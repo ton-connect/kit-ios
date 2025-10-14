@@ -23,11 +23,11 @@ public class TONWalletSignDataRequest {
     }
     
     public func approve() async throws {
-        await try walletKit.approveSignDataRequest(event)
+        try await walletKit.approveSignDataRequest(event)
     }
     
     public func reject(reason: String? = nil) async throws {
-        await try walletKit.rejectSignDataRequest(event)
+        try await walletKit.rejectSignDataRequest(event)
     }
 }
 

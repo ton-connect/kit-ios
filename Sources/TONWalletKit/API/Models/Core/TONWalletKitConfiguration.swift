@@ -6,7 +6,10 @@
 //
 
 import Foundation
+
+#if os(iOS)
 import UIKit
+#endif
 
 public struct TONWalletKitConfiguration: Encodable {
     let network: TONNetwork
@@ -63,7 +66,11 @@ extension TONWalletKitConfiguration {
         let features: [RawFeature]
         
         init(appName: String, features: [RawFeature]) {
+#if os(iOS)
             self.platform = UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone"
+#else
+            self.platform = "unknown"
+#endif
             self.appName = appName
             self.appVersion = Bundle.main.appVersion
             self.features = features

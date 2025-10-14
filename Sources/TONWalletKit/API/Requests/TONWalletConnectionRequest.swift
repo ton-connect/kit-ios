@@ -25,10 +25,10 @@ public class TONWalletConnectionRequest {
     public func approve(walletAddress: String) async throws {
         var event = self.event
         event.walletAddress = walletAddress
-        await try walletKit.approveConnectRequest(event)
+        try await walletKit.approveConnectRequest(event)
     }
     
     public func reject(reason: String? = nil) async throws {
-        await try  walletKit.rejectConnectRequest(event)
+        try await walletKit.rejectConnectRequest(event)
     }
 }
