@@ -23,6 +23,9 @@ xcuserdata
 *.moved-aside
 *.xcuserstate
 *.xcscmblueprint
+Demo/TONWalletApp.xcodeproj/project.xcworkspace/xcuserdata/
+Demo/TONWalletApp.xcodeproj/xcuserdata/
+Demo/TONWalletApp.xcodeproj/xcuserdata/
 
 ## Obj-C/Swift specific
 *.hmap
