@@ -38,3 +38,6 @@ playground.xcworkspace
 # Swift Package Manager
 .build/
 .swiftpm/
+
+# WalletKit
+walletkit
