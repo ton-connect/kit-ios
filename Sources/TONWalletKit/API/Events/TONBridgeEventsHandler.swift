@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol TONBridgeEventsHandler {
+public protocol TONBridgeEventsHandler: AnyObject {
     
-    func handle(event: TONWalletKitEvent)
+    func handle(event: TONWalletKitEvent) throws
 }

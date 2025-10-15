@@ -10,16 +10,11 @@ import JavaScriptCore
 
 public class WalletKitEngine: JSEngine {
     private let configuration: TONWalletKitConfiguration
-    private let eventsHandler: any TONBridgeEventsHandler
     
     public private(set) var jsContext: JSContext?
     
-    public init(
-        configuration: TONWalletKitConfiguration,
-        eventsHandler: any TONBridgeEventsHandler
-    ) {
+    public init(configuration: TONWalletKitConfiguration) {
         self.configuration = configuration
-        self.eventsHandler = eventsHandler
     }
     
     public func loadJS(into context: JSContext) async throws {
@@ -28,16 +23,6 @@ public class WalletKitEngine: JSEngine {
     }
     
     public func processJS(in context: JSContext) async throws {
-        let bridgePolyfill = JSWalletKitSwiftBridgePolyfill { [weak self] in
-            guard let self else { return }
-            
-            if let walletKitEvent = TONWalletKitEvent(bridgeEvent: $0, walletKit: self) {
-                self.eventsHandler.handle(event: walletKitEvent)
-            }
-        }
-        
-        context.polyfill(with: bridgePolyfill)
-        
         let storage: WalletKitJSStorage?
         
         switch configuration.storage {

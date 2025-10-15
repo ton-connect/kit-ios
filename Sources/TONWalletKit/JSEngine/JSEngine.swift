@@ -8,7 +8,7 @@
 import Foundation
 import JavaScriptCore
 
-public protocol JSEngine: JSDynamicObject {
+public protocol JSEngine: JSDynamicObject, AnyObject {
     func loadJS(into context: JSContext) async throws
     func processJS(in context: JSContext) async throws
     

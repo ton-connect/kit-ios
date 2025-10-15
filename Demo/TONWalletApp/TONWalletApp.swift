@@ -42,10 +42,8 @@ struct TONWalletApp: App {
                             storage: .keychain
                         )
                         do {
-                            try await TONWalletKit.initialize(
-                                configuration: configuration,
-                                eventsHandler: TONEventsHandler.shared
-                            )
+                            let kit = try await TONWalletKit.initialize(configuration: configuration)
+                            try await kit?.add(eventHandler: TONEventsHandler.shared)
                             initialized = true
                         } catch {
                             debugPrint(error.localizedDescription)
