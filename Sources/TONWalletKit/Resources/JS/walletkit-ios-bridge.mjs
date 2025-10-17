@@ -47170,7 +47170,7 @@ class RequestProcessor {
       throw new WalletKitError(ERROR_CODES.WALLET_NOT_FOUND, "Wallet not found for connect approval response", void 0, { walletAddress, eventId: event.id });
     }
     const walletStateInit = await wallet.getStateInit();
-    const publicKey = Buffer.from(wallet.publicKey).toString("hex");
+    const publicKey = wallet.publicKey.replace("0x", "");
     const address = wallet.getAddress();
     const connectResponse = {
       event: "connect",
@@ -66559,8 +66559,8 @@ function toNftCollection(data) {
     return null;
   const out = {
     address: asAddressFriendly(data.address),
-    codeHash: data.code_hash ? asHex(data.code_hash) : null,
-    dataHash: data.data_hash ? asHex(data.data_hash) : null,
+    codeHash: data.code_hash ? Base64ToHex(data.code_hash) : null,
+    dataHash: data.data_hash ? Base64ToHex(data.data_hash) : null,
     nextItemIndex: BigInt(data.next_item_index),
     ownerAddress: asMaybeAddressFriendly(data.owner_address)
   };
@@ -66574,8 +66574,8 @@ function toNftItem(data) {
   const out = {
     address: asAddressFriendly(data.address),
     auctionContractAddress: asMaybeAddressFriendly(data.auction_contract_address),
-    codeHash: data.code_hash ? asHex(data.code_hash) : null,
-    dataHash: data.data_hash ? asHex(data.data_hash) : null,
+    codeHash: data.code_hash ? Base64ToHex(data.code_hash) : null,
+    dataHash: data.data_hash ? Base64ToHex(data.data_hash) : null,
     collection: toNftCollection(data.collection),
     collectionAddress: asMaybeAddressFriendly(data.collection_address),
     index: BigInt(data.index),
