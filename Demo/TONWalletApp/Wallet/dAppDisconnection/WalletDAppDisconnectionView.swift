@@ -27,7 +27,7 @@ struct WalletDAppDisconnectionView: View {
 }
 
 private struct DisconnectEventView: View {
-    let event: DisconnectEvent
+    let event: TONDisconnectEvent
     
     let onDismiss: (() -> Void)?
     

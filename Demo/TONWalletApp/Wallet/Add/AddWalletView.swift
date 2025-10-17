@@ -14,7 +14,7 @@ import TONWalletKit
 struct AddWalletView: View {
     @StateObject var viewModel = AddWalletViewModel()
     
-    let onAddWallet: (TONWallet) -> Void
+    let onAddWallet: (TONWalletProtocol) -> Void
     
     var body: some View {
         VStack {

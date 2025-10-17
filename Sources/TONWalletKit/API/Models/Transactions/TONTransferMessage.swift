@@ -35,10 +35,10 @@ public struct TONTransferMessage: Codable {
     }
 }
 
-public struct TONTransferManyParams: Codable {
-    public var messages: [TONTransferMessage]
+struct TONTransferManyParams: Codable {
+    var messages: [TONTransferMessage]
     
-    public init(messages: [TONTransferMessage]) {
+    init(messages: [TONTransferMessage]) {
         self.messages = messages
     }
 }

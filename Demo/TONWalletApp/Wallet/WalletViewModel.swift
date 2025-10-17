@@ -13,7 +13,7 @@ import TONWalletKit
 class WalletViewModel: Identifiable, ObservableObject {
     let id = UUID()
 
-    let tonWallet: TONWallet
+    let tonWallet: TONWalletProtocol
     
     let info: WalletInfoViewModel
     let dAppConnection: WalletDAppConnectionViewModel
@@ -24,7 +24,7 @@ class WalletViewModel: Identifiable, ObservableObject {
     var onRemove: (() -> Void)?
     
     init(
-        tonWallet: TONWallet
+        tonWallet: TONWalletProtocol
     ) {
         self.tonWallet = tonWallet
         
@@ -38,7 +38,9 @@ class WalletViewModel: Identifiable, ObservableObject {
             try storage.remove(walletAddress: tonWallet.address)
             
             Task {
-                try await tonWallet.remove()
+                if let address = tonWallet.address {
+                    try await TONWalletKit.mainnet().remove(walletAddress: address)
+                }
             }
             
             onRemove?()

@@ -11,28 +11,23 @@ public enum TONWalletKitEvent {
     case connectRequest(TONWalletConnectionRequest)
     case transactionRequest(TONWalletTransactionRequest)
     case signDataRequest(TONWalletSignDataRequest)
-    case disconnect(DisconnectEvent)
+    case disconnect(TONDisconnectEvent)
     
-    init?(bridgeEvent: JSWalletKitSwiftBridgeEvent, walletKit: any JSDynamicObject) {
+    init(bridgeEvent: JSWalletKitSwiftBridgeEvent, context: any JSDynamicObject) throws {
         let decoder = JSONDecoder()
         
-        do {
-            switch bridgeEvent.type {
-            case .connectRequest:
-                let event = try decoder.decode(ConnectRequestEvent.self, from: bridgeEvent.data)
-                self = .connectRequest(TONWalletConnectionRequest(walletKit: walletKit, event: event))
-            case .transactionRequest:
-                let event = try decoder.decode(TransactionRequestEvent.self, from: bridgeEvent.data)
-                self = .transactionRequest(TONWalletTransactionRequest(walletKit: walletKit, event: event))
-            case .signDataRequest:
-                let event = try decoder.decode(SignDataRequestEvent.self, from: bridgeEvent.data)
-                self = .signDataRequest(TONWalletSignDataRequest(walletKit: walletKit, event: event))
-            case .disconnect:
-                self = .disconnect(try decoder.decode(DisconnectEvent.self, from: bridgeEvent.data))
-            }
-        } catch {
-            debugPrint("Unable to decode event with type: \(bridgeEvent.type)")
-            return nil
+        switch bridgeEvent.type {
+        case .connectRequest:
+            let event = try decoder.decode(TONConnectRequestEvent.self, from: bridgeEvent.data)
+            self = .connectRequest(TONWalletConnectionRequest(context: context, event: event))
+        case .transactionRequest:
+            let event = try decoder.decode(TONTransactionRequestEvent.self, from: bridgeEvent.data)
+            self = .transactionRequest(TONWalletTransactionRequest(context: context, event: event))
+        case .signDataRequest:
+            let event = try decoder.decode(TONSignDataRequestEvent.self, from: bridgeEvent.data)
+            self = .signDataRequest(TONWalletSignDataRequest(context: context, event: event))
+        case .disconnect:
+            self = .disconnect(try decoder.decode(TONDisconnectEvent.self, from: bridgeEvent.data))
         }
     }
 }

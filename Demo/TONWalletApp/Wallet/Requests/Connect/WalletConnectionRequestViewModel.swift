@@ -11,15 +11,15 @@ import TONWalletKit
 
 @MainActor
 class WalletConnectionRequestViewModel: ObservableObject {
-    private let wallet: TONWallet
+    private let wallet: TONWalletProtocol
     private let request: TONWalletConnectionRequest
     
-    var dAppInfo: DAppInfo? { request.dAppInfo }
-    var permissions: [ConnectRequestEvent.Preview.ConnectPermission] { request.permissions }
+    var dAppInfo: TONDAppInfo? { request.dAppInfo }
+    var permissions: [TONConnectRequestEvent.Preview.ConnectPermission] { request.permissions }
     
     let dismiss = PassthroughSubject<Void, Never>()
     
-    init(request: TONWalletConnectionRequest, wallet: TONWallet) {
+    init(request: TONWalletConnectionRequest, wallet: TONWalletProtocol) {
         self.request = request
         self.wallet = wallet
     }

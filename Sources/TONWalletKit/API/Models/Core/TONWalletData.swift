@@ -11,13 +11,13 @@ public struct TONWalletData: Codable {
     public let mnemonic: [String]
     public let name: String
     public let network: TONNetwork
-    public let version: String
+    public let version: TONWalletVersion
     
     public init(
         mnemonic: TONMnemonic,
         name: String,
         network: TONNetwork = .mainnet,
-        version: String = "v5r1"
+        version: TONWalletVersion
     ) {
         self.mnemonic = mnemonic.value
         self.name = name

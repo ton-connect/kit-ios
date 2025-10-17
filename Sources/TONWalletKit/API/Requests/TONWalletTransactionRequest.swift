@@ -8,24 +8,24 @@
 import Foundation
 
 public class TONWalletTransactionRequest {
-    let walletKit: any JSDynamicObject
-    let event: TransactionRequestEvent
+    let context: any JSDynamicObject
+    let event: TONTransactionRequestEvent
     
-    public var dAppInfo: DAppInfo? { event.dAppInfo }
+    public var dAppInfo: TONDAppInfo? { event.dAppInfo }
     
     init(
-        walletKit: any JSDynamicObject,
-        event: TransactionRequestEvent
+        context: any JSDynamicObject,
+        event: TONTransactionRequestEvent
     ) {
-        self.walletKit = walletKit
+        self.context = context
         self.event = event
     }
     
     public func approve() async throws {
-        try await walletKit.approveTransactionRequest(event)
+        try await context.walletKit.approveTransactionRequest(event)
     }
     
     public func reject(reason: String? = nil) async throws {
-        try await walletKit.rejectTransactionRequest(event)
+        try await context.walletKit.rejectTransactionRequest(event)
     }
 }

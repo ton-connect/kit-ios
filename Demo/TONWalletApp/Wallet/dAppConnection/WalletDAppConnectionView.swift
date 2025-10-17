@@ -27,14 +27,10 @@ struct WalletDAppConnectionView: View {
             }
             .buttonStyle(
                 TONButtonStyle(
-                    type: .primary,
-                    isLoading: viewModel.isConnecting
+                    type: .primary
                 )
             )
             .disabled(viewModel.link.isEmpty)
-        }
-        .onAppear {
-            viewModel.waitForEvent()
         }
     }
 }
