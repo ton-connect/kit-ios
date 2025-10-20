@@ -8,27 +8,27 @@
 import Foundation
 
 public class TONWalletConnectionRequest {
-    let walletKit: any JSDynamicObject
-    let event: ConnectRequestEvent
+    let context: any JSDynamicObject
+    let event: TONConnectRequestEvent
     
-    public var dAppInfo: DAppInfo? { event.dAppInfo }
-    public var permissions: [ConnectRequestEvent.Preview.ConnectPermission] { event.preview?.permissions ?? [] }
+    public var dAppInfo: TONDAppInfo? { event.dAppInfo }
+    public var permissions: [TONConnectRequestEvent.Preview.ConnectPermission] { event.preview?.permissions ?? [] }
     
     init(
-        walletKit: any JSDynamicObject,
-        event: ConnectRequestEvent
+        context: any JSDynamicObject,
+        event: TONConnectRequestEvent
     ) {
-        self.walletKit = walletKit
+        self.context = context
         self.event = event
     }
     
     public func approve(walletAddress: String) async throws {
         var event = self.event
         event.walletAddress = walletAddress
-        try await walletKit.approveConnectRequest(event)
+        try await context.walletKit.approveConnectRequest(event)
     }
     
     public func reject(reason: String? = nil) async throws {
-        try await walletKit.rejectConnectRequest(event)
+        try await context.walletKit.rejectConnectRequest(event)
     }
 }

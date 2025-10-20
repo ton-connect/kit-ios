@@ -9,7 +9,7 @@ import SwiftUI
 import TONWalletKit
 
 public struct DAppView: View {
-    let dAppInfo: DAppInfo
+    let dAppInfo: TONDAppInfo
     
     public var body: some View {
         HStack(spacing: AppSpacing.spacing(3.0)) {

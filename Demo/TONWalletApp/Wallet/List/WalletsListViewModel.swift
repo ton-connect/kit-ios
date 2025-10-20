@@ -23,7 +23,7 @@ class WalletsListViewModel: ObservableObject {
         self.wallets = wallets
     }
     
-    func add(wallets: [TONWallet]) {
+    func add(wallets: [TONWalletProtocol]) {
         let viewModels = wallets.map { WalletViewModel(tonWallet: $0) }
         add(wallets: viewModels)
     }

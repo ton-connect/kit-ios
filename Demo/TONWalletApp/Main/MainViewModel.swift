@@ -18,11 +18,28 @@ class MainViewModel: ObservableObject {
         do {
             let wallets = try storage.wallets()
             
-            var tonWallets: [TONWallet] = []
+            var tonWallets: [TONWalletProtocol] = []
             
             for wallet in wallets {
-                let tonWallet = try await TONWallet.add(data: wallet.data)
-                tonWallets.append(tonWallet)
+                switch wallet.data.version {
+                case .unknown: continue
+                case .v4r2:
+                    let tonWallet = try await TONWalletKit.mainnet().addV4R2Wallet(
+                        mnemonic: TONMnemonic(
+                            value: wallet.data.mnemonic
+                        ),
+                        parameters: .init(network: .mainnet)
+                    )
+                    tonWallets.append(tonWallet)
+                case .v5r1:
+                    let tonWallet = try await TONWalletKit.mainnet().addV5R1Wallet(
+                        mnemonic: TONMnemonic(
+                            value: wallet.data.mnemonic
+                        ),
+                        parameters: .init(network: .mainnet)
+                    )
+                    tonWallets.append(tonWallet)
+                }
             }
             
             if tonWallets.isEmpty {
@@ -35,7 +52,7 @@ class MainViewModel: ObservableObject {
         }
     }
     
-    func show(wallets: [TONWallet]) {
+    func show(wallets: [TONWalletProtocol]) {
         if wallets.isEmpty {
             return
         }
@@ -49,7 +66,7 @@ class MainViewModel: ObservableObject {
         
         state = .wallets(viewModel: viewModel)
     }
-
+    
     func walletsListViewModel() -> WalletsListViewModel {
         switch state {
         case .loading, .addWallet:

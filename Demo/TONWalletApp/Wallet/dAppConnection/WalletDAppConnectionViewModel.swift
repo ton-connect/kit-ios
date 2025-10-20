@@ -11,43 +11,24 @@ import TONWalletKit
 
 @MainActor
 class WalletDAppConnectionViewModel: ObservableObject {
-    let wallet: TONWallet
+    let wallet: TONWalletProtocol
     
     @Published var link = ""
-    @Published var isConnecting = false
 
     private var subscribers = Set<AnyCancellable>()
     
-    init(wallet: TONWallet) {
+    init(wallet: TONWalletProtocol) {
         self.wallet = wallet
     }
     
     func connect() {
-        isConnecting = true
-        
         Task {
             do {
-                try await wallet.connect(url: link)
+                try await TONWalletKit.mainnet().connect(url: link)
             } catch {
                 debugPrint(error.localizedDescription)
-                isConnecting = false
             }
         }
-    }
-    
-    func waitForEvent() {
-        subscribers.removeAll()
-        
-        TONEventsHandler.shared.events
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] event in
-                switch event {
-                case .connectRequest:
-                    self?.isConnecting = false
-                default: ()
-                }
-            }
-            .store(in: &subscribers)
     }
 }
 

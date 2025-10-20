@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol TONWalletKitStorage {
+public protocol TONWalletKitStorage: AnyObject {
     func save(key: String, value: String) throws
     func get(key: String) throws -> String?
     func remove(key: String) throws

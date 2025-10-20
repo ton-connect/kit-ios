@@ -11,13 +11,13 @@ import TONWalletKit
 
 @MainActor
 class WalletDAppDisconnectionViewModel: ObservableObject {
-    @Published private(set) var events: [DisconnectEvent] = []
+    @Published private(set) var events: [TONDisconnectEvent] = []
     
-    let wallet: TONWallet
+    let wallet: TONWalletProtocol
     
     private var subscribers: Set<AnyCancellable> = []
     
-    init(wallet: TONWallet) {
+    init(wallet: TONWalletProtocol) {
         self.wallet = wallet
     }
     
@@ -43,4 +43,4 @@ class WalletDAppDisconnectionViewModel: ObservableObject {
     }
 }
 
-extension DisconnectEvent: @retroactive Identifiable {}
+extension TONDisconnectEvent: @retroactive Identifiable {}

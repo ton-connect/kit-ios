@@ -8,26 +8,26 @@
 import Foundation
 
 public class TONWalletSignDataRequest {
-    let walletKit: any JSDynamicObject
-    let event: SignDataRequestEvent
+    let context: any JSDynamicObject
+    let event: TONSignDataRequestEvent
     
-    public var dAppInfo: DAppInfo? { event.dAppInfo }
+    public var dAppInfo: TONDAppInfo? { event.dAppInfo }
     public var walletAddress: String? { event.walletAddress }
     
     init(
-        walletKit: any JSDynamicObject,
-        event: SignDataRequestEvent
+        context: any JSDynamicObject,
+        event: TONSignDataRequestEvent
     ) {
-        self.walletKit = walletKit
+        self.context = context
         self.event = event
     }
     
     public func approve() async throws {
-        try await walletKit.approveSignDataRequest(event)
+        try await context.walletKit.approveSignDataRequest(event)
     }
     
     public func reject(reason: String? = nil) async throws {
-        try await walletKit.rejectSignDataRequest(event)
+        try await context.walletKit.rejectSignDataRequest(event)
     }
 }
 

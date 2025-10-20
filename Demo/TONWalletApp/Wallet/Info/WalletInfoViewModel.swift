@@ -10,13 +10,13 @@ import TONWalletKit
 
 @MainActor
 class WalletInfoViewModel: ObservableObject {
-    let wallet: TONWallet
+    let wallet: TONWalletProtocol
     
     var address: String { wallet.address ?? "Unknown address" }
     
     @Published private(set) var balance: String?
     
-    init(wallet: TONWallet) {
+    init(wallet: TONWalletProtocol) {
         self.wallet = wallet
     }
     
