@@ -64546,9 +64546,13 @@ class Initializer {
     if (options.storage && "get" in options.storage && typeof options.storage.get === "function" && "set" in options.storage && typeof options.storage.set === "function" && "remove" in options.storage && typeof options.storage.remove === "function" && "clear" in options.storage && typeof options.storage.clear === "function") {
       return options.storage;
     }
-    return createStorageAdapter({
-      prefix: "tonwalletkit:"
-    });
+    const createStorageOptions = {
+      prefix: options?.storage?.prefix ?? "tonwalletkit:",
+      maxRetries: options?.storage?.maxRetries,
+      retryDelay: options?.storage?.retryDelay,
+      allowMemory: options?.storage?.allowMemory
+    };
+    return createStorageAdapter(createStorageOptions);
   }
   /**
    * Initialize core managers

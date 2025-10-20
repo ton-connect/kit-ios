@@ -18,6 +18,8 @@ class JSBridgeRawEventsHandler {
     }
     
     func handle(eventType: String, eventData: JSValue) throws {
+        clean()
+        
         guard let data = eventData.toData() else {
             throw "Failed to parse event data"
         }
@@ -47,13 +49,21 @@ class JSBridgeRawEventsHandler {
     }
     
     func add(handler: any JSBridgeEventsHandler) {
+        clean()
+        
         if !handlers.contains(where: { $0 === handler }) {
             handlers.append(handler)
         }
     }
     
     func remove(handler: any JSBridgeEventsHandler) {
+        clean()
+        
         handlers.removeAll { $0 === handler }
+    }
+    
+    private func clean() {
+        handlers.removeAll { !$0.isValid }
     }
 }
 
