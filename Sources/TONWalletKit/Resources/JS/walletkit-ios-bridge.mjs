@@ -29611,6 +29611,7 @@ const ERROR_CODES = {
   API_CLIENT_ERROR: 7600,
   TON_CLIENT_INITIALIZATION_FAILED: 7601,
   API_REQUEST_FAILED: 7602,
+  ACCOUNT_NOT_FOUND: 7603,
   // Jetton/NFT Errors (7700-7799)
   JETTONS_MANAGER_ERROR: 7700,
   NFT_MANAGER_ERROR: 7701,
@@ -29623,7 +29624,8 @@ const ERROR_CODES = {
   VALIDATION_ERROR: 7901,
   INITIALIZATION_ERROR: 7902,
   CONFIGURATION_ERROR: 7903,
-  NETWORK_ERROR: 7904
+  NETWORK_ERROR: 7904,
+  UNKNOWN_EMULATION_ERROR: 7905
 };
 function getErrorCodeName(code) {
   const entry = Object.entries(ERROR_CODES).find(([, value]) => value === code);
@@ -35360,20 +35362,6 @@ function Za(t) {
       }
     }
 }
-class EmulationErrorUnknown extends Error {
-  constructor(message, cause) {
-    super(message);
-    this.name = "EmulationErrorUnknown";
-    this.cause = cause;
-  }
-}
-class EmulationErrorTransactionAccountNotFound extends Error {
-  constructor(message, cause) {
-    super(message);
-    this.name = "EmulationErrorTransactionAccountNotFound";
-    this.cause = cause;
-  }
-}
 const TON_PROXY_ADDRESSES = [
   "0:8CDC1D7640AD5EE326527FC1AD0514F468B30DC84B0173F0E155F451B4E11F7C",
   "0:671963027F7F85659AB55B821671688601CDCF1EE674FC7FBBB1A776A18D34A3"
@@ -35411,7 +35399,10 @@ async function fetchToncenterEmulation(message) {
       if (errorMessage.error === "Failed to fetch account state: Account not found in accounts_dict") {
         return {
           result: "error",
-          emulationError: new EmulationErrorTransactionAccountNotFound("Account not found")
+          emulationError: {
+            code: ERROR_CODES.ACCOUNT_NOT_FOUND,
+            message: "Account not found"
+          }
         };
       }
     } catch (_) {
@@ -35674,7 +35665,10 @@ class TransactionHandler extends BasicHandler {
     } catch (error2) {
       log$d.error("Failed to create transaction preview", { error: error2 });
       preview = {
-        emulationError: new EmulationErrorUnknown("Unknown emulation error", error2),
+        emulationError: {
+          code: ERROR_CODES.UNKNOWN_EMULATION_ERROR,
+          message: "Unknown emulation error"
+        },
         result: "error"
       };
     }
@@ -35834,10 +35828,13 @@ class TransactionHandler extends BasicHandler {
       } else {
         return emulatedResult;
       }
-    } catch (error2) {
+    } catch (_error) {
       return {
         result: "error",
-        emulationError: new EmulationErrorUnknown("Unknown emulation error", error2)
+        emulationError: {
+          code: ERROR_CODES.UNKNOWN_EMULATION_ERROR,
+          message: "Unknown emulation error"
+        }
       };
     }
     const moneyFlow = processToncenterMoneyFlow(emulationResult);
@@ -47883,6 +47880,64 @@ class StorageEventProcessor {
     return enabledTypes.filter((type) => type === "connect" || type === "restoreConnection").concat(["restoreConnection"]);
   }
 }
+const ERROR_MESSAGES = {
+  // Bridge Manager Errors (7000-7099)
+  [ERROR_CODES.BRIDGE_NOT_INITIALIZED]: "Bridge not initialized",
+  [ERROR_CODES.BRIDGE_CONNECTION_FAILED]: "Bridge connection failed",
+  [ERROR_CODES.BRIDGE_EVENT_PROCESSING_FAILED]: "Bridge event processing failed",
+  [ERROR_CODES.BRIDGE_RESPONSE_SEND_FAILED]: "Bridge response send failed",
+  // Session Errors (7100-7199)
+  [ERROR_CODES.SESSION_NOT_FOUND]: "Session not found",
+  [ERROR_CODES.SESSION_ID_REQUIRED]: "Session ID required",
+  [ERROR_CODES.SESSION_CREATION_FAILED]: "Session creation failed",
+  [ERROR_CODES.SESSION_DOMAIN_REQUIRED]: "Session domain required",
+  [ERROR_CODES.SESSION_RESTORATION_FAILED]: "Session restoration failed",
+  // Event Store Errors (7200-7299)
+  [ERROR_CODES.EVENT_STORE_NOT_INITIALIZED]: "Event store not initialized",
+  [ERROR_CODES.EVENT_STORE_OPERATION_FAILED]: "Event store operation failed",
+  // Storage Errors (7300-7399)
+  [ERROR_CODES.STORAGE_READ_FAILED]: "Storage read failed",
+  [ERROR_CODES.STORAGE_WRITE_FAILED]: "Storage write failed",
+  // Wallet Errors (7400-7499)
+  [ERROR_CODES.WALLET_NOT_FOUND]: "Wallet not found",
+  [ERROR_CODES.WALLET_REQUIRED]: "Wallet required",
+  [ERROR_CODES.WALLET_INVALID]: "Wallet invalid",
+  [ERROR_CODES.WALLET_CREATION_FAILED]: "Wallet creation failed",
+  [ERROR_CODES.WALLET_INITIALIZATION_FAILED]: "Wallet initialization failed",
+  [ERROR_CODES.LEDGER_DEVICE_ERROR]: "Ledger device error",
+  // Request Processing Errors (7500-7599)
+  [ERROR_CODES.INVALID_REQUEST_EVENT]: "Invalid request event",
+  [ERROR_CODES.REQUEST_PROCESSING_FAILED]: "Request processing failed",
+  [ERROR_CODES.RESPONSE_CREATION_FAILED]: "Response creation failed",
+  [ERROR_CODES.APPROVAL_FAILED]: "Approval failed",
+  [ERROR_CODES.REJECTION_FAILED]: "Rejection failed",
+  // API Client Errors (7600-7699)
+  [ERROR_CODES.API_CLIENT_ERROR]: "Api client error",
+  [ERROR_CODES.TON_CLIENT_INITIALIZATION_FAILED]: "Ton client initialization failed",
+  [ERROR_CODES.API_REQUEST_FAILED]: "Api request failed",
+  [ERROR_CODES.ACCOUNT_NOT_FOUND]: "Account not found",
+  // Jetton/NFT Errors (7700-7799)
+  [ERROR_CODES.JETTONS_MANAGER_ERROR]: "Jetton manager error",
+  [ERROR_CODES.NFT_MANAGER_ERROR]: "NFT manager error",
+  // Contract Errors (7800-7899)
+  [ERROR_CODES.CONTRACT_DEPLOYMENT_FAILED]: "Contract deployment failed",
+  [ERROR_CODES.CONTRACT_EXECUTION_FAILED]: "Contract execution failed",
+  [ERROR_CODES.CONTRACT_VALIDATION_FAILED]: "Contract validation failed",
+  // Generic Errors (7900-7999)
+  [ERROR_CODES.UNKNOWN_ERROR]: "Unknown error",
+  [ERROR_CODES.VALIDATION_ERROR]: "Validation error",
+  [ERROR_CODES.INITIALIZATION_ERROR]: "Initialization error",
+  [ERROR_CODES.CONFIGURATION_ERROR]: "Configuration error",
+  [ERROR_CODES.NETWORK_ERROR]: "Network error",
+  [ERROR_CODES.UNKNOWN_EMULATION_ERROR]: "Unknown emulation error"
+};
+function createErrorInfo(code, message, data) {
+  return {
+    code,
+    message: message || ERROR_MESSAGES[code] || "Unknown error",
+    data
+  };
+}
 class WalletTonClass {
   client;
   constructor(client) {
@@ -47957,7 +48012,7 @@ class WalletTonClass {
     return {
       preview: {
         result: "error",
-        emulationError: new EmulationErrorUnknown("Unknown emulation error")
+        emulationError: createErrorInfo(ERROR_CODES.UNKNOWN_EMULATION_ERROR)
       }
     };
   }

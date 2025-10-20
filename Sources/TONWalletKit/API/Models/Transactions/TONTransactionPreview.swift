@@ -19,12 +19,13 @@ public enum TONTransactionPreview: Codable {
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let result = try container.decode(String.self, forKey: .result)
+        let result = try container.decode(TONResult.self, forKey: .result)
+        
         switch result {
-        case "error":
+        case .error:
             let error = try TONTransactionPreviewEmulationError(from: decoder)
             self = .error(error)
-        case "success":
+        case .success:
             let success = try TONTransactionPreviewEmulationResult(from: decoder)
             self = .success(success)
         default:
@@ -43,10 +44,25 @@ public enum TONTransactionPreview: Codable {
 }
 
 public struct TONTransactionPreviewEmulationError: Codable {
-    public let emulationError: TONEmulationError
+    public let result: TONResult = .error
+    public let emulationError: TONError
+    
+    public init(emulationError: TONError) {
+        self.emulationError = emulationError
+    }
 }
 
 public struct TONTransactionPreviewEmulationResult: Codable {
+    public let result: TONResult = .success
+    
     public let moneyFlow: TONMoneyFlow
     public let emulationResult: TONCenterEmulationResponse
+    
+    public init(
+        moneyFlow: TONMoneyFlow,
+        emulationResult: TONCenterEmulationResponse
+    ) {
+        self.moneyFlow = moneyFlow
+        self.emulationResult = emulationResult
+    }
 }

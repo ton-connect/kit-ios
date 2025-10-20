@@ -70,6 +70,16 @@ public struct TONSignDataPayloadText: Codable {
     public var text: String
     public var network: String?
     public var from: String?
+    
+    public init(
+        text: String,
+        network: String? = nil,
+        from: String? = nil
+    ) {
+        self.text = text
+        self.network = network
+        self.from = from
+    }
 }
 
 public struct TONSignDataPayloadBinary: Codable {
@@ -77,6 +87,16 @@ public struct TONSignDataPayloadBinary: Codable {
     public var bytes: String
     public var network: String?
     public var from: String?
+    
+    public init(
+        bytes: String,
+        network: String? = nil,
+        from: String? = nil
+    ) {
+        self.bytes = bytes
+        self.network = network
+        self.from = from
+    }
 }
 
 public struct TONSignDataPayloadCell: Codable {
@@ -85,4 +105,16 @@ public struct TONSignDataPayloadCell: Codable {
     public var cell: String
     public var network: String?
     public var from: String?
+    
+    public init(
+        schema: String,
+        cell: String,
+        network: String? = nil,
+        from: String? = nil
+    ) {
+        self.schema = schema
+        self.cell = cell
+        self.network = network
+        self.from = from
+    }
 }
