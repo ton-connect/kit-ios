@@ -8,6 +8,8 @@
 import Foundation
 
 protocol JSBridgeEventsHandler: AnyObject {
+    var isValid: Bool { get }
     
     func handle(event: JSWalletKitSwiftBridgeEvent) throws
+    func invalidate()
 }

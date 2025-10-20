@@ -13,6 +13,10 @@ public class TONWalletKit {
     private let context: JSWalletKitContext
     private var eventHandlersAdapters: [TONBridgeEventsHandlerAdapter] = []
     
+    deinit {
+        eventHandlersAdapters.forEach { $0.invalidate() }
+    }
+    
     init(context: JSWalletKitContext) {
         self.context = context
     }
