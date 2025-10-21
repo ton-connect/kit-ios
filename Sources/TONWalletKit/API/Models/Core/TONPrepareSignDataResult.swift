@@ -12,14 +12,14 @@ public struct TONPrepareSignDataResult: Codable {
     public var timestamp: Int
     public var domain: String
     public var payload: TONSignDataPayload
-    public var hash: Data
+    public var hash: TONHex
     
     public init(
         address: String,
         timestamp: Int,
         domain: String,
         payload: TONSignDataPayload,
-        hash: Data
+        hash: TONHex
     ) {
         self.address = address
         self.timestamp = timestamp
@@ -45,7 +45,11 @@ public enum TONSignDataPayload: Codable {
         case "cell":
             self = .cell(try TONSignDataPayloadCell(from: decoder))
         default:
-            throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Unknown payload type")
+            throw DecodingError.dataCorruptedError(
+                forKey: .type,
+                in: container,
+                debugDescription: "Unknown payload type"
+            )
         }
     }
 
@@ -70,6 +74,16 @@ public struct TONSignDataPayloadText: Codable {
     public var text: String
     public var network: String?
     public var from: String?
+    
+    public init(
+        text: String,
+        network: String? = nil,
+        from: String? = nil
+    ) {
+        self.text = text
+        self.network = network
+        self.from = from
+    }
 }
 
 public struct TONSignDataPayloadBinary: Codable {
@@ -77,6 +91,16 @@ public struct TONSignDataPayloadBinary: Codable {
     public var bytes: String
     public var network: String?
     public var from: String?
+    
+    public init(
+        bytes: String,
+        network: String? = nil,
+        from: String? = nil
+    ) {
+        self.bytes = bytes
+        self.network = network
+        self.from = from
+    }
 }
 
 public struct TONSignDataPayloadCell: Codable {
@@ -85,4 +109,16 @@ public struct TONSignDataPayloadCell: Codable {
     public var cell: String
     public var network: String?
     public var from: String?
+    
+    public init(
+        schema: String,
+        cell: String,
+        network: String? = nil,
+        from: String? = nil
+    ) {
+        self.schema = schema
+        self.cell = cell
+        self.network = network
+        self.from = from
+    }
 }

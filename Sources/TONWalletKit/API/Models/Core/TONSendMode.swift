@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum TONSendMode: Int {
+public enum TONSendMode: Int, Codable {
     case carryAllRemainingBalance = 128
     case carryAllRemainingIncomingValue = 64
     case destroyAccountIfZero = 32

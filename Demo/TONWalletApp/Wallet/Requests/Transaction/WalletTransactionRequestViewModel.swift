@@ -24,7 +24,7 @@ class WalletTransactionRequestViewModel: ObservableObject {
     func approve() {
         Task {
             do {
-                try await request.approve()
+                _ = try await request.approve()
                 dismiss.send()
             } catch {
                 debugPrint("Error approving transaction: \(error.localizedDescription)")

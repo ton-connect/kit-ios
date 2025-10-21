@@ -106,7 +106,7 @@ class TONWalletJSAdapter: JSWalletAdapter {
         let options: AllOptions? = try? options.decode()
         
         do {
-            let input: TONTonProofParsedMessage = try input.decode()
+            let input: TONProofParsedMessage = try input.decode()
             
             return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
                 Task {

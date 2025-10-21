@@ -16,7 +16,7 @@ public protocol TONWalletAdapter {
     func stateInit() async throws -> Data
     func signedSendTransaction(input: TONConnectTransactionParamContent, fakeSignature: Bool) async throws -> String
     func signedSignData(input: TONPrepareSignDataResult, fakeSignature: Bool) async throws -> Data
-    func signedTonProof(input: TONTonProofParsedMessage, fakeSignature: Bool) async throws -> Data
+    func signedTonProof(input: TONProofParsedMessage, fakeSignature: Bool) async throws -> Data
 }
 
 public protocol TONWalletProtocol {

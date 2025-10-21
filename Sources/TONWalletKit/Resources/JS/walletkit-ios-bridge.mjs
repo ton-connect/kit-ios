@@ -24130,7 +24130,7 @@ function requireTuple() {
       throw Error("Invalid value");
     }
   }
-  function parseStackItem2(cs) {
+  function parseStackItem(cs) {
     let kind = cs.loadUint(8);
     if (kind === 0) {
       return { type: "null" };
@@ -24171,16 +24171,16 @@ function requireTuple() {
       if (length > 1) {
         let head = cs.loadRef().beginParse();
         let tail = cs.loadRef().beginParse();
-        items.unshift(parseStackItem2(tail));
+        items.unshift(parseStackItem(tail));
         for (let i = 0; i < length - 2; i++) {
           let ohead = head;
           head = ohead.loadRef().beginParse();
           tail = ohead.loadRef().beginParse();
-          items.unshift(parseStackItem2(tail));
+          items.unshift(parseStackItem(tail));
         }
-        items.unshift(parseStackItem2(head));
+        items.unshift(parseStackItem(head));
       } else if (length === 1) {
-        items.push(parseStackItem2(cs.loadRef().beginParse()));
+        items.push(parseStackItem(cs.loadRef().beginParse()));
       }
       return { type: "tuple", items };
     } else {
@@ -24209,7 +24209,7 @@ function requireTuple() {
     let size = cs.loadUint(24);
     for (let i = 0; i < size; i++) {
       let next = cs.loadRef();
-      res.unshift(parseStackItem2(cs));
+      res.unshift(parseStackItem(cs));
       cs = next.beginParse();
     }
     return res;
@@ -29611,6 +29611,7 @@ const ERROR_CODES = {
   API_CLIENT_ERROR: 7600,
   TON_CLIENT_INITIALIZATION_FAILED: 7601,
   API_REQUEST_FAILED: 7602,
+  ACCOUNT_NOT_FOUND: 7603,
   // Jetton/NFT Errors (7700-7799)
   JETTONS_MANAGER_ERROR: 7700,
   NFT_MANAGER_ERROR: 7701,
@@ -29623,7 +29624,8 @@ const ERROR_CODES = {
   VALIDATION_ERROR: 7901,
   INITIALIZATION_ERROR: 7902,
   CONFIGURATION_ERROR: 7903,
-  NETWORK_ERROR: 7904
+  NETWORK_ERROR: 7904,
+  UNKNOWN_EMULATION_ERROR: 7905
 };
 function getErrorCodeName(code) {
   const entry = Object.entries(ERROR_CODES).find(([, value]) => value === code);
@@ -35360,20 +35362,6 @@ function Za(t) {
       }
     }
 }
-class EmulationErrorUnknown extends Error {
-  constructor(message, cause) {
-    super(message);
-    this.name = "EmulationErrorUnknown";
-    this.cause = cause;
-  }
-}
-class EmulationErrorTransactionAccountNotFound extends Error {
-  constructor(message, cause) {
-    super(message);
-    this.name = "EmulationErrorTransactionAccountNotFound";
-    this.cause = cause;
-  }
-}
 const TON_PROXY_ADDRESSES = [
   "0:8CDC1D7640AD5EE326527FC1AD0514F468B30DC84B0173F0E155F451B4E11F7C",
   "0:671963027F7F85659AB55B821671688601CDCF1EE674FC7FBBB1A776A18D34A3"
@@ -35411,7 +35399,10 @@ async function fetchToncenterEmulation(message) {
       if (errorMessage.error === "Failed to fetch account state: Account not found in accounts_dict") {
         return {
           result: "error",
-          emulationError: new EmulationErrorTransactionAccountNotFound("Account not found")
+          emulationError: {
+            code: ERROR_CODES.ACCOUNT_NOT_FOUND,
+            message: "Account not found"
+          }
         };
       }
     } catch (_) {
@@ -35674,7 +35665,10 @@ class TransactionHandler extends BasicHandler {
     } catch (error2) {
       log$d.error("Failed to create transaction preview", { error: error2 });
       preview = {
-        emulationError: new EmulationErrorUnknown("Unknown emulation error", error2),
+        emulationError: {
+          code: ERROR_CODES.UNKNOWN_EMULATION_ERROR,
+          message: "Unknown emulation error"
+        },
         result: "error"
       };
     }
@@ -35834,10 +35828,13 @@ class TransactionHandler extends BasicHandler {
       } else {
         return emulatedResult;
       }
-    } catch (error2) {
+    } catch (_error) {
       return {
         result: "error",
-        emulationError: new EmulationErrorUnknown("Unknown emulation error", error2)
+        emulationError: {
+          code: ERROR_CODES.UNKNOWN_EMULATION_ERROR,
+          message: "Unknown emulation error"
+        }
       };
     }
     const moneyFlow = processToncenterMoneyFlow(emulationResult);
@@ -46510,7 +46507,7 @@ async function CreateTonProofMessageBytes(message) {
   const m2 = Buffer.concat([
     Buffer.from(tonProofPrefix),
     wc,
-    message.address,
+    HexToUint8Array(message.address),
     dl,
     Buffer.from(message.domain.value),
     ts,
@@ -46524,7 +46521,7 @@ async function CreateTonProofMessageBytes(message) {
 function createTonProofMessage({ address, domain, payload, stateInit, timestamp }) {
   const res = {
     workchain: address.workChain,
-    address: address.hash,
+    address: Uint8ArrayToHex(address.hash),
     domain: {
       lengthBytes: domain.lengthBytes,
       value: domain.value
@@ -46627,7 +46624,7 @@ function PrepareTonConnectData(params) {
     timestamp,
     domain,
     payload,
-    hash: new Uint8Array(finalHash)
+    hash: Uint8ArrayToHex(finalHash)
   };
 }
 const DEFAULT_DEVICE_INFO = {
@@ -47883,6 +47880,64 @@ class StorageEventProcessor {
     return enabledTypes.filter((type) => type === "connect" || type === "restoreConnection").concat(["restoreConnection"]);
   }
 }
+const ERROR_MESSAGES = {
+  // Bridge Manager Errors (7000-7099)
+  [ERROR_CODES.BRIDGE_NOT_INITIALIZED]: "Bridge not initialized",
+  [ERROR_CODES.BRIDGE_CONNECTION_FAILED]: "Bridge connection failed",
+  [ERROR_CODES.BRIDGE_EVENT_PROCESSING_FAILED]: "Bridge event processing failed",
+  [ERROR_CODES.BRIDGE_RESPONSE_SEND_FAILED]: "Bridge response send failed",
+  // Session Errors (7100-7199)
+  [ERROR_CODES.SESSION_NOT_FOUND]: "Session not found",
+  [ERROR_CODES.SESSION_ID_REQUIRED]: "Session ID required",
+  [ERROR_CODES.SESSION_CREATION_FAILED]: "Session creation failed",
+  [ERROR_CODES.SESSION_DOMAIN_REQUIRED]: "Session domain required",
+  [ERROR_CODES.SESSION_RESTORATION_FAILED]: "Session restoration failed",
+  // Event Store Errors (7200-7299)
+  [ERROR_CODES.EVENT_STORE_NOT_INITIALIZED]: "Event store not initialized",
+  [ERROR_CODES.EVENT_STORE_OPERATION_FAILED]: "Event store operation failed",
+  // Storage Errors (7300-7399)
+  [ERROR_CODES.STORAGE_READ_FAILED]: "Storage read failed",
+  [ERROR_CODES.STORAGE_WRITE_FAILED]: "Storage write failed",
+  // Wallet Errors (7400-7499)
+  [ERROR_CODES.WALLET_NOT_FOUND]: "Wallet not found",
+  [ERROR_CODES.WALLET_REQUIRED]: "Wallet required",
+  [ERROR_CODES.WALLET_INVALID]: "Wallet invalid",
+  [ERROR_CODES.WALLET_CREATION_FAILED]: "Wallet creation failed",
+  [ERROR_CODES.WALLET_INITIALIZATION_FAILED]: "Wallet initialization failed",
+  [ERROR_CODES.LEDGER_DEVICE_ERROR]: "Ledger device error",
+  // Request Processing Errors (7500-7599)
+  [ERROR_CODES.INVALID_REQUEST_EVENT]: "Invalid request event",
+  [ERROR_CODES.REQUEST_PROCESSING_FAILED]: "Request processing failed",
+  [ERROR_CODES.RESPONSE_CREATION_FAILED]: "Response creation failed",
+  [ERROR_CODES.APPROVAL_FAILED]: "Approval failed",
+  [ERROR_CODES.REJECTION_FAILED]: "Rejection failed",
+  // API Client Errors (7600-7699)
+  [ERROR_CODES.API_CLIENT_ERROR]: "Api client error",
+  [ERROR_CODES.TON_CLIENT_INITIALIZATION_FAILED]: "Ton client initialization failed",
+  [ERROR_CODES.API_REQUEST_FAILED]: "Api request failed",
+  [ERROR_CODES.ACCOUNT_NOT_FOUND]: "Account not found",
+  // Jetton/NFT Errors (7700-7799)
+  [ERROR_CODES.JETTONS_MANAGER_ERROR]: "Jetton manager error",
+  [ERROR_CODES.NFT_MANAGER_ERROR]: "NFT manager error",
+  // Contract Errors (7800-7899)
+  [ERROR_CODES.CONTRACT_DEPLOYMENT_FAILED]: "Contract deployment failed",
+  [ERROR_CODES.CONTRACT_EXECUTION_FAILED]: "Contract execution failed",
+  [ERROR_CODES.CONTRACT_VALIDATION_FAILED]: "Contract validation failed",
+  // Generic Errors (7900-7999)
+  [ERROR_CODES.UNKNOWN_ERROR]: "Unknown error",
+  [ERROR_CODES.VALIDATION_ERROR]: "Validation error",
+  [ERROR_CODES.INITIALIZATION_ERROR]: "Initialization error",
+  [ERROR_CODES.CONFIGURATION_ERROR]: "Configuration error",
+  [ERROR_CODES.NETWORK_ERROR]: "Network error",
+  [ERROR_CODES.UNKNOWN_EMULATION_ERROR]: "Unknown emulation error"
+};
+function createErrorInfo(code, message, data) {
+  return {
+    code,
+    message: message || ERROR_MESSAGES[code] || "Unknown error",
+    data
+  };
+}
 class WalletTonClass {
   client;
   constructor(client) {
@@ -47957,7 +48012,7 @@ class WalletTonClass {
     return {
       preview: {
         result: "error",
-        emulationError: new EmulationErrorUnknown("Unknown emulation error")
+        emulationError: createErrorInfo(ERROR_CODES.UNKNOWN_EMULATION_ERROR)
       }
     };
   }
@@ -58287,7 +58342,7 @@ function requireHttpApi() {
       }
     }
     async callGetMethod(address, method, stack) {
-      return await this.doCall("runGetMethod", { address: address.toString(), method, stack: serializeStack2(stack) }, callGetMethod);
+      return await this.doCall("runGetMethod", { address: address.toString(), method, stack: serializeStack(stack) }, callGetMethod);
     }
     async sendBoc(body) {
       await this.doCall("sendBoc", { boc: body.toString("base64") }, bocResponse);
@@ -58337,7 +58392,7 @@ function requireHttpApi() {
     }
   };
   HttpApi.HttpApi = HttpApi$1;
-  function serializeStack2(src2) {
+  function serializeStack(src2) {
     let stack = [];
     for (let s2 of src2) {
       if (s2.type === "int") {
@@ -58396,7 +58451,7 @@ function requireTonClient() {
       if (res.exit_code !== 0) {
         throw Error("Unable to execute get method. Got exit_code: " + res.exit_code);
       }
-      return { gas_used: res.gas_used, stack: parseStack2(res.stack) };
+      return { gas_used: res.gas_used, stack: parseStack(res.stack) };
     }
     /**
      * Invoke get method
@@ -58418,7 +58473,7 @@ function requireTonClient() {
     */
     async runMethodWithError(address, name, params = []) {
       let res = await this.api.callGetMethod(address, name, params);
-      return { gas_used: res.gas_used, stack: parseStack2(res.stack), exit_code: res.exit_code };
+      return { gas_used: res.gas_used, stack: parseStack(res.stack), exit_code: res.exit_code };
     }
     /**
      * Invoke get method that returns error code instead of throwing error
@@ -58645,7 +58700,7 @@ function requireTonClient() {
         throw Error("Unsupported item type: " + typeName);
     }
   }
-  function parseStackItem2(s2) {
+  function parseStackItem(s2) {
     if (s2[0] === "num") {
       let val = s2[1];
       if (val.startsWith("-")) {
@@ -58670,10 +58725,10 @@ function requireTonClient() {
       throw Error("Unsupported stack item type: " + s2[0]);
     }
   }
-  function parseStack2(src2) {
+  function parseStack(src2) {
     let stack = [];
     for (let s2 of src2) {
-      stack.push(parseStackItem2(s2));
+      stack.push(parseStackItem(s2));
     }
     return new core_1.TupleReader(stack);
   }
@@ -64364,6 +64419,54 @@ function requireDist() {
   return dist$1;
 }
 var distExports = requireDist();
+function ParseStackItem(item) {
+  switch (item.type) {
+    case "num":
+      if (item.value.startsWith("-")) {
+        return { type: "int", value: -BigInt(item.value.slice(1)) };
+      } else {
+        return { type: "int", value: BigInt(item.value) };
+      }
+    case "null":
+      return { type: "null" };
+    case "cell":
+      return { type: "cell", cell: distExports$3.Cell.fromBoc(Buffer.from(item.value, "base64"))[0] };
+    case "tuple":
+    case "list":
+      if (item.value.length === 0) {
+        return { type: "null" };
+      }
+      return { type: "tuple", items: item.value.map((value) => ParseStackItem(value)) };
+    default:
+      throw Error(`Unsupported parse stack item type: ${JSON.stringify(item)}`);
+  }
+}
+function ParseStack(list) {
+  let stack = [];
+  for (let item of list) {
+    stack.push(ParseStackItem(item));
+  }
+  return stack;
+}
+function SerializeStackItem(item) {
+  switch (item.type) {
+    case "int":
+      return { type: "num", value: `${item.value < 0 ? "-" : ""}0x${item.value.toString(16)}` };
+    case "slice":
+      return { type: "slice", value: item.cell.toBoc().toString("base64") };
+    case "cell":
+      return { type: "cell", value: item.cell.toBoc().toString("base64") };
+    default:
+      throw Error(`Unsupported serialize stack item type: ${item.type}`);
+  }
+}
+function SerializeStack(list) {
+  let stack = [];
+  for (let item of list) {
+    stack.push(SerializeStackItem(item));
+  }
+  return stack;
+}
 class WalletJettonClass {
   async createTransferJettonTransaction(jettonTransferParams) {
     if (!isValidAddress(jettonTransferParams.toAddress)) {
@@ -64408,7 +64511,8 @@ class WalletJettonClass {
     const jettonWalletAddress = await this.getJettonWalletAddress(jettonAddress);
     try {
       const result = await this.client.runGetMethod(distExports$3.Address.parse(jettonWalletAddress), "get_wallet_data");
-      const balance = result.stack.readBigNumber();
+      const parsedStack = ParseStack(result.stack);
+      const balance = parsedStack[0].type === "int" ? parsedStack[0].value : 0n;
       return balance.toString();
     } catch (_error) {
       return "0";
@@ -64419,10 +64523,14 @@ class WalletJettonClass {
       throw new Error(`Invalid jetton address: ${jettonAddress}`);
     }
     try {
-      const result = await this.client.runGetMethod(distExports$3.Address.parse(jettonAddress), "get_wallet_address", [
+      const result = await this.client.runGetMethod(distExports$3.Address.parse(jettonAddress), "get_wallet_address", SerializeStack([
         { type: "slice", cell: distExports$3.beginCell().storeAddress(distExports$3.Address.parse(this.getAddress())).endCell() }
-      ]);
-      const jettonWalletAddress = result.stack.readAddress();
+      ]));
+      const parsedStack = ParseStack(result.stack);
+      const jettonWalletAddress = parsedStack[0].type === "slice" || parsedStack[0].type === "cell" ? parsedStack[0].cell.asSlice().loadAddress() : null;
+      if (!jettonWalletAddress) {
+        throw new Error("Failed to get jetton wallet address");
+      }
       return jettonWalletAddress.toString();
     } catch (error2) {
       throw new Error(`Failed to get jetton wallet address for ${jettonAddress}: ${error2 instanceof Error ? error2.message : "Unknown error"}`);
@@ -66510,54 +66618,6 @@ class AnalyticsApi {
     });
   }
 }
-function parseStackItem(item) {
-  switch (item.type) {
-    case "num":
-      if (item.value.startsWith("-")) {
-        return { type: "int", value: -BigInt(item.value.slice(1)) };
-      } else {
-        return { type: "int", value: BigInt(item.value) };
-      }
-    case "null":
-      return { type: "null" };
-    case "cell":
-      return { type: "cell", cell: distExports$3.Cell.fromBoc(Buffer.from(item.value, "base64"))[0] };
-    case "tuple":
-    case "list":
-      if (item.value.length === 0) {
-        return { type: "null" };
-      }
-      return { type: "tuple", items: item.value.map((value) => parseStackItem(value)) };
-    default:
-      throw Error(`Unsupported parse stack item type: ${JSON.stringify(item)}`);
-  }
-}
-function parseStack(list) {
-  let stack = [];
-  for (let item of list) {
-    stack.push(parseStackItem(item));
-  }
-  return new distExports$3.TupleReader(stack);
-}
-function serializeStackItem(item) {
-  switch (item.type) {
-    case "int":
-      return { type: "num", value: `${item.value < 0 ? "-" : ""}0x${item.value.toString(16)}` };
-    case "slice":
-      return { type: "slice", value: item.cell.toBoc().toString("base64") };
-    case "cell":
-      return { type: "cell", value: item.cell.toBoc().toString("base64") };
-    default:
-      throw Error(`Unsupported serialize stack item type: ${item.type}`);
-  }
-}
-function serializeStack(list) {
-  let stack = [];
-  for (let item of list) {
-    stack.push(serializeStackItem(item));
-  }
-  return stack;
-}
 function toNftCollection(data) {
   if (!data)
     return null;
@@ -66740,11 +66800,15 @@ async function dnsLookup(client, domain, category, resolver) {
     { type: "slice", cell: toStringTail(internal) },
     { type: "int", value: toTonDnsCategory(category) }
   ];
-  const { stack, exitCode } = await client.runGetMethod(resolver, "dnsresolve", param);
+  const { stack, exitCode } = await client.runGetMethod(resolver, "dnsresolve", SerializeStack(param));
+  if (stack?.length !== 2) {
+    return null;
+  }
+  const parsedStack = ParseStack(stack);
   if (exitCode !== 0) {
     return null;
   }
-  const resolvedBit = stack.readNumber();
+  const resolvedBit = parsedStack[0].type === "int" ? Number(parsedStack[0].value) : 0;
   if (resolvedBit === 0 || resolvedBit % 8 !== 0) {
     return null;
   }
@@ -66756,7 +66820,7 @@ async function dnsLookup(client, domain, category, resolver) {
   if (category === DnsCategory.All) {
     throw new Error("not implemented all categories are requested");
   }
-  const cell = stack.readCellOpt();
+  const cell = parsedStack[1].type === "cell" ? parsedStack[1].cell : null;
   if (!cell) {
     return result;
   }
@@ -66857,14 +66921,15 @@ class ApiClientToncenter {
     const props = {
       address,
       method,
-      stack: serializeStack(stack)
+      stack
+      //serializeStack(stack),
     };
     if (typeof seqno === "number")
       props.seqno = seqno;
     const raw = await this.postJson("/api/v3/runGetMethod", props);
     return {
       gasUsed: raw.gas_used,
-      stack: parseStack(raw.stack),
+      stack: raw.stack,
       exitCode: raw.exit_code
     };
   }
@@ -67898,7 +67963,7 @@ class WalletV5R1Adapter {
     return distExports$3.beginCell().storeSlice(payload.beginParse()).storeBuffer(Buffer.from(HexToUint8Array(signature))).endCell();
   }
   async getSignedSignData(input) {
-    const signature = await this.sign(input.hash);
+    const signature = await this.sign(HexToUint8Array(input.hash));
     return signature;
   }
   async getSignedTonProof(input) {
@@ -67979,7 +68044,12 @@ class WalletV5 {
   get publicKey() {
     return this.client.runGetMethod(this.address, "get_public_key").then((data) => {
       if (data.exitCode === 0) {
-        return data.stack.readBigNumber();
+        const parsedStack = ParseStack(data.stack);
+        if (parsedStack[0]?.type === "int") {
+          return parsedStack[0].value;
+        } else {
+          throw new Error("Stack is not an int");
+        }
       } else if (this.init) {
         return this.init.data.asSlice().skip(1 + 32 + 32).loadUintBig(256);
       } else {
@@ -67993,7 +68063,12 @@ class WalletV5 {
   get seqno() {
     return this.client.runGetMethod(this.address, "seqno").then((data) => {
       if (data.exitCode === 0) {
-        return data.stack.readNumber();
+        const parsedStack = ParseStack(data.stack);
+        if (parsedStack[0]?.type === "int") {
+          return Number(parsedStack[0].value);
+        } else {
+          throw new Error("Stack is not an int");
+        }
       } else {
         return 0;
       }
@@ -68002,7 +68077,12 @@ class WalletV5 {
   get isSignatureAuthAllowed() {
     return this.client.runGetMethod(this.address, "is_signature_allowed").then((data) => {
       if (data.exitCode === 0) {
-        return data.stack.readBoolean();
+        const parsedStack = ParseStack(data.stack);
+        if (parsedStack[0]?.type === "int") {
+          return Boolean(parsedStack[0].value);
+        } else {
+          throw new Error("Stack is not an int");
+        }
       } else {
         return false;
       }
@@ -68016,26 +68096,18 @@ class WalletV5 {
     } else {
       return this.client.runGetMethod(this.address, "get_subwallet_id").then((data) => {
         if (data.exitCode === 0) {
-          this.subwalletId = data.stack.readNumber();
+          const parsedStack = ParseStack(data.stack);
+          if (parsedStack[0]?.type === "int") {
+            this.subwalletId = Number(parsedStack[0].value);
+          } else {
+            throw new Error("Stack is not an int");
+          }
           return WalletId.deserialize(this.subwalletId);
         } else {
           return WalletId.deserialize(defaultWalletIdV5R1);
         }
       });
     }
-  }
-  get extensions() {
-    return this.client.runGetMethod(this.address, "get_extensions").then((data) => {
-      if (data.exitCode === 0) {
-        const dict = distExports$3.Dictionary.loadDirect(distExports$3.Dictionary.Keys.BigUint(256), distExports$3.Dictionary.Values.BigInt(1), data.stack.readCellOpt());
-        const wc = this.address.workChain;
-        return dict.keys().map((key2) => {
-          return distExports$3.Address.parseRaw(`${wc}:${key2.toString(16).padStart(64, "0")}`);
-        });
-      } else {
-        return [];
-      }
-    });
   }
 }
 class WalletV4R2 {
@@ -68085,7 +68157,12 @@ class WalletV4R2 {
       if (state.exitCode !== 0) {
         return 0;
       }
-      return state.stack.readNumber();
+      const parsedStack = ParseStack(state.stack);
+      if (parsedStack[0]?.type === "int") {
+        return Number(parsedStack[0].value);
+      } else {
+        throw new Error("Stack is not an int");
+      }
     } catch (error2) {
       return 0;
     }
@@ -68105,7 +68182,12 @@ class WalletV4R2 {
       if (state.exitCode !== 0) {
         return this.subwalletId;
       }
-      return state.stack.readNumber();
+      const parsedStack = ParseStack(state.stack);
+      if (parsedStack[0]?.type === "int") {
+        return Number(parsedStack[0].value);
+      } else {
+        throw new Error("Stack is not an int");
+      }
     } catch (error2) {
       return this.subwalletId;
     }
@@ -68294,7 +68376,7 @@ class WalletV4R2Adapter {
     }
   }
   async getSignedSignData(input) {
-    const signature = await this.sign(input.hash);
+    const signature = await this.sign(HexToUint8Array(input.hash));
     return signature;
   }
   async getSignedTonProof(input) {
@@ -70014,17 +70096,13 @@ window.initWalletKit = (configuration, storage) => __async(null, null, function*
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Adding wallet:");
-        try {
-          const wallet = yield walletKit.addWallet(walletAdapter);
-          if (wallet) {
-            console.log("✅ Wallet added:", wallet.getAddress());
-          } else {
-            console.log("✅ Wallet added: undefined");
-          }
-          return wallet;
-        } catch (error2) {
-          throw error2;
+        const wallet = yield walletKit.addWallet(walletAdapter);
+        if (wallet) {
+          console.log("✅ Wallet added:", wallet.getAddress());
+        } else {
+          console.log("✅ Wallet added: undefined");
         }
+        return wallet;
       });
     },
     removeWallet(address) {

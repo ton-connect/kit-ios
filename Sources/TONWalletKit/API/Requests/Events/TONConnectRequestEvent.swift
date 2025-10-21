@@ -11,34 +11,34 @@ public struct TONConnectRequestEvent: Codable {
     private let id: String
     private let from: String
     
-    let preview: Preview?
-    let request: [Request]?
-    let dAppInfo: TONDAppInfo?
+    public let preview: Preview?
+    public let request: [Request]?
+    public let dAppInfo: TONDAppInfo?
     
-    var walletAddress: String?
+    public var walletAddress: String?
 }
 
 public extension TONConnectRequestEvent {
     
-    struct Preview: Codable {
+    public struct Preview: Codable {
         public let manifestURL: URL?
         public let manifest: Manifest?
         public let permissions: [ConnectPermission]
         
-        let requestedItems: [TONConnectRequestEvent.Request]
+        public let requestedItems: [TONConnectRequestEvent.Request]
     }
 }
 
 public extension TONConnectRequestEvent.Preview {
     
-    struct Manifest: Codable {
-        let name: String?
-        let description: String?
-        let url: String?
-        let iconUrl: String?
+    public struct Manifest: Codable {
+        public let name: String?
+        public let description: String?
+        public let url: String?
+        public let iconUrl: String?
     }
     
-    struct ConnectPermission: Codable {
+    public struct ConnectPermission: Codable {
         public let name: String?
         public let title: String?
         public let description: String?
@@ -47,7 +47,7 @@ public extension TONConnectRequestEvent.Preview {
 
 extension TONConnectRequestEvent {
     
-    struct Request: Codable {
+    public struct Request: Codable {
         let name: String?
         let payload: String?
     }

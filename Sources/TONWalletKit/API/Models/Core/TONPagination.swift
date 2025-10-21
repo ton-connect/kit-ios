@@ -11,7 +11,11 @@ public struct TONPagination: Codable {
     public var limit: Int
     public var pages: Int?
     
-    public init(offset: Int, limit: Int, pages: Int? = nil) {
+    public init(
+        offset: Int,
+        limit: Int,
+        pages: Int? = nil
+    ) {
         self.offset = offset
         self.limit = limit
         self.pages = pages
