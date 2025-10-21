@@ -1805,18 +1805,18 @@ const DEFAULT_WALLET_INFO = {
   jsBridgeKey: "wallet"
 };
 function getDeviceInfoWithDefaults(options) {
-  const deviceInfo = {
+  const deviceInfo2 = {
     ...DEFAULT_DEVICE_INFO,
     ...options
   };
-  return deviceInfo;
+  return deviceInfo2;
 }
 function getWalletInfoWithDefaults(options) {
-  const walletInfo = {
+  const walletInfo2 = {
     ...DEFAULT_WALLET_INFO,
     ...options
   };
-  return walletInfo;
+  return walletInfo2;
 }
 function validateBridgeConfig(config) {
   if (!config.deviceInfo) {
@@ -1931,7 +1931,7 @@ class TonConnectBridge {
 }
 const TONCONNECT_BRIDGE_REQUEST = "TONCONNECT_BRIDGE_REQUEST";
 const TONCONNECT_BRIDGE_RESPONSE = "TONCONNECT_BRIDGE_RESPONSE";
-const TONCONNECT_BRIDGE_EVENT = "TONCONNECT_BRIDGE_EVENT";
+const TONCONNECT_BRIDGE_EVENT$1 = "TONCONNECT_BRIDGE_EVENT";
 const INJECT_CONTENT_SCRIPT = "INJECT_CONTENT_SCRIPT";
 const DEFAULT_REQUEST_TIMEOUT = 3e4;
 const RESTORE_CONNECTION_TIMEOUT = 1e4;
@@ -1966,7 +1966,7 @@ class ExtensionTransport {
         this.handleResponse(data);
         return;
       }
-      if (data.type === TONCONNECT_BRIDGE_EVENT && data.source === this.source) {
+      if (data.type === TONCONNECT_BRIDGE_EVENT$1 && data.source === this.source) {
         this.handleEvent(data.event);
         return;
       }
@@ -2072,83 +2072,6 @@ class ExtensionTransport {
     this.extensionId = null;
   }
 }
-class IframeWatcher {
-  onIframeDetected;
-  observer = null;
-  constructor(onIframeDetected) {
-    this.onIframeDetected = onIframeDetected;
-  }
-  /**
-   * Start watching for iframes
-   */
-  start() {
-    if (this.observer) {
-      return;
-    }
-    this.observer = new MutationObserver((mutations) => {
-      this.handleMutations(mutations);
-    });
-    this.observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  }
-  /**
-   * Stop watching for iframes
-   */
-  stop() {
-    if (this.observer) {
-      this.observer.disconnect();
-      this.observer = null;
-    }
-  }
-  /**
-   * Handle DOM mutations
-   */
-  handleMutations(mutations) {
-    for (const mutation of mutations) {
-      if (mutation.type !== "childList") {
-        continue;
-      }
-      for (const node of mutation.addedNodes) {
-        this.handleAddedNode(node);
-      }
-    }
-  }
-  /**
-   * Handle a single added node
-   */
-  handleAddedNode(node) {
-    if (node.nodeType !== Node.ELEMENT_NODE) {
-      return;
-    }
-    const element = node;
-    if (element.tagName === "IFRAME") {
-      this.setupIframeListeners(element);
-      this.onIframeDetected();
-      return;
-    }
-    const iframes = element.querySelectorAll("iframe");
-    if (iframes.length > 0) {
-      iframes.forEach((iframe) => {
-        this.setupIframeListeners(iframe);
-      });
-      this.onIframeDetected();
-    }
-  }
-  /**
-   * Setup event listeners for iframe
-   */
-  setupIframeListeners(iframe) {
-    const handleIframeEvent = () => {
-      this.onIframeDetected();
-    };
-    iframe.removeEventListener("load", handleIframeEvent);
-    iframe.removeEventListener("error", handleIframeEvent);
-    iframe.addEventListener("load", handleIframeEvent);
-    iframe.addEventListener("error", handleIframeEvent);
-  }
-}
 class WindowAccessor {
   window;
   bridgeKey;
@@ -2225,12 +2148,12 @@ function resolveJsBridgeKey(options) {
   return "unknown-wallet";
 }
 function createBridgeConfig(options) {
-  const deviceInfo = getDeviceInfoWithDefaults(options.deviceInfo);
-  const walletInfo = getWalletInfoWithDefaults(options.walletInfo);
+  const deviceInfo2 = getDeviceInfoWithDefaults(options.deviceInfo);
+  const walletInfo2 = getWalletInfoWithDefaults(options.walletInfo);
   const jsBridgeKey = resolveJsBridgeKey(options);
   return {
-    deviceInfo,
-    walletInfo,
+    deviceInfo: deviceInfo2,
+    walletInfo: walletInfo2,
     jsBridgeKey,
     isWalletBrowser: options.isWalletBrowser ?? false,
     protocolVersion: SUPPORTED_PROTOCOL_VERSION
@@ -2256,36 +2179,154 @@ function injectBridge(window2, options, argsTransport) {
     return;
   }
   let transport;
-  {
+  if (argsTransport) {
+    transport = argsTransport;
+  } else {
     const source = `${config.jsBridgeKey}-tonconnect`;
     transport = new ExtensionTransport(window2, source);
   }
   const bridge = new TonConnectBridge(config, transport);
   windowAccessor.injectBridge(bridge);
   console.log(`TonConnect JS Bridge injected for ${config.jsBridgeKey} - forwarding to extension`);
-  const iframeWatcher = new IframeWatcher(() => {
-    transport.requestContentScriptInjection();
-  });
-  iframeWatcher.start();
   return;
 }
 function injectBridgeCode(window2, options, transport) {
-  injectBridge(window2, options);
+  injectBridge(window2, options, transport);
 }
+const TONCONNECT_BRIDGE_EVENT = "TONCONNECT_BRIDGE_EVENT";
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 window.Buffer = bufferExports.Buffer;
 if (globalThis && !globalThis.Buffer) {
   globalThis.Buffer = bufferExports.Buffer;
 }
-function injectTonConnectBridge() {
+const deviceInfo = {
+  platform: "android",
+  appName: "Tonkeeper",
+  appVersion: "1.0.0",
+  maxProtocolVersion: 2,
+  features: [
+    "SendTransaction",
+    {
+      name: "SendTransaction",
+      maxMessages: 4
+    },
+    {
+      name: "SignData",
+      types: ["text", "binary", "cell"]
+    }
+  ]
+};
+const walletInfo = {
+  name: "tonkeeper",
+  // key for wallet
+  app_name: "Tonkeeper",
+  // SDK expects app_name not appName
+  about_url: "https://tonkeeper.com",
+  // SDK expects about_url not aboutUrl  
+  image: "https://tonkeeper.com/assets/tonconnect-icon.png",
+  // SDK expects image not imageUrl
+  platforms: ["ios", "android", "macos", "windows", "linux", "chrome", "firefox", "safari"],
+  // supported platforms
+  jsBridgeKey: "tonkeeper",
+  // window key for wallet bridge
+  injected: true,
+  // wallet is injected into the page (via injectBridgeCode)
+  embedded: true,
+  // dApp IS embedded in wallet (wallet's internal browser) - tells dApp to prefer injected bridge
+  tondns: "tonkeeper.ton",
+  // tondns for wallet
+  bridgeUrl: "https://bridge.tonapi.io/bridge",
+  // url for wallet bridge
+  features: [
+    "SendTransaction",
+    {
+      name: "SendTransaction",
+      maxMessages: 4
+    },
+    {
+      name: "SignData",
+      types: ["text", "binary", "cell"]
+    }
+  ]
+};
+window.injectWalletKit = () => {
   try {
     injectBridgeCode(window, {
-      // deviceInfo: getTonConnectDeviceInfo(),
-      // walletInfo: getTonConnectWalletManifest(),
-    });
+      deviceInfo,
+      walletInfo,
+      isWalletBrowser: true
+    }, new SwiftTransport(window, "key-tonconnect"));
     console.log("TonConnect bridge injected - forwarding to extension");
   } catch (error) {
     console.error("Failed to inject TonConnect bridge:", error);
   }
+};
+class SwiftTransport {
+  constructor(window2) {
+    __publicField(this, "window");
+    __publicField(this, "eventCallback", null);
+    __publicField(this, "messageListener", null);
+    this.window = window2;
+    this.setupMessageListener();
+  }
+  setupMessageListener() {
+    this.messageListener = (event) => {
+      if (event.source !== this.window) return;
+      const data = event.data;
+      if (!data || typeof data !== "object") return;
+      if (data.type === TONCONNECT_BRIDGE_EVENT) {
+        this.handleEvent(data.event);
+        return;
+      }
+    };
+    this.window.addEventListener("message", this.messageListener);
+  }
+  handleEvent(event) {
+    if (this.eventCallback) {
+      try {
+        this.eventCallback(event);
+      } catch (error) {
+        console.error("TonConnect event callback error:", error);
+      }
+    }
+  }
+  send(request) {
+    return __async(this, null, function* () {
+      console.log("EVENT RECEIVED - ", request.method);
+      return window.webkit.messageHandlers.tonConnectBridge.postMessage(request);
+    });
+  }
+  onEvent(callback) {
+    this.eventCallback = callback;
+  }
+  isAvailable() {
+    return true;
+  }
+  requestContentScriptInjection() {
+  }
+  destroy() {
+  }
 }
-injectTonConnectBridge();
 //# sourceMappingURL=inject.mjs.map

@@ -30,7 +30,9 @@ import TONWalletKit
 
 @MainActor
 class WalletConnectionRequestViewModel: ObservableObject {
-    private let wallet: TONWalletProtocol
+    @Published var selectedWallet: SelectableWallet?
+    
+    let wallets: [SelectableWallet]
     private let request: TONWalletConnectionRequest
     
     var dAppInfo: TONDAppInfo? { request.dAppInfo }
@@ -38,13 +40,19 @@ class WalletConnectionRequestViewModel: ObservableObject {
     
     let dismiss = PassthroughSubject<Void, Never>()
     
-    init(request: TONWalletConnectionRequest, wallet: TONWalletProtocol) {
+    init(request: TONWalletConnectionRequest, walletsAddresses: [String]) {
         self.request = request
-        self.wallet = wallet
+        self.wallets = walletsAddresses.map { SelectableWallet(address: $0) }
+        
+        self.selectedWallet = wallets.first
     }
-    
+
     func approve() {
-        let address = wallet.address
+        guard let selectedWallet else {
+            return
+        }
+        
+        let address = selectedWallet.address
         
         Task {
             do {
@@ -64,6 +72,18 @@ class WalletConnectionRequestViewModel: ObservableObject {
             } catch {
                 debugPrint(error.localizedDescription)
             }
+        }
+    }
+}
+
+extension WalletConnectionRequestViewModel {
+    
+    struct SelectableWallet: Identifiable {
+        let id = UUID()
+        let address: String
+        
+        init(address: String) {
+            self.address = address
         }
     }
 }

@@ -29,7 +29,9 @@ import Foundation
 public class TONWalletKit {
     private static let sharedPool = TONWalletKitReusableContextPool()
     
+    let configuration: TONWalletKitConfiguration
     private let context: JSWalletKitContext
+    
     private var walletKit: any JSDynamicObject { context.walletKit }
     private var eventHandlersAdapters: [TONBridgeEventsHandlerAdapter] = []
     
@@ -37,7 +39,11 @@ public class TONWalletKit {
         eventHandlersAdapters.forEach { $0.invalidate() }
     }
     
-    init(context: JSWalletKitContext) {
+    init(
+        configuration: TONWalletKitConfiguration,
+        context: JSWalletKitContext
+    ) {
+        self.configuration = configuration
         self.context = context
     }
     
@@ -54,10 +60,10 @@ public class TONWalletKit {
             try await context.initWalletKit(configuration, AnyJSValueEncodable(storage))
             
             sharedPool.store(configuration: configuration, walletKitContext: context)
-            return TONWalletKit(context: context)
+            return TONWalletKit(configuration: configuration, context: context)
         }
         
-        return TONWalletKit(context: context)
+        return TONWalletKit(configuration: configuration, context: context)
     }
     
     private func add(_ walletAdapter: Any, _ version: TONWalletVersion) async throws -> TONWalletProtocol {
@@ -151,6 +157,11 @@ public class TONWalletKit {
             
             eventHandlersAdapters.removeAll { $0 === adapter }
         }
+    }
+    
+    func processInjectedBridgeRequest(message: TONBridgeEventMessage, request: Any) async throws -> Any? {
+        let value: JSValue = try await walletKit.processInjectedBridgeRequest(message,AnyJSValueEncodable(request))
+        return value.toObject()
     }
 }
 

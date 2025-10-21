@@ -77,6 +77,23 @@ struct WalletsListView: View {
                     }
                 case .send(let viewModel):
                     SendTokensView(viewModel: viewModel)
+                case .browser:
+                    if let walletKit = viewModel.kit {
+                        WebView(walletKit: walletKit, url: URL(string: "https://tonconnect-sdk-demo-dapp.vercel.app/iframe/iframe")!)
+                            .ignoresSafeArea()
+                    }
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(
+                        action: {
+                            navigationPath.append(Paths.browser)
+                        },
+                        label: {
+                            Image(systemName: "safari")
+                        }
+                    )
                 }
             }
         }
@@ -102,6 +119,21 @@ struct WalletsListView: View {
                     animated: true,
                     completion: nil
                 )
+            } else if let connectRequest = event.connectionRequest {
+                let controller = UIHostingController(
+                    rootView: WalletConnectionRequestView(
+                        viewModel: .init(
+                            request: connectRequest,
+                            walletsAddresses: viewModel.wallets.map { $0.address}
+                        )
+                    )
+                    .presentationDragIndicator(.visible)
+                )
+                UIApplication.shared.topViewController()?.present(
+                    controller,
+                    animated: true,
+                    completion: nil
+                )
             }
         }
     }
@@ -110,6 +142,7 @@ struct WalletsListView: View {
 private enum Paths: Hashable {
     case wallet(viewModel: WalletViewModel)
     case addWallet
+    case browser
     case send(viewModel: SendTokensViewModel)
     
     func hash(into hasher: inout Hasher) {
@@ -118,6 +151,8 @@ private enum Paths: Hashable {
             hasher.combine(viewModel.id)
         case .addWallet:
             hasher.combine("addWallet")
+        case .browser:
+            hasher.combine("browser")
         case .send:
             hasher.combine("send")
         }

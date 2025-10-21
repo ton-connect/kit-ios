@@ -83,6 +83,8 @@ struct WalletConnectionRequestView: View {
                 .widget(style: .block(.warning))
                 .fixedSize(horizontal: false, vertical: true)
             
+            Spacer()
+            
             HStack(spacing: AppSpacing.spacing(2.0)) {
                 Button("Reject") {
                     viewModel.reject()
