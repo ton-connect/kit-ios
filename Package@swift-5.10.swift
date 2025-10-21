@@ -1,4 +1,4 @@
-// swift-tools-version: 6.2
+// swift-tools-version: 5.10
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -27,8 +27,8 @@ let package = Package(
         ),
         .testTarget(
             name: "TONWalletKitTests",
-            dependencies: ["TONWalletKit"]
+            dependencies: ["TONWalletKit"],
         ),
     ],
-    swiftLanguageModes: [.v5]
+    swiftLanguageVersions: [.v5]
 )

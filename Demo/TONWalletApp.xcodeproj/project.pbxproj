@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		24F673A72E72F23C0058A042 /* TONWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24F673A62E72F23C0058A042 /* TONWalletKit */; };
+		24E3B1072EA7F4F000921C5C /* TONWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24E3B1062EA7F4F000921C5C /* TONWalletKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24F673A72E72F23C0058A042 /* TONWalletKit in Frameworks */,
+				24E3B1072EA7F4F000921C5C /* TONWalletKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,7 +91,7 @@
 			);
 			name = TONWalletApp;
 			packageProductDependencies = (
-				24F673A62E72F23C0058A042 /* TONWalletKit */,
+				24E3B1062EA7F4F000921C5C /* TONWalletKit */,
 			);
 			productName = TONWalletApp;
 			productReference = 24F673912E72E90F0058A042 /* TONWalletApp.app */;
@@ -122,7 +122,7 @@
 			mainGroup = 24F673882E72E90F0058A042;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				24B25B442E9E8A000031FC3E /* XCLocalSwiftPackageReference "../../kit-ios" */,
+				24E3B1052EA7F4F000921C5C /* XCLocalSwiftPackageReference "../../kit-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24F673922E72E90F0058A042 /* Products */;
@@ -303,7 +303,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.silvester.walletkit.demoapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_APPROACHABLE_CONCURRENCY = NO;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -336,7 +339,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.silvester.walletkit.demoapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_APPROACHABLE_CONCURRENCY = NO;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -366,14 +372,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		24B25B442E9E8A000031FC3E /* XCLocalSwiftPackageReference "../../kit-ios" */ = {
+		24E3B1052EA7F4F000921C5C /* XCLocalSwiftPackageReference "../../kit-ios" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../../kit-ios";
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		24F673A62E72F23C0058A042 /* TONWalletKit */ = {
+		24E3B1062EA7F4F000921C5C /* TONWalletKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TONWalletKit;
 		};
