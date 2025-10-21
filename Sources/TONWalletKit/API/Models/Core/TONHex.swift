@@ -1,22 +1,22 @@
 //
-//  TONBase64.swift
+//  TONHex.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 20.10.2025.
+//  Created by Nikita Rodionov on 21.10.2025.
 //
 
 import Foundation
 
-public struct TONBase64: Codable {
+public struct TONHex: Codable {
     public let value: String
-    public var data: Data? { Data(base64Encoded: value) }
+    public var data: Data? { Data(hex: value) }
     
-    public init(base64Encoded: String) {
-        self.value = base64Encoded
+    public init(hexString: String) {
+        self.value = hexString
     }
     
     public init(data: Data) {
-        self.init(base64Encoded: data.base64EncodedString())
+        self.init(hexString: data.hex)
     }
     
     public init(string: String) {

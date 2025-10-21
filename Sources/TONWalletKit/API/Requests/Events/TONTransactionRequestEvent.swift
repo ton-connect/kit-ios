@@ -20,5 +20,4 @@ public struct TONTransactionRequestEvent: Codable {
     public let request: TONConnectTransactionParamContent?
     public let dAppInfo: TONDAppInfo?
     public let preview: TONTransactionPreview?
-    public let error: String?
 }

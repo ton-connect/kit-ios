@@ -12,14 +12,14 @@ public struct TONPrepareSignDataResult: Codable {
     public var timestamp: Int
     public var domain: String
     public var payload: TONSignDataPayload
-    public var hash: Data
+    public var hash: TONHex
     
     public init(
         address: String,
         timestamp: Int,
         domain: String,
         payload: TONSignDataPayload,
-        hash: Data
+        hash: TONHex
     ) {
         self.address = address
         self.timestamp = timestamp
@@ -45,7 +45,11 @@ public enum TONSignDataPayload: Codable {
         case "cell":
             self = .cell(try TONSignDataPayloadCell(from: decoder))
         default:
-            throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Unknown payload type")
+            throw DecodingError.dataCorruptedError(
+                forKey: .type,
+                in: container,
+                debugDescription: "Unknown payload type"
+            )
         }
     }
 

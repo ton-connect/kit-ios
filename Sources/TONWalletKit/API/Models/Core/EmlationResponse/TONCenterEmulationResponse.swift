@@ -990,7 +990,6 @@ public struct TONEmulationTokenInfoMasters: Codable {
         public let imageBig: String?
         public let imageMedium: String?
         public let imageSmall: String?
-//        public let decimals: String? need to uncomment when concrete type specified
         public let imageData: String? // base64 encoded image data
         public let social: [String]?
         public let uri: String?
