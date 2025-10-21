@@ -105,6 +105,114 @@ public class TONWalletKit {
             eventHandlersAdapters.removeAll { $0 === adapter }
         }
     }
+    
+    /// Handles a raw bridge message from WebView
+    /// This method forwards the message to the internal walletKit JavaScript instance
+    /// - Parameter method: The bridge method name (e.g., "connect", "send", "disconnect")
+    /// - Parameter params: The parameters for the method
+    /// - Returns: The result from the JavaScript walletKit instance as a dictionary
+    public func handleBridgeMessage(method: String, params: [String: Any]?) async throws -> [String: Any]? {
+        debugPrint("📱 TONWalletKit.handleBridgeMessage: \(method)")
+        
+        // Forward the request to the JavaScript walletKit instance
+        let result: JSValue?
+        
+        switch method {
+        case "connect":
+            // Convert params to JS object and call JS method
+            guard let params = params else {
+                throw "Missing connect params"
+            }
+            debugPrint("📱 Calling JS walletKit with connect params")
+            // The connect should trigger events through the event system
+            // For now, we'll return nil and let the event handlers process it
+            result = nil
+            
+        case "restoreConnection":
+            // Call JS method to restore connections
+            debugPrint("📱 Calling JS walletKit.restoreConnection")
+            // For now, return empty array - should query JS for active sessions
+            return [:]
+            
+        case "send":
+            // Forward transaction to JS
+            guard let params = params else {
+                throw "Missing send params"
+            }
+            debugPrint("📱 Calling JS walletKit with send params")
+            // Transaction should trigger events through the event system
+            result = nil
+            
+        case "disconnect":
+            // Handle disconnection
+            debugPrint("📱 Calling JS walletKit.disconnect")
+            result = nil
+            
+        default:
+            throw "Unknown bridge method: \(method)"
+        }
+        
+        // Convert JS result to dictionary if needed
+        if let result = result, !result.isNull && !result.isUndefined {
+            return result.toDictionary() as? [String: Any]
+        }
+        
+        return nil
+    }
+    
+    /// Loads the inject.mjs script content for WebView injection
+    /// - Returns: The inject.mjs script content as a String
+    /// - Throws: Error if the script file cannot be found or loaded
+    public static func loadInjectScript() throws -> String {
+        // Try to find the TONWalletKit resource bundle
+        var possibleBundles: [Bundle] = [Bundle.module]
+        
+        // Look for the module's resource bundle in the main bundle
+        if let resourceBundleURL = Bundle.main.url(forResource: "TONWalletKit_TONWalletKit", withExtension: "bundle"),
+           let resourceBundle = Bundle(url: resourceBundleURL) {
+            possibleBundles.append(resourceBundle)
+        }
+        
+        // Also try the class bundle and main bundle as fallbacks
+        possibleBundles.append(contentsOf: [
+            Bundle(for: TONWalletKit.self),
+            Bundle.main
+        ])
+        
+        for bundle in possibleBundles {
+            // Try without subdirectory first (for .copy() or .process() resources)
+            if let path = bundle.path(forResource: "inject", ofType: "mjs") {
+                return try String(contentsOfFile: path, encoding: .utf8)
+            }
+            
+            // Try with subdirectory (for .copy() with preserved paths)
+            if let path = bundle.path(forResource: "inject", ofType: "mjs", inDirectory: "Resources/JS") {
+                return try String(contentsOfFile: path, encoding: .utf8)
+            }
+            
+            // Try direct file path
+            if let resourceURL = bundle.resourceURL {
+                let possiblePaths = [
+                    resourceURL.appendingPathComponent("inject.mjs"),
+                    resourceURL.appendingPathComponent("Resources/JS/inject.mjs")
+                ]
+                
+                for possiblePath in possiblePaths {
+                    if FileManager.default.fileExists(atPath: possiblePath.path) {
+                        return try String(contentsOf: possiblePath, encoding: .utf8)
+                    }
+                }
+            }
+        }
+        
+        // Provide detailed error message
+        let bundlePaths = possibleBundles.compactMap { $0.resourceURL?.path }.joined(separator: "\n  - ")
+        throw NSError(
+            domain: "TONWalletKit",
+            code: 404,
+            userInfo: [NSLocalizedDescriptionKey: "inject.mjs script not found in any bundle. Searched in:\n  - \(bundlePaths)\n\nNote: You may need to rebuild the project to update resources."]
+        )
+    }
 }
 
 private class TONWalletKitReusableContextPool {

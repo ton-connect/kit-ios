@@ -14,13 +14,15 @@ class WalletsListViewModel: ObservableObject {
     @Published private(set) var wallets: [WalletViewModel] = []
     
     var onRemoveAll: (() -> Void)?
+    let walletKit: TONWalletKit?
     
     private var subscribers = Set<AnyCancellable>()
     
     @Published var event: Event?
 
-    init(wallets: [WalletViewModel]) {
+    init(wallets: [WalletViewModel], walletKit: TONWalletKit?) {
         self.wallets = wallets
+        self.walletKit = walletKit
     }
     
     func add(wallets: [TONWalletProtocol]) {

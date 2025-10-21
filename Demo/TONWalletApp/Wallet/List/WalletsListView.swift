@@ -55,8 +55,16 @@ struct WalletsListView: View {
                         navigationPath.removeLast()
                     }
                 case .browser:
-                    WebView(url: URL(string: "https://tonconnect-demo-dapp-with-react-ui.vercel.app/iframe/iframe")!)
+                    if let walletKit = viewModel.walletKit {
+                        WebView(
+                            url: URL(string: "https://tonconnect-sdk-demo-dapp.vercel.app/iframe/iframe")!,
+                            walletKit: walletKit
+                        )
                         .ignoresSafeArea()
+                    } else {
+                        Text("WalletKit not available")
+                            .foregroundColor(.red)
+                    }
                 }
             }
             .toolbar {

@@ -66,6 +66,7 @@ pnpm build
 
 # Source file path
 SOURCE_FILE="$WALLETKIT_PATH/packages/walletkit-ios-bridge/build/walletkit-ios-bridge.mjs"
+SOURCE_FILE_INJECT="$WALLETKIT_PATH/packages/walletkit-ios-bridge/build/inject.mjs"
 
 # Destination directory (relative to project root)
 DEST_DIR="$PROJECT_ROOT/Sources/TONWalletKit/Resources/JS"
@@ -83,5 +84,8 @@ mkdir -p "$DEST_DIR"
 # Copy the file
 echo "Copying $SOURCE_FILE to $DEST_DIR..."
 cp "$SOURCE_FILE" "$DEST_DIR/"
+
+echo "Copying $SOURCE_FILE_INJECT to $DEST_DIR..."
+cp "$SOURCE_FILE_INJECT" "$DEST_DIR/"
 
 echo "✅ Done! File copied successfully to $DEST_DIR/walletkit-ios-bridge.mjs"

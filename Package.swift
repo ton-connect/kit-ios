@@ -21,7 +21,8 @@ let package = Package(
         .target(
             name: "TONWalletKit",
             resources: [
-                .process("Resources/JS/walletkit-ios-bridge.mjs"),
+                .copy("Resources/JS/walletkit-ios-bridge.mjs"),
+                .copy("Resources/JS/inject.mjs"),
                 .process("Core/JS/Polyfilling/Fetch/JS")
             ]
         ),

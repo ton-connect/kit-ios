@@ -11,20 +11,20 @@ struct MainView: View {
     @StateObject private var viewModel = MainViewModel()
     
     var body: some View {
-        Group {
-            switch viewModel.state {
-            case .loading:
-                ProgressView()
-                    .task {
-                        await viewModel.load()
-                    }
-            case .addWallet:
-                AddWalletView() {
-                    viewModel.show(wallets: [$0])
+        switch viewModel.state {
+        case .loading:
+            ProgressView()
+                .task {
+                    await viewModel.load()
                 }
-            case .wallets(let viewModel):
-                WalletsListView(viewModel: viewModel)
+        case .addWallet:
+            AddWalletView() { wallet in
+                Task {
+                    await viewModel.onWalletAdded(wallet)
+                }
             }
+        case .wallets(let viewModel):
+            WalletsListView(viewModel: viewModel)
         }
     }
 }

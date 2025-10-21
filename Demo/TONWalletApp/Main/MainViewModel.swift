@@ -16,6 +16,7 @@ class MainViewModel: ObservableObject {
     
     func load() async {
         do {
+            let kit = try await TONWalletKit.mainnet()
             let wallets = try storage.wallets()
             
             var tonWallets: [TONWalletProtocol] = []
@@ -24,7 +25,7 @@ class MainViewModel: ObservableObject {
                 switch wallet.data.version {
                 case .unknown: continue
                 case .v4r2:
-                    let tonWallet = try await TONWalletKit.mainnet().addV4R2Wallet(
+                    let tonWallet = try await kit.addV4R2Wallet(
                         mnemonic: TONMnemonic(
                             value: wallet.data.mnemonic
                         ),
@@ -32,7 +33,7 @@ class MainViewModel: ObservableObject {
                     )
                     tonWallets.append(tonWallet)
                 case .v5r1:
-                    let tonWallet = try await TONWalletKit.mainnet().addV5R1Wallet(
+                    let tonWallet = try await kit.addV5R1Wallet(
                         mnemonic: TONMnemonic(
                             value: wallet.data.mnemonic
                         ),
@@ -45,14 +46,23 @@ class MainViewModel: ObservableObject {
             if tonWallets.isEmpty {
                 state = .addWallet
             } else {
-                show(wallets: tonWallets)
+                show(wallets: tonWallets, walletKit: kit)
             }
         } catch {
             state = .addWallet
         }
     }
     
-    func show(wallets: [TONWalletProtocol]) {
+    func onWalletAdded(_ wallet: TONWalletProtocol) async {
+        do {
+            let kit = try await TONWalletKit.mainnet()
+            show(wallets: [wallet], walletKit: kit)
+        } catch {
+            debugPrint("Failed to initialize TONWalletKit:", error)
+        }
+    }
+    
+    func show(wallets: [TONWalletProtocol], walletKit: TONWalletKit) {
         if wallets.isEmpty {
             return
         }
@@ -61,24 +71,13 @@ class MainViewModel: ObservableObject {
             WalletViewModel(tonWallet: wallet)
         }
         
-        let viewModel = walletsListViewModel()
+        let viewModel = WalletsListViewModel(wallets: [], walletKit: walletKit)
+        viewModel.onRemoveAll = { [weak self] in
+            self?.state = .addWallet
+        }
         viewModel.add(wallets: wallets)
         
         state = .wallets(viewModel: viewModel)
-    }
-    
-    func walletsListViewModel() -> WalletsListViewModel {
-        switch state {
-        case .loading, .addWallet:
-            let viewModel = WalletsListViewModel(wallets: [])
-            
-            viewModel.onRemoveAll = { [weak self] in
-                self?.state = .addWallet
-            }
-            return viewModel
-        case .wallets(let viewModel):
-            return viewModel
-        }
     }
 }
 
