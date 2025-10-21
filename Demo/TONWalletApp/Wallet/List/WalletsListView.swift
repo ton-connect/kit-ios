@@ -54,6 +54,21 @@ struct WalletsListView: View {
                         viewModel.add(wallets: [$0])
                         navigationPath.removeLast()
                     }
+                case .browser:
+                    WebView(url: URL(string: "https://tonconnect-demo-dapp-with-react-ui.vercel.app/iframe/iframe")!)
+                        .ignoresSafeArea()
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(
+                        action: {
+                            navigationPath.append(Paths.browser)
+                        },
+                        label: {
+                            Image(systemName: "safari")
+                        }
+                    )
                 }
             }
         }
@@ -72,6 +87,7 @@ struct WalletsListView: View {
 private enum Paths: Hashable {
     case wallet(viewModel: WalletViewModel)
     case addWallet
+    case browser
     
     func hash(into hasher: inout Hasher) {
         switch self {
@@ -79,6 +95,8 @@ private enum Paths: Hashable {
             hasher.combine(viewModel.id)
         case .addWallet:
             hasher.combine("addWallet")
+        case .browser:
+            hasher.combine("browser")
         }
     }
     
