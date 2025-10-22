@@ -21,11 +21,12 @@ public class TONWalletTransactionRequest {
         self.event = event
     }
     
-    public func approve() async throws -> TONWalletTransactionResponse? {
-        try await context.walletKit.approveTransactionRequest(event)?.decode()
+    public func approve() async throws -> TONWalletTransactionResponse {
+        try await context.walletKit.approveTransactionRequest(event)
     }
     
     public func reject(reason: String? = nil) async throws {
         try await context.walletKit.rejectTransactionRequest(event)
     }
 }
+

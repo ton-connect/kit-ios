@@ -20,15 +20,11 @@ class JSBridgeRawEventsHandler {
     func handle(eventType: String, eventData: JSValue) throws {
         clean()
         
-        guard let data = eventData.toData() else {
-            throw "Failed to parse event data"
-        }
-        
         guard let eventType = JSWalletKitSwiftBridgeEventType(rawValue: eventType) else {
             throw "Unknown event type: \(eventType)"
         }
         
-        let event = JSWalletKitSwiftBridgeEvent(type: eventType, data: data)
+        let event = JSWalletKitSwiftBridgeEvent(type: eventType, value: eventData)
         
         if handlers.isEmpty {
             throw "No handlers was added to handle \(eventType)"
@@ -69,7 +65,7 @@ class JSBridgeRawEventsHandler {
 
 struct JSWalletKitSwiftBridgeEvent {
     let type: JSWalletKitSwiftBridgeEventType
-    let data: Data
+    let value: JSValue
 }
 
 enum JSWalletKitSwiftBridgeEventType: String {

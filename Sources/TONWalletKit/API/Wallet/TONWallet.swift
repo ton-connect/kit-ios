@@ -24,46 +24,46 @@ public class TONWallet: TONWalletProtocol {
     }
     
     public func balance() async throws -> String? {
-        try await wallet.getBalance()?.toString()
+        try await wallet.getBalance()
     }
     
-    public func transferTON(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent? {
-        try await wallet.createTransferTonTransaction(message)?.decode()
+    public func transferTON(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent {
+        try await wallet.createTransferTonTransaction(message)
     }
     
-    public func transferTON(messages: [TONTransferMessage]) async throws -> TONConnectTransactionParamContent? {
-        try await wallet.createTransferMultiTonTransaction(TONTransferManyParams(messages: messages))?.decode()
+    public func transferTON(messages: [TONTransferMessage]) async throws -> TONConnectTransactionParamContent {
+        try await wallet.createTransferMultiTonTransaction(TONTransferManyParams(messages: messages))
     }
     
-    public func transactionPreview(data: TONConnectTransactionParamContent) async throws -> TONTransactionPreview? {
-        try await wallet.getTransactionPreview(data)?.decode()
+    public func transactionPreview(data: TONConnectTransactionParamContent) async throws -> TONTransactionPreview {
+        try await wallet.getTransactionPreview(data)
     }
     
-    public func transferNFT(parameters: TONNFTTransferParamsHuman) async throws -> TONConnectTransactionParamContent? {
-        try await wallet.createTransferNftTransaction(parameters)?.decode()
+    public func transferNFT(parameters: TONNFTTransferParamsHuman) async throws -> TONConnectTransactionParamContent {
+        try await wallet.createTransferNftTransaction(parameters)
     }
     
-    public func transferNFT(rawParameters: TONNFTTransferParamsRaw) async throws -> TONConnectTransactionParamContent? {
-        try await wallet.createTransferNftRawTransaction(rawParameters)?.decode()
+    public func transferNFT(rawParameters: TONNFTTransferParamsRaw) async throws -> TONConnectTransactionParamContent {
+        try await wallet.createTransferNftRawTransaction(rawParameters)
     }
     
-    public func nfts(limit: TONLimitRequest) async throws -> TONNFTItems? {
-        try await wallet.getNfts(limit)?.decode()
+    public func nfts(limit: TONLimitRequest) async throws -> TONNFTItems {
+        try await wallet.getNfts(limit)
     }
     
-    public func nft(address: String) async throws -> TONNFTItem? {
-        try await wallet.getNft(address)?.decode()
+    public func nft(address: String) async throws -> TONNFTItem {
+        try await wallet.getNft(address)
     }
     
-    public func transferJetton(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent? {
-        try await wallet.createTransferJettonTransaction(parameters)?.decode()
+    public func transferJetton(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent {
+        try await wallet.createTransferJettonTransaction(parameters)
     }
     
-    public func jettonBalance(jettonAddress: String) async throws -> String? {
-        try await wallet.getJettonBalance(jettonAddress)?.toString()
+    public func jettonBalance(jettonAddress: String) async throws -> String {
+        try await wallet.getJettonBalance(jettonAddress)
     }
     
-    public func jettonWalletAddress(jettonAddress: String) async throws -> String? {
-        try await wallet.getJettonWalletAddress(jettonAddress)?.toString()
+    public func jettonWalletAddress(jettonAddress: String) async throws -> String {
+        try await wallet.getJettonWalletAddress(jettonAddress)
     }
 }

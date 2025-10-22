@@ -130,10 +130,10 @@ class TONWalletJSAdapter: JSWalletAdapter {
     }
 }
 
-private struct AllOptions: Decodable {
+private struct AllOptions: Decodable, JSValueDecodable {
     let fakeSignature: Bool
 }
 
-private struct GetAddressOptions: Decodable {
+private struct GetAddressOptions: Decodable, JSValueDecodable {
     let testnet: Bool?
 }

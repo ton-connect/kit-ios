@@ -536,12 +536,12 @@ public struct TONEmulationMessage: Codable {
 public struct TONEmulationMessageContent: Codable {
     public let hash: String?
     public let body: String? // base64-encoded body
-    public let decoded: String?
+    public let decoded: AnyCodable?
     
     public init(
         hash: String?,
         body: String?,
-        decoded: String?
+        decoded: AnyCodable?
     ) {
         self.hash = hash
         self.body = body
