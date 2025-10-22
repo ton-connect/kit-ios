@@ -8,14 +8,14 @@
 import Foundation
 
 public class TONWallet: TONWalletProtocol {
-    public let address: String?
+    public let address: String
     public let version: TONWalletVersion
 
     let wallet: any JSDynamicObject
 
     init(
         wallet: any JSDynamicObject,
-        address: String?,
+        address: String,
         version: TONWalletVersion
     ) {
         self.wallet = wallet

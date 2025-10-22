@@ -30,14 +30,14 @@ struct JSFunction: JSDynamicObjectMember {
     var jsContext: JSContext { parent.jsContext }
     
     let parent: any JSDynamicObject
-    let object: any JSDynamicObject
+    let value: any JSDynamicObject
     
     subscript<T: JSValueDecodable>(dynamicMember member: String) -> T? {
-        object[dynamicMember: member]
+        value[dynamicMember: member]
     }
     
     subscript(dynamicMember member: String) -> any JSDynamicObjectMember {
-        object[dynamicMember: member]
+        value[dynamicMember: member]
     }
     
     func dynamicallyCall(withArguments args: [any JSValueEncodable]) async throws -> JSValue {
@@ -65,7 +65,7 @@ extension JSValue: JSDynamicObject {
     }
     
     subscript(dynamicMember member: String) -> any JSDynamicObjectMember {
-        JSFunction(parent: self, object: objectForKeyedSubscript(member))
+        JSFunction(parent: self, value: objectForKeyedSubscript(member))
     }
     
 }
@@ -78,7 +78,7 @@ extension JSContext: JSDynamicObject {
     }
     
     subscript(dynamicMember member: String) -> JSDynamicObjectMember {
-        JSFunction(parent: self, object: objectForKeyedSubscript(member))
+        JSFunction(parent: self, value: objectForKeyedSubscript(member))
     }
 }
 
@@ -103,14 +103,7 @@ extension JSValue {
             do {
                 try then(
                     { continuation.resume(returning: $0) },
-                    {
-                        do {
-                            let message: String = try $0.message.convert()
-                            continuation.resume(throwing: JSError(message: message))
-                        } catch {
-                            continuation.resume(throwing: $0.toString())
-                        }
-                    }
+                    { continuation.resume(throwing: $0.toJSError() ?? $0.toString()) }
                 )
             } catch {
                 continuation.resume(throwing: error)
@@ -186,9 +179,9 @@ private extension JSContext {
         
         return try call(function: function, args: args, on: throwErrorToReturnWrapper)
     }
-    
+
     private func call(function: JSFunction, args: [Any], on wrapper: JSValue) throws -> JSValue {
-        let value: JSValue = wrapper.call(withArguments: [function.object, function.parent] + args)
+        let value: JSValue = wrapper.call(withArguments: [function.value, function.parent] + args)
         
         if value.isJSError == true, let error = value.toJSError() {
             throw error

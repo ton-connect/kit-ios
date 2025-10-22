@@ -20,7 +20,7 @@ public protocol TONWalletAdapter {
 }
 
 public protocol TONWalletProtocol {
-    var address: String? { get }
+    var address: String { get }
     var version: TONWalletVersion { get }
     
     func balance() async throws -> String?
