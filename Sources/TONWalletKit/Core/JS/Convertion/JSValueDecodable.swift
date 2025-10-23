@@ -142,8 +142,14 @@ extension JSValueDecodable where Self: Decodable {
             return nil
         }
         
-        let jsonData = try JSONSerialization.data(withJSONObject: object, options: [])
-        let decoder = JSONDecoder()
-        return try decoder.decode(Self.self, from: jsonData)
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: object, options: [])
+            let decoder = JSONDecoder()
+            return try decoder.decode(Self.self, from: jsonData)
+        } catch let error as DecodingError {
+            throw JSValueConversionError.decodingError(error)
+        } catch {
+            throw JSValueConversionError.unknown(message: error.localizedDescription)
+        }
     }
 }

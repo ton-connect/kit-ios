@@ -148,7 +148,7 @@ private extension JSContext {
         promiseWrapper = self[dynamicMember: functionName]
         
         guard let promiseWrapper else {
-            throw "JSFunctionError: No promise wrapper found"
+            throw JSError(message: "JSFunctionError: No promise wrapper found")
         }
         
         return try call(function: function, args: args, on: promiseWrapper)
@@ -178,7 +178,7 @@ private extension JSContext {
         throwErrorToReturnWrapper = self[dynamicMember: functionName]
         
         guard let throwErrorToReturnWrapper else {
-            throw "JSFunctionError: No error return wrapper found"
+            throw JSError(message: "JSFunctionError: No error return wrapper found")
         }
         
         return try call(function: function, args: args, on: throwErrorToReturnWrapper)

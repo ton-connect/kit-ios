@@ -90,14 +90,20 @@ extension Array: JSValueEncodable where Element: JSValueEncodable {
 extension JSValueEncodable where Self: Encodable {
     
     func encode(in context: JSContext) throws -> Any {
-        let encoder = JSONEncoder()
-        let data = try encoder.encode(self)
-        let object = try JSONSerialization.jsonObject(with: data)
-        
-        guard let value = JSValue(object: object, in: context) else {
-            throw "Unable to encode value: \(Self.self) to JSValue"
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(self)
+            let object = try JSONSerialization.jsonObject(with: data)
+            
+            guard let value = JSValue(object: object, in: context) else {
+                throw JSValueConversionError.unknown(message: "Unable to encode value: \(Self.self) to JSValue")
+            }
+            return value
+        } catch let error as DecodingError {
+            throw JSValueConversionError.decodingError(error)
+        } catch {
+            throw JSValueConversionError.unknown(message: error.localizedDescription)
         }
-        return value
     }
 }
 

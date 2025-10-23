@@ -17,11 +17,11 @@ extension JSValueDecodingTests {
         againstType: U.Type,
         context: JSContext
     ) throws where T: JSValueDecodable & JSFunctionProvider, U: JSValueDecodable {
-        #expect(throws: Error.self, "Testing convertion to value recieved from \(T.self) function to \(U.self) throws error") {
+        #expect(throws: JSValueConversionError.self, "Testing convertion to value recieved from \(T.self) function to \(U.self) throws error") {
             let _: U = try context.objectForKeyedSubscript(T.jsFunctionName).call(withArguments: []).decode()
         }
         
-        #expect(throws: Error.self, "Testing convertion to optional value recieved from \(T.self) function to \(U.self) throws error") {
+        #expect(throws: JSValueConversionError.self, "Testing convertion to optional value recieved from \(T.self) function to \(U.self) throws error") {
             let _: U? = try context.objectForKeyedSubscript(T.jsFunctionName).call(withArguments: []).decode()
         }
     }
@@ -31,11 +31,11 @@ extension JSValueDecodingTests {
         againstType: U.Type,
         context: JSContext
     ) throws where T: JSValueDecodable & JSFunctionProvider, U: JSValueDecodable & JSFunctionProvider {
-        #expect(throws: Error.self, "Testing conversion of \(T.self) from JSValue recieved from \(U.self) function throws error") {
+        #expect(throws: JSValueConversionError.self, "Testing conversion of \(T.self) from JSValue recieved from \(U.self) function throws error") {
             let _: T = try context.objectForKeyedSubscript(againstType.jsFunctionName).call(withArguments: []).decode()
         }
         
-        #expect(throws: Error.self, "Testing conversion of optional \(T.self) from JSValue recieved from \(U.self) function throws error") {
+        #expect(throws: JSValueConversionError.self, "Testing conversion of optional \(T.self) from JSValue recieved from \(U.self) function throws error") {
             let _: T? = try context.objectForKeyedSubscript(againstType.jsFunctionName).call(withArguments: []).decode()
         }
     }
