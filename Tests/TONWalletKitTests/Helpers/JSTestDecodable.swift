@@ -11,3 +11,9 @@ import Testing
 struct JSTestDecodable: JSValueDecodable, JSFunctionProvider, Decodable {
     var test: String
 }
+
+extension JSTestDecodable: Equatable {
+    static func == (lhs: JSTestDecodable, rhs: JSTestDecodable) -> Bool {
+        lhs.test == rhs.test
+    }
+}

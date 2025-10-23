@@ -9,7 +9,7 @@ import Testing
 import JavaScriptCore
 @testable import TONWalletKit
 
-@Suite("JSValue To Navite Types Conversion Tests")
+@Suite("JSValue To Native Types Conversion Tests")
 struct JSValueConversionTests {
     
     private func conext() -> JSContext {
@@ -24,7 +24,32 @@ struct JSValueConversionTests {
         try testNullConversion(String.self, context: context)
         try testVoidConversion(String.self, context: context)
         try testUndefinedConversion(String.self, context: context)
+        
+        // Throwing conversions
         try testValueThrowingConversion(String.self, againstType: JSDummyValue.self, context: context)
+        try testValueThrowingConversion(String.self, againstType: Int.self, context: context)
+        try testValueThrowingConversion(String.self, againstType: Bool.self, context: context)
+        try testValueThrowingConversion(String.self, againstType: Array<Int>.self, context: context)
+        try testValueThrowingConversion(String.self, againstType: Dictionary<String, String>.self, context: context)
+        try testValueThrowingConversion(String.self, againstType: Date.self, context: context)
+    }
+    
+    @Test("JSTestDecodable Conversion")
+    func testJSTestDecodableConversion() throws {
+        let context = self.conext()
+        
+        // Basic decodable conversion
+        let expected = JSTestDecodable(test: "testValue")
+        try testValueConversion(JSTestDecodable.self, context: context, equalTo: expected)
+        try testNullConversion(JSTestDecodable.self, context: context)
+        try testUndefinedConversion(JSTestDecodable.self, context: context)
+
+        try testValueThrowingConversion(JSTestDecodable.self, againstType: JSDummyValue.self, context: context)
+        try testValueThrowingConversion(JSTestDecodable.self, againstType: String.self, context: context)
+        try testValueThrowingConversion(JSTestDecodable.self, againstType: Int.self, context: context)
+        try testValueThrowingConversion(JSTestDecodable.self, againstType: Bool.self, context: context)
+        try testValueThrowingConversion(JSTestDecodable.self, againstType: Array<Int>.self, context: context)
+        try testValueThrowingConversion(JSTestDecodable.self, againstType: Date.self, context: context)
     }
     
     @Test("Int Conversion")
