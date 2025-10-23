@@ -19,9 +19,11 @@ protocol JSDynamicObject {
 @dynamicCallable
 protocol JSDynamicObjectMember: JSDynamicObject {
     
+    @discardableResult
     func dynamicallyCall(withArguments args: [any JSValueEncodable]) async throws -> JSValue
     func dynamicallyCall<T>(withArguments args: [any JSValueEncodable]) async throws -> T where T: JSValueDecodable
     
+    @discardableResult
     func dynamicallyCall(withArguments args: [any JSValueEncodable]) throws -> JSValue
     func dynamicallyCall<T>(withArguments args: [any JSValueEncodable]) throws -> T where T: JSValueDecodable
 }
@@ -40,20 +42,22 @@ struct JSFunction: JSDynamicObjectMember {
         value[dynamicMember: member]
     }
     
+    @discardableResult
     func dynamicallyCall(withArguments args: [any JSValueEncodable]) async throws -> JSValue {
         try await jsContext.promise(wrap: self, args: args.map { try $0.encode(in: jsContext) }).then()
     }
     
     func dynamicallyCall<T>(withArguments args: [any JSValueEncodable]) async throws -> T where T: JSValueDecodable {
-        try await dynamicallyCall(withArguments: args).to(T.self)
+        try await dynamicallyCall(withArguments: args).decode()
     }
     
+    @discardableResult
     func dynamicallyCall(withArguments args: [any JSValueEncodable]) throws -> JSValue {
         try jsContext.throwErrorToReturn(wrap: self, args: args.map { try $0.encode(in: jsContext) })
     }
     
     func dynamicallyCall<T>(withArguments args: [any JSValueEncodable]) throws -> T where T: JSValueDecodable {
-        try dynamicallyCall(withArguments: args).to(T.self)
+        try dynamicallyCall(withArguments: args).decode()
     }
 }
 
@@ -180,7 +184,7 @@ private extension JSContext {
         return try call(function: function, args: args, on: throwErrorToReturnWrapper)
     }
 
-    private func call(function: JSFunction, args: [Any], on wrapper: JSValue) throws -> JSValue {
+    func call(function: JSFunction, args: [Any], on wrapper: JSValue) throws -> JSValue {
         let value: JSValue = wrapper.call(withArguments: [function.value, function.parent] + args)
         
         if value.isJSError == true, let error = value.toJSError() {

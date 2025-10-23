@@ -105,7 +105,10 @@ extension Bool: JSValueDecodable {
 extension Date: JSValueDecodable {
     
     static func from(_ value: JSValue) throws -> Date? {
-        value.toDate()
+        if value.isDate, let date = value.toDate() {
+            return date
+        }
+        return nil
     }
 }
 
@@ -125,14 +128,14 @@ extension Array: JSValueDecodable where Element: Decodable {}
 extension JSValueDecodable where Self: Decodable {
     
     static func from(_ value: JSValue) throws -> Self? {
-        guard value.isObject && !value.isUndefined else {
+        guard value.isObject && !value.isUndefined && !value.isDate && !value.isNull else {
             return nil
         }
             
         let object: Any
         
         if value.isArray {
-            object = value.toArray()
+            object = value.toArray() ?? []
         } else if let dictionary = value.toDictionary() {
             object = dictionary
         } else {
