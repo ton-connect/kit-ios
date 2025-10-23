@@ -70,7 +70,7 @@ public enum TONSignDataPayload: Codable {
 }
 
 public struct TONSignDataPayloadText: Codable {
-    public let type: TONSignDataType = .text
+    public var type: TONSignDataType = .text
     public var text: String
     public var network: String?
     public var from: String?
@@ -87,7 +87,7 @@ public struct TONSignDataPayloadText: Codable {
 }
 
 public struct TONSignDataPayloadBinary: Codable {
-    public let type: TONSignDataType = .binary
+    public var type: TONSignDataType = .binary
     public var bytes: String
     public var network: String?
     public var from: String?
@@ -104,7 +104,7 @@ public struct TONSignDataPayloadBinary: Codable {
 }
 
 public struct TONSignDataPayloadCell: Codable {
-    public let type: TONSignDataType = .cell
+    public var type: TONSignDataType = .cell
     public var schema: String
     public var cell: String
     public var network: String?

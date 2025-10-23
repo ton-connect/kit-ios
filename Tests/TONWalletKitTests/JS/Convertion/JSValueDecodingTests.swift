@@ -10,7 +10,7 @@ import JavaScriptCore
 @testable import TONWalletKit
 
 @Suite("JSValue To Native Types Conversion Tests")
-struct JSValueConversionTests {
+struct JSValueDecodingTests {
     
     private func conext() -> JSContext {
         JSTestContext()

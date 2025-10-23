@@ -90,7 +90,7 @@ extension JSContextInstallable where Self == JSFetchInstaller {
         
         if let body = request.httpBody {
             debugPrint("Body")
-            debugPrint(String(data: body, encoding: .utf8) as? AnyObject)
+            debugPrint(String(data: body, encoding: .utf8) as? AnyObject as Any)
         }
         
         self.request = request
@@ -221,7 +221,7 @@ extension JSURLSessionDataDelegate: URLSessionDataDelegate {
     
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         debugPrint("Response object")
-        debugPrint(String(data: data, encoding: .utf8) as? AnyObject)
+        debugPrint(String(data: data, encoding: .utf8) as Any)
         self.editState(for: dataTask.taskIdentifier) { $0.body?.resume(with: data) }
     }
     

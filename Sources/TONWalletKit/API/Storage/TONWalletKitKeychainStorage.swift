@@ -18,7 +18,7 @@ public class TONWalletKitKeychainStorage: TONWalletKitStorage {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
             kSecAttrService as String: service,
-            kSecValueData as String: data,
+            kSecValueData as String: data as Any,
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
         ]
         SecItemDelete(query as CFDictionary)

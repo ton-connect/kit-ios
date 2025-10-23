@@ -28,8 +28,6 @@ public enum TONTransactionPreview: Codable {
         case .success:
             let success = try TONTransactionPreviewEmulationResult(from: decoder)
             self = .success(success)
-        default:
-            throw DecodingError.dataCorruptedError(forKey: .result, in: container, debugDescription: "Unknown transaction result type")
         }
     }
     
@@ -44,7 +42,7 @@ public enum TONTransactionPreview: Codable {
 }
 
 public struct TONTransactionPreviewEmulationError: Codable {
-    public let result: TONResult = .error
+    var result: TONResult = .error
     public let emulationError: TONError
     
     public init(emulationError: TONError) {
@@ -53,7 +51,7 @@ public struct TONTransactionPreviewEmulationError: Codable {
 }
 
 public struct TONTransactionPreviewEmulationResult: Codable {
-    public let result: TONResult = .success
+    var result: TONResult = .success
     
     public let moneyFlow: TONMoneyFlow
     public let emulationResult: TONCenterEmulationResponse

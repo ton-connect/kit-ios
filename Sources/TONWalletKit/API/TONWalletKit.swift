@@ -31,7 +31,7 @@ public class TONWalletKit {
             
             let storage = storage.jsStorage(context: context)
             
-            try await context.initWalletKit(configuration, AnyJSValueEncodable(storage))
+            try await context.initWalletKit(configuration, AnyJSValueEncodable(storage as Any))
             
             sharedPool.store(configuration: configuration, walletKitContext: context)
             return TONWalletKit(context: context)
@@ -105,7 +105,7 @@ public class TONWalletKit {
     }
     
     public func remove(eventsHandler: TONBridgeEventsHandler) async throws {
-        if let adapter = eventHandlersAdapters.first { $0 == eventsHandler } {
+        if let adapter = eventHandlersAdapters.first(where: { $0 == eventsHandler }) {
             try await context.remove(eventsHandler: adapter)
             
             eventHandlersAdapters.removeAll { $0 === adapter }

@@ -58,7 +58,7 @@ public enum TONSignDataPreview: Codable {
 }
 
 public struct TONSignDataPreviewText: Codable {
-    public let kind: TONSignDataType = .text
+    public var kind: TONSignDataType = .text
     public let content: String
     
     public init(content: String) {
@@ -67,7 +67,7 @@ public struct TONSignDataPreviewText: Codable {
 }
 
 public struct TONSignDataPreviewBinary: Codable {
-    public let kind: TONSignDataType = .binary
+    public var kind: TONSignDataType = .binary
     public let content: String
     
     public init(content: String) {
@@ -76,7 +76,7 @@ public struct TONSignDataPreviewBinary: Codable {
 }
 
 public struct TONSignDataPreviewCell: Codable {
-    public let kind: TONSignDataType = .cell
+    public var kind: TONSignDataType = .cell
     public let content: String
     public let schema: String?
     public let parsed: [String: AnyCodable]?

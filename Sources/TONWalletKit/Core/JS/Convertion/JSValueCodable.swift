@@ -89,6 +89,9 @@ extension JSValueEncodable where Self: Encodable {
         let data = try encoder.encode(self)
         let object = try JSONSerialization.jsonObject(with: data)
         
-        return JSValue(object: object, in: context)
+        guard let value = JSValue(object: object, in: context) else {
+            throw "Unable to encode value: \(Self.self) to JSValue"
+        }
+        return value
     }
 }

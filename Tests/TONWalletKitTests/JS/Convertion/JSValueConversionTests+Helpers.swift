@@ -1,5 +1,5 @@
 //
-//  JSValueConversionTests+Helpers.swift
+//  JSValueDecodingTests+Helpers.swift
 //  TONWalletKit
 //
 //  Created by Nikita Rodionov on 23.10.2025.
@@ -10,7 +10,7 @@ import Testing
 import JavaScriptCore
 @testable import TONWalletKit
 
-extension JSValueConversionTests {
+extension JSValueDecodingTests {
     
     func testValueThrowingConversion<T, U>(
         _ type: T.Type,

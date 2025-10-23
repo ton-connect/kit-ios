@@ -14,8 +14,6 @@ public enum TONWalletKitEvent {
     case disconnect(TONDisconnectEvent)
     
     init(bridgeEvent: JSWalletKitSwiftBridgeEvent, context: any JSDynamicObject) throws {
-        let decoder = JSONDecoder()
-        
         switch bridgeEvent.type {
         case .connectRequest:
             let event: TONConnectRequestEvent = try bridgeEvent.value.decode()

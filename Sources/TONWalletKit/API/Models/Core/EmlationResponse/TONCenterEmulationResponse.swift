@@ -962,7 +962,7 @@ public struct TONEmulationTokenInfoBase: Codable {
 }
 
 public struct TONEmulationTokenInfoMasters: Codable {
-    public let type: String = "jetton_masters"
+    public var type: String = "jetton_masters"
     public let valid: Bool
     public let name: String
     public let symbol: String
@@ -1080,7 +1080,7 @@ public struct TONEmulationTokenInfoMasters: Codable {
 }
 
 public struct TONEmulationTokenInfoWallets: Codable {
-    public let type: String = "jetton_wallets"
+    public var type: String = "jetton_wallets"
     public let valid: Bool
     public let extra: Extra
     
