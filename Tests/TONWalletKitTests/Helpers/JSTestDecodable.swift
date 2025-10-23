@@ -8,7 +8,7 @@
 import Testing
 @testable import TONWalletKit
 
-struct JSTestDecodable: JSValueDecodable, JSFunctionProvider, Decodable {
+struct JSTestDecodable: JSValueDecodable, JSValueEncodable, JSFunctionProvider, Codable {
     var test: String
 }
 

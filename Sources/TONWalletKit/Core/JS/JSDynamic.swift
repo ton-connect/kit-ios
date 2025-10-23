@@ -128,7 +128,7 @@ private extension JSContext {
         }
         
         let script = """
-            function \(functionName)(fn, context = null, ...args) {
+            function \(functionName)(fn, context = null, args) {
                 try {
                   const result = fn.apply(context, args);
                   
@@ -164,7 +164,7 @@ private extension JSContext {
         }
         
         let script = """
-            function \(functionName)(fn, context = null, ...args) {
+            function \(functionName)(fn, context = null, args) {
                 try {
                     return fn.apply(context, args);
                 } catch (error) {
@@ -178,7 +178,7 @@ private extension JSContext {
         throwErrorToReturnWrapper = self[dynamicMember: functionName]
         
         guard let throwErrorToReturnWrapper else {
-            throw "JSFunctionError: No promise wrapper found"
+            throw "JSFunctionError: No error return wrapper found"
         }
         
         return try call(function: function, args: args, on: throwErrorToReturnWrapper)

@@ -85,6 +85,34 @@ class JSTestContext: JSContext {
             function IntInString() {
                 return "12345";
             }
+            
+            function _isString(value) {
+                return typeof value === 'string';
+            }
+            
+            function _isNumber(value) {
+                return typeof value === 'number';
+            }
+            
+            function _isBoolean(value) {
+                return typeof value === 'boolean';
+            }
+            
+            function _isDate(value) {
+                return value instanceof Date;
+            }
+            
+            function _isArray(value) {
+                return Object.prototype.toString.call(value) === '[object Array]'
+            }
+            
+            function _isNull(value) {
+                return value === null;
+            }
+            
+            function _validateJSTestDecodable(value) {
+                return typeof value === 'object' && value.hasOwnProperty('test') && typeof value.test === 'string' && value.test === 'testValue';
+            }
             """
         evaluateScript(js)
     }

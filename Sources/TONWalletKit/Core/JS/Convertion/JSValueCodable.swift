@@ -73,10 +73,15 @@ extension Date: JSValueEncodable {
     func encode(in context: JSContext) throws -> Any { self }
 }
 
+extension NSNull: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any { self }
+}
+
 extension Array: JSValueEncodable where Element: JSValueEncodable {
     
     func encode(in context: JSContext) throws -> Any {
-        return try self.map { element in
+        try self.map { element in
             try element.encode(in: context)
         }
     }
@@ -95,3 +100,17 @@ extension JSValueEncodable where Self: Encodable {
         return value
     }
 }
+
+extension Optional: JSValueEncodable where Wrapped: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any {
+        switch self {
+        case .none:
+            return JSValue(nullIn: context) as Any
+        case .some(let wrapped):
+            return try wrapped.encode(in: context)
+        }
+    }
+}
+
+
