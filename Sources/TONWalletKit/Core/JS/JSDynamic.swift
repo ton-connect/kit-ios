@@ -108,7 +108,7 @@ extension JSValue {
         let onRejectedWrapper: @convention(block) (JSValue) -> Void = { value in
             onRejected(value)
         }
-        try self[dynamicMember: "then"](AnyJSValueEncodable(onResolvedWrapper), AnyJSValueEncodable(onRejectedWrapper))
+        self.invokeMethod("then", withArguments: [onResolvedWrapper, onRejectedWrapper])
     }
     
     func then() async throws -> JSValue {
