@@ -76,7 +76,6 @@ extension JSValue: JSDynamicObject {
     subscript(dynamicMember member: String) -> any JSDynamicObjectMember {
         JSFunction(parent: self, value: objectForKeyedSubscript(member))
     }
-    
 }
 
 extension JSContext: JSDynamicObject {

@@ -12,8 +12,7 @@ import JavaScriptCore
 @Suite("JSContext function calls wrappers tests")
 struct JSDynamicCallTests {
     
-    @Test("Check Promise Wrapper")
-    func testFunctionsCorrectlyWrappedToPromise() async throws {
+    private func context() -> JSContext {
         let context = JSContext()!
         
         let script = """
@@ -41,6 +40,12 @@ struct JSDynamicCallTests {
         """
         
         context.evaluateScript(script)
+        return context
+    }
+    
+    @Test("Check Promise Wrapper")
+    func testFunctionsCorrectlyWrappedToPromise() async throws {
+        let context = self.context()
         
         let testPromiseFunctionSuccess = JSFunction(
             parent: context,
@@ -68,9 +73,6 @@ struct JSDynamicCallTests {
         #expect(testPromiseFunctionFailureResult.isPromise == true)
         #expect(testPromiseFunctionNativeSuccessResult.isPromise == true)
         #expect(testPromiseFunctionNativeFailureResult.isPromise == true)
-        
-        let resolvedSuccess = try await testPromiseFunctionSuccessResult.then().toString()
-        #expect(resolvedSuccess == "success")
         #expect(try await testPromiseFunctionSuccessResult.then().toString() == "success")
         await #expect(throws: JSError.self) {
             try await testPromiseFunctionFailureResult.then()
@@ -83,6 +85,92 @@ struct JSDynamicCallTests {
     
     @Test("Check Error Throw Wrapper")
     func testFunctionsCorrectlyWrappedErrorThrow() async throws {
+        let context = self.context()
         
+        let testPromiseFunctionSuccess = JSFunction(
+            parent: context,
+            value: context.objectForKeyedSubscript("_testPromiseFunctionSuccess")
+        )
+        let testPromiseFunctionFailure = JSFunction(
+            parent: context,
+            value: context.objectForKeyedSubscript("_testPromiseFunctionFailure")
+        )
+        let testPromiseFunctionNativeSuccess = JSFunction(
+            parent: context,
+            value: context.objectForKeyedSubscript("_testPromiseFunctionNativeSuccess")
+        )
+        let testPromiseFunctionNativeFailure = JSFunction(
+            parent: context,
+            value: context.objectForKeyedSubscript("_testPromiseFunctionNativeFailure")
+        )
+        
+        let testPromiseFunctionSuccessResult = try context.throwErrorToReturn(wrap: testPromiseFunctionSuccess, args: ["success"])
+        let testPromiseFunctionFailureResult = try context.throwErrorToReturn(wrap: testPromiseFunctionFailure, args: ["failure"])
+        let testPromiseFunctionNativeSuccessResult = try context.throwErrorToReturn(wrap: testPromiseFunctionNativeSuccess, args: ["native success"])
+    
+        #expect(testPromiseFunctionSuccessResult.isPromise == true)
+        #expect(testPromiseFunctionFailureResult.isPromise == true)
+        #expect(testPromiseFunctionNativeSuccessResult.isPromise == false)
+        
+        #expect(try await testPromiseFunctionSuccessResult.then().toString() == "success")
+        await #expect(throws: JSError.self) {
+            try await testPromiseFunctionFailureResult.then()
+        }
+        #expect(testPromiseFunctionNativeSuccessResult.toString() == "native success")
+        #expect(throws: JSError.self) {
+            try context.throwErrorToReturn(wrap: testPromiseFunctionNativeFailure, args: ["native failure"])
+        }
+    }
+    
+    @Test("Check synchronous dynamic calls")
+    func testSyncDynamicCall() throws {
+        let context = self.context()
+        
+        #expect(throws: JSError.self) {
+            try context._testPromiseFunctionSuccess("value")
+        }
+        
+        #expect(throws: JSError.self) {
+            try context._testPromiseFunctionFailure("value")
+        }
+        
+        #expect(throws: JSError.self) {
+            let _: String = try context._testPromiseFunctionSuccess("value")
+        }
+        
+        #expect(throws: JSError.self) {
+            let _: String = try context._testPromiseFunctionFailure("value")
+        }
+        
+        #expect(try context._testPromiseFunctionNativeSuccess("value") == "value")
+        
+        #expect(throws: JSError.self) {
+            let _: String = try context._testPromiseFunctionNativeFailure("value")
+        }
+    }
+    
+    @Test("Check asynchronous dynamic calls")
+    func testAsyncDynamicCall() async throws {
+        let context = self.context()
+        
+        #expect(try await context._testPromiseFunctionSuccess("value") == "value")
+
+        await #expect(throws: JSError.self) {
+            try await context._testPromiseFunctionFailure("value")
+        }
+        
+        await #expect(throws: JSError.self) {
+            let _: String = try await context._testPromiseFunctionFailure("value")
+        }
+        
+        #expect(try await context._testPromiseFunctionNativeSuccess("value") == "value")
+        
+        await #expect(throws: JSError.self) {
+            try await context._testPromiseFunctionNativeFailure("value")
+        }
+        
+        #expect(throws: JSError.self) {
+            let _: String = try context._testPromiseFunctionNativeFailure("value")
+        }
     }
 }
