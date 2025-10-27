@@ -12,7 +12,7 @@ import TONWalletKit
 class WalletInfoViewModel: ObservableObject {
     let wallet: TONWalletProtocol
     
-    var address: String { wallet.address ?? "Unknown address" }
+    var address: String { wallet.address }
     
     @Published private(set) var balance: String?
     

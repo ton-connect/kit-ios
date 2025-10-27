@@ -20,7 +20,7 @@ public struct TONConnectRequestEvent: Codable {
 
 public extension TONConnectRequestEvent {
     
-    public struct Preview: Codable {
+    struct Preview: Codable {
         public let manifestURL: URL?
         public let manifest: Manifest?
         public let permissions: [ConnectPermission]
@@ -31,14 +31,14 @@ public extension TONConnectRequestEvent {
 
 public extension TONConnectRequestEvent.Preview {
     
-    public struct Manifest: Codable {
+    struct Manifest: Codable {
         public let name: String?
         public let description: String?
         public let url: String?
         public let iconUrl: String?
     }
     
-    public struct ConnectPermission: Codable {
+    struct ConnectPermission: Codable {
         public let name: String?
         public let title: String?
         public let description: String?

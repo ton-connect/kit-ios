@@ -38,9 +38,7 @@ class WalletViewModel: Identifiable, ObservableObject {
             try storage.remove(walletAddress: tonWallet.address)
             
             Task {
-                if let address = tonWallet.address {
-                    try await TONWalletKit.mainnet().remove(walletAddress: address)
-                }
+                try await TONWalletKit.mainnet().remove(walletAddress: tonWallet.address)
             }
             
             onRemove?()

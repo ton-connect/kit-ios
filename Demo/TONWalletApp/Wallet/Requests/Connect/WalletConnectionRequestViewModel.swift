@@ -25,9 +25,7 @@ class WalletConnectionRequestViewModel: ObservableObject {
     }
     
     func approve() {
-        guard let address = wallet.address else {
-            return
-        }
+        let address = wallet.address
         
         Task {
             do {

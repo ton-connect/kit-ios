@@ -22,8 +22,8 @@ public class TONWalletSignDataRequest {
         self.event = event
     }
     
-    public func approve() async throws -> TONWalletSignDataResponse? {
-        try await context.walletKit.approveSignDataRequest(event)?.decode()
+    public func approve() async throws -> TONWalletSignDataResponse {
+        try await context.walletKit.approveSignDataRequest(event)
     }
     
     public func reject(reason: String? = nil) async throws {

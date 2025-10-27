@@ -57,7 +57,7 @@ class JSWalletKitContext: JSContext {
             }
         }
         
-        try await self.walletKit.setEventsListeners(callback)
+        try await self.walletKit.setEventsListeners(AnyJSValueEncodable(callback))
     }
     
     func remove(eventsHandler: any JSBridgeEventsHandler) async throws {

@@ -40,9 +40,9 @@ class TONWalletJSAdapter: JSWalletAdapter {
                 do {
                     let value = try await self.wallet.stateInit()
                     
-                    await MainActor.run { resolve?.call(withArguments: [value]) }
+                    await MainActor.run { _ = resolve?.call(withArguments: [value]) }
                 } catch {
-                    await MainActor.run { reject?.call(withArguments: [error.localizedDescription]) }
+                    await MainActor.run { _ = reject?.call(withArguments: [error.localizedDescription]) }
                 }
             }
         }
@@ -64,9 +64,9 @@ class TONWalletJSAdapter: JSWalletAdapter {
                             fakeSignature: options?.fakeSignature == true
                         )
                         
-                        await MainActor.run { resolve?.call(withArguments: [value]) }
+                        await MainActor.run { _ = resolve?.call(withArguments: [value]) }
                     } catch {
-                        await MainActor.run { reject?.call(withArguments: [error.localizedDescription]) }
+                        await MainActor.run { _ = reject?.call(withArguments: [error.localizedDescription]) }
                     }
                 }
             }
@@ -91,9 +91,9 @@ class TONWalletJSAdapter: JSWalletAdapter {
                             fakeSignature: options?.fakeSignature == true
                         )
                         
-                        await MainActor.run { resolve?.call(withArguments: [value]) }
+                        await MainActor.run { _ = resolve?.call(withArguments: [value]) }
                     } catch {
-                        await MainActor.run { reject?.call(withArguments: [error.localizedDescription]) }
+                        await MainActor.run { _ = reject?.call(withArguments: [error.localizedDescription]) }
                     }
                 }
             }
@@ -118,9 +118,9 @@ class TONWalletJSAdapter: JSWalletAdapter {
                             fakeSignature: options?.fakeSignature == true
                         )
                         
-                        await MainActor.run { resolve?.call(withArguments: [value]) }
+                        await MainActor.run { _ = resolve?.call(withArguments: [value]) }
                     } catch {
-                        await MainActor.run { reject?.call(withArguments: [error.localizedDescription]) }
+                        await MainActor.run { _ = reject?.call(withArguments: [error.localizedDescription]) }
                     }
                 }
             }
@@ -130,10 +130,10 @@ class TONWalletJSAdapter: JSWalletAdapter {
     }
 }
 
-private struct AllOptions: Decodable {
+private struct AllOptions: Decodable, JSValueDecodable {
     let fakeSignature: Bool
 }
 
-private struct GetAddressOptions: Decodable {
+private struct GetAddressOptions: Decodable, JSValueDecodable {
     let testnet: Bool?
 }

@@ -20,23 +20,23 @@ public protocol TONWalletAdapter {
 }
 
 public protocol TONWalletProtocol {
-    var address: String? { get }
+    var address: String { get }
     var version: TONWalletVersion { get }
     
     func balance() async throws -> String?
     
-    func transferTON(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent?
-    func transferTON(messages: [TONTransferMessage]) async throws -> TONConnectTransactionParamContent?
+    func transferTON(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent
+    func transferTON(messages: [TONTransferMessage]) async throws -> TONConnectTransactionParamContent
     
-    func transactionPreview(data: TONConnectTransactionParamContent) async throws -> TONTransactionPreview?
+    func transactionPreview(data: TONConnectTransactionParamContent) async throws -> TONTransactionPreview
     
-    func transferNFT(parameters: TONNFTTransferParamsHuman) async throws -> TONConnectTransactionParamContent?
-    func transferNFT(rawParameters: TONNFTTransferParamsRaw) async throws -> TONConnectTransactionParamContent?
+    func transferNFT(parameters: TONNFTTransferParamsHuman) async throws -> TONConnectTransactionParamContent
+    func transferNFT(rawParameters: TONNFTTransferParamsRaw) async throws -> TONConnectTransactionParamContent
     
-    func nfts(limit: TONLimitRequest) async throws -> TONNFTItems?
-    func nft(address: String) async throws -> TONNFTItem?
+    func nfts(limit: TONLimitRequest) async throws -> TONNFTItems
+    func nft(address: String) async throws -> TONNFTItem
 
-    func transferJetton(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent?
-    func jettonBalance(jettonAddress: String) async throws -> String?
-    func jettonWalletAddress(jettonAddress: String) async throws -> String?
+    func transferJetton(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent
+    func jettonBalance(jettonAddress: String) async throws -> String
+    func jettonWalletAddress(jettonAddress: String) async throws -> String
 }
