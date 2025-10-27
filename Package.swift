@@ -22,7 +22,10 @@ let package = Package(
             name: "TONWalletKit",
             resources: [
                 .process("Resources/JS/walletkit-ios-bridge.mjs"),
-                .process("Core/JS/Polyfilling/Fetch/JS")
+                .process("JSCore/Polyfilling/Fetch/JS")
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-enable-private-imports"], .when(configuration: .debug)),
             ]
         ),
         .testTarget(

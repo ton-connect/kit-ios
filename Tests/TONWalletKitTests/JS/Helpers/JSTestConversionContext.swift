@@ -1,5 +1,5 @@
 //
-//  JSTestContext.swift
+//  JSTestConversionContext.swift
 //  TONWalletKit
 //
 //  Created by Nikita Rodionov on 23.10.2025.
@@ -8,7 +8,7 @@
 import Foundation
 import JavaScriptCore
 
-class JSTestContext: JSContext {
+class JSTestConversionContext: JSContext {
     
     override init() {
         super.init()
@@ -112,6 +112,12 @@ class JSTestContext: JSContext {
             
             function _validateJSTestDecodable(value) {
                 return typeof value === 'object' && value.hasOwnProperty('test') && typeof value.test === 'string' && value.test === 'testValue';
+            }
+            
+            function _validateMultipleParameters(stringValue, intValue, boolValue) {
+                return typeof stringValue === 'string' && stringValue === 'testString' &&
+                       typeof intValue === 'number' && intValue === 42 &&
+                       typeof boolValue === 'boolean' && boolValue === true;
             }
             """
         evaluateScript(js)

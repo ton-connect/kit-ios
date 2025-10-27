@@ -26,8 +26,7 @@ extension JSValue {
     
     func toJSError() -> JSError? {
         if isJSError {
-            let message: String? = self.message
-            return message.flatMap { JSError(message: $0) }
+            return JSError(message: self.message ?? "Unknown JS error")
         }
         return nil
     }

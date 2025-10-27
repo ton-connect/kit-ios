@@ -26,7 +26,7 @@ extension JSValue {
         }
         
         guard let value = try T.from(self) else {
-            throw JSValueConversionError.unableToConvertJSValue(type: T.self)
+            throw JSValueConversionError.unableToConvertJSValue(type: T.self, description: self.toString())
         }
         return value
     }

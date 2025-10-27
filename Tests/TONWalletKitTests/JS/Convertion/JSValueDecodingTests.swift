@@ -13,7 +13,7 @@ import JavaScriptCore
 struct JSValueDecodingTests {
     
     private func conext() -> JSContext {
-        JSTestContext()
+        JSTestConversionContext()
     }
     
     @Test("String Conversion")

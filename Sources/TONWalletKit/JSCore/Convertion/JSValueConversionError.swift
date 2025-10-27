@@ -8,7 +8,7 @@
 import Foundation
 
 enum JSValueConversionError: LocalizedError {
-    case unableToConvertJSValue(type: Any.Type)
+    case unableToConvertJSValue(type: Any.Type, description: String)
     case unableToConvertUndefinedJSValue(type: Any.Type)
     case unableToConvertNullJSValue(type: Any.Type)
     case decodingError(DecodingError)
@@ -17,8 +17,8 @@ enum JSValueConversionError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .unableToConvertJSValue(let type):
-            return "Unable to cast JS value to \(type)"
+        case .unableToConvertJSValue(let type, let description):
+            return "Unable to cast JS value \(description) to \(type)"
         case .unableToConvertUndefinedJSValue(let type):
             return "Unable to cast undefined JS value to \(type)"
         case .unableToConvertNullJSValue(let type):

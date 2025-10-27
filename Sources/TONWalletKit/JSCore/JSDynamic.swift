@@ -53,7 +53,12 @@ struct JSFunction: JSDynamicObjectMember {
     
     @discardableResult
     func dynamicallyCall(withArguments args: [any JSValueEncodable]) throws -> JSValue {
-        try jsContext.throwErrorToReturn(wrap: self, args: args.map { try $0.encode(in: jsContext) })
+        let value = try jsContext.throwErrorToReturn(wrap: self, args: args.map { try $0.encode(in: jsContext) })
+        
+        if value.isPromise {
+            throw JSError(message: "Unable to call async function of JS Promise in sync context")
+        }
+        return value
     }
     
     func dynamicallyCall<T>(withArguments args: [any JSValueEncodable]) throws -> T where T: JSValueDecodable {
@@ -71,7 +76,6 @@ extension JSValue: JSDynamicObject {
     subscript(dynamicMember member: String) -> any JSDynamicObjectMember {
         JSFunction(parent: self, value: objectForKeyedSubscript(member))
     }
-    
 }
 
 extension JSContext: JSDynamicObject {
@@ -88,10 +92,14 @@ extension JSContext: JSDynamicObject {
 
 extension JSValue {
 
-    fileprivate func then(
+    func then(
         _ onResolved: @escaping (JSValue) -> Void,
         _ onRejected: @escaping (JSValue) -> Void,
     ) throws {
+        guard self.isPromise else {
+            throw JSError(message: "Unable to call 'then' on non-promise JSValue")
+        }
+        
         let onResolvedWrapper: @convention(block) (JSValue) -> Void = { value in
             onResolved(value)
         }
@@ -99,10 +107,10 @@ extension JSValue {
         let onRejectedWrapper: @convention(block) (JSValue) -> Void = { value in
             onRejected(value)
         }
-        try self[dynamicMember: "then"](AnyJSValueEncodable(onResolvedWrapper), AnyJSValueEncodable(onRejectedWrapper))
+        self.invokeMethod("then", withArguments: [onResolvedWrapper, onRejectedWrapper])
     }
     
-    fileprivate func then() async throws -> JSValue {
+    func then() async throws -> JSValue {
         try await withCheckedThrowingContinuation { continuation in
             do {
                 try then(
@@ -116,9 +124,9 @@ extension JSValue {
     }
 }
 
-private extension JSContext {
+extension JSContext {
     
-    func promise(wrap function: JSFunction, args: [Any]) async throws -> JSValue {
+    func promise(wrap function: JSFunction, args: [Any]) throws -> JSValue {
         let functionName = "__promiseWrapper"
         
         var promiseWrapper: JSValue? = self[dynamicMember: functionName]
@@ -128,7 +136,7 @@ private extension JSContext {
         }
         
         let script = """
-            function \(functionName)(fn, context = null, args) {
+            function \(functionName)(fn, context = null, ...args) {
                 try {
                   const result = fn.apply(context, args);
                   
@@ -164,7 +172,7 @@ private extension JSContext {
         }
         
         let script = """
-            function \(functionName)(fn, context = null, args) {
+            function \(functionName)(fn, context = null, ...args) {
                 try {
                     return fn.apply(context, args);
                 } catch (error) {
