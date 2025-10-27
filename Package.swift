@@ -25,7 +25,7 @@ let package = Package(
                 .process("JSCore/Polyfilling/Fetch/JS")
             ],
             swiftSettings: [
-                .unsafeFlags(["-enable-private-imports"])
+                .unsafeFlags(["-enable-private-imports"], .when(configuration: .debug)),
             ]
         ),
         .testTarget(
