@@ -1,5 +1,5 @@
 //
-//  AnyWeakValueWrapper.swift
+//  WeakValueWrapper.swift
 //  TONWalletKit
 //
 //  Created by Nikita Rodionov on 16.10.2025.

@@ -14,7 +14,9 @@ class JSWalletKitContext: JSContext {
     override init() {
         super.init()
         
+#if DEBUG
         polyfill(with: JSConsoleLogPolyfill())
+#endif
         polyfill(with: JSTimerPolyfill())
         polyfill(with: JSFetchPolyfill())
         polyfill(with: JSWalletKitInitialPolyfill())

@@ -18,29 +18,6 @@ public class JSWalletKitInitialPolyfill: JSPolyfill {
         context.evaluateScript("""
             // Create global window object for browser compatibility
             const window = globalThis || this || {};
-            
-            // Add basic console object
-            const console = {
-                log: function(...args) {
-                    nativeLog(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
-                },
-                warn: function(...args) { 
-                    nativeLog('[WARN] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')); 
-                },
-                error: function(...args) { 
-                    nativeLog('[ERROR] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')); 
-                },
-                info: function(...args) { 
-                    nativeLog('[INFO] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')); 
-                },
-                debug: function(...args) { 
-                    nativeLog('[DEBUG] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')); 
-                },
-                trace: function(...args) { 
-                    nativeTrace(args);
-                    // nativeLog('[TRACE] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')); 
-                }
-            };
         
             // Set up crypto polyfill using Swift's secure random
             const crypto = {
@@ -243,7 +220,6 @@ public class JSWalletKitInitialPolyfill: JSPolyfill {
                 }
             };
                         
-            window.console = console;
             window.crypto = crypto;
             globalThis.crypto = crypto;
             window.EventSource = EventSource;
