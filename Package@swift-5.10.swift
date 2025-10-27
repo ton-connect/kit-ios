@@ -1,4 +1,4 @@
-// swift-tools-version: 6.2
+// swift-tools-version: 5.10
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -23,15 +23,12 @@ let package = Package(
             resources: [
                 .process("Resources/JS/walletkit-ios-bridge.mjs"),
                 .process("Core/JS/Polyfilling/Fetch/JS")
-            ],
-            swiftSettings: [
-                .unsafeFlags(["-enable-private-imports"])
             ]
         ),
         .testTarget(
             name: "TONWalletKitTests",
-            dependencies: ["TONWalletKit"]
+            dependencies: ["TONWalletKit"],
         ),
     ],
-    swiftLanguageModes: [.v5]
+    swiftLanguageVersions: [.v5]
 )
