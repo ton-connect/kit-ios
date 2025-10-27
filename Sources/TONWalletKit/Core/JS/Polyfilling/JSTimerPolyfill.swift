@@ -127,10 +127,8 @@ public class JSTimerPolyfill: NSObject, JSPolyfill, JSTimerManager {
         timersQueue.sync { [weak self] in
             guard let self = self else { return }
             
-            if timerIsValid {
-                if self.timers[identifier] != nil {
-                    self.timers[identifier] = timer
-                }
+            if timerIsValid && self.timers[identifier] == Optional<Timer>.none {
+                self.timers[identifier] = timer
             } else {
                 self.timers.removeValue(forKey: identifier)
             }
