@@ -39,7 +39,7 @@ struct JSTimerPolyfillTests {
         
         context!.evaluateScript(script)
         
-        let id: String = try await context!.setTimeout()
+        let id: Int32 = try await context!.setTimeout()
         
         // Verify timer is registered
         #expect(timerPolyfill.timers.contains { $0.key == id })
@@ -122,7 +122,7 @@ struct JSTimerPolyfillTests {
         
         context.evaluateScript(script)
         
-        let id: String = try await context.clearTimeout()
+        let id = try await context.clearTimeout()
         
         // Wait longer than the original delay
         try await Task.sleep(for: .milliseconds(150))
@@ -158,7 +158,7 @@ struct JSTimerPolyfillTests {
         
         context.evaluateScript(script)
         
-        let id: String = try await context.setInterval()
+        let id = try await context.setInterval()
         
         // Verify timer is registered
         #expect(timerPolyfill.timers.contains { $0.key == id })
@@ -214,7 +214,7 @@ struct JSTimerPolyfillTests {
         
         context.evaluateScript(script)
         
-        let id: String = try await context.clearInterval()
+        let id = try await context.clearInterval()
         
         // Wait for the interval to be cleared and a bit more
         try await Task.sleep(for: .milliseconds(250))
@@ -338,7 +338,7 @@ struct JSTimerPolyfillTests {
         
         context.evaluateScript(script)
         
-        let ids: [String] = try await context.multipleTimers()
+        let ids = try await context.multipleTimers()
         
         // Verify all timers are registered
         for id in ids {
@@ -379,11 +379,11 @@ struct JSTimerPolyfillTests {
         
         context.evaluateScript(script)
         
-        let ids: [String] = try await context.invalidCallbacks()
+        let ids = try await context.invalidCallbacks()
         
         // All IDs should be empty strings for invalid callbacks
         for id in ids {
-            #expect(id.isEmpty)
+            #expect(id == -1)
         }
         
         // No timers should be registered
@@ -468,91 +468,91 @@ struct JSTimerPolyfillTests {
 private extension JSContext {
     
     @discardableResult
-    func setTimeout() async throws -> String {
+    func setTimeout() async throws -> Int32 {
         guard let function = objectForKeyedSubscript("testSetTimeout") else {
             throw "Function testSetTimeout not found"
         }
         let result = function.call(withArguments: [])
-        guard let stringResult = result?.toString() else {
+        guard let result = result?.toInt32() else {
             throw "Expected string result from testSetTimeout"
         }
-        return stringResult
+        return result
     }
     
     @discardableResult
-    func setTimeoutWithParams() async throws -> String {
+    func setTimeoutWithParams() async throws -> Int32 {
         guard let function = objectForKeyedSubscript("testSetTimeoutWithParams") else {
             throw "Function testSetTimeoutWithParams not found"
         }
         let result = function.call(withArguments: [])
-        guard let stringResult = result?.toString() else {
+        guard let result = result?.toInt32() else {
             throw "Expected string result from testSetTimeoutWithParams"
         }
-        return stringResult
+        return result
     }
     
     @discardableResult
-    func clearTimeout() async throws -> String {
+    func clearTimeout() async throws -> Int32 {
         guard let function = objectForKeyedSubscript("testClearTimeout") else {
             throw "Function testClearTimeout not found"
         }
         let result = function.call(withArguments: [])
-        guard let stringResult = result?.toString() else {
+        guard let result = result?.toInt32() else {
             throw "Expected string result from testClearTimeout"
         }
-        return stringResult
+        return result
     }
     
     @discardableResult
-    func setInterval() async throws -> String {
+    func setInterval() async throws -> Int32 {
         guard let function = objectForKeyedSubscript("testSetInterval") else {
             throw "Function testSetInterval not found"
         }
         let result = function.call(withArguments: [])
-        guard let stringResult = result?.toString() else {
+        guard let result = result?.toInt32() else {
             throw "Expected string result from testSetInterval"
         }
-        return stringResult
+        return result
     }
     
     @discardableResult
-    func clearInterval() async throws -> String {
+    func clearInterval() async throws -> Int32 {
         guard let function = objectForKeyedSubscript("testClearInterval") else {
             throw "Function testClearInterval not found"
         }
         let result = function.call(withArguments: [])
-        guard let stringResult = result?.toString() else {
+        guard let result = result?.toInt32() else {
             throw "Expected string result from testClearInterval"
         }
-        return stringResult
+        return result
     }
     
     @discardableResult
-    func zeroDelay() async throws -> String {
+    func zeroDelay() async throws -> Int32 {
         guard let function = objectForKeyedSubscript("testZeroDelay") else {
             throw "Function testZeroDelay not found"
         }
         let result = function.call(withArguments: [])
-        guard let stringResult = result?.toString() else {
+        guard let result = result?.toInt32() else {
             throw "Expected string result from testZeroDelay"
         }
-        return stringResult
+        return result
     }
     
     @discardableResult
-    func negativeDelay() async throws -> String {
+    func negativeDelay() async throws -> Int32 {
         guard let function = objectForKeyedSubscript("testNegativeDelay") else {
             throw "Function testNegativeDelay not found"
         }
         let result = function.call(withArguments: [])
-        guard let stringResult = result?.toString() else {
+        guard let result = result?.toInt32() else {
             throw "Expected string result from testNegativeDelay"
         }
-        return stringResult
+        return result
     }
     
     @discardableResult
-    func multipleTimers() async throws -> [String] {
+    func multipleTimers() async throws -> [Int32] {
         guard let function = objectForKeyedSubscript("testMultipleTimers") else {
             throw "Function testMultipleTimers not found"
         }
@@ -560,11 +560,11 @@ private extension JSContext {
         guard let arrayResult = result?.toArray() else {
             throw "Expected array result from testMultipleTimers"
         }
-        return arrayResult.compactMap { $0 as? String }
+        return arrayResult.compactMap { $0 as? Int32 }
     }
     
     @discardableResult
-    func invalidCallbacks() async throws -> [String] {
+    func invalidCallbacks() async throws -> [Int32] {
         guard let function = objectForKeyedSubscript("testInvalidCallbacks") else {
             throw "Function testInvalidCallbacks not found"
         }
@@ -572,7 +572,7 @@ private extension JSContext {
         guard let arrayResult = result?.toArray() else {
             throw "Expected array result from testInvalidCallbacks"
         }
-        return arrayResult.compactMap { $0 as? String }
+        return arrayResult.compactMap { $0 as? Int32 }
     }
     
     @discardableResult
@@ -585,7 +585,7 @@ private extension JSContext {
     }
     
     @discardableResult
-    func createTimers() async throws -> [String] {
+    func createTimers() async throws -> [Int32] {
         guard let function = objectForKeyedSubscript("createTimers") else {
             throw "Function createTimers not found"
         }
@@ -593,6 +593,6 @@ private extension JSContext {
         guard let arrayResult = result?.toArray() else {
             throw "Expected array result from createTimers"
         }
-        return arrayResult.compactMap { $0 as? String }
+        return arrayResult.compactMap { $0 as? Int32 }
     }
 }

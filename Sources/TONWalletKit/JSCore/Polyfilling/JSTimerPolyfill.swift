@@ -10,15 +10,27 @@ import JavaScriptCore
 
 @objc
 public protocol JSTimerManager: JSExport {
-    @objc(setTimeout:::) func setTimeout(callback: JSValue, interval: Double, parameters: [Any]) -> String
-    @objc(clearTimeout:) func clearTimeout(identifier: String)
-    @objc(setInterval:::) func setInterval(callback: JSValue, interval: Double, parameters: [Any]) -> String
-    @objc(clearInterval:) func clearInterval(identifier: String)
+    
+    @objc(setTimeout:::) func setTimeout(callback: JSValue, interval: Double, parameters: [Any]) -> Int32
+    @objc(clearTimeout:) func clearTimeout(identifier: Int32)
+    @objc(setInterval:::) func setInterval(callback: JSValue, interval: Double, parameters: [Any]) -> Int32
+    @objc(clearInterval:) func clearInterval(identifier: Int32)
+}
+
+class JSTimerIdentifierProvider {
+    private var lastID: Int32 = 0
+    
+    func nextTimerIdentifier() -> Int32 {
+        let id = lastID
+        lastID = lastID &+ 1
+        return id
+    }
 }
 
 public class JSTimerPolyfill: NSObject, JSPolyfill, JSTimerManager {
-    private var timers: [String: Timer?] = [:]
+    private var timers: [Int32: Timer?] = [:]
     private let timersQueue = DispatchQueue(label: "com.jstimers.queue")
+    private let timerIdentifierProvider = JSTimerIdentifierProvider()
     
     public func apply(to context: JSContext) {
         context.setObject(self,
@@ -46,12 +58,12 @@ public class JSTimerPolyfill: NSObject, JSPolyfill, JSTimerManager {
     }
     
     @objc
-    public func setTimeout(callback: JSValue, interval: Double, parameters: [Any]) -> String {
+    public func setTimeout(callback: JSValue, interval: Double, parameters: [Any]) -> Int32 {
         guard callback.isObject && callback.isFunction else {
-            return ""
+            return -1
         }
         
-        let identifier = UUID().uuidString
+        let identifier = timersQueue.sync { self.timerIdentifierProvider.nextTimerIdentifier() }
         
         preserveTimerSlot(for: identifier)
         
@@ -75,7 +87,7 @@ public class JSTimerPolyfill: NSObject, JSPolyfill, JSTimerManager {
     }
     
     @objc
-    public func clearTimeout(identifier: String) {
+    public func clearTimeout(identifier: Int32) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
@@ -88,12 +100,12 @@ public class JSTimerPolyfill: NSObject, JSPolyfill, JSTimerManager {
     }
     
     @objc
-    public func setInterval(callback: JSValue, interval: Double, parameters: [Any]) -> String {
+    public func setInterval(callback: JSValue, interval: Double, parameters: [Any]) -> Int32 {
         guard callback.isObject && callback.isFunction else {
-            return ""
+            return -1
         }
         
-        let identifier = UUID().uuidString
+        let identifier = timersQueue.sync { self.timerIdentifierProvider.nextTimerIdentifier() }
         
         preserveTimerSlot(for: identifier)
         
@@ -111,17 +123,17 @@ public class JSTimerPolyfill: NSObject, JSPolyfill, JSTimerManager {
     }
     
     @objc
-    public func clearInterval(identifier: String) {
+    public func clearInterval(identifier: Int32) {
         clearTimeout(identifier: identifier)
     }
     
-    private func preserveTimerSlot(for identifier: String) {
+    private func preserveTimerSlot(for identifier: Int32) {
         timersQueue.sync {
             timers[identifier] = Optional<Timer>.none
         }
     }
     
-    private func set(timer: Timer, for identifier: String) {
+    private func set(timer: Timer, for identifier: Int32) {
         let timerIsValid = timer.isValid
         
         timersQueue.sync { [weak self] in
