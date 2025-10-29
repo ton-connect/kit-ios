@@ -29244,338 +29244,81 @@ var C$1 = class o3 {
     this.gateway && (s("[BridgeProvider] Closing previous gateway..."), await this.gateway.close(), this.gateway = null, s("[BridgeProvider] Gateway closed."));
   }
 };
-/**
- * uuidv7: A JavaScript implementation of UUID version 7
- *
- * Copyright 2021-2024 LiosK
- *
- * @license Apache-2.0
- * @packageDocumentation
- */
-const DIGITS = "0123456789abcdef";
-class UUID {
-  bytes;
-  /** @param bytes - The 16-byte byte array representation. */
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  constructor(bytes) {
-    this.bytes = bytes;
-  }
-  /**
-   * Creates an object from the internal representation, a 16-byte byte array
-   * containing the binary UUID representation in the big-endian byte order.
-   *
-   * This method does NOT shallow-copy the argument, and thus the created object
-   * holds the reference to the underlying buffer.
-   *
-   * @throws TypeError if the length of the argument is not 16.
-   */
-  static ofInner(bytes) {
-    if (bytes.length !== 16) {
-      throw new TypeError("not 128-bit length");
-    } else {
-      return new UUID(bytes);
-    }
-  }
-  /**
-   * Builds a byte array from UUIDv7 field values.
-   *
-   * @param unixTsMs - A 48-bit `unix_ts_ms` field value.
-   * @param randA - A 12-bit `rand_a` field value.
-   * @param randBHi - The higher 30 bits of 62-bit `rand_b` field value.
-   * @param randBLo - The lower 32 bits of 62-bit `rand_b` field value.
-   * @throws RangeError if any field value is out of the specified range.
-   */
-  static fromFieldsV7(unixTsMs, randA, randBHi, randBLo) {
-    if (!Number.isInteger(unixTsMs) || !Number.isInteger(randA) || !Number.isInteger(randBHi) || !Number.isInteger(randBLo) || unixTsMs < 0 || randA < 0 || randBHi < 0 || randBLo < 0 || unixTsMs > 281474976710655 || randA > 4095 || randBHi > 1073741823 || randBLo > 4294967295) {
-      throw new RangeError("invalid field value");
-    }
-    const bytes = new Uint8Array(16);
-    bytes[0] = unixTsMs / 2 ** 40;
-    bytes[1] = unixTsMs / 2 ** 32;
-    bytes[2] = unixTsMs / 2 ** 24;
-    bytes[3] = unixTsMs / 2 ** 16;
-    bytes[4] = unixTsMs / 2 ** 8;
-    bytes[5] = unixTsMs;
-    bytes[6] = 112 | randA >>> 8;
-    bytes[7] = randA;
-    bytes[8] = 128 | randBHi >>> 24;
-    bytes[9] = randBHi >>> 16;
-    bytes[10] = randBHi >>> 8;
-    bytes[11] = randBHi;
-    bytes[12] = randBLo >>> 24;
-    bytes[13] = randBLo >>> 16;
-    bytes[14] = randBLo >>> 8;
-    bytes[15] = randBLo;
-    return new UUID(bytes);
-  }
-  /**
-   * Builds a byte array from a string representation.
-   *
-   * This method accepts the following formats:
-   *
-   * - 32-digit hexadecimal format without hyphens: `0189dcd553117d408db09496a2eef37b`
-   * - 8-4-4-4-12 hyphenated format: `0189dcd5-5311-7d40-8db0-9496a2eef37b`
-   * - Hyphenated format with surrounding braces: `{0189dcd5-5311-7d40-8db0-9496a2eef37b}`
-   * - RFC 9562 URN format: `urn:uuid:0189dcd5-5311-7d40-8db0-9496a2eef37b`
-   *
-   * Leading and trailing whitespaces represents an error.
-   *
-   * @throws SyntaxError if the argument could not parse as a valid UUID string.
-   */
-  static parse(uuid) {
-    let hex = void 0;
-    switch (uuid.length) {
-      case 32:
-        hex = /^[0-9a-f]{32}$/i.exec(uuid)?.[0];
-        break;
-      case 36:
-        hex = /^([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{12})$/i.exec(uuid)?.slice(1, 6).join("");
-        break;
-      case 38:
-        hex = /^\{([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{12})\}$/i.exec(uuid)?.slice(1, 6).join("");
-        break;
-      case 45:
-        hex = /^urn:uuid:([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{12})$/i.exec(uuid)?.slice(1, 6).join("");
-        break;
-    }
-    if (hex) {
-      const inner = new Uint8Array(16);
-      for (let i = 0; i < 16; i += 4) {
-        const n = parseInt(hex.substring(2 * i, 2 * i + 8), 16);
-        inner[i + 0] = n >>> 24;
-        inner[i + 1] = n >>> 16;
-        inner[i + 2] = n >>> 8;
-        inner[i + 3] = n;
-      }
-      return new UUID(inner);
-    } else {
-      throw new SyntaxError("could not parse UUID string");
-    }
-  }
-  /**
-   * @returns The 8-4-4-4-12 canonical hexadecimal string representation
-   * (`0189dcd5-5311-7d40-8db0-9496a2eef37b`).
-   */
-  toString() {
-    let text = "";
-    for (let i = 0; i < this.bytes.length; i++) {
-      text += DIGITS.charAt(this.bytes[i] >>> 4);
-      text += DIGITS.charAt(this.bytes[i] & 15);
-      if (i === 3 || i === 5 || i === 7 || i === 9) {
-        text += "-";
-      }
-    }
-    return text;
-  }
-  /**
-   * @returns The 32-digit hexadecimal representation without hyphens
-   * (`0189dcd553117d408db09496a2eef37b`).
-   */
-  toHex() {
-    let text = "";
-    for (let i = 0; i < this.bytes.length; i++) {
-      text += DIGITS.charAt(this.bytes[i] >>> 4);
-      text += DIGITS.charAt(this.bytes[i] & 15);
-    }
-    return text;
-  }
-  /** @returns The 8-4-4-4-12 canonical hexadecimal string representation. */
-  toJSON() {
-    return this.toString();
-  }
-  /**
-   * Reports the variant field value of the UUID or, if appropriate, "NIL" or
-   * "MAX".
-   *
-   * For convenience, this method reports "NIL" or "MAX" if `this` represents
-   * the Nil or Max UUID, although the Nil and Max UUIDs are technically
-   * subsumed under the variants `0b0` and `0b111`, respectively.
-   */
-  getVariant() {
-    const n = this.bytes[8] >>> 4;
-    if (n < 0) {
-      throw new Error("unreachable");
-    } else if (n <= 7) {
-      return this.bytes.every((e) => e === 0) ? "NIL" : "VAR_0";
-    } else if (n <= 11) {
-      return "VAR_10";
-    } else if (n <= 13) {
-      return "VAR_110";
-    } else if (n <= 15) {
-      return this.bytes.every((e) => e === 255) ? "MAX" : "VAR_RESERVED";
-    } else {
-      throw new Error("unreachable");
-    }
-  }
-  /**
-   * Returns the version field value of the UUID or `undefined` if the UUID does
-   * not have the variant field value of `0b10`.
-   */
-  getVersion() {
-    return this.getVariant() === "VAR_10" ? this.bytes[6] >>> 4 : void 0;
-  }
-  /** Creates an object from `this`. */
-  clone() {
-    return new UUID(this.bytes.slice(0));
-  }
-  /** Returns true if `this` is equivalent to `other`. */
-  equals(other) {
-    return this.compareTo(other) === 0;
-  }
-  /**
-   * Returns a negative integer, zero, or positive integer if `this` is less
-   * than, equal to, or greater than `other`, respectively.
-   */
-  compareTo(other) {
-    for (let i = 0; i < 16; i++) {
-      const diff = this.bytes[i] - other.bytes[i];
-      if (diff !== 0) {
-        return Math.sign(diff);
-      }
-    }
-    return 0;
-  }
+const byteToHex = [];
+for (let i = 0; i < 256; ++i) {
+  byteToHex.push((i + 256).toString(16).slice(1));
 }
-class V7Generator {
-  timestamp = 0;
-  counter = 0;
-  /** The random number generator used by the generator. */
-  random;
-  /**
-   * Creates a generator object with the default random number generator, or
-   * with the specified one if passed as an argument. The specified random
-   * number generator should be cryptographically strong and securely seeded.
-   */
-  constructor(randomNumberGenerator) {
-    this.random = randomNumberGenerator ?? getDefaultRandom();
-  }
-  /**
-   * Generates a new UUIDv7 object from the current timestamp, or resets the
-   * generator upon significant timestamp rollback.
-   *
-   * This method returns a monotonically increasing UUID by reusing the previous
-   * timestamp even if the up-to-date timestamp is smaller than the immediately
-   * preceding UUID's. However, when such a clock rollback is considered
-   * significant (i.e., by more than ten seconds), this method resets the
-   * generator and returns a new UUID based on the given timestamp, breaking the
-   * increasing order of UUIDs.
-   *
-   * See {@link generateOrAbort} for the other mode of generation and
-   * {@link generateOrResetCore} for the low-level primitive.
-   */
-  generate() {
-    return this.generateOrResetCore(Date.now(), 1e4);
-  }
-  /**
-   * Generates a new UUIDv7 object from the current timestamp, or returns
-   * `undefined` upon significant timestamp rollback.
-   *
-   * This method returns a monotonically increasing UUID by reusing the previous
-   * timestamp even if the up-to-date timestamp is smaller than the immediately
-   * preceding UUID's. However, when such a clock rollback is considered
-   * significant (i.e., by more than ten seconds), this method aborts and
-   * returns `undefined` immediately.
-   *
-   * See {@link generate} for the other mode of generation and
-   * {@link generateOrAbortCore} for the low-level primitive.
-   */
-  generateOrAbort() {
-    return this.generateOrAbortCore(Date.now(), 1e4);
-  }
-  /**
-   * Generates a new UUIDv7 object from the `unixTsMs` passed, or resets the
-   * generator upon significant timestamp rollback.
-   *
-   * This method is equivalent to {@link generate} except that it takes a custom
-   * timestamp and clock rollback allowance.
-   *
-   * @param rollbackAllowance - The amount of `unixTsMs` rollback that is
-   * considered significant. A suggested value is `10_000` (milliseconds).
-   * @throws RangeError if `unixTsMs` is not a 48-bit positive integer.
-   */
-  generateOrResetCore(unixTsMs, rollbackAllowance) {
-    let value = this.generateOrAbortCore(unixTsMs, rollbackAllowance);
-    if (value === void 0) {
-      this.timestamp = 0;
-      value = this.generateOrAbortCore(unixTsMs, rollbackAllowance);
-    }
-    return value;
-  }
-  /**
-   * Generates a new UUIDv7 object from the `unixTsMs` passed, or returns
-   * `undefined` upon significant timestamp rollback.
-   *
-   * This method is equivalent to {@link generateOrAbort} except that it takes a
-   * custom timestamp and clock rollback allowance.
-   *
-   * @param rollbackAllowance - The amount of `unixTsMs` rollback that is
-   * considered significant. A suggested value is `10_000` (milliseconds).
-   * @throws RangeError if `unixTsMs` is not a 48-bit positive integer.
-   */
-  generateOrAbortCore(unixTsMs, rollbackAllowance) {
-    const MAX_COUNTER = 4398046511103;
-    if (!Number.isInteger(unixTsMs) || unixTsMs < 1 || unixTsMs > 281474976710655) {
-      throw new RangeError("`unixTsMs` must be a 48-bit positive integer");
-    } else if (rollbackAllowance < 0 || rollbackAllowance > 281474976710655) {
-      throw new RangeError("`rollbackAllowance` out of reasonable range");
-    }
-    if (unixTsMs > this.timestamp) {
-      this.timestamp = unixTsMs;
-      this.resetCounter();
-    } else if (unixTsMs + rollbackAllowance >= this.timestamp) {
-      this.counter++;
-      if (this.counter > MAX_COUNTER) {
-        this.timestamp++;
-        this.resetCounter();
-      }
-    } else {
-      return void 0;
-    }
-    return UUID.fromFieldsV7(this.timestamp, Math.trunc(this.counter / 2 ** 30), this.counter & 2 ** 30 - 1, this.random.nextUint32());
-  }
-  /** Initializes the counter at a 42-bit random integer. */
-  resetCounter() {
-    this.counter = this.random.nextUint32() * 1024 + (this.random.nextUint32() & 1023);
-  }
-  /**
-   * Generates a new UUIDv4 object utilizing the random number generator inside.
-   *
-   * @internal
-   */
-  generateV4() {
-    const bytes = new Uint8Array(Uint32Array.of(this.random.nextUint32(), this.random.nextUint32(), this.random.nextUint32(), this.random.nextUint32()).buffer);
-    bytes[6] = 64 | bytes[6] >>> 4;
-    bytes[8] = 128 | bytes[8] >>> 2;
-    return UUID.ofInner(bytes);
-  }
+function unsafeStringify(arr, offset = 0) {
+  return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
 }
-const getDefaultRandom = () => {
-  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues !== "undefined") {
-    return new BufferedCryptoRandom();
+let getRandomValues;
+const rnds8 = new Uint8Array(16);
+function rng() {
+  if (!getRandomValues) {
+    if (typeof crypto === "undefined" || !crypto.getRandomValues) {
+      throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
+    }
+    getRandomValues = crypto.getRandomValues.bind(crypto);
+  }
+  return getRandomValues(rnds8);
+}
+const _state = {};
+function v7(options, buf2, offset) {
+  let bytes;
+  {
+    const now = Date.now();
+    const rnds = rng();
+    updateV7State(_state, now, rnds);
+    bytes = v7Bytes(rnds, _state.msecs, _state.seq, buf2, offset);
+  }
+  return unsafeStringify(bytes);
+}
+function updateV7State(state, now, rnds) {
+  state.msecs ??= -Infinity;
+  state.seq ??= 0;
+  if (now > state.msecs) {
+    state.seq = rnds[6] << 23 | rnds[7] << 16 | rnds[8] << 8 | rnds[9];
+    state.msecs = now;
   } else {
-    if (typeof UUIDV7_DENY_WEAK_RNG !== "undefined" && UUIDV7_DENY_WEAK_RNG) {
-      throw new Error("no cryptographically strong RNG available");
+    state.seq = state.seq + 1 | 0;
+    if (state.seq === 0) {
+      state.msecs++;
     }
-    return {
-      nextUint32: () => Math.trunc(Math.random() * 65536) * 65536 + Math.trunc(Math.random() * 65536)
-    };
   }
-};
-class BufferedCryptoRandom {
-  buffer = new Uint32Array(8);
-  cursor = 65535;
-  nextUint32() {
-    if (this.cursor >= this.buffer.length) {
-      crypto.getRandomValues(this.buffer);
-      this.cursor = 0;
-    }
-    return this.buffer[this.cursor++];
-  }
+  return state;
 }
-let defaultGenerator;
-const uuidv7 = () => uuidv7obj().toString();
-const uuidv7obj = () => (defaultGenerator || (defaultGenerator = new V7Generator())).generate();
+function v7Bytes(rnds, msecs, seq, buf2, offset = 0) {
+  if (rnds.length < 16) {
+    throw new Error("Random bytes length must be >= 16");
+  }
+  if (!buf2) {
+    buf2 = new Uint8Array(16);
+    offset = 0;
+  } else {
+    if (offset < 0 || offset + 16 > buf2.length) {
+      throw new RangeError(`UUID byte range ${offset}:${offset + 15} is out of buffer bounds`);
+    }
+  }
+  msecs ??= Date.now();
+  seq ??= rnds[6] * 127 << 24 | rnds[7] << 16 | rnds[8] << 8 | rnds[9];
+  buf2[offset++] = msecs / 1099511627776 & 255;
+  buf2[offset++] = msecs / 4294967296 & 255;
+  buf2[offset++] = msecs / 16777216 & 255;
+  buf2[offset++] = msecs / 65536 & 255;
+  buf2[offset++] = msecs / 256 & 255;
+  buf2[offset++] = msecs & 255;
+  buf2[offset++] = 112 | seq >>> 28 & 15;
+  buf2[offset++] = seq >>> 20 & 255;
+  buf2[offset++] = 128 | seq >>> 14 & 63;
+  buf2[offset++] = seq >>> 6 & 255;
+  buf2[offset++] = seq << 2 & 255 | rnds[10] & 3;
+  buf2[offset++] = rnds[11];
+  buf2[offset++] = rnds[12];
+  buf2[offset++] = rnds[13];
+  buf2[offset++] = rnds[14];
+  buf2[offset++] = rnds[15];
+  return buf2;
+}
 const ERROR_CODES = {
   // Bridge Manager Errors (7000-7099)
   BRIDGE_NOT_INITIALIZED: 7e3,
@@ -29714,6 +29457,7 @@ class BridgeManager {
   lastEventId;
   storageKey = "bridge_last_event_id";
   walletKitConfig;
+  jsBridgeTransport;
   // Event processing queue and concurrency control
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   eventQueue = [];
@@ -29746,6 +29490,9 @@ class BridgeManager {
     this.eventRouter = eventRouter;
     this.analyticsApi = analyticsApi;
     this.walletKitConfig = walletKitConfig;
+    this.jsBridgeTransport = config?.jsBridgeTransport ?? (async (sessionId, message) => {
+      await chrome.tabs.sendMessage(parseInt(sessionId), message);
+    });
   }
   /**
    * Initialize bridge connection
@@ -29844,14 +29591,19 @@ class BridgeManager {
   }
   async sendJsBridgeResponse(sessionId, _isJsBridge, requestId, response, options) {
     const source = this.config.jsBridgeKey + "-tonconnect";
-    chrome.tabs.sendMessage(parseInt(sessionId), {
+    const message = {
       type: "TONCONNECT_BRIDGE_RESPONSE",
       source,
       messageId: requestId,
       success: true,
       payload: response,
       traceId: options?.traceId
-    });
+    };
+    if (this.jsBridgeTransport) {
+      await this.jsBridgeTransport(sessionId, message);
+    } else {
+      await chrome.tabs.sendMessage(parseInt(sessionId), message);
+    }
   }
   /**
    * Close bridge connection
@@ -29898,7 +29650,7 @@ class BridgeManager {
     if (!this.config.bridgeUrl) {
       return;
     }
-    const connectTraceId = uuidv7();
+    const connectTraceId = v7();
     try {
       const clients = await this.getClients();
       if (clients.length === 0) {
@@ -29914,7 +29666,7 @@ class BridgeManager {
           subsystem: getEventsSubsystem(),
           bridge_url: this.config.bridgeUrl,
           client_timestamp: getUnixtime(),
-          event_id: uuidv7(),
+          event_id: v7(),
           network_id: this.walletKitConfig.network,
           trace_id: connectTraceId,
           version: getVersion()
@@ -29934,7 +29686,7 @@ class BridgeManager {
               subsystem: getEventsSubsystem(),
               bridge_url: this.config.bridgeUrl,
               error_message: error2?.toString() || "Unknown error",
-              event_id: uuidv7(),
+              event_id: v7(),
               trace_id: error2?.traceId ?? connectTraceId,
               version: getVersion(),
               client_id: error2?.clientId,
@@ -29959,7 +29711,7 @@ class BridgeManager {
           subsystem: getEventsSubsystem(),
           bridge_url: this.config.bridgeUrl,
           client_timestamp: getUnixtime(),
-          event_id: uuidv7(),
+          event_id: v7(),
           network_id: this.walletKitConfig.network,
           trace_id: connectTraceId,
           version: getVersion()
@@ -29974,7 +29726,7 @@ class BridgeManager {
           subsystem: getEventsSubsystem(),
           bridge_url: this.config.bridgeUrl,
           error_message: error2?.toString() || "Unknown error",
-          event_id: uuidv7(),
+          event_id: v7(),
           trace_id: error2?.traceId ?? connectTraceId,
           version: getVersion(),
           client_id: error2?.clientId,
@@ -30035,7 +29787,7 @@ class BridgeManager {
       return;
     }
     if (!event.traceId) {
-      event.traceId = uuidv7();
+      event.traceId = v7();
     }
     if (event.method == "connect") {
       this.eventQueue.push({
@@ -30118,7 +29870,7 @@ class BridgeManager {
         traceId: event?.traceId
       };
       if (!rawEvent.traceId) {
-        rawEvent.traceId = uuidv7();
+        rawEvent.traceId = v7();
       }
       await this.sessionManager.initialize();
       if (rawEvent.from) {
@@ -30240,14 +29992,17 @@ class ConnectHandler extends BasicHandler {
   async handle(event) {
     const manifestUrl = this.extractManifestUrl(event);
     let manifest = null;
+    let manifestFetchErrorCode = void 0;
     if (manifestUrl) {
       try {
-        manifest = await this.fetchManifest(manifestUrl);
+        const result = await this.fetchManifest(manifestUrl);
+        manifest = result.manifest;
+        manifestFetchErrorCode = result.manifestFetchErrorCode;
       } catch (error2) {
         log$e.warn("Failed to fetch manifest", { error: error2 });
       }
     }
-    const preview = this.createPreview(event, manifestUrl, manifest);
+    const preview = this.createPreview(event, manifestUrl, manifest, manifestFetchErrorCode);
     const connectEvent = {
       ...event,
       id: event.id,
@@ -30265,7 +30020,7 @@ class ConnectHandler extends BasicHandler {
     this.analyticsApi?.sendEvents([
       {
         event_name: "wallet-connect-request-received",
-        trace_id: event.traceId ?? uuidv7(),
+        trace_id: event.traceId ?? v7(),
         client_environment: "wallet",
         subsystem: getEventsSubsystem(),
         client_id: event.from,
@@ -30273,7 +30028,7 @@ class ConnectHandler extends BasicHandler {
         is_ton_addr: event.params?.items?.some((item) => item.name === "ton_addr") || false,
         is_ton_proof: event.params?.items?.some((item) => item.name === "ton_proof") || false,
         client_timestamp: getUnixtime(),
-        event_id: uuidv7(),
+        event_id: v7(),
         // network_id: event.network,
         version: getVersion(),
         proof_payload_size: event.params?.items?.some((item) => item.name === "ton_proof") ? event.params?.items?.find((item) => item.name === "ton_proof")?.payload?.length : 0,
@@ -30303,11 +30058,10 @@ class ConnectHandler extends BasicHandler {
   /**
    * Create preview object for connect request
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createPreview(event, manifestUrl, fetchedManifest) {
+  createPreview(event, manifestUrl, fetchedManifest, manifestFetchErrorCode) {
     const eventManifest = event.params?.manifest;
     const manifest = fetchedManifest || eventManifest;
-    const dAppUrl = manifest?.url || manifestUrl || "";
+    const dAppUrl = manifest?.url || "";
     const sanitizedManifest = manifest && {
       name: manifest.name?.toString()?.trim() || "",
       description: manifest.description?.toString()?.trim() || "",
@@ -30338,19 +30092,47 @@ class ConnectHandler extends BasicHandler {
     return {
       manifest: sanitizedManifest,
       requestedItems: event.params?.items || [],
-      permissions
+      permissions,
+      manifestFetchErrorCode: manifestFetchErrorCode ?? void 0
     };
   }
   /**
    * Fetch manifest from URL
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async fetchManifest(manifestUrl) {
-    const response = await fetch(manifestUrl);
-    if (!response.ok) {
-      throw new WalletKitError(ERROR_CODES.API_REQUEST_FAILED, `Failed to fetch manifest: ${response.statusText}`, void 0, { manifestUrl, status: response.status, statusText: response.statusText });
+    try {
+      const parsedUrl = new URL(manifestUrl);
+      if (parsedUrl.host.indexOf(".") === -1) {
+        return {
+          manifest: null,
+          manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_NOT_FOUND_ERROR
+        };
+      }
+    } catch (_) {
+      return {
+        manifest: null,
+        manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_NOT_FOUND_ERROR
+      };
     }
-    return response.json();
+    try {
+      const response = await fetch(manifestUrl);
+      if (!response.ok) {
+        return {
+          manifest: null,
+          manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR
+        };
+      }
+      const result = await response.json();
+      return {
+        manifest: result,
+        manifestFetchErrorCode: void 0
+      };
+    } catch (_) {
+      return {
+        manifest: null,
+        manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR
+      };
+    }
   }
 }
 function ot(t) {
@@ -35682,7 +35464,7 @@ class TransactionHandler extends BasicHandler {
     this.analyticsApi?.sendEvents([
       {
         event_name: "wallet-transaction-request-received",
-        trace_id: event.traceId ?? uuidv7(),
+        trace_id: event.traceId ?? v7(),
         client_environment: "wallet",
         subsystem: getEventsSubsystem(),
         client_id: event.from,
@@ -35692,7 +35474,7 @@ class TransactionHandler extends BasicHandler {
         network_id: this.walletKitConfig.network,
         wallet_app_name: this.walletKitConfig.deviceInfo?.appName,
         wallet_app_version: this.walletKitConfig.deviceInfo?.appVersion,
-        event_id: uuidv7(),
+        event_id: v7(),
         // manifest_json_url: event.dAppInfo?.url, // todo
         origin_url: event.dAppInfo?.url,
         wallet_id: Base64Normalize(event.walletAddress)
@@ -46216,7 +45998,7 @@ class SignDataHandler extends BasicHandler {
     this.analyticsApi?.sendEvents([
       {
         event_name: "wallet-sign-data-request-received",
-        trace_id: event.traceId ?? uuidv7(),
+        trace_id: event.traceId ?? v7(),
         client_environment: "wallet",
         subsystem: getEventsSubsystem(),
         client_id: event.from,
@@ -46227,7 +46009,7 @@ class SignDataHandler extends BasicHandler {
         network_id: this.walletKitConfig.network,
         wallet_app_name: this.walletKitConfig.deviceInfo?.appName,
         wallet_app_version: this.walletKitConfig.deviceInfo?.appVersion,
-        event_id: uuidv7(),
+        event_id: v7(),
         // manifest_json_url: event.dAppInfo?.url, // todo
         origin_url: event.dAppInfo?.url
       }
@@ -46695,7 +46477,7 @@ class RequestProcessor {
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-            event_id: uuidv7(),
+            event_id: v7(),
             origin_url: event.dAppInfo?.url,
             dapp_name: event.dAppInfo?.name,
             client_id: event.from,
@@ -46720,7 +46502,7 @@ class RequestProcessor {
             is_ton_proof: event.request.some((item) => item.name === "ton_proof"),
             manifest_json_url: event.preview.manifest?.url,
             proof_payload_size: event.request.find((item) => item.name === "ton_proof")?.payload?.length,
-            event_id: uuidv7(),
+            event_id: v7(),
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion
@@ -46749,7 +46531,7 @@ class RequestProcessor {
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-            event_id: uuidv7(),
+            event_id: v7(),
             client_id: event.from,
             is_ton_addr: event.result.response.payload.items.some((item) => item.name === "ton_addr"),
             is_ton_proof: event.result.response.payload.items.some((item) => item.name === "ton_proof"),
@@ -46774,7 +46556,7 @@ class RequestProcessor {
             is_ton_proof: event.result.response.payload.items.some((item) => item.name === "ton_proof"),
             manifest_json_url: event.result.dAppUrl,
             proof_payload_size: event.result.response.payload.items.find((item) => item.name === "ton_proof")?.proof?.payload?.length,
-            event_id: uuidv7(),
+            event_id: v7(),
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion
@@ -46794,7 +46576,7 @@ class RequestProcessor {
   /**
    * Process connect request rejection
    */
-  async rejectConnectRequest(event, reason) {
+  async rejectConnectRequest(event, reason, errorCode) {
     try {
       log$a.info("Connect request rejected", {
         id: event.id,
@@ -46803,9 +46585,10 @@ class RequestProcessor {
       });
       const response = {
         event: "connect_error",
-        id: parseInt(event.id || ""),
+        id: 1,
+        // parseInt(event.id || '') ?? 1,
         payload: {
-          code: CONNECT_EVENT_ERROR_CODES.USER_REJECTS_ERROR,
+          code: errorCode ?? CONNECT_EVENT_ERROR_CODES.USER_REJECTS_ERROR,
           message: reason || "User rejected connection"
         }
       };
@@ -46822,7 +46605,7 @@ class RequestProcessor {
           dapp_name: event.preview.manifest?.name || "",
           origin_url: event.preview.manifest?.url || "",
           manifest_json_url: event.preview.manifest?.url || "",
-          event_id: uuidv7(),
+          event_id: v7(),
           client_timestamp: getUnixtime(),
           version: getVersion(),
           network_id: this.walletKitOptions.network,
@@ -46841,7 +46624,7 @@ class RequestProcessor {
           dapp_name: event.preview.manifest?.name || "",
           origin_url: event.preview.manifest?.url || "",
           manifest_json_url: event.preview.manifest?.url || "",
-          event_id: uuidv7(),
+          event_id: v7(),
           client_timestamp: getUnixtime(),
           version: getVersion(),
           network_id: this.walletKitOptions.network,
@@ -46879,7 +46662,7 @@ class RequestProcessor {
             trace_id: event.traceId,
             client_environment: "wallet",
             subsystem: getEventsSubsystem(),
-            event_id: uuidv7(),
+            event_id: v7(),
             client_timestamp: getUnixtime(),
             version: getVersion(),
             network_id: this.walletKitOptions.network,
@@ -46914,7 +46697,7 @@ class RequestProcessor {
             subsystem: getEventsSubsystem(),
             dapp_name: event.dAppInfo?.name,
             origin_url: event.dAppInfo?.url,
-            event_id: uuidv7(),
+            event_id: v7(),
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
@@ -46928,7 +46711,7 @@ class RequestProcessor {
             trace_id: event.traceId,
             client_environment: "wallet",
             subsystem: getEventsSubsystem(),
-            event_id: uuidv7(),
+            event_id: v7(),
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
@@ -46978,7 +46761,7 @@ class RequestProcessor {
           subsystem: getEventsSubsystem(),
           dapp_name: event.dAppInfo?.name,
           origin_url: event.dAppInfo?.url,
-          event_id: uuidv7(),
+          event_id: v7(),
           network_id: this.walletKitOptions.network,
           wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
           wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
@@ -47017,7 +46800,7 @@ class RequestProcessor {
             trace_id: event.traceId,
             client_environment: "wallet",
             subsystem: getEventsSubsystem(),
-            event_id: uuidv7(),
+            event_id: v7(),
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
@@ -47031,7 +46814,7 @@ class RequestProcessor {
             trace_id: event.traceId,
             client_environment: "wallet",
             subsystem: getEventsSubsystem(),
-            event_id: uuidv7(),
+            event_id: v7(),
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
@@ -47082,7 +46865,7 @@ class RequestProcessor {
             subsystem: getEventsSubsystem(),
             dapp_name: event.dAppInfo?.name,
             origin_url: event.dAppInfo?.url,
-            event_id: uuidv7(),
+            event_id: v7(),
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
@@ -47098,7 +46881,7 @@ class RequestProcessor {
             subsystem: getEventsSubsystem(),
             dapp_name: event.dAppInfo?.name,
             origin_url: event.dAppInfo?.url,
-            event_id: uuidv7(),
+            event_id: v7(),
             network_id: this.walletKitOptions.network,
             wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
             wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
@@ -47138,7 +46921,7 @@ class RequestProcessor {
           subsystem: getEventsSubsystem(),
           dapp_name: event.dAppInfo?.name,
           origin_url: event.dAppInfo?.url,
-          event_id: uuidv7(),
+          event_id: v7(),
           network_id: this.walletKitOptions.network,
           wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
           wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
@@ -67539,9 +67322,9 @@ class TonWalletKit {
     await this.ensureInitialized();
     return this.requestProcessor.approveConnectRequest(event);
   }
-  async rejectConnectRequest(event, reason) {
+  async rejectConnectRequest(event, reason, errorCode) {
     await this.ensureInitialized();
-    return this.requestProcessor.rejectConnectRequest(event, reason);
+    return this.requestProcessor.rejectConnectRequest(event, reason, errorCode);
   }
   async approveTransactionRequest(event) {
     await this.ensureInitialized();
@@ -69768,13 +69551,13 @@ function requireSrc() {
     return wordlist2[0] === "あいこくしん" ? words.join("　") : words.join(" ");
   }
   src.entropyToMnemonic = entropyToMnemonic;
-  function generateMnemonic(strength, rng, wordlist2) {
+  function generateMnemonic(strength, rng2, wordlist2) {
     strength = strength || 128;
     if (strength % 32 !== 0) {
       throw new TypeError(INVALID_ENTROPY);
     }
-    rng = rng || ((size) => Buffer.from(utils_1.randomBytes(size)));
-    return entropyToMnemonic(rng(strength / 8), wordlist2);
+    rng2 = rng2 || ((size) => Buffer.from(utils_1.randomBytes(size)));
+    return entropyToMnemonic(rng2(strength / 8), wordlist2);
   }
   src.generateMnemonic = generateMnemonic;
   function validateMnemonic(mnemonic2, wordlist2) {
@@ -70292,6 +70075,13 @@ window.initWalletKit = (configuration, storage) => __async(null, null, function*
           console.error("❌ Failed to get jettons:", error2);
           throw error2;
         }
+      });
+    },
+    sendTransaction(wallet, transaction) {
+      return __async(this, null, function* () {
+        if (!initialized) throw new Error("WalletKit Bridge not initialized");
+        console.log("🪙 Bridge: Sending transaction:", transaction);
+        yield walletKit.handleNewTransaction(wallet, transaction);
       });
     }
   };

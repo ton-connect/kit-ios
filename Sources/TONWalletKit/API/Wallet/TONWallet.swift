@@ -46,23 +46,28 @@ public class TONWallet: TONWalletProtocol {
         try await wallet.getBalance()
     }
     
-    public func transferTON(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent {
+    public func transferTONTransaction(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent {
         try await wallet.createTransferTonTransaction(message)
     }
     
-    public func transferTON(messages: [TONTransferMessage]) async throws -> TONConnectTransactionParamContent {
+    public func transferTONTransaction(messages: [TONTransferMessage]) async throws -> TONConnectTransactionParamContent {
         try await wallet.createTransferMultiTonTransaction(TONTransferManyParams(messages: messages))
     }
     
-    public func transactionPreview(data: TONConnectTransactionParamContent) async throws -> TONTransactionPreview {
-        try await wallet.getTransactionPreview(data)
+    public func send(transaction: TONConnectTransactionParamContent) async throws {
+        // TODO: Small hack, remove after send method moved to wallet object
+        try await wallet.jsContext.walletKit.sendTransaction(AnyJSValueEncodable(wallet), transaction)
     }
     
-    public func transferNFT(parameters: TONNFTTransferParamsHuman) async throws -> TONConnectTransactionParamContent {
+    public func preview(transaction: TONConnectTransactionParamContent) async throws -> TONTransactionPreview {
+        try await wallet.getTransactionPreview(transaction)
+    }
+    
+    public func transferNFTTransaction(parameters: TONNFTTransferParamsHuman) async throws -> TONConnectTransactionParamContent {
         try await wallet.createTransferNftTransaction(parameters)
     }
     
-    public func transferNFT(rawParameters: TONNFTTransferParamsRaw) async throws -> TONConnectTransactionParamContent {
+    public func transferNFTTransaction(rawParameters: TONNFTTransferParamsRaw) async throws -> TONConnectTransactionParamContent {
         try await wallet.createTransferNftRawTransaction(rawParameters)
     }
     

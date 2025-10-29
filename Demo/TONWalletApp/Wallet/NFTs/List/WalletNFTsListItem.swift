@@ -1,8 +1,9 @@
-//  TONNFTCollection.swift
-//  TONWalletKit
 //
-//  Created by Nikita Rodionov on 14.10.2025.
+//  WalletNFTsListItem.swift
+//  TONWalletApp
 //
+//  Created by Nikita Rodionov on 29.10.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,28 +25,21 @@
 //  SOFTWARE.
 
 import Foundation
+import TONWalletKit
 
-public struct TONNFTCollection: Codable {
-    public let address: String
-    public let codeHash: String?
-    public let dataHash: String?
-    public let lastTransactionLt: String?
-    public let nextItemIndex: String?
-    public let ownerAddress: String?
+struct WalletNFTsListItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let address: String
+    let imageURL: URL?
     
-    public init(
-        address: String,
-        codeHash: String?,
-        dataHash: String?,
-        lastTransactionLt: String?,
-        nextItemIndex: String?,
-        ownerAddress: String?
-    ) {
-        self.address = address
-        self.codeHash = codeHash
-        self.dataHash = dataHash
-        self.lastTransactionLt = lastTransactionLt
-        self.nextItemIndex = nextItemIndex
-        self.ownerAddress = ownerAddress
+    let tonNFT: TONNFTItem
+    
+    init(nft: TONNFTItem) {
+        self.tonNFT = nft
+        
+        self.name = nft.metadata?.name ?? "Unknown NFT"
+        self.address = nft.address
+        self.imageURL = nft.metadata?.image.flatMap { URL(string: $0) }
     }
 }
