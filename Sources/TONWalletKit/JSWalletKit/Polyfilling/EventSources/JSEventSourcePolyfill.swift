@@ -12,10 +12,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -153,14 +153,13 @@ public class JSEventSourcePolyfill: JSPolyfill {
             """
             
         case .event(let eventData):
-            let data = eventData.data?.replacingOccurrences(of: "\", with: "\\")
-                .replacingOccurrences(of: "'", with: "\'")
-                .replacingOccurrences(of: "
-", with: "\n")
-                .replacingOccurrences(of: "", with: "\r") ?? ""
+            let data = eventData.data?.replacingOccurrences(of: "\\", with: "\\\\")
+                .replacingOccurrences(of: "'", with: "\\'")
+                .replacingOccurrences(of: "\n", with: "\\n")
+                .replacingOccurrences(of: "\r", with: "\\r") ?? ""
             
-            let eventType = eventData.event?.replacingOccurrences(of: "'", with: "\'") ?? "message"
-            let eventId = eventData.id?.replacingOccurrences(of: "'", with: "\'") ?? ""
+            let eventType = eventData.event?.replacingOccurrences(of: "'", with: "\\'") ?? "message"
+            let eventId = eventData.id?.replacingOccurrences(of: "'", with: "\\'") ?? ""
             
             script = """
                 if (window.eventSourceInstances && window.eventSourceInstances['\(eventSourceID)']) {
@@ -169,7 +168,7 @@ public class JSEventSourcePolyfill: JSPolyfill {
             """
             
         case .error(let error):
-            let errorMessage = error.localizedDescription.replacingOccurrences(of: "'", with: "\'")
+            let errorMessage = error.localizedDescription.replacingOccurrences(of: "'", with: "\\'")
             script = """
                 if (window.eventSourceInstances && window.eventSourceInstances['\(eventSourceID)']) {
                     window.eventSourceInstances['\(eventSourceID)']._handleError(new Error('\(errorMessage)'));
@@ -201,7 +200,7 @@ public class JSEventSourcePolyfill: JSPolyfill {
         eventSourceID: String,
         error: Error
     ) async {
-        let errorMessage = error.localizedDescription.replacingOccurrences(of: "'", with: "\'")
+        let errorMessage = error.localizedDescription.replacingOccurrences(of: "'", with: "\\'")
         let script = """
             if (window.eventSourceInstances && window.eventSourceInstances['\(eventSourceID)']) {
                 window.eventSourceInstances['\(eventSourceID)']._handleError(new Error('\(errorMessage)'));
