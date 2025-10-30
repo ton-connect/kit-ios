@@ -46,6 +46,9 @@ struct WalletView: View {
                 
                 WalletNFTsListView(viewModel: viewModel.nftsViewModel())
                     .widget()
+                
+                WalletJettonsListView(viewModel: viewModel.jettonsViewModel())
+                    .widget()
             }
             .padding(16.0)
             .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -69795,6 +69795,9 @@ window.initWalletKit = (configuration, storage) => __async(null, null, function*
     isReady() {
       return initialized && walletKit;
     },
+    jettonsManager() {
+      return walletKit.jettons;
+    },
     setEventsListeners(callback) {
       if (!initialized) throw new Error("WalletKit Bridge not initialized");
       console.log("🔔 Bridge: Adding event listeners");

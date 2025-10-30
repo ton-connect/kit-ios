@@ -78,15 +78,28 @@ public class TONWallet: TONWalletProtocol {
         try await wallet.getNft(address)
     }
     
-    public func transferJetton(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent {
+    public func transferJettonTransaction(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent {
         try await wallet.createTransferJettonTransaction(parameters)
     }
-    
-    public func jettonBalance(jettonAddress: String) async throws -> String {
-        try await wallet.getJettonBalance(jettonAddress)
-    }
-    
-    public func jettonWalletAddress(jettonAddress: String) async throws -> String {
-        try await wallet.getJettonWalletAddress(jettonAddress)
+
+    public func jettonsWallets(limit: TONLimitRequest) async throws -> TONJettonWallets {
+        // TODO: Remove this hack after JettonInfo is added into JettonWallet on JS side
+        var wallets: TONJettonWallets = try await wallet.getJettons(limit)
+        var items: [TONJettonWallet] = []
+        
+        for var wallet in wallets.items {
+            guard let jettonAddress = wallet.jettonAddress else {
+                items.append(wallet)
+                continue
+            }
+            
+            let jetton: TONJetton = try await self.wallet.jsContext.walletKit.jettonsManager().getJettonInfo(jettonAddress)
+            
+            wallet.jetton = jetton
+
+            items.append(wallet)
+        }
+        wallets.items = items
+        return wallets
     }
 }

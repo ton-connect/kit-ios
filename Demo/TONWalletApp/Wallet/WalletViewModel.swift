@@ -56,6 +56,10 @@ class WalletViewModel: Identifiable, ObservableObject {
         return WalletNFTsListViewModel(wallet: tonWallet)
     }
     
+    func jettonsViewModel() -> WalletJettonsListViewModel {
+        return WalletJettonsListViewModel(wallet: tonWallet)
+    }
+    
     func remove() {
         do {
             try storage.remove(walletAddress: tonWallet.address)

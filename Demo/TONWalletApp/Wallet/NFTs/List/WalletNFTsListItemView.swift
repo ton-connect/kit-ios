@@ -90,8 +90,6 @@ struct WalletNFTsListItemView: View {
                     .foregroundColor(Color.TON.gray400)
                     .textSM()
             }
-            .padding(.horizontal, AppSpacing.spacing(4))
-            .padding(.vertical, AppSpacing.spacing(3))
         }
         .buttonStyle(PlainButtonStyle())
         .sheet(item: $detailsViewModel) { details in

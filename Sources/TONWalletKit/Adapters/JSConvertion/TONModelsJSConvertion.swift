@@ -38,6 +38,9 @@ extension TONConnectRequestEvent: JSValueDecodable {}
 extension TONSignDataRequestEvent: JSValueDecodable {}
 extension TONTransactionRequestEvent: JSValueDecodable {}
 extension TONDisconnectEvent: JSValueDecodable {}
+extension TONJettonWallets: JSValueDecodable {}
+extension TONJettonWallet: JSValueDecodable {}
+extension TONJetton: JSValueDecodable {}
 
 extension TONTransferMessage: JSValueEncodable {}
 extension TONTransferManyParams: JSValueEncodable {}
