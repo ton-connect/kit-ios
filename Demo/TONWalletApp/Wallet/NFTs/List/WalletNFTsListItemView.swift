@@ -29,10 +29,21 @@ import TONWalletKit
 
 struct WalletNFTsListItemView: View {
     let nftItem: WalletNFTsListItem
-    let onTap: () -> Void
+    let onRemove: (WalletNFTsListItem) -> Void
+    
+    @State private var detailsViewModel: WalletNFTDetailsViewModel?
     
     var body: some View {
-        Button(action: onTap) {
+        Button(
+            action: {
+                detailsViewModel = WalletNFTDetailsViewModel(
+                    wallet: nftItem.wallet,
+                    nft: nftItem.tonNFT,
+                    onRemove: {
+                        onRemove(nftItem)
+                    }
+                )
+            }) {
             HStack(spacing: AppSpacing.spacing(3)) {
                 // NFT Image
                 let placeholder = Rectangle()
@@ -83,6 +94,10 @@ struct WalletNFTsListItemView: View {
             .padding(.vertical, AppSpacing.spacing(3))
         }
         .buttonStyle(PlainButtonStyle())
+        .sheet(item: $detailsViewModel) { details in
+            WalletNFTDetailsView(viewModel: details)
+                .presentationDragIndicator(.visible)
+        }
     }
     
     private func formatAddress(_ address: String) -> String {

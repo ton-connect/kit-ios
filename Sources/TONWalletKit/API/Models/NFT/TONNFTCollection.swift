@@ -27,25 +27,14 @@ import Foundation
 
 public struct TONNFTCollection: Codable {
     public let address: String
-    public let codeHash: String?
-    public let dataHash: String?
-    public let lastTransactionLt: String?
+    public let name: String?
     public let nextItemIndex: String?
+    public let image: String?
+    public let description: String?
+    public let collectionContent: [String: String]?
+    public let codeHash: TONHex?
+    public let dataHash: TONHex?
+    public let lastTransactionLt: String?
     public let ownerAddress: String?
-    
-    public init(
-        address: String,
-        codeHash: String?,
-        dataHash: String?,
-        lastTransactionLt: String?,
-        nextItemIndex: String?,
-        ownerAddress: String?
-    ) {
-        self.address = address
-        self.codeHash = codeHash
-        self.dataHash = dataHash
-        self.lastTransactionLt = lastTransactionLt
-        self.nextItemIndex = nextItemIndex
-        self.ownerAddress = ownerAddress
-    }
+    public let extra: [String: AnyCodable]?
 }

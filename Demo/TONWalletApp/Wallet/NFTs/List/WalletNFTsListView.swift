@@ -45,7 +45,7 @@ struct WalletNFTsListView: View {
                 LazyVStack(spacing: 8.0) {
                     ForEach(viewModel.nfts) { item in
                         WalletNFTsListItemView(nftItem: item) {
-                            viewModel.showDetails(item: item)
+                            viewModel.remove(nft: $0)
                         }
                     }
                 }
@@ -66,10 +66,6 @@ struct WalletNFTsListView: View {
         .frame(maxWidth: .infinity)
         .task { [weak viewModel] in
             await viewModel?.loadNFTs()
-        }
-        .sheet(item: $viewModel.details) { details in
-            WalletNFTDetailsView(viewModel: details)
-                .presentationDragIndicator(.visible)
         }
     }
 }

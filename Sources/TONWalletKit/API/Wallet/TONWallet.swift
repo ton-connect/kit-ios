@@ -55,8 +55,7 @@ public class TONWallet: TONWalletProtocol {
     }
     
     public func send(transaction: TONConnectTransactionParamContent) async throws {
-        // TODO: Small hack, remove after send method moved to wallet object
-        try await wallet.jsContext.walletKit.sendTransaction(AnyJSValueEncodable(wallet), transaction)
+        try await wallet.sendTransaction(transaction)
     }
     
     public func preview(transaction: TONConnectTransactionParamContent) async throws -> TONTransactionPreview {

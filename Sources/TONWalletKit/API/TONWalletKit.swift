@@ -102,6 +102,24 @@ public class TONWalletKit {
         let wallet = TONWalletJSAdapter(context: context, wallet: walletAdapter)
         return try await add(wallet, walletAdapter.version)
     }
+    
+    public func wallets() throws -> [any TONWalletProtocol] {
+        let value: JSValue = try context.walletKit.getWallets()
+        let jsWallets = value.toArray().compactMap { JSValue(object: $0, in: context) }
+        
+        var wallets: [TONWallet] = []
+        
+        for jsWallet in jsWallets {
+            let wallet = TONWallet(
+                wallet: jsWallet,
+                address: try jsWallet.getAddress(),
+                version: TONWalletVersion(value: jsWallet.version)
+            )
+            wallets.append(wallet)
+        }
+        return wallets
+    }
+
         
     public func connect(url: String) async throws {
         try await context.walletKit.handleTonConnectUrl(url)

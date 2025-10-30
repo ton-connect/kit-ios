@@ -25,6 +25,7 @@
 //  SOFTWARE.
 
 import Foundation
+import Combine
 import TONWalletKit
 
 @MainActor
@@ -34,17 +35,22 @@ class WalletNFTDetailsViewModel: ObservableObject, Identifiable {
     @Published private(set) var details: WalletNFTDetails
     @Published private(set) var isTransferring = false
     
+    let onRemove: () -> Void
+    
     private let wallet: TONWalletProtocol
     private let nft: TONNFTItem
     
-    init(wallet: TONWalletProtocol, nft: TONNFTItem) {
+    init(wallet: TONWalletProtocol, nft: TONNFTItem, onRemove: @escaping () -> Void) {
         self.wallet = wallet
         self.nft = nft
         self.details = .init(from: nft)
+        self.onRemove = onRemove
     }
     
     func transfer(to address: String) {
         if isTransferring { return }
+        
+        let sameWalletTransfer = address == wallet.address
         
         isTransferring = true
         
@@ -58,6 +64,14 @@ class WalletNFTDetailsViewModel: ObservableObject, Identifiable {
             }
             
             isTransferring = false
+            
+            if !sameWalletTransfer {
+                onRemove()
+            }
         }
+    }
+    
+    func remove() {
+        onRemove()
     }
 }

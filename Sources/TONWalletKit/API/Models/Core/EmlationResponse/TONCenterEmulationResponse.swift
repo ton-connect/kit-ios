@@ -924,8 +924,8 @@ public enum TONEmulationTokenInfo: Codable {
 }
 
 public struct TONEmulationTokenInfoBase: Codable {
-    public let valid: Bool
-    public let type: String
+    public let valid: Bool?
+    public let type: String?
     public let additionalProperties: [String: AnyCodable]?
     
     public init(
@@ -982,12 +982,12 @@ public struct TONEmulationTokenInfoBase: Codable {
 
 public struct TONEmulationTokenInfoMasters: Codable {
     public var type: String = "jetton_masters"
-    public let valid: Bool
-    public let name: String
-    public let symbol: String
-    public let description: String
+    public let valid: Bool?
+    public let name: String?
+    public let symbol: String?
+    public let description: String?
     public let image: String?
-    public let extra: Extra
+    public let extra: Extra?
     
     public init(
         valid: Bool,
@@ -1100,8 +1100,8 @@ public struct TONEmulationTokenInfoMasters: Codable {
 
 public struct TONEmulationTokenInfoWallets: Codable {
     public var type: String = "jetton_wallets"
-    public let valid: Bool
-    public let extra: Extra
+    public let valid: Bool?
+    public let extra: Extra?
     
     public init(
         valid: Bool,

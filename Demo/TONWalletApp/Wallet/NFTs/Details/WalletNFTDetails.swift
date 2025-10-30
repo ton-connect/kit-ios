@@ -45,10 +45,9 @@ struct WalletNFTDetails {
         self.description = nftItem.metadata?.description ?? "No description available"
         self.imageURL = nftItem.metadata?.image.flatMap { URL(string: $0) }
         
-        // TODO: Update when ready in wallet kit
-        self.collectionName = "Unknown Collection"
+        self.collectionName = nftItem.collection?.name ?? "Unknown Collection"
         
-        if let index = nftItem.metadata?.nftIndex {
+        if let index = nftItem.index {
             self.index = "#\(index)"
         } else {
             self.index = "#0"

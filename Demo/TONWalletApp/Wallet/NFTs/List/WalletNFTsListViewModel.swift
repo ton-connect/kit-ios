@@ -32,7 +32,6 @@ final class WalletNFTsListViewModel: ObservableObject {
     @Published private(set) var state: State = .initial
     @Published private(set) var nfts: [WalletNFTsListItem] = []
     @Published private(set) var isLoadingMore = false
-    @Published var details: WalletNFTDetailsViewModel?
     
     private var pagination: TONPagination?
     private let limit = 10
@@ -59,7 +58,7 @@ final class WalletNFTsListViewModel: ObservableObject {
                 state = .empty
             } else {
                 pagination = nfts.pagination
-                self.nfts = nfts.items.map { WalletNFTsListItem(nft: $0) }
+                self.nfts = nfts.items.map { WalletNFTsListItem(nft: $0, wallet: wallet) }
                 state = .nfts
             }
         } catch {
@@ -79,7 +78,7 @@ final class WalletNFTsListViewModel: ObservableObject {
                 let nfts = try await wallet.nfts(limit: TONLimitRequest(limit: limit, offset: pagination.offset))
                 
                 self.pagination = nfts.pagination
-                self.nfts.append(contentsOf: nfts.items.map { WalletNFTsListItem(nft: $0) })
+                self.nfts.append(contentsOf: nfts.items.map { WalletNFTsListItem(nft: $0, wallet: self.wallet) })
             } catch {
                 debugPrint(error)
             }
@@ -87,8 +86,8 @@ final class WalletNFTsListViewModel: ObservableObject {
         }
     }
     
-    func showDetails(item: WalletNFTsListItem) {
-        self.details = WalletNFTDetailsViewModel(wallet: wallet, nft: item.tonNFT)
+    func remove(nft: WalletNFTsListItem) {
+        nfts.removeAll { $0.id == nft.id }
     }
 }
 
