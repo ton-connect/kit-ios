@@ -42,7 +42,7 @@ public protocol TONWalletProtocol {
     var address: String { get }
     var version: TONWalletVersion { get }
     
-    func balance() async throws -> TONBalance?
+    func balance() async throws -> TONBalance
     
     func transferTONTransaction(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent
     func transferTONTransaction(messages: [TONTransferMessage]) async throws -> TONConnectTransactionParamContent
@@ -56,7 +56,7 @@ public protocol TONWalletProtocol {
     func nfts(limit: TONLimitRequest) async throws -> TONNFTItems
     func nft(address: String) async throws -> TONNFTItem
     
-    func jettonBalance(jettonAddress: String) async throws -> TONBalance?
+    func jettonBalance(jettonAddress: String) async throws -> TONBalance
     func jettonWalletAddress(jettonAddress: String) async throws -> String
     
     func transferJettonTransaction(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent

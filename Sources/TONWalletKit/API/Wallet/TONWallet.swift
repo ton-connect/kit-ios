@@ -43,10 +43,8 @@ public class TONWallet: TONWalletProtocol {
         self.version = version
     }
     
-    public func balance() async throws -> TONBalance? {
-        let balance: String = try await wallet.getBalance()
-        let bigInt = BigInt(balance)
-        return bigInt.flatMap { TONBalance(nanoUnits: $0) }
+    public func balance() async throws -> TONBalance {
+        try await wallet.getBalance()
     }
     
     public func transferTONTransaction(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent {
@@ -81,10 +79,8 @@ public class TONWallet: TONWalletProtocol {
         try await wallet.getNft(address)
     }
     
-    public func jettonBalance(jettonAddress: String) async throws -> TONBalance? {
-        let balance: String = try await wallet.getJettonBalance(jettonAddress)
-        let bigInt = BigInt(balance)
-        return bigInt.flatMap { TONBalance(nanoUnits: $0) }
+    public func jettonBalance(jettonAddress: String) async throws -> TONBalance {
+        try await wallet.getJettonBalance(jettonAddress)
     }
     
     public func jettonWalletAddress(jettonAddress: String) async throws -> String {

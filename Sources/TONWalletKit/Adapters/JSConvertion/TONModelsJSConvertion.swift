@@ -25,6 +25,7 @@
 //  SOFTWARE.
 
 import Foundation
+import BigInt
 
 extension TONConnectTransactionParamContent: JSValueDecodable {}
 extension TONTransactionPreview: JSValueDecodable {}
@@ -40,7 +41,18 @@ extension TONTransactionRequestEvent: JSValueDecodable {}
 extension TONDisconnectEvent: JSValueDecodable {}
 extension TONJetton: JSValueDecodable {}
 extension TONJettons: JSValueDecodable {}
-extension TONBalance: JSValueDecodable {}
+
+extension TONBalance: JSValueDecodable {
+    
+    static func from(_ value: JSValue) throws -> Self? {
+        let stringValue: String = try value.decode()
+        
+        guard let bigInt = BigInt(stringValue) else {
+            throw JSValueConversionError.unknown(message: "Unable to convert JS value \(stringValue) to BigInt")
+        }
+        return TONBalance(nanoUnits: bigInt)
+    }
+}
 
 extension TONTransferMessage: JSValueEncodable {}
 extension TONTransferManyParams: JSValueEncodable {}
@@ -56,4 +68,10 @@ extension TONSignDataRequestEvent: JSValueEncodable {}
 extension TONTransactionRequestEvent: JSValueEncodable {}
 extension TONDisconnectEvent: JSValueEncodable {}
 extension TONWalletKitConfiguration: JSValueEncodable {}
-extension TONBalance: JSValueEncodable {}
+
+extension TONBalance: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any {
+        return String(nanoUnits)
+    }
+}

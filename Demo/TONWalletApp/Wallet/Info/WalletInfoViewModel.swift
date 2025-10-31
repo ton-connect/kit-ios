@@ -44,9 +44,9 @@ class WalletInfoViewModel: ObservableObject {
         
         do {
             let formatter = TONBalanceFormatter()
-            let balance = try await wallet.balance()
-            self.balance = balance.flatMap { formatter.string(from: $0) } ?? "Unknown balance"
+            self.balance = formatter.string(from: try await wallet.balance())
         } catch {
+            self.balance = "Unknown balance"
             debugPrint(error.localizedDescription)
         }
     }
