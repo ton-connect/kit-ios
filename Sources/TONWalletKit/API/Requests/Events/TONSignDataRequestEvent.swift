@@ -31,8 +31,15 @@ public struct TONSignDataRequestEvent: Codable {
     public let from: String?
     public let walletAddress: String?
     public let domain: String?
+    public let isJsBridge: Bool?
+    public let tabId: String?
     public let sessionId: String?
+    public let isLocal: Bool?
     public let messageId: String?
+    public let traceId: String?
+    public let method: String?
+    public let params: [String]?
+    
     public let request: TONSignDataPayload?
     public let dAppInfo: TONDAppInfo?
     public let preview: TONSignDataPreview?

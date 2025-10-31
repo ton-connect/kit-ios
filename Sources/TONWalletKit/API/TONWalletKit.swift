@@ -120,6 +120,9 @@ public class TONWalletKit {
         return wallets
     }
 
+    public func send(transaction: TONConnectTransactionParamContent, from wallet: any TONWalletProtocol) async throws {
+        try await context.walletKit.sendTransaction(AnyJSValueEncodable(wallet), transaction)
+    }
         
     public func connect(url: String) async throws {
         try await context.walletKit.handleTonConnectUrl(url)
