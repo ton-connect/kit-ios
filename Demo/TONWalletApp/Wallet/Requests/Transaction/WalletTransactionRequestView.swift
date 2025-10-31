@@ -74,26 +74,21 @@ struct WalletTransactionRequestView: View {
             }
             .padding(AppSpacing.spacing(4.0))
             
-            // Fixed bottom buttons
-            VStack(spacing: 0) {
-                HStack(spacing: AppSpacing.spacing(2.0)) {
-                    Button("Reject") {
-                        viewModel.reject()
-                    }
-                    .buttonStyle(TONButtonStyle(type: .secondary))
-                    
-                    Button("Approve") {
-                        viewModel.approve()
-                    }
-                    .buttonStyle(TONButtonStyle(type: .primary))
+            Spacer()
+            
+            HStack(spacing: AppSpacing.spacing(2.0)) {
+                Button("Reject") {
+                    viewModel.reject()
                 }
-                .padding(AppSpacing.spacing(4.0))
+                .buttonStyle(TONButtonStyle(type: .secondary))
+                
+                Button("Approve") {
+                    viewModel.approve()
+                }
+                .buttonStyle(TONButtonStyle(type: .primary))
             }
+            .padding(AppSpacing.spacing(4.0))
         }
         .onReceive(viewModel.dismiss) { dismiss() }
     }
-}
-
-#Preview {
-    Text("WalletTransactionRequestView Preview")
 }

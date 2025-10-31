@@ -76,13 +76,28 @@ struct WalletsListView: View {
                 }
             }
         }
-        .sheet(item: $viewModel.event) { event in
+        .onReceive(viewModel.event) { event in
             if let transactionRequest = event.transactionRequest {
-                WalletTransactionRequestView(viewModel: .init(request: transactionRequest))
-                    .automaticHeightPresentationDetents()
+                let controller = UIHostingController(
+                    rootView: WalletTransactionRequestView(viewModel: .init(request: transactionRequest))
+                        .presentationDragIndicator(.visible)
+                )
+                UIApplication.shared.topViewController()?.present(
+                    controller,
+                    animated: true,
+                    completion: nil
+                )
             } else if let signDataRequest = event.signDataRequest {
-                WalletSignDataRequestView(viewModel: .init(request: signDataRequest))
-                    .automaticHeightPresentationDetents()
+                let controller = UIHostingController(
+                    rootView: WalletSignDataRequestView(viewModel: .init(request: signDataRequest))
+                        .presentationDragIndicator(.visible)
+                )
+                
+                UIApplication.shared.topViewController()?.present(
+                    controller,
+                    animated: true,
+                    completion: nil
+                )
             }
         }
     }

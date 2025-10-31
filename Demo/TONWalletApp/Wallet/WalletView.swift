@@ -43,6 +43,12 @@ struct WalletView: View {
                     .widget()
                 
                 WalletDAppDisconnectionView(viewModel: viewModel.dAppDisconnect)
+                
+                WalletNFTsListView(viewModel: viewModel.nftsViewModel())
+                    .widget()
+                
+                WalletJettonsListView(viewModel: viewModel.jettonsViewModel())
+                    .widget()
             }
             .padding(16.0)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -74,6 +80,7 @@ struct WalletView: View {
                 )
             )
             .automaticHeightPresentationDetents()
+            .presentationDragIndicator(.visible)
         }
     }
 }

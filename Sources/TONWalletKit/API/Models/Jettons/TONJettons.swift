@@ -1,9 +1,9 @@
 //
-//  WalletInfoViewModel.swift
-//  TONWalletApp
+//  TONJettons.swift
+//  TONWalletKit
 //
-//  Created by Nikita Rodionov on 30.09.2025.
-//
+//  Created by Nikita Rodionov on 31.10.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,29 +25,15 @@
 //  SOFTWARE.
 
 import Foundation
-import TONWalletKit
 
-@MainActor
-class WalletInfoViewModel: ObservableObject {
-    let wallet: TONWalletProtocol
+public struct TONJettons: Codable {
+    public var items: [TONJetton]
+    public var addressBook: [String: TONEmulationAddressBookEntry]?
+    public var pagination: TONPagination?
     
-    var address: String { wallet.address }
-    
-    @Published private(set) var balance: String?
-    
-    init(wallet: TONWalletProtocol) {
-        self.wallet = wallet
-    }
-    
-    func load() async {
-        if balance != nil { return }
-        
-        do {
-            let formatter = TONTokenAmountFormatter()
-            self.balance = formatter.string(from: try await wallet.balance())
-        } catch {
-            self.balance = "Unknown balance"
-            debugPrint(error.localizedDescription)
-        }
+    enum CodingKeys: String, CodingKey {
+        case items = "jettons"
+        case addressBook = "address_book"
+        case pagination
     }
 }

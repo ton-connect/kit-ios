@@ -33,7 +33,7 @@ public struct TONNFTTransferParamsHuman: Codable {
     
     public init(
         nftAddress: String,
-        transferAmount: String,
+        transferAmount: String = "100000000",
         toAddress: String,
         comment: String? = nil
     ) {

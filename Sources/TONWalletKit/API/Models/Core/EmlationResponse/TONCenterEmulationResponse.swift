@@ -570,7 +570,7 @@ public struct TONEmulationMessageContent: Codable {
 
 public struct TONEmulationAccountState: Codable {
     public let hash: String?
-    public let balance: String?
+    public let balance: TONBalance?
     public let extraCurrencies: [String: String]?
     public let accountStatus: TONEmulationAccountStatus?
     public let frozenHash: String?
@@ -579,7 +579,7 @@ public struct TONEmulationAccountState: Codable {
 
     public init(
         hash: String?,
-        balance: String?,
+        balance: TONBalance?,
         extraCurrencies: [String : String]?,
         accountStatus: TONEmulationAccountStatus?,
         frozenHash: String?,
@@ -924,8 +924,8 @@ public enum TONEmulationTokenInfo: Codable {
 }
 
 public struct TONEmulationTokenInfoBase: Codable {
-    public let valid: Bool
-    public let type: String
+    public let valid: Bool?
+    public let type: String?
     public let additionalProperties: [String: AnyCodable]?
     
     public init(
@@ -982,12 +982,12 @@ public struct TONEmulationTokenInfoBase: Codable {
 
 public struct TONEmulationTokenInfoMasters: Codable {
     public var type: String = "jetton_masters"
-    public let valid: Bool
-    public let name: String
-    public let symbol: String
-    public let description: String
+    public let valid: Bool?
+    public let name: String?
+    public let symbol: String?
+    public let description: String?
     public let image: String?
-    public let extra: Extra
+    public let extra: Extra?
     
     public init(
         valid: Bool,
@@ -1100,8 +1100,8 @@ public struct TONEmulationTokenInfoMasters: Codable {
 
 public struct TONEmulationTokenInfoWallets: Codable {
     public var type: String = "jetton_wallets"
-    public let valid: Bool
-    public let extra: Extra
+    public let valid: Bool?
+    public let extra: Extra?
     
     public init(
         valid: Bool,
@@ -1112,11 +1112,11 @@ public struct TONEmulationTokenInfoWallets: Codable {
     }
     
     public struct Extra: Codable {
-        public let balance: String
+        public let balance: TONBalance
         public let jetton: String
         public let owner: String
         
-        public init(balance: String, jetton: String, owner: String) {
+        public init(balance: TONBalance, jetton: String, owner: String) {
             self.balance = balance
             self.jetton = jetton
             self.owner = owner

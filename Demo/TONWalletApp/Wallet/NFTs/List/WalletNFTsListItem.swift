@@ -1,9 +1,9 @@
 //
-//  WalletInfoViewModel.swift
+//  WalletNFTsListItem.swift
 //  TONWalletApp
 //
-//  Created by Nikita Rodionov on 30.09.2025.
-//
+//  Created by Nikita Rodionov on 29.10.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,27 +27,21 @@
 import Foundation
 import TONWalletKit
 
-@MainActor
-class WalletInfoViewModel: ObservableObject {
+struct WalletNFTsListItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let address: String
+    let imageURL: URL?
+    
+    let tonNFT: TONNFTItem
     let wallet: TONWalletProtocol
     
-    var address: String { wallet.address }
-    
-    @Published private(set) var balance: String?
-    
-    init(wallet: TONWalletProtocol) {
-        self.wallet = wallet
-    }
-    
-    func load() async {
-        if balance != nil { return }
+    init(nft: TONNFTItem, wallet: TONWalletProtocol) {
+        self.tonNFT = nft
         
-        do {
-            let formatter = TONTokenAmountFormatter()
-            self.balance = formatter.string(from: try await wallet.balance())
-        } catch {
-            self.balance = "Unknown balance"
-            debugPrint(error.localizedDescription)
-        }
+        self.name = nft.metadata?.name ?? "Unknown NFT"
+        self.address = nft.address
+        self.imageURL = nft.metadata?.image.flatMap { URL(string: $0) }
+        self.wallet = wallet
     }
 }

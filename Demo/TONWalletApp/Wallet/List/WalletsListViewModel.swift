@@ -36,7 +36,7 @@ class WalletsListViewModel: ObservableObject {
     
     private var subscribers = Set<AnyCancellable>()
     
-    @Published var event: Event?
+    let event = PassthroughSubject<Event, Never>()
 
     init(wallets: [WalletViewModel]) {
         self.wallets = wallets
@@ -71,9 +71,9 @@ class WalletsListViewModel: ObservableObject {
             .sink { [weak self] event in
                 switch event {
                 case .transactionRequest(let request):
-                    self?.event = Event(transactionRequest: request)
+                    self?.event.send(Event(transactionRequest: request))
                 case .signDataRequest(let request):
-                    self?.event = Event(signDataRequest: request)
+                    self?.event.send(Event(signDataRequest: request))
                 default: ()
                 }
             }

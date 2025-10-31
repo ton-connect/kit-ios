@@ -1,8 +1,8 @@
 //
-//  WalletInfoViewModel.swift
+//  WalletNFTDetails.swift
 //  TONWalletApp
 //
-//  Created by Nikita Rodionov on 30.09.2025.
+//  Created by Nikita Rodionov on 29.10.2025.
 //
 //  Copyright (c) 2025 TON Connect
 //
@@ -27,27 +27,37 @@
 import Foundation
 import TONWalletKit
 
-@MainActor
-class WalletInfoViewModel: ObservableObject {
-    let wallet: TONWalletProtocol
+struct WalletNFTDetails {
+    let name: String
+    let description: String
     
-    var address: String { wallet.address }
+    // TODO: Play lottie animation when added into wallet kit
+    let imageURL: URL?
+    let collectionName: String
+    let index: String
+    let status: String
+    let contractAddress: String
+    let ownerAddress: String
+    let canTransfer: Bool
     
-    @Published private(set) var balance: String?
-    
-    init(wallet: TONWalletProtocol) {
-        self.wallet = wallet
-    }
-    
-    func load() async {
-        if balance != nil { return }
+    init(from nftItem: TONNFTItem) {
+        self.name = nftItem.metadata?.name ?? "Unknown NFT"
+        self.description = nftItem.metadata?.description ?? "No description available"
+        self.imageURL = nftItem.metadata?.image.flatMap { URL(string: $0) }
         
-        do {
-            let formatter = TONTokenAmountFormatter()
-            self.balance = formatter.string(from: try await wallet.balance())
-        } catch {
-            self.balance = "Unknown balance"
-            debugPrint(error.localizedDescription)
+        self.collectionName = nftItem.collection?.name ?? "Unknown Collection"
+        
+        if let index = nftItem.index {
+            self.index = "#\(index)"
+        } else {
+            self.index = "#0"
         }
+        
+        self.status = (nftItem.onSale == true) ? "On Sale" : "Not on Sale"
+        
+        self.contractAddress = nftItem.address
+        self.ownerAddress = nftItem.ownerAddress ?? nftItem.realOwner ?? "Unknown"
+        
+        self.canTransfer = nftItem.onSale == false && nftItem.ownerAddress != nil
     }
 }

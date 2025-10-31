@@ -52,6 +52,14 @@ class WalletViewModel: Identifiable, ObservableObject {
         self.dAppDisconnect = WalletDAppDisconnectionViewModel(wallet: tonWallet)
     }
     
+    func nftsViewModel() -> WalletNFTsListViewModel {
+        return WalletNFTsListViewModel(wallet: tonWallet)
+    }
+    
+    func jettonsViewModel() -> WalletJettonsListViewModel {
+        return WalletJettonsListViewModel(wallet: tonWallet)
+    }
+    
     func remove() {
         do {
             try storage.remove(walletAddress: tonWallet.address)
