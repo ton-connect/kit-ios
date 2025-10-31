@@ -551,7 +551,7 @@ public struct TONEmulationMessageContent: Codable {
 
 public struct TONEmulationAccountState: Codable {
     public let hash: String?
-    public let balance: String?
+    public let balance: TONBalance?
     public let extraCurrencies: [String: String]?
     public let accountStatus: TONEmulationAccountStatus?
     public let frozenHash: String?
@@ -560,7 +560,7 @@ public struct TONEmulationAccountState: Codable {
 
     public init(
         hash: String?,
-        balance: String?,
+        balance: TONBalance?,
         extraCurrencies: [String : String]?,
         accountStatus: TONEmulationAccountStatus?,
         frozenHash: String?,
@@ -1093,11 +1093,11 @@ public struct TONEmulationTokenInfoWallets: Codable {
     }
     
     public struct Extra: Codable {
-        public let balance: String
+        public let balance: TONBalance
         public let jetton: String
         public let owner: String
         
-        public init(balance: String, jetton: String, owner: String) {
+        public init(balance: TONBalance, jetton: String, owner: String) {
             self.balance = balance
             self.jetton = jetton
             self.owner = owner

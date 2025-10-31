@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import BigInt
 
 public class TONWallet: TONWalletProtocol {
     public let address: String
@@ -23,8 +24,10 @@ public class TONWallet: TONWalletProtocol {
         self.version = version
     }
     
-    public func balance() async throws -> String? {
-        try await wallet.getBalance()
+    public func balance() async throws -> TONBalance? {
+        let balance: String = try await wallet.getBalance()
+        let bigInt = BigInt(balance)
+        return bigInt.flatMap { TONBalance(nanoUnits: $0) }
     }
     
     public func transferTON(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent {
@@ -59,7 +62,7 @@ public class TONWallet: TONWalletProtocol {
         try await wallet.createTransferJettonTransaction(parameters)
     }
     
-    public func jettonBalance(jettonAddress: String) async throws -> String {
+    public func jettonBalance(jettonAddress: String) async throws -> TONBalance {
         try await wallet.getJettonBalance(jettonAddress)
     }
     
