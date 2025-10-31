@@ -25,6 +25,7 @@
 //  SOFTWARE.
 
 import Foundation
+import BigInt
 
 public class TONWallet: TONWalletProtocol {
     public let address: String
@@ -42,8 +43,10 @@ public class TONWallet: TONWalletProtocol {
         self.version = version
     }
     
-    public func balance() async throws -> String? {
-        try await wallet.getBalance()
+    public func balance() async throws -> TONBalance? {
+        let balance: String = try await wallet.getBalance()
+        let bigInt = BigInt(balance)
+        return bigInt.flatMap { TONBalance(nanoUnits: $0) }
     }
     
     public func transferTONTransaction(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent {

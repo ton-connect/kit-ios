@@ -42,7 +42,7 @@ public protocol TONWalletProtocol {
     var address: String { get }
     var version: TONWalletVersion { get }
     
-    func balance() async throws -> String?
+    func balance() async throws -> TONBalance?
     
     func transferTONTransaction(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent
     func transferTONTransaction(messages: [TONTransferMessage]) async throws -> TONConnectTransactionParamContent
