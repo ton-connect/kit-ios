@@ -50,7 +50,6 @@ open class TONBalanceFormatter: Formatter {
             string = String(repeating: "0", count: paddingCount) + string
         }
         
-        // Split into integer and fractional parts
         let splitIndex = string.count - nanoUnitDecimalsNumber
         let integer = splitIndex > 0 ? String(string.prefix(splitIndex)) : ""
         var fraction = String(string.suffix(nanoUnitDecimalsNumber))
@@ -59,7 +58,6 @@ open class TONBalanceFormatter: Formatter {
             fraction = fraction.replacingOccurrences(of: #"0+$"#, with: "", options: .regularExpression)
         }
         
-        // Build the result
         let negativePrefix = negative ? "-" : ""
         let integerPart = integer.isEmpty ? "0" : integer
         let fractionPart = fraction.isEmpty ? "" : ".\(fraction)"
@@ -71,30 +69,24 @@ open class TONBalanceFormatter: Formatter {
         let cleanInput = string.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleanInput.isEmpty else { return nil }
         
-        // Split on decimal point
         let parts = cleanInput.components(separatedBy: ".")
         guard parts.count <= 2 else { return nil }
         
         let integerPart = parts[0]
         let fractionalPart = parts.count == 2 ? parts[1] : ""
         
-        // Validate and convert integer part
         guard let integerValue = BigInt(integerPart) else { return nil }
         
-        // Convert to nano units
         let multiplier = BigInt(10).power(nanoUnitDecimalsNumber)
         var result = integerValue * multiplier
         
-        // Handle fractional part if present
         if !fractionalPart.isEmpty {
-            // Pad or truncate fractional part to match decimal precision
             let normalizedFraction = fractionalPart.count > nanoUnitDecimalsNumber ?
                 String(fractionalPart.prefix(nanoUnitDecimalsNumber)) :
                 fractionalPart.padding(toLength: nanoUnitDecimalsNumber, withPad: "0", startingAt: 0)
             
             guard let fractionValue = BigInt(normalizedFraction) else { return nil }
             
-            // Add fractional part with correct sign
             if integerValue.sign == .minus {
                 result -= fractionValue
             } else {
