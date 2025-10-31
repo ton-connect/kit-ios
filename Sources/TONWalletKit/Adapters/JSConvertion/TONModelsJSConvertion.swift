@@ -69,9 +69,12 @@ extension TONTransactionRequestEvent: JSValueEncodable {}
 extension TONDisconnectEvent: JSValueEncodable {}
 extension TONWalletKitConfiguration: JSValueEncodable {}
 
+extension TONWallet: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any { self.wallet }
+}
+
 extension TONBalance: JSValueEncodable {
     
-    func encode(in context: JSContext) throws -> Any {
-        return String(nanoUnits)
-    }
+    func encode(in context: JSContext) throws -> Any { String(nanoUnits) }
 }

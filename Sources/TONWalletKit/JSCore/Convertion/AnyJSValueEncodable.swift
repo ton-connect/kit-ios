@@ -35,7 +35,7 @@ struct AnyJSValueEncodable: JSValueEncodable {
     }
     
     func encode(in context: JSContext) throws -> Any {
-        if let value = value as? AnyJSValueEncodable {
+        if let value = value as? JSValueEncodable {
             return try value.encode(in: context)
         }
         return value

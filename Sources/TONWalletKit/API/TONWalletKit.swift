@@ -50,7 +50,7 @@ public class TONWalletKit {
             
             let storage = storage.jsStorage(context: context)
             
-            try await context.initWalletKit(configuration, AnyJSValueEncodable(storage as Any))
+            try await context.initWalletKit(configuration, AnyJSValueEncodable(storage))
             
             sharedPool.store(configuration: configuration, walletKitContext: context)
             return TONWalletKit(context: context)
