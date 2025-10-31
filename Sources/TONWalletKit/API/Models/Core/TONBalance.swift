@@ -27,27 +27,4 @@
 import Foundation
 import BigInt
 
-public struct TONBalance: Codable {
-    public let nanoUnits: BigInt
-    
-    public init(nanoUnits: BigInt) {
-        self.nanoUnits = nanoUnits
-    }
-    
-    public init?(nanoUnits: String) {
-        guard let bigInt = BigInt(nanoUnits) else {
-            return nil
-        }
-        self.nanoUnits = bigInt
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.nanoUnits = try container.decode(BigInt.self)
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(nanoUnits)
-    }
-}
+public typealias TONBalance = TONTokenAmount

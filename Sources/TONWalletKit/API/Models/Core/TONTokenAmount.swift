@@ -1,9 +1,9 @@
 //
-//  WalletInfoViewModel.swift
-//  TONWalletApp
+//  TONTokenAmount.swift
+//  TONWalletKit
 //
-//  Created by Nikita Rodionov on 30.09.2025.
-//
+//  Created by Nikita Rodionov on 31.10.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,29 +25,29 @@
 //  SOFTWARE.
 
 import Foundation
-import TONWalletKit
+import BigInt
 
-@MainActor
-class WalletInfoViewModel: ObservableObject {
-    let wallet: TONWalletProtocol
+public struct TONTokenAmount: Codable {
+    public let nanoUnits: BigInt
     
-    var address: String { wallet.address }
-    
-    @Published private(set) var balance: String?
-    
-    init(wallet: TONWalletProtocol) {
-        self.wallet = wallet
+    public init(nanoUnits: BigInt) {
+        self.nanoUnits = nanoUnits
     }
     
-    func load() async {
-        if balance != nil { return }
-        
-        do {
-            let formatter = TONTokenAmountFormatter()
-            self.balance = formatter.string(from: try await wallet.balance())
-        } catch {
-            self.balance = "Unknown balance"
-            debugPrint(error.localizedDescription)
+    public init?(nanoUnits: String) {
+        guard let bigInt = BigInt(nanoUnits) else {
+            return nil
         }
+        self.nanoUnits = bigInt
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.nanoUnits = try container.decode(BigInt.self)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(nanoUnits)
     }
 }

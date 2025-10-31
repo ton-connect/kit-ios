@@ -49,7 +49,7 @@ struct WalletJettonsListItem: Identifiable {
         self.symbol = jetton.symbol ?? "UNKNOWN"
         self.address = jetton.address ?? "Unknown address"
         
-        let formatter = TONBalanceFormatter()
+        let formatter = TONTokenAmountFormatter()
         formatter.nanoUnitDecimalsNumber = min(jetton.decimals ?? 0, 9)
         self.balance = jetton.balance.flatMap { formatter.string(from: $0) } ?? "Unknown balance"
         
