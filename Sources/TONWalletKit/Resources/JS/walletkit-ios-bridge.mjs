@@ -27795,7 +27795,7 @@ class SessionManager {
   /**
    * Create new session
    */
-  async createSession(sessionId, dAppName, domain, dAppIconUrl, dAppDescription, wallet, { disablePersist = false } = {}) {
+  async createSession(sessionId, dAppName, domain, dAppIconUrl, dAppDescription, wallet, { disablePersist = false, isJsBridge = false } = {}) {
     const now = /* @__PURE__ */ new Date();
     const randomKeyPair = new SessionCrypto().stringifyKeypair();
     const sessionData = {
@@ -27808,7 +27808,8 @@ class SessionManager {
       privateKey: randomKeyPair.secretKey,
       publicKey: randomKeyPair.publicKey,
       dAppIconUrl,
-      dAppDescription
+      dAppDescription,
+      isJsBridge
     };
     if (disablePersist) {
       return SessionManager.toSessionData(sessionData);
@@ -27829,7 +27830,8 @@ class SessionManager {
       lastActivityAt: session.lastActivityAt,
       domain: session.domain,
       dAppIconUrl: session.dAppIconUrl,
-      dAppDescription: session.dAppDescription
+      dAppDescription: session.dAppDescription,
+      isJsBridge: session.isJsBridge
     };
   }
   // async getSessionData(sessionId: string): Promise<SessionData | undefined> {}
@@ -27849,7 +27851,8 @@ class SessionManager {
         lastActivityAt: session.lastActivityAt,
         domain: session.domain,
         dAppIconUrl: session.dAppIconUrl,
-        dAppDescription: session.dAppDescription
+        dAppDescription: session.dAppDescription,
+        isJsBridge: session.isJsBridge
       };
     }
     return void 0;
@@ -27997,7 +28000,8 @@ class SessionManager {
         privateKey: session.privateKey,
         publicKey: session.publicKey,
         dAppIconUrl: session.dAppIconUrl,
-        dAppDescription: session.dAppDescription
+        dAppDescription: session.dAppDescription,
+        isJsBridge: session.isJsBridge
       }));
       await this.storage.set(this.storageKey, sessionMetadata);
     } catch (error2) {
@@ -29659,6 +29663,27 @@ class BridgeManager {
       await this.jsBridgeTransport(sessionId, message);
     } else {
       await chrome.tabs.sendMessage(parseInt(sessionId), message);
+    }
+    if (response?.event === "disconnect" && options?.session) {
+      const session = options.session;
+      const disconnectEvent = {
+        id: response.id || crypto.randomUUID(),
+        method: "disconnect",
+        params: response.payload || {},
+        timestamp: Date.now(),
+        from: sessionId,
+        domain: session.domain,
+        isJsBridge: true,
+        walletAddress: session.walletAddress,
+        dAppInfo: {
+          name: session.dAppName,
+          description: session.dAppDescription,
+          url: session.dAppIconUrl,
+          iconUrl: session.dAppIconUrl
+        },
+        traceId: options.traceId
+      };
+      await this.eventRouter.routeEvent(disconnectEvent);
     }
   }
   /**
@@ -46509,7 +46534,9 @@ class RequestProcessor {
         }
         const url = new URL(event.preview.manifest?.url || "");
         const domain = url.hostname;
-        const newSession = await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), event.preview.manifest?.name || "", domain, event.preview.manifest?.iconUrl || "", event.preview.manifest?.description || "", wallet);
+        const newSession = await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), event.preview.manifest?.name || "", domain, event.preview.manifest?.iconUrl || "", event.preview.manifest?.description || "", wallet, {
+          isJsBridge: event.isJsBridge
+        });
         await this.bridgeManager.createSession(newSession.sessionId);
         const response = await this.createConnectApprovalResponse(event);
         await this.bridgeManager.sendResponse(event, response.result);
@@ -65993,50 +66020,12 @@ class JettonsManager {
         offset,
         limit
       });
-      if (!response.jetton_wallets) {
+      if (!response.jettons) {
         return [];
       }
       const addressJettons = [];
-      for (const item of response.jetton_wallets) {
-        try {
-          const jettonMetadata = response.metadata[item.jetton];
-          const metadataJettonInfo = jettonMetadata?.token_info?.find((info) => typeof info === "object" && info !== null && "type" in info && info.type === "jetton_masters");
-          const jettonInfo = metadataJettonInfo ? {
-            address: normalizedAddress,
-            name: metadataJettonInfo.name,
-            symbol: metadataJettonInfo.symbol,
-            description: metadataJettonInfo.description,
-            image: metadataJettonInfo.image,
-            decimals: typeof metadataJettonInfo.extra.decimals === "string" ? parseInt(metadataJettonInfo.extra.decimals, 10) : metadataJettonInfo.extra.decimals,
-            image_data: metadataJettonInfo.extra.image_data,
-            uri: metadataJettonInfo.extra.uri
-          } : await this.getJettonInfo(item.jetton);
-          if (jettonInfo) {
-            const addressJetton = {
-              address: item.jetton,
-              name: jettonInfo.name,
-              symbol: jettonInfo.symbol,
-              description: jettonInfo.description,
-              decimals: jettonInfo.decimals,
-              balance: item.balance,
-              jettonWalletAddress: item.address,
-              usdValue: "0",
-              image: jettonInfo.image,
-              verification: jettonInfo.verification,
-              metadata: jettonInfo.metadata,
-              totalSupply: jettonInfo.totalSupply,
-              uri: jettonInfo.uri,
-              image_data: jettonInfo.image_data
-              // lastActivity: item.last_transaction_lt,
-            };
-            addressJettons.push(addressJetton);
-          }
-        } catch (error2) {
-          log$6.warn("Failed to get jetton info for address jetton", {
-            jettonAddress: item.jetton,
-            error: error2
-          });
-        }
+      for (const item of response.jettons) {
+        addressJettons.push(item);
       }
       log$6.debug("Retrieved address jettons", { count: addressJettons.length });
       return addressJettons;
@@ -66441,7 +66430,7 @@ function toNftItem(data) {
     saleContractAddress: asMaybeAddressFriendly(data.sale_contract_address)
   };
   if (data.last_transaction_lt)
-    out.lastTransactionLt = BigInt(data.last_transaction_lt);
+    out.lastTransactionLt = data.last_transaction_lt;
   if (data.content)
     out.content = data.content;
   if (data.is_sbt !== void 0)
@@ -66455,7 +66444,8 @@ function toTokenInfo(data) {
     name: data.name,
     description: data.description,
     image: data.image,
-    extra: data.extra
+    extra: data.extra,
+    animation: data?.extra?.animation_url
   };
   if (data.lottie) {
     result.lottie = data.lottie;
@@ -66464,6 +66454,11 @@ function toTokenInfo(data) {
     if (typeof lottieValue === "string") {
       result.lottie = lottieValue;
     }
+  }
+  if (data?.extra?.animation_url) {
+    result.animation = data.extra.animation_url;
+  } else if (data?.extra?.content_url && data.extra.content_url.includes("mp4")) {
+    result.animation = data.extra.content_url;
   }
   return result;
 }
@@ -66977,11 +66972,68 @@ class ApiClientToncenter {
     });
   }
   async jettonsByOwnerAddress(request) {
-    return this.getJson("/api/v3/jetton/wallets", {
+    const offset = request.offset ?? 0;
+    const limit = request.limit ?? 50;
+    const rawResponse = await this.getJson("/api/v3/jetton/wallets", {
       owner_address: request.ownerAddress,
-      offset: request.offset,
-      limit: request.limit
+      offset,
+      limit
     });
+    return this.mapToResponseUserJettons(rawResponse, offset, limit);
+  }
+  mapToResponseUserJettons(rawResponse, offset, limit) {
+    const userJettons = rawResponse.jetton_wallets.map((wallet) => {
+      const jettonInfo = this.extractJettonInfoFromMetadata(wallet.jetton, rawResponse.metadata);
+      return {
+        address: wallet.jetton,
+        balance: wallet.balance,
+        jettonWalletAddress: wallet.address,
+        usdValue: "0",
+        name: jettonInfo.name,
+        symbol: jettonInfo.symbol,
+        description: jettonInfo.description,
+        decimals: jettonInfo.decimals,
+        image: jettonInfo.image,
+        verification: jettonInfo.verification,
+        metadata: jettonInfo.metadata,
+        totalSupply: jettonInfo.totalSupply,
+        uri: jettonInfo.uri,
+        image_data: jettonInfo.image_data,
+        lastActivity: wallet.last_transaction_lt
+      };
+    });
+    return {
+      jettons: userJettons,
+      address_book: rawResponse.address_book,
+      pagination: {
+        offset,
+        limit
+      }
+    };
+  }
+  extractJettonInfoFromMetadata(jettonAddress, metadata) {
+    const jettonMetadata = metadata[jettonAddress];
+    const metadataJettonInfo = jettonMetadata?.token_info?.find((info) => typeof info === "object" && info !== null && "type" in info && info.type === "jetton_masters");
+    if (metadataJettonInfo) {
+      const decimals = typeof metadataJettonInfo.extra.decimals === "string" ? parseInt(metadataJettonInfo.extra.decimals, 10) : metadataJettonInfo.extra.decimals ?? 9;
+      return {
+        address: jettonAddress,
+        name: metadataJettonInfo.name ?? "",
+        symbol: metadataJettonInfo.symbol ?? "",
+        description: metadataJettonInfo.description ?? "",
+        decimals,
+        image: metadataJettonInfo.image,
+        image_data: metadataJettonInfo.extra.image_data,
+        uri: metadataJettonInfo.extra.uri
+      };
+    }
+    return {
+      address: jettonAddress,
+      name: "",
+      symbol: "",
+      description: "",
+      decimals: 9
+    };
   }
 }
 const padBase64 = (data) => {
@@ -67176,15 +67228,38 @@ class TonWalletKit {
   async disconnect(sessionId) {
     await this.ensureInitialized();
     const removeSession = async (sessionId2) => {
-      await this.bridgeManager.sendResponse({
-        sessionId: sessionId2,
-        isJsBridge: false,
-        id: Date.now()
-      }, {
-        event: "disconnect",
-        id: Date.now(),
-        payload: {}
-      });
+      const session = await this.sessionManager.getSession(sessionId2);
+      if (session?.isJsBridge) {
+        await this.bridgeManager.sendJsBridgeResponse(
+          sessionId2,
+          // Use sessionId to route to correct WebView
+          true,
+          null,
+          {
+            event: "disconnect",
+            id: Date.now(),
+            payload: {
+              items: [sessionId2]
+            }
+          },
+          {
+            traceId: void 0,
+            session
+            // Pass session for disconnect event routing on emit
+          }
+        );
+      } else if (session) {
+        await this.bridgeManager.sendResponse({
+          sessionId: sessionId2,
+          isJsBridge: false,
+          id: Date.now(),
+          from: sessionId2
+        }, {
+          event: "disconnect",
+          id: Date.now(),
+          payload: {}
+        }, session);
+      }
       await this.sessionManager.removeSession(sessionId2);
     };
     if (sessionId) {
@@ -67426,11 +67501,10 @@ class TonWalletKit {
     if (this.initializer) {
       await this.initializer.cleanup({
         walletManager: this.walletManager,
+        bridgeManager: this.bridgeManager,
         sessionManager: this.sessionManager,
         eventRouter: this.eventRouter,
         requestProcessor: this.requestProcessor,
-        // responseHandler: this.responseHandler,
-        // tonClient: this.tonClient,
         eventProcessor: this.eventProcessor
       });
     }
@@ -69794,9 +69868,6 @@ window.initWalletKit = (configuration, storage) => __async(null, null, function*
     // Check if initialized
     isReady() {
       return initialized && walletKit;
-    },
-    jettonsManager() {
-      return walletKit.jettons;
     },
     setEventsListeners(callback) {
       if (!initialized) throw new Error("WalletKit Bridge not initialized");

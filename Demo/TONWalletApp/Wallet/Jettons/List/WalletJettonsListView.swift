@@ -45,7 +45,7 @@ struct WalletJettonsListView: View {
             case .empty:
                 Text("No Jettons found")
             case .jettons:
-                LazyVStack(spacing: 0) {
+                LazyVStack(spacing: AppSpacing.spacing(2)) {
                     ForEach(viewModel.jettons) { jetton in
                         VStack(spacing: 0) {
                             WalletJettonsListItemView(jettonItem: jetton) {

@@ -38,24 +38,25 @@ struct WalletJettonsListItem: Identifiable {
     let imageURL: URL?
     let estimatedValue: String
     
-    let tonJettonWallet: TONJettonWallet
+    let jetton: TONJetton
     let wallet: TONWalletProtocol
     
-    init(jettonWallet: TONJettonWallet, wallet: TONWalletProtocol) {
-        self.tonJettonWallet = jettonWallet
+    init(jetton: TONJetton, wallet: TONWalletProtocol) {
         self.wallet = wallet
+        self.jetton = jetton
         
-        let jetton = jettonWallet.jetton
+        self.name = jetton.name ?? "Unknown Jetton"
+        self.symbol = jetton.symbol ?? "UNKNOWN"
+        self.address = jetton.address ?? "Unknown address"
         
-        self.name = jetton?.name ?? "Unknown Jetton"
-        self.symbol = jetton?.symbol ?? "UNKNOWN"
-        self.address = jettonWallet.address
-        self.balance = jettonWallet.balance ?? "0"
+        let formatter = TONBalanceFormatter()
+        formatter.nanoUnitDecimalsNumber = min(jetton.decimals ?? 0, 9)
+        self.balance = jetton.balance.flatMap { formatter.string(from: $0) } ?? "Unknown balance"
         
-        if let imageUrl = jetton?.image {
+        if let imageUrl = jetton.image {
             self.image = nil
             self.imageURL = URL(string: imageUrl)
-        } else if let imageData = jetton?.imageData, let uiImage = imageData.data(using: .utf8).flatMap({ UIImage(data: $0) }) {
+        } else if let imageData = jetton.imageData, let uiImage = imageData.data(using: .utf8).flatMap({ UIImage(data: $0) }) {
             self.image = Image(uiImage: uiImage)
             self.imageURL = nil
         } else {
@@ -64,6 +65,6 @@ struct WalletJettonsListItem: Identifiable {
         }
         
         // Placeholder for estimated value - would need price data
-        self.estimatedValue = "≈ $0.00"
+        self.estimatedValue = "≈ \(jetton.usdValue ?? "0.00")"
     }
 }

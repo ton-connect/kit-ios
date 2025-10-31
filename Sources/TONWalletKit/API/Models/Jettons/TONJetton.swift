@@ -26,18 +26,40 @@
 
 import Foundation
 
-public struct TONJetton: Codable, Equatable {
+public struct TONJetton: Codable {
     public let address: String?
+    public let balance: TONBalance?
     public let name: String?
     public let symbol: String?
     public let description: String?
     public let decimals: Int?
+    public let walletAddress: String?
+    public let lastActivity: String?
+    public let usdValue: String?
     public let totalSupply: String?
     public let image: String?
     public let imageData: String?
     public let uri: String?
     public let verification: TONJettonVerification?
     public let metadata: [String: AnyCodable]?
+    
+    enum CodingKeys: String, CodingKey {
+        case address
+        case balance
+        case name
+        case symbol
+        case description
+        case decimals
+        case walletAddress = "jettonWalletAddress"
+        case lastActivity
+        case usdValue
+        case totalSupply
+        case image
+        case imageData = "image_data"
+        case uri
+        case verification
+        case metadata
+    }
 }
 
 public struct TONJettonVerification: Codable, Equatable {

@@ -52,21 +52,14 @@ final class WalletJettonsListViewModel: ObservableObject {
         state = .loading
         
         do {
-            let jettonWallets = try await wallet.jettonsWallets(limit: TONLimitRequest(limit: limit))
+            let jettons = try await wallet.jettons(limit: TONLimitRequest(limit: limit))
             
-            if jettonWallets.items.isEmpty {
+            if jettons.items.isEmpty {
                 state = .empty
             } else {
-                let jettonItems = jettonWallets.items.map { jettonWallet in
-                    return WalletJettonsListItem(
-                        jettonWallet: jettonWallet,
-                        wallet: wallet
-                    )
-                }
-                
-                self.jettons = jettonItems
-                state = jettonItems.isEmpty ? .empty : .jettons
-                pagination = jettonWallets.pagination
+                self.jettons = jettons.items.map { WalletJettonsListItem(jetton: $0, wallet: wallet) }
+                state = self.jettons.isEmpty ? .empty : .jettons
+                pagination = jettons.pagination
             }
         } catch {
             state = .empty
@@ -83,18 +76,14 @@ final class WalletJettonsListViewModel: ObservableObject {
             guard let self = self else { return }
             
             do {
-                let jettonWallets = try await wallet.jettonsWallets(
-                    limit: TONLimitRequest(limit: limit, offset: pagination.offset)
-                )
-                let newJettonItems = jettonWallets.items.map { jettonWallet in
-                    return WalletJettonsListItem(
-                        jettonWallet: jettonWallet,
-                        wallet: self.wallet
-                    )
+                let jettons = try await wallet.jettons(limit: TONLimitRequest(limit: limit, offset: pagination.offset))
+                
+                let newJettonItems = jettons.items.map { jetton in
+                    WalletJettonsListItem(jetton: jetton, wallet: self.wallet)
                 }
                 
                 self.jettons.append(contentsOf: newJettonItems)
-                self.pagination = jettonWallets.pagination
+                self.pagination = jettons.pagination
             } catch {
                 debugPrint("Failed to load more jettons: \(error)")
             }

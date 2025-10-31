@@ -1,8 +1,8 @@
 //
-//  TONJettonWallet.swift
+//  TONJettons.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 30.10.2025.
+//  Created by Nikita Rodionov on 31.10.2025.
 //  
 //  Copyright (c) 2025 TON Connect
 //
@@ -26,24 +26,14 @@
 
 import Foundation
 
-public struct TONJettonWallet: Codable {
-    public let address: String
-    public let balance: String?
-    public let owner: String?
-    // TODO: Remove this hack after JettonInfo is added into JettonWallet on JS side
-    public internal(set) var jetton: TONJetton?
-    public let jettonAddress: String?
-    public let lastTransactionLt: String?
-    public let codeHash: String?
-    public let dataHash: String?
+public struct TONJettons: Codable {
+    public var items: [TONJetton]
+    public var addressBook: [String: TONEmulationAddressBookEntry]?
+    public var pagination: TONPagination?
     
     enum CodingKeys: String, CodingKey {
-        case address
-        case balance
-        case owner
-        case jettonAddress = "jetton"
-        case lastTransactionLt = "last_transaction_lt"
-        case codeHash = "code_hash"
-        case dataHash = "data_hash"
+        case items = "jettons"
+        case addressBook = "address_book"
+        case pagination
     }
 }

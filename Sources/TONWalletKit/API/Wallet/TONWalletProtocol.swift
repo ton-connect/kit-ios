@@ -55,9 +55,12 @@ public protocol TONWalletProtocol {
     
     func nfts(limit: TONLimitRequest) async throws -> TONNFTItems
     func nft(address: String) async throws -> TONNFTItem
-
+    
+    func jettonBalance(jettonAddress: String) async throws -> TONBalance?
+    func jettonWalletAddress(jettonAddress: String) async throws -> String
+    
     func transferJettonTransaction(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent
-    func jettonsWallets(limit: TONLimitRequest) async throws -> TONJettonWallets
+    func jettons(limit: TONLimitRequest) async throws -> TONJettons
 }
 
 public extension TONWalletProtocol {
