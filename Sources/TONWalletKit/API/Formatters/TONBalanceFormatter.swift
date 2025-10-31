@@ -30,36 +30,78 @@ import BigInt
 open class TONBalanceFormatter: Formatter {
     // Defaults to 9, as TON uses nano units (1 TON = 10^9 nanoTON)
     open var nanoUnitDecimalsNumber: Int = 9
+    open var allowFractionalTrailingZeroes = false
     
     open func string(from balance: TONBalance) -> String? {
-        return nil
+        if nanoUnitDecimalsNumber < 0 {
+            return nil
+        }
+        
+        var string = String(balance.nanoUnits)
+        
+        let negative = string.hasPrefix("-")
+        
+        if negative {
+            string = String(string.dropFirst())
+        }
+        
+        if string.count < nanoUnitDecimalsNumber {
+            let paddingCount = nanoUnitDecimalsNumber - string.count
+            string = String(repeating: "0", count: paddingCount) + string
+        }
+        
+        // Split into integer and fractional parts
+        let splitIndex = string.count - nanoUnitDecimalsNumber
+        let integer = splitIndex > 0 ? String(string.prefix(splitIndex)) : ""
+        var fraction = String(string.suffix(nanoUnitDecimalsNumber))
+        
+        if !allowFractionalTrailingZeroes {
+            fraction = fraction.replacingOccurrences(of: #"0+$"#, with: "", options: .regularExpression)
+        }
+        
+        // Build the result
+        let negativePrefix = negative ? "-" : ""
+        let integerPart = integer.isEmpty ? "0" : integer
+        let fractionPart = fraction.isEmpty ? "" : ".\(fraction)"
+        
+        return "\(negativePrefix)\(integerPart)\(fractionPart)"
     }
     
     open func balance(from string: String) -> TONBalance? {
-        let trimmedString = string.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedString.isEmpty else { return nil }
+        let cleanInput = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleanInput.isEmpty else { return nil }
         
-        let components = trimmedString.components(separatedBy: ".")
-        guard components.count <= 2 else { return nil }
+        // Split on decimal point
+        let parts = cleanInput.components(separatedBy: ".")
+        guard parts.count <= 2 else { return nil }
         
-        let integerPart = components[0]
-        let fractionalPart = components.count > 1 ? components[1] : ""
+        let integerPart = parts[0]
+        let fractionalPart = parts.count == 2 ? parts[1] : ""
         
-        guard let integerBigInt = BigInt(integerPart) else { return nil }
+        // Validate and convert integer part
+        guard let integerValue = BigInt(integerPart) else { return nil }
         
-        var nanoUnits = integerBigInt * BigInt(10).power(nanoUnitDecimalsNumber)
+        // Convert to nano units
+        let multiplier = BigInt(10).power(nanoUnitDecimalsNumber)
+        var result = integerValue * multiplier
         
+        // Handle fractional part if present
         if !fractionalPart.isEmpty {
-            let paddedFractional = fractionalPart.padding(
-                toLength: nanoUnitDecimalsNumber, 
-                withPad: "0", 
-                startingAt: 0
-            ).prefix(nanoUnitDecimalsNumber)
+            // Pad or truncate fractional part to match decimal precision
+            let normalizedFraction = fractionalPart.count > nanoUnitDecimalsNumber ?
+                String(fractionalPart.prefix(nanoUnitDecimalsNumber)) :
+                fractionalPart.padding(toLength: nanoUnitDecimalsNumber, withPad: "0", startingAt: 0)
             
-            guard let fractionalBigInt = BigInt(String(paddedFractional)) else { return nil }
-            nanoUnits += fractionalBigInt
+            guard let fractionValue = BigInt(normalizedFraction) else { return nil }
+            
+            // Add fractional part with correct sign
+            if integerValue.sign == .minus {
+                result -= fractionValue
+            } else {
+                result += fractionValue
+            }
         }
         
-        return TONBalance(nanoUnits: nanoUnits)
+        return TONBalance(nanoUnits: result)
     }
 }

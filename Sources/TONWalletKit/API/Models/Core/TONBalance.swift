@@ -28,10 +28,17 @@ import Foundation
 import BigInt
 
 public struct TONBalance: Codable {
-    let nanoUnits: BigInt
+    public let nanoUnits: BigInt
     
     public init(nanoUnits: BigInt) {
         self.nanoUnits = nanoUnits
+    }
+    
+    public init?(nanoUnits: String) {
+        guard let bigInt = BigInt(nanoUnits) else {
+            return nil
+        }
+        self.nanoUnits = bigInt
     }
     
     public init(from decoder: Decoder) throws {
