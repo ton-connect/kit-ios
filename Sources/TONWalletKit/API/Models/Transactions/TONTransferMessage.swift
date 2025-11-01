@@ -28,7 +28,7 @@ import Foundation
 
 public struct TONTransferMessage: Codable {
     public var toAddress: String
-    public var amount: String
+    public var amount: TONTokenAmount
     public var stateInit: String? // base64 boc
     public var extraCurrency: TONConnectExtraCurrency?
     public var mode: TONSendMode?
@@ -37,7 +37,7 @@ public struct TONTransferMessage: Codable {
     
     public init(
         toAddress: String,
-        amount: String,
+        amount: TONTokenAmount,
         stateInit: String? = nil,
         extraCurrency: TONConnectExtraCurrency? = nil,
         mode: TONSendMode? = nil,

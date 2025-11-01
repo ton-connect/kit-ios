@@ -170,14 +170,16 @@ private extension TONWalletKitStorageType {
     func jsStorage(context: JSContext) -> (any JSWalletKitStorage)? {
         switch self {
         case .memory: nil
-        case .keychain: TONWalletKitStorageAdapter(
-            context: context,
-            storage: TONWalletKitKeychainStorage()
-        )
-        case .custom(let value): TONWalletKitStorageAdapter(
-            context: context,
-            storage: value
-        )
+        case .keychain:
+            TONWalletKitStorageAdapter(
+                context: context,
+                storage: TONWalletKitKeychainStorage()
+            )
+        case .custom(let value):
+            TONWalletKitStorageAdapter(
+                context: context,
+                storage: value
+            )
         }
     }
 }

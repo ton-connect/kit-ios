@@ -35,8 +35,10 @@ class WalletViewModel: Identifiable, ObservableObject {
     let tonWallet: TONWalletProtocol
     
     let info: WalletInfoViewModel
-    let dAppConnection: WalletDAppConnectionViewModel
-    let dAppDisconnect: WalletDAppDisconnectionViewModel
+    private(set) lazy var dAppConnection = WalletDAppConnectionViewModel(wallet: tonWallet)
+    private(set) lazy var dAppDisconnect = WalletDAppDisconnectionViewModel(wallet: tonWallet)
+    private(set) lazy var jettonsViewModel = WalletJettonsListViewModel(wallet: tonWallet)
+    private(set) lazy var nftsViewModel = WalletNFTsListViewModel(wallet: tonWallet)
     
     private let storage = WalletsStorage()
     
@@ -48,16 +50,24 @@ class WalletViewModel: Identifiable, ObservableObject {
         self.tonWallet = tonWallet
         
         self.info = WalletInfoViewModel(wallet: tonWallet)
-        self.dAppConnection = WalletDAppConnectionViewModel(wallet: tonWallet)
-        self.dAppDisconnect = WalletDAppDisconnectionViewModel(wallet: tonWallet)
     }
-    
-    func nftsViewModel() -> WalletNFTsListViewModel {
-        return WalletNFTsListViewModel(wallet: tonWallet)
-    }
-    
-    func jettonsViewModel() -> WalletJettonsListViewModel {
-        return WalletJettonsListViewModel(wallet: tonWallet)
+
+    func sendTokensViewModel() -> SendTokensViewModel? {
+        var tokens: [any SendableTokenViewModel] = []
+        
+        if let balance = info.balance {
+            tokens.append(SendableTONViewModel(balance: balance, wallet: tonWallet))
+        }
+        
+        tokens.append(
+            contentsOf: jettonsViewModel.jettons.map {
+                SendableJettonViewModel(
+                    jetton: $0.jetton,
+                    wallet: tonWallet
+                )
+            })
+        
+        return SendTokensViewModel(tokens: tokens)
     }
     
     func remove() {

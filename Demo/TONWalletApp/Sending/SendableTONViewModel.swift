@@ -1,9 +1,9 @@
 //
-//  WalletInfoViewModel.swift
+//  SendableTONViewModel.swift
 //  TONWalletApp
 //
-//  Created by Nikita Rodionov on 30.09.2025.
-//
+//  Created by Nikita Rodionov on 01.11.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,30 +27,37 @@
 import Foundation
 import TONWalletKit
 
-@MainActor
-class WalletInfoViewModel: ObservableObject {
-    let wallet: TONWalletProtocol
-
-    var address: String { wallet.address }
+class SendableTONViewModel: SendableTokenViewModel {
+    var name: String { "The Open Network" }
+    var symbol: String { "TON" }
+    var decimals: Int { 9 }
+    var requiredAmountInfo: String { "Minimum transaction: 0.0001 TON" }
     
-    @Published private(set) var formattedBalance: String?
-    private(set) var balance: TONBalance?
+    private(set) var balance: String
     
-    init(wallet: TONWalletProtocol) {
+    let wallet: any TONWalletProtocol
+    let formatter: TONBalanceFormatter = {
+        let formatter = TONBalanceFormatter()
+        formatter.nanoUnitDecimalsNumber = 9
+        return formatter
+    }()
+    
+    init(balance: TONBalance, wallet: any TONWalletProtocol) {
+        self.balance = formatter.string(from: balance) ?? "Unknown balance"
         self.wallet = wallet
     }
     
-    func load() async {
-        if formattedBalance != nil { return }
-        
-        do {
-            let formatter = TONTokenAmountFormatter()
-            let balance = try await wallet.balance()
-            self.balance = balance
-            self.formattedBalance = formatter.string(from: balance)
-        } catch {
-            self.formattedBalance = "Unknown balance"
-            debugPrint(error.localizedDescription)
+    func send(amount: String, address: String) async throws {
+        guard let amount = formatter.amount(from: amount) else {
+            return
         }
+        
+        let message = TONTransferMessage(toAddress: address, amount: amount)
+        let transaction = try await wallet.transferTONTransaction(message: message)
+        try await wallet.send(transaction: transaction)
+    }
+    
+    func updateBalance() async throws {
+        balance = formatter.string(from: try await wallet.balance()) ?? "Unknown balance"
     }
 }

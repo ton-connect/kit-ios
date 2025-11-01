@@ -67,12 +67,16 @@ struct WalletsListView: View {
             .navigationDestination(for: Paths.self) { value in
                 switch value {
                 case .wallet(let viewModel):
-                    WalletView(viewModel: viewModel)
+                    WalletView(viewModel: viewModel) {
+                        navigationPath.append(Paths.send(viewModel: $0))
+                    }
                 case .addWallet:
                     AddWalletView() {
                         viewModel.add(wallets: [$0])
                         navigationPath.removeLast()
                     }
+                case .send(let viewModel):
+                    SendTokensView(viewModel: viewModel)
                 }
             }
         }
@@ -106,6 +110,7 @@ struct WalletsListView: View {
 private enum Paths: Hashable {
     case wallet(viewModel: WalletViewModel)
     case addWallet
+    case send(viewModel: SendTokensViewModel)
     
     func hash(into hasher: inout Hasher) {
         switch self {
@@ -113,6 +118,8 @@ private enum Paths: Hashable {
             hasher.combine(viewModel.id)
         case .addWallet:
             hasher.combine("addWallet")
+        case .send:
+            hasher.combine("send")
         }
     }
     
@@ -151,7 +158,7 @@ private struct WalletRowView: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
                 
-                if let balance = walletInfoViewModel.balance {
+                if let balance = walletInfoViewModel.formattedBalance {
                     Text("\(balance) TON")
                         .font(.subheadline)
                         .foregroundColor(.secondary)

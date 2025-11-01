@@ -1,8 +1,8 @@
 //
-//  TONTokenAmount.swift
-//  TONWalletKit
+//  SendableTokernInitialsView.swift
+//  TONWalletApp
 //
-//  Created by Nikita Rodionov on 31.10.2025.
+//  Created by Nikita Rodionov on 01.11.2025.
 //  
 //  Copyright (c) 2025 TON Connect
 //
@@ -25,39 +25,19 @@
 //  SOFTWARE.
 
 import Foundation
-import BigInt
+import SwiftUI
 
-public struct TONTokenAmount: Codable {
-    public let nanoUnits: BigInt
+struct SendableTokenInitialsView: View {
+    let initials: String
     
-    public init(nanoUnits: BigInt) {
-        self.nanoUnits = nanoUnits
-    }
-    
-    public init?(nanoUnits: String) {
-        guard let bigInt = BigInt(nanoUnits) else {
-            return nil
-        }
-        self.nanoUnits = bigInt
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let stringValue = try container.decode(String.self)
-        
-        guard let bigIntValue = BigInt(stringValue) else {
-            throw DecodingError.dataCorrupted(
-                DecodingError.Context(
-                    codingPath: container.codingPath,
-                    debugDescription: "Failed to decode TONTokenAmount from string: \(stringValue)"
-                )
-            )
-        }
-        self.nanoUnits = BigInt(bigIntValue)
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(String(nanoUnits))
+    var body: some View {
+        Text(initials)
+            .font(.system(size: 16, weight: .semibold))
+            .foregroundColor(.white)
+            .frame(width: 32, height: 32)
+            .background(Color.blue)
+            .clipShape(Circle())
     }
 }
+
+
