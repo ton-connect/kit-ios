@@ -25,6 +25,7 @@
 //  SOFTWARE.
 
 import SwiftUI
+import TONWalletKit
 
 struct WalletsListView: View {
     @State private(set) var navigationPath = NavigationPath()
@@ -61,6 +62,25 @@ struct WalletsListView: View {
             .background(Color.TON.gray100)
             .navigationTitle("TON Wallets")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(
+                        action: {
+                            Task {
+                                do {
+                                    let wallets = try await TONWalletKit.mainnet().wallets()
+                                    debugPrint("Loaded wallets count - \(wallets.count)")
+                                } catch {
+                                    debugPrint(error)
+                                }
+                            }
+                        },
+                        label: {
+                            Text("Wallets")
+                        }
+                    )
+                }
+            }
             .onAppear {
                 viewModel.waitForEvents()
             }

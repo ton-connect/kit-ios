@@ -27154,8 +27154,12 @@ const DEFAULT_DURABLE_EVENTS_CONFIG = {
   // 1 minute
   cleanupIntervalMs: 60 * 1e3,
   // 1 minute
-  retentionMs: 60 * 10 * 1e3
+  retentionMs: 60 * 10 * 1e3,
   // 10 minutes
+  retryDelayMs: 500,
+  // 500 milliseconds
+  maxRetries: 20
+  // 20 retry attempts
 };
 class JettonError extends Error {
   code;
@@ -39933,7 +39937,7 @@ main$1.exports.ohmGrammar = ohmGrammar = ohmGrammar$1;
 Grammar.initApplicationParser(ohmGrammar, buildGrammar);
 var ohm = main$1.exports;
 const { assert } = common$l;
-function getProp(name, thing, fn2) {
+function getProp$2(name, thing, fn2) {
   return fn2(thing[name]);
 }
 function mapProp(name, thing, fn2) {
@@ -39944,7 +39948,7 @@ function getPropWalkFn(descriptor2) {
   if (parts.length === 2) {
     return mapProp.bind(null, parts[0]);
   }
-  return getProp.bind(null, descriptor2);
+  return getProp$2.bind(null, descriptor2);
 }
 function getProps(walkFns, thing, fn2) {
   return walkFns.map((walkFn) => walkFn(thing, fn2));
@@ -46234,6 +46238,7 @@ class EventRouter {
       }
     } catch (error2) {
       log$c.error("Error routing event", { error: error2 });
+      throw error2;
     }
   }
   /**
@@ -46296,35 +46301,35 @@ class EventRouter {
   /**
    * Notify connect request callbacks
    */
-  notifyConnectRequestCallbacks(event) {
+  async notifyConnectRequestCallbacks(event) {
     if ("error" in event) {
       return;
     }
-    this.connectRequestCallback?.(event);
+    return await this.connectRequestCallback?.(event);
   }
   /**
    * Notify transaction request callbacks
    */
   async notifyTransactionRequestCallbacks(event) {
-    this.transactionRequestCallback?.(event);
+    return await this.transactionRequestCallback?.(event);
   }
   /**
    * Notify sign data request callbacks
    */
-  notifySignDataRequestCallbacks(event) {
-    this.signDataRequestCallback?.(event);
+  async notifySignDataRequestCallbacks(event) {
+    return await this.signDataRequestCallback?.(event);
   }
   /**
    * Notify disconnect callbacks
    */
-  notifyDisconnectCallbacks(event) {
-    this.disconnectCallback?.(event);
+  async notifyDisconnectCallbacks(event) {
+    return await this.disconnectCallback?.(event);
   }
   /**
    * Notify error callbacks
    */
-  notifyErrorCallback(event) {
-    this.errorCallback?.(event);
+  async notifyErrorCallback(event) {
+    return await this.errorCallback?.(event);
   }
   /**
    * Get enabled event types based on registered callbacks
@@ -47189,6 +47194,38 @@ class StorageEventStore {
     });
   }
   /**
+   * Increment retry count and update error message for an event
+   */
+  async releaseLock(eventId, error2) {
+    return this.withLock("storage", async () => {
+      const allEvents = await this.getAllEventsFromStorage();
+      const event = allEvents[eventId];
+      if (!event) {
+        throw new Error(`Event not found: ${eventId}`);
+      }
+      if (event.status !== "processing") {
+        throw new Error(`Event not in processing status: ${eventId}, current status: ${event.status}`);
+      }
+      const addRetryCount = error2 ? 1 : 0;
+      const updatedEvent = {
+        ...event,
+        retryCount: (event.retryCount || 0) + addRetryCount,
+        lastError: error2,
+        status: "new",
+        lockedBy: void 0,
+        processingStartedAt: void 0
+      };
+      allEvents[eventId] = updatedEvent;
+      await this.storage.set(this.storageKey, allEvents);
+      log$a.debug("Event retry count incremented", {
+        eventId,
+        retryCount: updatedEvent.retryCount,
+        error: error2
+      });
+      return updatedEvent;
+    });
+  }
+  /**
    * Update event status and timestamps with optimistic locking
    */
   async updateEventStatus(eventId, status, oldStatus) {
@@ -47237,7 +47274,6 @@ class StorageEventStore {
       if (event.status === "processing" && event.processingStartedAt && now - event.processingStartedAt > processingTimeoutMs) {
         const recoveredEvent = {
           ...event,
-          status: "new",
           processingStartedAt: void 0,
           lockedBy: void 0
         };
@@ -47246,7 +47282,8 @@ class StorageEventStore {
         log$a.info("Recovered stale event", {
           eventId: event.id,
           lockedBy: event.lockedBy,
-          staleMinutes: Math.round((now - event.processingStartedAt) / 6e4)
+          staleMinutes: Math.round((now - event.processingStartedAt) / 6e4),
+          retryCount: event.retryCount || 0
         });
       }
     }
@@ -47264,9 +47301,9 @@ class StorageEventStore {
     let cleanedUpCount = 0;
     const eventsToRemove = [];
     for (const event of events) {
-      if (event.status === "completed" && event.completedAt && event.completedAt < cutoffTime) {
+      if (event.status === "completed" && event.completedAt && event.completedAt < cutoffTime || event.status === "errored" && event.createdAt < cutoffTime) {
         eventsToRemove.push(event.id);
-        log$a.debug("Marked event for cleanup", { eventId: event.id });
+        log$a.debug("Marked event for cleanup", { eventId: event.id, status: event.status });
       }
     }
     if (eventsToRemove.length > 0) {
@@ -47357,26 +47394,22 @@ const log$9 = globalLogger.createChild("EventProcessor");
 class StorageEventProcessor {
   eventStore;
   config;
-  walletManager;
   sessionManager;
   eventRouter;
   eventEmitter;
-  // Active processing loops per wallet
-  processingLoops = /* @__PURE__ */ new Map();
-  // Wake-up promises for processing loops
-  wakeUpResolvers = /* @__PURE__ */ new Map();
-  // No-wallet processing loop state
-  noWalletProcessing = false;
-  noWalletWakeUpResolver;
+  // Single global processing loop state
+  isProcessing = false;
+  wakeUpResolver;
+  // Track which wallets are registered for processing
+  registeredWallets = /* @__PURE__ */ new Set();
   // Recovery and cleanup timeouts
   recoveryTimeoutId;
   cleanupTimeoutId;
   processorConfig;
-  constructor(processorConfig = {}, eventStore, config, walletManager, sessionManager, eventRouter, eventEmitter) {
+  constructor(processorConfig = {}, eventStore, config, _walletManager, sessionManager, eventRouter, eventEmitter) {
     this.processorConfig = processorConfig;
     this.eventStore = eventStore;
     this.config = config;
-    this.walletManager = walletManager;
     this.sessionManager = sessionManager;
     this.eventRouter = eventRouter;
     this.eventEmitter = eventEmitter;
@@ -47384,8 +47417,7 @@ class StorageEventProcessor {
       return;
     }
     this.eventEmitter.on("bridge-storage-updated", () => {
-      this.triggerProcessingForAllWallets();
-      this.triggerNoWalletProcessing();
+      this.triggerProcessing();
     });
   }
   /**
@@ -47395,13 +47427,21 @@ class StorageEventProcessor {
     if (this.processorConfig.disableEvents) {
       return;
     }
-    if (this.processingLoops.get(walletAddress)) {
-      log$9.debug("Processing already active for wallet", { walletAddress });
-      return;
+    if (walletAddress) {
+      if (this.registeredWallets.has(walletAddress)) {
+        log$9.debug("Processing already registered for wallet", { walletAddress });
+      } else {
+        this.registeredWallets.add(walletAddress);
+        log$9.info("Registered wallet for event processing", { walletAddress });
+      }
     }
-    this.processingLoops.set(walletAddress, true);
-    log$9.info("Started event processing for wallet", { walletAddress });
-    this.processEventsLoop(walletAddress);
+    if (!this.isProcessing) {
+      this.isProcessing = true;
+      log$9.info("Started global event processing loop");
+      this.processEventsLoop();
+    } else {
+      this.triggerProcessing();
+    }
   }
   /**
    * Stop processing events for a wallet
@@ -47410,132 +47450,56 @@ class StorageEventProcessor {
     if (this.processorConfig.disableEvents) {
       return;
     }
-    this.processingLoops.set(walletAddress, false);
-    const wakeUpResolver = this.wakeUpResolvers.get(walletAddress);
-    if (wakeUpResolver) {
-      wakeUpResolver();
-      this.wakeUpResolvers.delete(walletAddress);
+    if (walletAddress) {
+      this.registeredWallets.delete(walletAddress);
+      log$9.info("Unregistered wallet from event processing", { walletAddress });
     }
-    log$9.info("Stopped event processing for wallet", { walletAddress });
-  }
-  /**
-   * Start processing events that don't require a wallet (e.g., connect events)
-   */
-  async startNoWalletProcessing() {
-    if (this.processorConfig.disableEvents) {
-      return;
-    }
-    if (this.noWalletProcessing) {
-      log$9.debug("No-wallet processing already active");
-      return;
-    }
-    this.noWalletProcessing = true;
-    log$9.info("Started no-wallet event processing");
-    this.processNoWalletEventsLoop();
-  }
-  /**
-   * Stop processing events that don't require a wallet
-   */
-  async stopNoWalletProcessing() {
-    if (this.processorConfig.disableEvents) {
-      return;
-    }
-    this.noWalletProcessing = false;
-    if (this.noWalletWakeUpResolver) {
-      this.noWalletWakeUpResolver();
-      this.noWalletWakeUpResolver = void 0;
-    }
-    log$9.info("Stopped no-wallet event processing");
-  }
-  /**
-   * Process next available event for a wallet
-   */
-  async processNextEvent(walletAddress) {
-    try {
-      const sessions = this.sessionManager.getSessionsForAPI().filter((session) => session.walletAddress === walletAddress);
-      if (sessions.length === 0) {
-        log$9.debug("No active sessions for wallet", { walletAddress });
-        return false;
+    if (this.registeredWallets.size === 0 && this.isProcessing && !walletAddress) {
+      this.isProcessing = false;
+      if (this.wakeUpResolver) {
+        this.wakeUpResolver();
+        this.wakeUpResolver = void 0;
       }
-      const sessionIds = sessions.map((session) => session.sessionId);
+      log$9.info("Stopped global event processing loop (no more wallets)");
+    }
+  }
+  async clearRegisteredWallets() {
+    this.registeredWallets.clear();
+    log$9.info("Cleared registered wallets from event processing");
+  }
+  /**
+   * Process next available event from any source (wallet or no-wallet)
+   * This is the main method used by the global processing loop
+   */
+  async processNextAvailableEvent() {
+    try {
+      const allLocalSessions = this.sessionManager.getSessionsForAPI();
+      const allSessions = allLocalSessions.filter((session) => session.walletAddress && this.registeredWallets.has(session.walletAddress));
       const enabledEventTypes = this.getEnabledEventTypes();
-      const events = await this.eventStore.getEventsForWallet(walletAddress, sessionIds, enabledEventTypes);
-      if (events.length === 0) {
+      const allEvents = [];
+      if (allSessions.length > 0) {
+        const walletAddresses = Array.from(new Set(allSessions.map((s2) => s2.walletAddress).filter(Boolean)));
+        for (const walletAddress2 of walletAddresses) {
+          const walletSessionIds = allSessions.filter((s2) => s2.walletAddress === walletAddress2).map((s2) => s2.sessionId);
+          const events = await this.eventStore.getEventsForWallet(walletAddress2, walletSessionIds, enabledEventTypes);
+          allEvents.push(...events);
+        }
+      }
+      const noWalletEventTypes = this.getNoWalletEnabledEventTypes();
+      if (noWalletEventTypes.length > 0) {
+        const noWalletEvents = await this.eventStore.getNoWalletEvents(noWalletEventTypes);
+        allEvents.push(...noWalletEvents);
+      }
+      allEvents.sort((a2, b2) => a2.createdAt - b2.createdAt);
+      if (allEvents.length === 0) {
         return false;
       }
-      const eventToUse = events[0];
-      const acquiredEvent = await this.eventStore.acquireLock(eventToUse.id, walletAddress);
-      if (!acquiredEvent) {
-        log$9.debug("Failed to acquire lock on event", { eventId: eventToUse.id, walletAddress });
-        return false;
-      }
-      log$9.info("Processing event", {
-        eventId: acquiredEvent.id,
-        eventType: acquiredEvent.eventType,
-        walletAddress,
-        sessionId: acquiredEvent.sessionId
-      });
-      try {
-        await this.eventRouter.routeEvent({
-          ...acquiredEvent.rawEvent,
-          walletAddress
-        });
-        await this.eventStore.updateEventStatus(acquiredEvent.id, "completed", "processing");
-        log$9.info("Event processing completed", { eventId: acquiredEvent.id });
-        return true;
-      } catch (error2) {
-        log$9.error("Error processing event", {
-          eventId: acquiredEvent.id,
-          error: error2.message
-        });
-        return false;
-      }
+      const eventToUse = allEvents[0];
+      const walletAddress = allSessions.find((s2) => s2.sessionId === eventToUse.sessionId)?.walletAddress || "no-wallet";
+      const processed = await this.processEvent(eventToUse, walletAddress);
+      return processed;
     } catch (error2) {
-      log$9.error("Error in processNextEvent", {
-        walletAddress,
-        error: error2.message
-      });
-      return false;
-    }
-  }
-  /**
-   * Process next available event that doesn't require a wallet
-   */
-  async processNextNoWalletEvent() {
-    try {
-      const enabledEventTypes = this.getNoWalletEnabledEventTypes();
-      const events = await this.eventStore.getNoWalletEvents(enabledEventTypes);
-      if (events.length === 0) {
-        return false;
-      }
-      const eventToUse = events[0];
-      const acquiredEvent = await this.eventStore.acquireLock(eventToUse.id, eventToUse?.rawEvent?.walletAddress || "no-wallet");
-      if (!acquiredEvent) {
-        log$9.debug("Failed to acquire lock on no-wallet event", { eventId: eventToUse.id });
-        return false;
-      }
-      log$9.info("Processing no-wallet event", {
-        eventId: acquiredEvent.id,
-        eventType: acquiredEvent.eventType,
-        sessionId: acquiredEvent.sessionId
-      });
-      try {
-        await this.eventRouter.routeEvent({
-          ...acquiredEvent.rawEvent
-          // Don't set wallet for no-wallet events
-        });
-        await this.eventStore.updateEventStatus(acquiredEvent.id, "completed", "processing");
-        log$9.info("No-wallet event processing completed", { eventId: acquiredEvent.id });
-        return true;
-      } catch (error2) {
-        log$9.error("Error processing no-wallet event", {
-          eventId: acquiredEvent.id,
-          error: error2.message
-        });
-        return false;
-      }
-    } catch (error2) {
-      log$9.error("Error in processNextNoWalletEvent", {
+      log$9.error("Error in processNextAvailableEvent", {
         error: error2.message
       });
       return false;
@@ -47567,7 +47531,7 @@ class StorageEventProcessor {
       try {
         const recoveredCount = await this.eventStore.recoverStaleEvents(this.config.processingTimeoutMs);
         if (recoveredCount > 0) {
-          this.triggerProcessingForAllWallets();
+          this.triggerProcessing();
         }
       } catch (error2) {
         log$9.error("Error in recovery loop", { error: error2.message });
@@ -47606,103 +47570,109 @@ class StorageEventProcessor {
   }
   // Private helper methods
   /**
-   * Main processing loop for a wallet
+   * Process a single event with retry logic
+   * Returns true if event was processed successfully, false otherwise
    */
-  async processEventsLoop(walletAddress) {
-    while (this.processingLoops.get(walletAddress)) {
+  async processEvent(event, walletAddress) {
+    const acquiredEvent = await this.eventStore.acquireLock(event.id, walletAddress);
+    if (!acquiredEvent) {
+      log$9.debug("Failed to acquire lock on event", { eventId: event.id, walletAddress });
+      return false;
+    }
+    const retryCount = event.retryCount || 0;
+    if (retryCount >= this.config.maxRetries) {
+      log$9.error("Event exceeded max retries, marking as errored", {
+        eventId: event.id,
+        retryCount,
+        maxRetries: this.config.maxRetries
+      });
       try {
-        const processed = await this.processNextEvent(walletAddress);
-        if (!processed) {
-          await this.waitForWakeUpOrTimeout(walletAddress, 1e3);
-        }
+        await this.eventStore.updateEventStatus(event.id, "errored", "processing");
       } catch (error2) {
-        log$9.error("Error in processing loop", {
-          walletAddress,
+        log$9.error("Failed to mark event as errored", {
+          eventId: event.id,
           error: error2.message
         });
-        await this.waitForWakeUpOrTimeout(walletAddress, 5e3);
       }
+      return false;
     }
-    this.wakeUpResolvers.delete(walletAddress);
-    log$9.debug("Processing loop ended for wallet", { walletAddress });
+    log$9.info("Processing event", {
+      eventId: event.id,
+      eventType: event.eventType,
+      walletAddress,
+      sessionId: event.sessionId,
+      retryCount
+    });
+    try {
+      await this.eventRouter.routeEvent({
+        ...event.rawEvent,
+        ...walletAddress ? { walletAddress } : {}
+      });
+      await this.eventStore.updateEventStatus(event.id, "completed", "processing");
+      log$9.info("Event processing completed", { eventId: event.id });
+      return true;
+    } catch (error2) {
+      const errorMessage = error2.message ?? "Unknown error";
+      log$9.error("Error processing event", {
+        eventId: event.id,
+        error: errorMessage,
+        retryCount
+      });
+      try {
+        await this.eventStore.releaseLock(event.id, errorMessage);
+      } catch (updateError) {
+        log$9.error("Failed to increment retry count", {
+          eventId: event.id,
+          error: updateError.message
+        });
+      }
+      return false;
+    }
   }
   /**
-   * Main processing loop for no-wallet events
+   * Main global processing loop for all events
    */
-  async processNoWalletEventsLoop() {
-    while (this.noWalletProcessing) {
+  async processEventsLoop() {
+    while (this.isProcessing) {
       try {
-        const processed = await this.processNextNoWalletEvent();
+        const processed = await this.processNextAvailableEvent();
         if (!processed) {
-          await this.waitForNoWalletWakeUpOrTimeout(1e3);
+          await this.waitForWakeUpOrTimeout(500);
         }
       } catch (error2) {
-        log$9.error("Error in no-wallet processing loop", {
+        log$9.error("Error in global processing loop", {
           error: error2.message
         });
-        await this.waitForNoWalletWakeUpOrTimeout(5e3);
+        await this.waitForWakeUpOrTimeout(500);
       }
     }
-    this.noWalletWakeUpResolver = void 0;
-    log$9.debug("No-wallet processing loop ended");
+    this.wakeUpResolver = void 0;
+    log$9.debug("Global processing loop ended");
   }
   /**
-   * Trigger processing for all active wallets
+   * Trigger the global processing loop
    */
-  triggerProcessingForAllWallets() {
-    for (const [walletAddress, isActive] of this.processingLoops.entries()) {
-      if (isActive) {
-        const wakeUpResolver = this.wakeUpResolvers.get(walletAddress);
-        if (wakeUpResolver) {
-          log$9.debug("Waking up processing loop for wallet", { walletAddress });
-          wakeUpResolver();
-        } else {
-          log$9.debug("No wake-up resolver found for wallet", { walletAddress });
-        }
-      }
-    }
-  }
-  /**
-   * Trigger processing for no-wallet events
-   */
-  triggerNoWalletProcessing() {
-    if (this.noWalletProcessing && this.noWalletWakeUpResolver) {
-      log$9.debug("Waking up no-wallet processing loop");
-      this.noWalletWakeUpResolver();
+  triggerProcessing() {
+    if (this.isProcessing && this.wakeUpResolver) {
+      log$9.debug("Waking up global processing loop");
+      this.wakeUpResolver();
     }
   }
   /**
    * Wait for either a wake-up signal or timeout
    */
-  async waitForWakeUpOrTimeout(walletAddress, timeoutMs) {
+  async waitForWakeUpOrTimeout(timeoutMs) {
     return new Promise((resolve) => {
       const timeoutId = setTimeout(() => {
-        this.wakeUpResolvers.delete(walletAddress);
+        this.wakeUpResolver = void 0;
         resolve();
       }, timeoutMs);
       const wakeUpResolver = () => {
         clearTimeout(timeoutId);
-        this.wakeUpResolvers.delete(walletAddress);
+        this.wakeUpResolver = void 0;
         resolve();
       };
-      this.wakeUpResolvers.set(walletAddress, wakeUpResolver);
-    });
-  }
-  /**
-   * Wait for either a wake-up signal or timeout for no-wallet processing
-   */
-  async waitForNoWalletWakeUpOrTimeout(timeoutMs) {
-    return new Promise((resolve) => {
-      const timeoutId = setTimeout(() => {
-        this.noWalletWakeUpResolver = void 0;
-        resolve();
-      }, timeoutMs);
-      const wakeUpResolver = () => {
-        clearTimeout(timeoutId);
-        this.noWalletWakeUpResolver = void 0;
-        resolve();
-      };
-      this.noWalletWakeUpResolver = wakeUpResolver;
+      this.wakeUpResolver = wakeUpResolver;
     });
   }
   /**
@@ -47716,7 +47686,7 @@ class StorageEventProcessor {
    */
   getNoWalletEnabledEventTypes() {
     const enabledTypes = this.eventRouter.getEnabledEventTypes();
-    return enabledTypes.filter((type) => type === "connect" || type === "restoreConnection").concat(["restoreConnection"]);
+    return enabledTypes.filter((type) => type === "connect" || type === "restoreConnection");
   }
 }
 const log$8 = globalLogger.createChild("WalletTonClass");
@@ -64506,7 +64476,8 @@ class Initializer {
       log$7.info("Cleaning up TonWalletKit components...");
       if (components.eventProcessor) {
         components.eventProcessor.stopRecoveryLoop();
-        await components.eventProcessor.stopNoWalletProcessing();
+        await components.eventProcessor.clearRegisteredWallets();
+        await components.eventProcessor.stopProcessing();
       }
       if (components.bridgeManager) {
         await components.bridgeManager.close();
@@ -66655,6 +66626,802 @@ async function dnsLookup(client, domain, category, resolver) {
   }
   return result;
 }
+function parseOutgoingTonTransfers(tx, addressBook, status) {
+  const actions = [];
+  for (const msg of tx.out_msgs || []) {
+    const valueNum = toPositiveNumber(msg.value);
+    if (valueNum === null) {
+      continue;
+    }
+    const sender = msg.source ?? tx.account;
+    const recipient = msg.destination;
+    const amount = BigInt(valueNum);
+    const recipientAccount = msg.init_state ? toContractAccount$3(recipient, addressBook) : toAccount(recipient, addressBook);
+    const comment = extractComment(msg) ?? void 0;
+    actions.push({
+      type: "TonTransfer",
+      id: Base64ToHex(tx.hash),
+      status,
+      TonTransfer: {
+        sender: toAccount(sender, addressBook),
+        recipient: recipientAccount,
+        amount,
+        ...comment !== void 0 ? { comment } : {}
+      },
+      simplePreview: {
+        name: "Ton Transfer",
+        description: `Transferring ${distExports$3.fromNano(String(amount))} TON`,
+        value: `${distExports$3.fromNano(String(amount))} TON`,
+        accounts: [toAccount(sender, addressBook), recipientAccount]
+      },
+      baseTransactions: [Base64ToHex(tx.hash)]
+    });
+  }
+  return actions;
+}
+function parseIncomingTonTransfers(tx, addressBook, status) {
+  const actions = [];
+  const msg = tx.in_msg;
+  if (!msg) {
+    return actions;
+  }
+  const valueNum = toPositiveNumber(msg.value);
+  if (valueNum === null) {
+    return actions;
+  }
+  const sender = msg.source ?? tx.account;
+  const recipient = msg.destination;
+  const amount = BigInt(valueNum);
+  const recipientAccount = msg.init_state ? toContractAccount$3(recipient, addressBook) : toAccount(recipient, addressBook);
+  const comment = extractComment(msg) ?? void 0;
+  actions.push({
+    type: "TonTransfer",
+    id: Base64ToHex(tx.hash),
+    status,
+    TonTransfer: {
+      sender: toAccount(sender, addressBook),
+      recipient: recipientAccount,
+      amount,
+      ...comment !== void 0 ? { comment } : {}
+    },
+    simplePreview: {
+      name: "Ton Transfer",
+      description: `Transferring ${distExports$3.fromNano(String(amount))} TON`,
+      value: `${distExports$3.fromNano(String(amount))} TON`,
+      accounts: [toAccount(sender, addressBook), recipientAccount]
+    },
+    baseTransactions: [Base64ToHex(tx.hash)]
+  });
+  return actions;
+}
+function computeStatus$1(tx) {
+  const aborted = Boolean(tx.description?.aborted);
+  const computeSuccess = Boolean(tx.description?.compute_ph?.success);
+  const actionSuccess = Boolean(tx.description?.action?.success);
+  return !aborted && computeSuccess && actionSuccess ? "success" : "failure";
+}
+function toPositiveNumber(value) {
+  if (value === null || value === void 0) {
+    return null;
+  }
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) {
+    return null;
+  }
+  return n;
+}
+function extractComment(msg) {
+  const decoded = msg.message_content && msg.message_content.decoded;
+  if (decoded && typeof decoded === "object") {
+    if (typeof decoded.comment === "string" && decoded.comment.length > 0) {
+      return decoded.comment;
+    }
+    if (decoded["@type"] === "text_comment" && typeof decoded.text === "string" && decoded.text.length > 0) {
+      return decoded.text;
+    }
+  }
+  return null;
+}
+function toContractAccount$3(address, addressBook) {
+  const acc = toAccount(address, addressBook);
+  return { ...acc, isWallet: false };
+}
+function parseContractActions(ownerFriendly, transactions, addressBook) {
+  const actions = [];
+  for (const hash of Object.keys(transactions)) {
+    const tx = transactions[hash];
+    if (asAddressFriendly(tx.account) !== ownerFriendly)
+      continue;
+    const status = computeStatus$1(tx);
+    for (const msg of tx.out_msgs || []) {
+      if (!msg || !msg.destination)
+        continue;
+      if (!msg.opcode)
+        continue;
+      const contractAddress2 = msg.destination;
+      const tonAttached = BigInt(Number(msg.value || "0"));
+      const operation = msg.opcode;
+      const child = findChildTransactionByInMsgHash(transactions, msg.hash);
+      const baseTx = child ? Base64ToHex(child.hash) : Base64ToHex(tx.hash);
+      const exec = {
+        type: "SmartContractExec",
+        id: Base64ToHex(tx.hash),
+        status,
+        SmartContractExec: {
+          executor: toAccount(ownerFriendly, addressBook),
+          contract: toContractAccount$2(contractAddress2, addressBook),
+          tonAttached,
+          operation,
+          payload: ""
+        },
+        simplePreview: {
+          name: "Smart Contract Execution",
+          description: "Execution of smart contract",
+          value: `${distExports$3.fromNano(String(tonAttached))} TON`,
+          accounts: [toAccount(ownerFriendly, addressBook), toContractAccount$2(contractAddress2, addressBook)]
+        },
+        baseTransactions: [baseTx]
+      };
+      actions.push(exec);
+      if (child && isDeploy(child, msg)) {
+        const deploy = {
+          type: "ContractDeploy",
+          id: Base64ToHex(child.hash),
+          status: computeStatus$1(child),
+          ContractDeploy: {
+            address: asAddressFriendly(contractAddress2),
+            interfaces: []
+          },
+          simplePreview: {
+            name: "Contract Deploy",
+            description: "Deploying a contract",
+            value: "",
+            accounts: [toContractAccount$2(contractAddress2, addressBook)]
+          },
+          baseTransactions: [baseTx]
+        };
+        actions.push(deploy);
+      }
+    }
+  }
+  return actions;
+}
+function isDeploy(child, msg) {
+  const created = child.orig_status === "nonexist" && child.end_status === "active";
+  const hasInit = Boolean(msg.init_state) || Boolean(child.in_msg && child.in_msg.init_state);
+  return created || hasInit;
+}
+function findChildTransactionByInMsgHash(transactions, inMsgHashBase64) {
+  for (const key2 of Object.keys(transactions)) {
+    const t = transactions[key2];
+    if (t.in_msg && t.in_msg.hash === inMsgHashBase64)
+      return t;
+  }
+  return null;
+}
+function toContractAccount$2(address, addressBook) {
+  const acc = toAccount(address, addressBook);
+  return { ...acc, isWallet: false };
+}
+function getDecoded(msg) {
+  if (!msg)
+    return null;
+  const mc = msg.message_content;
+  if (isRecord$2(mc)) {
+    const d = mc.decoded;
+    return isRecord$2(d) ? d : null;
+  }
+  return null;
+}
+function extractOpFromBody(msg) {
+  if (!msg)
+    return null;
+  const decoded = getDecoded(msg);
+  if (isRecord$2(decoded)) {
+    const t = decoded["@type"];
+    if (typeof t === "string" && t.length > 0)
+      return t;
+    const val = decoded["value"];
+    if (isRecord$2(val) && typeof val["@type"] === "string")
+      return val["@type"];
+  }
+  return null;
+}
+function matchOpWithMap(op, types2, mapping) {
+  if (!op)
+    return "";
+  const normalized = mapping[op] ?? op;
+  return types2.includes(normalized) ? normalized : "";
+}
+function isRecord$2(v2) {
+  return typeof v2 === "object" && v2 !== null;
+}
+function parseJettonActions(ownerFriendly, item, addressBook) {
+  const actions = [];
+  const txs = item.transactions || {};
+  let added = false;
+  for (const key2 of Object.keys(txs)) {
+    const tx = txs[key2];
+    const inMsg = tx.in_msg;
+    const decoded = getDecoded(inMsg);
+    if (!decoded)
+      continue;
+    if (decoded["@type"] === "jetton_transfer" && inMsg?.source && asAddressFriendly(inMsg.source) === ownerFriendly) {
+      const amount = toBigInt(readAmountValue(getProp$1(decoded, "amount")));
+      const dest = toAddr$1(getProp$1(decoded, "destination"));
+      const comment = extractCommentFromDecoded(getForwardPayloadValue(decoded)) ?? void 0;
+      const senderWallet = asAddressFriendly(tx.account);
+      const recipientWallet = findRecipientJettonWalletFromOut(tx);
+      const status = computeStatus(tx);
+      const id = findFirstOwnerTxId(ownerFriendly, item) ?? Base64ToHex(tx.hash);
+      const base2 = collectBaseTransactionsSent(item, ownerFriendly);
+      const jetton = buildJettonInfo(item, senderWallet, addressBook);
+      const action = {
+        type: "JettonTransfer",
+        id,
+        status,
+        JettonTransfer: {
+          sender: toAccount(ownerFriendly, addressBook),
+          recipient: toAccount(dest, addressBook),
+          sendersWallet: senderWallet,
+          recipientsWallet: recipientWallet ?? "",
+          amount,
+          comment,
+          jetton
+        },
+        simplePreview: jettonPreview(amount, jetton.name, jetton.decimals, jetton.image, [
+          toAccount(dest, addressBook),
+          toAccount(ownerFriendly, addressBook),
+          toContractAccount$1(jetton.address || inferMinterFromAddressBook(addressBook)?.address || "", addressBook)
+        ]),
+        baseTransactions: base2
+      };
+      actions.push(action);
+      added = true;
+    }
+  }
+  if (!added)
+    for (const key2 of Object.keys(txs)) {
+      const tx = txs[key2];
+      if (asAddressFriendly(tx.account) === ownerFriendly)
+        continue;
+      const inMsg = tx.in_msg;
+      const decoded = getDecoded(inMsg);
+      if (!decoded)
+        continue;
+      if (decoded["@type"] === "jetton_internal_transfer") {
+        const amount = toBigInt(readAmountValue(getProp$1(decoded, "amount")));
+        const senderMain = toAddr$1(getProp$1(decoded, "from"));
+        const recipientWallet = asAddressFriendly(tx.account);
+        const senderWallet = asAddressFriendly(inMsg.source);
+        const status = computeStatus(tx);
+        const id = getTraceRootId(item) ?? Base64ToHex(tx.hash);
+        const base2 = collectBaseTransactionsReceived(item, ownerFriendly);
+        const jetton = buildJettonInfo(item, recipientWallet, addressBook);
+        const action = {
+          type: "JettonTransfer",
+          id,
+          status,
+          JettonTransfer: {
+            sender: toAccount(senderMain, addressBook),
+            recipient: toAccount(ownerFriendly, addressBook),
+            sendersWallet: senderWallet,
+            recipientsWallet: recipientWallet,
+            amount,
+            jetton
+          },
+          simplePreview: jettonPreview(amount, jetton.name, jetton.decimals, jetton.image, [
+            toAccount(ownerFriendly, addressBook),
+            toAccount(senderMain, addressBook),
+            toContractAccount$1(jetton.address || inferMinterFromAddressBook(addressBook)?.address || "", addressBook)
+          ]),
+          baseTransactions: base2
+        };
+        actions.push(action);
+        added = true;
+      }
+    }
+  return actions;
+}
+function extractCommentFromDecoded(decoded) {
+  if (!isRecord$1(decoded))
+    return null;
+  const t = decoded["@type"];
+  if (t === "text_comment") {
+    const txt = decoded["text"];
+    if (typeof txt === "string" && txt.length > 0)
+      return txt;
+  }
+  return null;
+}
+function toBigInt(value) {
+  if (value === void 0 || value === null)
+    return BigInt(0);
+  const n = typeof value === "string" ? Number(value) : value;
+  return BigInt(Number.isFinite(n) ? n : 0);
+}
+function toAddr$1(raw) {
+  if (!raw)
+    return "";
+  if (typeof raw === "string") {
+    if (/^[A-Fa-f0-9]{64}$/.test(raw)) {
+      return asAddressFriendly(`0:${raw}`);
+    }
+    return asAddressFriendly(raw);
+  }
+  if (isRecord$1(raw)) {
+    const wc = raw["workchain_id"];
+    const addr = raw["address"];
+    if ((typeof wc === "string" || typeof wc === "number") && typeof addr === "string") {
+      return asAddressFriendly(`${wc}:${addr}`);
+    }
+  }
+  return "";
+}
+function jettonPreview(amount, name, decimals, image, accounts) {
+  let denom = BigInt(1);
+  for (let i = 0; i < (decimals || 0); i++)
+    denom = denom * BigInt(10);
+  const value = Number(amount) / Number(denom);
+  const human = name ? `${trimAmount(value)} ${name.includes("USD") ? "USD₮" : name}` : `${trimAmount(value)}`;
+  const preview = {
+    name: "Jetton Transfer",
+    description: `Transferring ${human}`,
+    value: human,
+    accounts
+  };
+  if (image)
+    preview.valueImage = image;
+  return preview;
+}
+function computeStatus(tx) {
+  const aborted = Boolean(tx.description?.aborted);
+  const computePh = tx.description?.["compute_ph"];
+  const action = tx.description?.["action"];
+  const computeSuccess = Boolean(computePh && Boolean(computePh["success"]));
+  const actionSuccess = Boolean(action && Boolean(action["success"]));
+  return !aborted && computeSuccess && actionSuccess ? "success" : "failure";
+}
+function findFirstOwnerTxId(ownerFriendly, item) {
+  for (const h2 of item.transactions_order || []) {
+    const tx = item.transactions[h2];
+    if (tx && asAddressFriendly(tx.account) === ownerFriendly) {
+      return Base64ToHex(h2);
+    }
+  }
+  return null;
+}
+function getTraceRootId(item) {
+  const first = (item.transactions_order || [])[0];
+  return first ? Base64ToHex(first) : null;
+}
+function findRecipientJettonWalletFromOut(tx) {
+  for (const m2 of tx.out_msgs || []) {
+    const d = getDecoded(m2);
+    if (m2.opcode === "0x178d4519" || d && d["@type"] === "jetton_internal_transfer") {
+      return asAddressFriendly(m2.destination);
+    }
+  }
+  return null;
+}
+function collectBaseTransactionsSent(item, ownerFriendly) {
+  const order = item.transactions_order || [];
+  const pairs = [];
+  for (const h2 of order) {
+    const tx = item.transactions[h2];
+    if (!tx)
+      continue;
+    if (asAddressFriendly(tx.account) === ownerFriendly)
+      continue;
+    const t = getTxType(tx);
+    if (t)
+      pairs.push({ type: t, hex: Base64ToHex(h2) });
+  }
+  const priority = {
+    jetton_transfer: 1,
+    jetton_notify: 2,
+    jetton_internal_transfer: 3,
+    excess: 4
+  };
+  pairs.sort((a2, b2) => (priority[a2.type] ?? 99) - (priority[b2.type] ?? 99));
+  return pairs.map((p2) => p2.hex);
+}
+function collectBaseTransactionsReceived(item, ownerFriendly) {
+  const order = item.transactions_order || [];
+  const findTx = (predicate) => {
+    for (const h2 of order) {
+      const tx = item.transactions[h2];
+      if (!tx)
+        continue;
+      if (predicate(tx))
+        return Base64ToHex(h2);
+    }
+    return null;
+  };
+  const root = getTraceRootId(item);
+  const isType = (tx, type) => getTxType(tx) === type;
+  const jt2 = findTx((tx) => isType(tx, "jetton_transfer"));
+  const internal = findTx((tx) => isType(tx, "jetton_internal_transfer") && asAddressFriendly(tx.account) !== ownerFriendly);
+  const excess = findTx((tx) => isType(tx, "excess"));
+  const out = [];
+  if (root)
+    out.push(root);
+  if (jt2)
+    out.push(jt2);
+  if (internal)
+    out.push(internal);
+  if (excess)
+    out.push(excess);
+  return out;
+}
+function getTxType(tx) {
+  const fromBody = extractOpFromBody(tx.in_msg);
+  return matchOpWithMap(fromBody || tx.in_msg?.opcode || "", ["jetton_transfer", "jetton_internal_transfer", "jetton_notify", "excess"], {
+    "0x0f8a7ea5": "jetton_transfer",
+    "0x178d4519": "jetton_internal_transfer",
+    "0x7362d09c": "jetton_notify",
+    "0xd53276db": "excess"
+  });
+}
+function buildJettonInfo(item, walletFriendly, addressBook) {
+  const metadata = item.metadata;
+  let master;
+  if (metadata) {
+    for (const [raw, infoAny] of Object.entries(metadata)) {
+      const info = infoAny;
+      const tokenInfo = info["token_info"];
+      if (!Array.isArray(tokenInfo))
+        continue;
+      for (const tAny of tokenInfo) {
+        const t = tAny;
+        if (t["type"] === "jetton_wallets") {
+          const extra = t["extra"];
+          const owner = extra?.["owner"];
+          if (typeof owner === "string" && asAddressFriendly(owner) && asAddressFriendly(raw) === walletFriendly) {
+            const j2 = extra?.["jetton"];
+            if (typeof j2 === "string")
+              master = j2;
+          }
+        }
+      }
+    }
+  }
+  let name = "";
+  let symbol = "";
+  let decimals = 0;
+  let image;
+  if (master && metadata && metadata[master]) {
+    const m2 = metadata[master];
+    name = m2["name"] || "";
+    symbol = m2["symbol"] || "";
+    const extra = m2["extra"];
+    const dec = extra?.["decimals"];
+    decimals = typeof dec === "string" ? parseInt(dec, 10) : 0;
+    image = m2["image"] || extra?.["_image_small"] || extra?.["_image_medium"] || extra?.["_image_big"];
+  }
+  let outAddress = master ? asAddressFriendly(master) : "";
+  if (!outAddress) {
+    const inferred = inferMinterFromAddressBook(addressBook);
+    if (inferred) {
+      outAddress = inferred.address;
+      if (!name)
+        name = inferred.name;
+      if (!symbol)
+        symbol = inferred.symbol;
+      if (!decimals)
+        decimals = inferred.decimals;
+      if (!image)
+        image = inferred.image;
+    }
+  }
+  return {
+    address: outAddress,
+    name,
+    symbol,
+    decimals,
+    image: image ?? "",
+    verification: "whitelist",
+    score: 100
+  };
+}
+function toContractAccount$1(address, addressBook) {
+  const acct = toAccount(address, addressBook);
+  return { ...acct, isWallet: false };
+}
+function inferMinterFromAddressBook(addressBook) {
+  const knownMinterByDomain = "usdt-minter.ton";
+  for (const key2 of Object.keys(addressBook)) {
+    const entry = addressBook[key2];
+    const domain = entry && entry.domain;
+    if (domain === knownMinterByDomain || typeof domain === "string" && domain.includes("minter")) {
+      return {
+        address: key2,
+        name: "Tether USD",
+        symbol: "USD₮",
+        decimals: 6,
+        image: "https://cache.tonapi.io/imgproxy/T3PB4s7oprNVaJkwqbGg54nexKE0zzKhcrPv8jcWYzU/rs:fill:200:200:1/g:no/aHR0cHM6Ly90ZXRoZXIudG8vaW1hZ2VzL2xvZ29DaXJjbGUucG5n.webp"
+      };
+    }
+  }
+  return null;
+}
+function trimAmount(v2) {
+  if (v2 >= 1)
+    return `${Number(v2.toFixed(3)).toString().replace(/\.0+$/, "")}`;
+  const s2 = v2.toFixed(9);
+  return s2.replace(/0+$/, "").replace(/\.$/, "");
+}
+function isRecord$1(v2) {
+  return typeof v2 === "object" && v2 !== null;
+}
+function getProp$1(obj, key2) {
+  return isRecord$1(obj) ? obj[key2] : void 0;
+}
+function readAmountValue(obj) {
+  if (!isRecord$1(obj))
+    return void 0;
+  const v2 = obj["value"];
+  if (typeof v2 === "string" || typeof v2 === "number")
+    return v2;
+  return void 0;
+}
+function getForwardPayloadValue(decoded) {
+  const fp = getProp$1(decoded, "forward_payload");
+  return isRecord$1(fp) ? fp["value"] : void 0;
+}
+function parseNftActions(ownerFriendly, item, addressBook) {
+  const actions = [];
+  const txs = item.transactions || {};
+  for (const key2 of Object.keys(txs)) {
+    const tx = txs[key2];
+    if (asAddressFriendly(tx.account) !== ownerFriendly)
+      continue;
+    for (const out of tx.out_msgs || []) {
+      const decoded = getDecoded(out);
+      if (decoded?.["@type"] === "nft_transfer") {
+        const newOwner = toAddr(getProp(decoded, "new_owner"));
+        const nftAddr = out.destination ? asAddressFriendly(out.destination) : "";
+        const status = computeStatus$1(tx);
+        const base2 = collectBaseTransactionsForSent(item, ownerFriendly, newOwner, nftAddr);
+        const action = buildNftAction(status, ownerFriendly, newOwner, nftAddr, addressBook, base2);
+        actions.push(action);
+      }
+    }
+  }
+  for (const key2 of Object.keys(txs)) {
+    const tx = txs[key2];
+    const acc = asAddressFriendly(tx.account);
+    const decoded = getDecoded(tx.in_msg);
+    if (!decoded)
+      continue;
+    const t = decoded["@type"];
+    if (acc === ownerFriendly && (t === "nft_ownership_assigned" || t === "nft_owner_changed")) {
+      const prevOwner = toAddr(getProp(decoded, "prev_owner")) || toAddr(getProp(decoded, "old_owner"));
+      const nftAddr = tx.in_msg?.source ? asAddressFriendly(tx.in_msg.source) : "";
+      const nftTx = findTransactionByAccount(item, nftAddr);
+      const status = nftTx ? computeStatus$1(nftTx) : computeStatus$1(tx);
+      const base2 = collectBaseTransactionsForReceived(item, ownerFriendly, nftAddr);
+      const action = buildNftAction(status, prevOwner, ownerFriendly, nftAddr, addressBook, base2);
+      actions.push(action);
+    }
+  }
+  return actions;
+}
+function buildNftAction(status, senderFriendly, recipientFriendly, nftAddress, addressBook, base2) {
+  const preview = {
+    name: "NFT Transfer",
+    description: "Transferring 1 NFT",
+    value: "1 NFT",
+    accounts: [
+      toAccount(recipientFriendly, addressBook),
+      toAccount(senderFriendly, addressBook),
+      toContractAccount(nftAddress, addressBook)
+    ]
+  };
+  return {
+    type: "NftItemTransfer",
+    id: base2[0] || "",
+    status,
+    NftItemTransfer: {
+      sender: toAccount(senderFriendly, addressBook),
+      recipient: toAccount(recipientFriendly, addressBook),
+      nft: nftAddress
+    },
+    simplePreview: preview,
+    baseTransactions: base2
+  };
+}
+function collectBaseTransactionsForSent(item, ownerFriendly, newOwner, nftAddr) {
+  const order = item.transactions_order || [];
+  let ownerTonFromNft = null;
+  let assignToNewOwner = null;
+  let nftTransferHash = null;
+  for (const h2 of order) {
+    const tx = item.transactions[h2];
+    if (!tx)
+      continue;
+    const acc = asAddressFriendly(tx.account);
+    const t = getNftType(tx);
+    if (!ownerTonFromNft && acc === ownerFriendly && tx.in_msg?.source && asAddressFriendly(tx.in_msg.source) === nftAddr) {
+      ownerTonFromNft = Base64ToHex(h2);
+    }
+    if (!assignToNewOwner && acc === asAddressFriendly(newOwner) && (t === "nft_ownership_assigned" || t === "nft_owner_changed")) {
+      assignToNewOwner = Base64ToHex(h2);
+    }
+    if (!nftTransferHash && acc === nftAddr && t === "nft_transfer") {
+      nftTransferHash = Base64ToHex(h2);
+    }
+  }
+  return [ownerTonFromNft, assignToNewOwner, nftTransferHash].filter(Boolean);
+}
+function getNftType(tx) {
+  const t = extractOpFromBody(tx.in_msg) || tx.in_msg?.opcode || "";
+  return matchOpWithMap(t, ["nft_transfer", "nft_ownership_assigned", "nft_owner_changed", "excess"], {
+    "0x5fcc3d14": "nft_transfer",
+    "0x05138d91": "nft_ownership_assigned",
+    "0x7bdd97de": "nft_owner_changed",
+    "0xd53276db": "excess"
+  });
+}
+function collectBaseTransactionsForReceived(item, ownerFriendly, nftAddr) {
+  const order = item.transactions_order || [];
+  let ownerFromNft = null;
+  const outToOwner = [];
+  const others = [];
+  for (const h2 of order) {
+    const tx = item.transactions[h2];
+    if (!tx)
+      continue;
+    const acc = asAddressFriendly(tx.account);
+    if (!ownerFromNft && acc === ownerFriendly && tx.in_msg?.source && asAddressFriendly(tx.in_msg.source) === nftAddr) {
+      ownerFromNft = Base64ToHex(h2);
+      continue;
+    }
+    if (acc !== ownerFriendly) {
+      const hex = Base64ToHex(h2);
+      const targetsOwner = (tx.out_msgs || []).some((m2) => asAddressFriendly(m2.destination) === ownerFriendly);
+      if (targetsOwner)
+        outToOwner.push(hex);
+      others.push(hex);
+    }
+  }
+  const firstOther = outToOwner[0] || null;
+  const base2 = [];
+  if (firstOther)
+    base2.push(firstOther);
+  const second = others.find((h2) => h2 !== firstOther) || null;
+  if (second)
+    base2.push(second);
+  if (ownerFromNft)
+    base2.push(ownerFromNft);
+  return base2;
+}
+function toContractAccount(address, addressBook) {
+  const acc = toAccount(address, addressBook);
+  return { ...acc, isWallet: false };
+}
+function findTransactionByAccount(item, account) {
+  for (const key2 of Object.keys(item.transactions || {})) {
+    const t = item.transactions[key2];
+    if (t && asAddressFriendly(t.account) === account)
+      return t;
+  }
+  return null;
+}
+function toAddr(raw) {
+  if (!raw)
+    return "";
+  if (typeof raw === "string") {
+    if (/^[A-Fa-f0-9]{64}$/.test(raw))
+      return asAddressFriendly(`0:${raw}`);
+    return asAddressFriendly(raw);
+  }
+  if (isRecord(raw)) {
+    const wc = raw["workchain_id"];
+    const addr = raw["address"];
+    if ((typeof wc === "string" || typeof wc === "number") && typeof addr === "string") {
+      return asAddressFriendly(`${wc}:${addr}`);
+    }
+  }
+  return "";
+}
+function isRecord(v2) {
+  return typeof v2 === "object" && v2 !== null;
+}
+function getProp(obj, key2) {
+  return isRecord(obj) ? obj[key2] : void 0;
+}
+function toAddressBook(data) {
+  const out = {};
+  for (const item of Object.keys(data)) {
+    const domain = data[item].domain;
+    if (domain) {
+      out[asAddressFriendly(item)] = { domain };
+    }
+  }
+  return out;
+}
+function toEvent(data, account, addressBook = {}) {
+  const actions = [];
+  const accountFriendly = asAddressFriendly(account);
+  const transactions = data.transactions || {};
+  for (const txHash of Object.keys(transactions)) {
+    const tx = transactions[txHash];
+    const txAccount = asAddressFriendly(tx.account);
+    if (txAccount !== accountFriendly) {
+      continue;
+    }
+    const status = computeStatus$1(tx);
+    actions.push(...parseOutgoingTonTransfers(tx, addressBook, status), ...parseIncomingTonTransfers(tx, addressBook, status));
+  }
+  actions.push(...parseContractActions(accountFriendly, transactions, addressBook));
+  actions.push(...parseJettonActions(accountFriendly, data, addressBook));
+  actions.push(...parseNftActions(accountFriendly, data, addressBook));
+  const hasJetton = actions.some((a2) => a2.type === "JettonTransfer");
+  const hasNft = actions.some((a2) => a2.type === "NftItemTransfer");
+  if (hasJetton || hasNft) {
+    const keepTypes = hasJetton ? ["JettonTransfer"] : ["NftItemTransfer"];
+    let filtered = actions.filter((a2) => keepTypes.includes(a2.type));
+    if (hasNft && !hasJetton) {
+      filtered = filtered.map((a2) => {
+        if (a2.type !== "NftItemTransfer")
+          return a2;
+        const nft = a2;
+        const out = {
+          type: "NftItemTransfer",
+          status: nft.status,
+          NftItemTransfer: nft.NftItemTransfer,
+          simplePreview: nft.simplePreview,
+          baseTransactions: nft.baseTransactions
+        };
+        return out;
+      });
+    }
+    return {
+      eventId: Base64ToHex(data.trace_id),
+      account: toAccount(account, addressBook),
+      timestamp: data.start_utime,
+      actions: filtered,
+      isScam: false,
+      lt: Number(data.start_lt),
+      inProgress: data.is_incomplete,
+      trace: data.trace,
+      transactions: data.transactions
+    };
+  }
+  return {
+    eventId: Base64ToHex(data.trace_id),
+    account: toAccount(account, addressBook),
+    timestamp: data.start_utime,
+    actions,
+    isScam: false,
+    // TODO implement detect isScam for Event
+    lt: Number(data.start_lt),
+    inProgress: data.is_incomplete,
+    trace: data.trace,
+    transactions: data.transactions
+  };
+}
+function toAccount(address, addressBook) {
+  const out = {
+    address: asAddressFriendly(address),
+    isScam: false,
+    isWallet: true
+  };
+  const record = addressBook[asAddressFriendly(address)];
+  if (record) {
+    if (record.isScam) {
+      out.isScam = record.isScam;
+    }
+    if (record.isWallet) {
+      out.isWallet = record.isWallet;
+    }
+    if (record.domain) {
+      out.name = record.domain;
+    }
+  }
+  return out;
+}
 const log$3 = globalLogger.createChild("ApiClientToncenter");
 class TonClientError extends Error {
   status;
@@ -67035,6 +67802,23 @@ class ApiClientToncenter {
       decimals: 9
     };
   }
+  async getEvents(request) {
+    const account = request.account instanceof distExports$3.Address ? request.account.toString() : request.account;
+    const limit = request.limit ?? 20;
+    const offset = request.offset ?? 0;
+    const query = {
+      account,
+      limit,
+      offset
+    };
+    const list = await this.getJson("/api/v3/traces", query);
+    const out = { events: [], limit, offset };
+    const addressBook = toAddressBook(list.address_book);
+    for (const trace of list.traces) {
+      out.events.push(toEvent(trace, account, addressBook));
+    }
+    return out;
+  }
 }
 const padBase64 = (data) => {
   return data.padEnd(data.length + (4 - data.length % 4), "=");
@@ -67126,7 +67910,7 @@ class TonWalletKit {
       this.assignComponents(components);
       this.setupEventRouting();
       this.eventProcessor.startRecoveryLoop();
-      await this.eventProcessor.startNoWalletProcessing();
+      await this.eventProcessor.startProcessing();
       this.isInitialized = true;
     } catch (error2) {
       log$2.error("TonWalletKit initialization failed", { error: error2?.toString() });
