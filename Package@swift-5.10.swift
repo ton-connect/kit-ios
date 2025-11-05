@@ -34,19 +34,28 @@ let package = Package(
             name: "TONWalletKit",
             targets: ["TONWalletKit"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.4.0")
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "TONWalletKit",
+            dependencies: [
+                .product(name: "BigInt", package: "BigInt")
+            ],
             resources: [
                 .process("Resources/JS/walletkit-ios-bridge.mjs"),
-                .process("Core/JS/Polyfilling/Fetch/JS")
+                .process("JSCore/Polyfilling/Fetch/JS")
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-enable-private-imports"], .when(configuration: .debug)),
             ]
         ),
         .testTarget(
             name: "TONWalletKitTests",
-            dependencies: ["TONWalletKit"],
+            dependencies: ["TONWalletKit"]
         ),
     ],
     swiftLanguageVersions: [.v5]
