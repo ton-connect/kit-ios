@@ -33,21 +33,27 @@ struct WalletView: View {
     
     @EnvironmentObject var appStateManager: TONWalletAppStateManager
     
+    let onSend: (SendTokensViewModel) -> Void
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 16.0) {
-                WalletInfoView(viewModel: viewModel.info)
-                    .widget()
+                WalletInfoView(viewModel: viewModel.info) {
+                    if let viewModel = viewModel.sendTokensViewModel() {
+                        onSend(viewModel)
+                    }
+                }
+                .widget()
                 
                 WalletDAppConnectionView(viewModel: viewModel.dAppConnection)
                     .widget()
                 
                 WalletDAppDisconnectionView(viewModel: viewModel.dAppDisconnect)
                 
-                WalletNFTsListView(viewModel: viewModel.nftsViewModel())
+                WalletNFTsListView(viewModel: viewModel.nftsViewModel)
                     .widget()
                 
-                WalletJettonsListView(viewModel: viewModel.jettonsViewModel())
+                WalletJettonsListView(viewModel: viewModel.jettonsViewModel)
                     .widget()
             }
             .padding(16.0)

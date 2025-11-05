@@ -29,12 +29,14 @@ import SwiftUI
 struct WalletInfoView: View {
     @ObservedObject var viewModel: WalletInfoViewModel
     
+    let onSend: () -> Void
+    
     var body: some View {
         VStack(spacing: 8.0) {
             Text("BALANCE")
                 .font(.headline)
                 .foregroundStyle(.gray)
-            Text(viewModel.balance ?? "")
+            Text(viewModel.formattedBalance ?? "")
                 .font(.largeTitle)
             
             VStack(spacing: 8.0) {
@@ -58,6 +60,11 @@ struct WalletInfoView: View {
             .padding(16.0)
             .background(Color.gray.opacity(0.1))
             .cornerRadius(AppRadius.standard)
+            
+            Button("Send") {
+                onSend()
+            }
+            .buttonStyle(TONButtonStyle(type: .primary))
         }
         .task {
             await viewModel.load()

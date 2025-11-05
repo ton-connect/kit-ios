@@ -27,14 +27,22 @@
 import Foundation
 
 public struct TONConnectRequestEvent: Codable {
-    private let id: String
-    private let from: String
+    public let id: String?
+    public let from: String?
+    public var walletAddress: String?
+    public let domain: String?
+    public let isJsBridge: Bool?
+    public let tabId: String?
+    public let sessionId: String?
+    public let isLocal: Bool?
+    public let messageId: String?
+    public let traceId: String?
+    public let method: String?
+    public let params: [String]?
     
     public let preview: Preview?
     public let request: [Request]?
     public let dAppInfo: TONDAppInfo?
-    
-    public var walletAddress: String?
 }
 
 public extension TONConnectRequestEvent {

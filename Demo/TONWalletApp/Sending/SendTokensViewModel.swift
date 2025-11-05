@@ -1,8 +1,8 @@
 //
-//  TONTokenAmount.swift
-//  TONWalletKit
+//  SendTokensViewModel.swift
+//  TONWalletApp
 //
-//  Created by Nikita Rodionov on 31.10.2025.
+//  Created by Nikita Rodionov on 01.11.2025.
 //  
 //  Copyright (c) 2025 TON Connect
 //
@@ -25,39 +25,45 @@
 //  SOFTWARE.
 
 import Foundation
-import BigInt
 
-public struct TONTokenAmount: Codable {
-    public let nanoUnits: BigInt
+@MainActor
+class SendTokensViewModel: ObservableObject {
+    @Published private(set) var selectedToken: any SendableTokenViewModel
+    @Published private(set) var isSending = false
     
-    public init(nanoUnits: BigInt) {
-        self.nanoUnits = nanoUnits
+    private let tokens: [any SendableTokenViewModel]
+    
+    var availableTokens: [any SendableTokenViewModel] {
+        return tokens
     }
     
-    public init?(nanoUnits: String) {
-        guard let bigInt = BigInt(nanoUnits) else {
+    init?(tokens: [any SendableTokenViewModel]) {
+        if tokens.isEmpty {
             return nil
         }
-        self.nanoUnits = bigInt
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let stringValue = try container.decode(String.self)
         
-        guard let bigIntValue = BigInt(stringValue) else {
-            throw DecodingError.dataCorrupted(
-                DecodingError.Context(
-                    codingPath: container.codingPath,
-                    debugDescription: "Failed to decode TONTokenAmount from string: \(stringValue)"
-                )
-            )
-        }
-        self.nanoUnits = BigInt(bigIntValue)
+        self.tokens = tokens
+        self.selectedToken = tokens[0]
     }
     
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(String(nanoUnits))
+    func send(amount: String, address: String) {
+        if isSending { return }
+        
+        isSending = true
+        
+        Task {
+            do {
+                try await selectedToken.send(amount: amount, address: address)
+                try? await selectedToken.updateBalance()
+                objectWillChange.send()
+            } catch {
+                debugPrint(error)
+            }
+            isSending = false
+        }
+    }
+    
+    func select(token: any SendableTokenViewModel) {
+        selectedToken = token
     }
 }

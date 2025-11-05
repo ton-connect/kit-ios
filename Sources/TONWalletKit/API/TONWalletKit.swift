@@ -50,7 +50,7 @@ public class TONWalletKit {
             
             let storage = storage.jsStorage(context: context)
             
-            try await context.initWalletKit(configuration, AnyJSValueEncodable(storage as Any))
+            try await context.initWalletKit(configuration, AnyJSValueEncodable(storage))
             
             sharedPool.store(configuration: configuration, walletKitContext: context)
             return TONWalletKit(context: context)
@@ -120,6 +120,9 @@ public class TONWalletKit {
         return wallets
     }
 
+    public func send(transaction: TONConnectTransactionParamContent, from wallet: any TONWalletProtocol) async throws {
+        try await context.walletKit.sendTransaction(AnyJSValueEncodable(wallet), transaction)
+    }
         
     public func connect(url: String) async throws {
         try await context.walletKit.handleTonConnectUrl(url)
@@ -167,14 +170,16 @@ private extension TONWalletKitStorageType {
     func jsStorage(context: JSContext) -> (any JSWalletKitStorage)? {
         switch self {
         case .memory: nil
-        case .keychain: TONWalletKitStorageAdapter(
-            context: context,
-            storage: TONWalletKitKeychainStorage()
-        )
-        case .custom(let value): TONWalletKitStorageAdapter(
-            context: context,
-            storage: value
-        )
+        case .keychain:
+            TONWalletKitStorageAdapter(
+                context: context,
+                storage: TONWalletKitKeychainStorage()
+            )
+        case .custom(let value):
+            TONWalletKitStorageAdapter(
+                context: context,
+                storage: value
+            )
         }
     }
 }

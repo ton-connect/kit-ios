@@ -1,8 +1,8 @@
 //
-//  TONTokenAmount.swift
-//  TONWalletKit
+//  SendableTokenViewModel.swift
+//  TONWalletApp
 //
-//  Created by Nikita Rodionov on 31.10.2025.
+//  Created by Nikita Rodionov on 01.11.2025.
 //  
 //  Copyright (c) 2025 TON Connect
 //
@@ -25,39 +25,23 @@
 //  SOFTWARE.
 
 import Foundation
-import BigInt
 
-public struct TONTokenAmount: Codable {
-    public let nanoUnits: BigInt
+protocol SendableTokenViewModel {
+    var name: String { get }
+    var symbol: String { get }
+    var balance: String { get }
+    var decimals: Int { get }
+    var requiredAmountInfo: String { get }
     
-    public init(nanoUnits: BigInt) {
-        self.nanoUnits = nanoUnits
-    }
+    func send(amount: String, address: String) async throws
+    func updateBalance() async throws
+}
+
+extension SendableTokenViewModel {
     
-    public init?(nanoUnits: String) {
-        guard let bigInt = BigInt(nanoUnits) else {
-            return nil
-        }
-        self.nanoUnits = bigInt
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let stringValue = try container.decode(String.self)
-        
-        guard let bigIntValue = BigInt(stringValue) else {
-            throw DecodingError.dataCorrupted(
-                DecodingError.Context(
-                    codingPath: container.codingPath,
-                    debugDescription: "Failed to decode TONTokenAmount from string: \(stringValue)"
-                )
-            )
-        }
-        self.nanoUnits = BigInt(bigIntValue)
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(String(nanoUnits))
+    var initials: String {
+        let components = name.components(separatedBy: " ")
+        let initials = components.compactMap { $0.first }.prefix(2)
+        return String(initials).uppercased()
     }
 }

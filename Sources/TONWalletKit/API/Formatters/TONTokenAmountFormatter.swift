@@ -65,7 +65,7 @@ open class TONTokenAmountFormatter: Formatter {
         return "\(negativePrefix)\(integerPart)\(fractionPart)"
     }
     
-    open func balance(from string: String) -> TONBalance? {
+    open func amount(from string: String) -> TONTokenAmount? {
         let cleanInput = string.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleanInput.isEmpty else { return nil }
         
