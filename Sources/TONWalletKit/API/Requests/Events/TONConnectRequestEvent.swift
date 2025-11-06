@@ -38,7 +38,6 @@ public struct TONConnectRequestEvent: Codable {
     public let messageId: String?
     public let traceId: String?
     public let method: String?
-    public let params: [String]?
     
     public let preview: Preview?
     public let request: [Request]?

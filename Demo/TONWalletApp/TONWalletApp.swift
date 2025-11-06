@@ -41,8 +41,7 @@ struct TONWalletApp: App {
                 ProgressView()
                     .task {
                         do {
-                            let kit = try await TONWalletKit.mainnet()
-                            try await kit.add(eventsHandler: TONEventsHandler.shared)
+                            try await TONWalletKit.mainnet()
                             initialized = true
                         } catch {
                             debugPrint(error.localizedDescription)
@@ -57,6 +56,7 @@ extension TONWalletKit {
     
     private static var _mainnet: TONWalletKit?
     
+    @discardableResult
     static func mainnet() async throws -> TONWalletKit {
         if let _mainnet {
             return _mainnet

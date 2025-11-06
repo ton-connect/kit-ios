@@ -78,6 +78,11 @@ class WalletsListViewModel: ObservableObject {
                 }
             }
             .store(in: &subscribers)
+        
+        Task {
+            let kit = try await TONWalletKit.mainnet()
+            try await kit.add(eventsHandler: TONEventsHandler.shared)
+        }
     }
     
     private func remove(walletID: WalletViewModel.ID) {

@@ -103,16 +103,16 @@ public class TONWalletKit {
         return try await add(wallet, walletAdapter.version)
     }
     
-    public func wallets() throws -> [any TONWalletProtocol] {
-        let value: JSValue = try context.walletKit.getWallets()
-        let jsWallets = value.toArray().compactMap { JSValue(object: $0, in: context) }
+    public func wallets() async throws -> [any TONWalletProtocol] {
+        let value: JSValue = try await context.walletKit.getWallets()
+        let jsWallets = value.toObjectsArray()
         
         var wallets: [TONWallet] = []
         
         for jsWallet in jsWallets {
             let wallet = TONWallet(
                 wallet: jsWallet,
-                address: try jsWallet.getAddress(),
+                address: try await jsWallet.getAddress(),
                 version: TONWalletVersion(value: jsWallet.version)
             )
             wallets.append(wallet)
