@@ -58,9 +58,7 @@ class JSWalletKitContext: JSContext {
         
         bridgeEventHandlers = JSBridgeRawEventsHandler(handlers: [eventsHandler])
         
-        let callback: @convention(block) (String, JSValue) -> JSValue? = {
-            [weak self] eventType,
-            eventData in
+        let callback: @convention(block) (String, JSValue) -> JSValue? = { [weak self] eventType, eventData in
             guard let self else { return nil }
             
             debugPrint("Swift Bridge: Received event '\(eventType)'")
