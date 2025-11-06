@@ -1,9 +1,9 @@
 //
-//  TONEventsHandler.swift
-//  TONWalletApp
+//  JSValue+ObjectsArray.swift
+//  TONWalletKit
 //
-//  Created by Nikita Rodionov on 06.10.2025.
-//
+//  Created by Nikita Rodionov on 06.11.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,18 +25,14 @@
 //  SOFTWARE.
 
 import Foundation
-import Combine
-import TONWalletKit
+import JavaScriptCore
 
-class TONEventsHandler: TONBridgeEventsHandler {
-    let events = PassthroughSubject<TONWalletKitEvent, Never>()
+extension JSValue {
     
-    static let shared = TONEventsHandler()
-    
-    private init() {}
-    
-    func handle(event: TONWalletKitEvent) throws {
-        events.send(event)
+    func toObjectsArray() -> [JSValue] {
+        guard let length: Int32 = self.length else {
+            return []
+        }
+        return (0..<length).compactMap { atIndex(Int($0)) }
     }
 }
-
