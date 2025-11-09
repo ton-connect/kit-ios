@@ -2277,14 +2277,16 @@ window.injectWalletKit = () => {
       deviceInfo,
       walletInfo,
       isWalletBrowser: true
-    }, new SwiftTransport(window, "key-tonconnect"));
+    }, new SwiftTransport(window));
     console.log("TonConnect bridge injected - forwarding to extension");
   } catch (error) {
     console.error("Failed to inject TonConnect bridge:", error);
   }
 };
+window.id = crypto.randomUUID();
 class SwiftTransport {
   constructor(window2) {
+    __publicField(this, "frameID");
     __publicField(this, "window");
     __publicField(this, "eventCallback", null);
     __publicField(this, "messageListener", null);

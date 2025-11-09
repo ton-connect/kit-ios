@@ -52,7 +52,7 @@ struct WalletConnectionRequestView: View {
                 VStack(alignment: .leading, spacing: 8.0) {
                     Text("Requested Permissions:")
                         .textLG(weight: .medium)
-                        .foregroundStyle(Color.TON.gray900)
+                        .foregroundColor(Color.TON.gray900)
                     
                     ForEach(0..<viewModel.permissions.count, id: \.self) { index in
                         let permission = viewModel.permissions[index]
@@ -60,13 +60,13 @@ struct WalletConnectionRequestView: View {
                         VStack(alignment: .leading, spacing: AppSpacing.spacing(2.0)) {
                             Text(permission.title ?? "")
                                 .textSM(weight: .medium)
-                                .foregroundStyle(Color.TON.gray900)
+                                .foregroundColor(Color.TON.gray900)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .multilineTextAlignment(.leading)
                             
                             Text(permission.description ?? "")
                                 .textXS()
-                                .foregroundStyle(Color.TON.gray600)
+                                .foregroundColor(Color.TON.gray600)
                                 .multilineTextAlignment(.leading)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
@@ -76,9 +76,32 @@ struct WalletConnectionRequestView: View {
                 }
             }
             
+            // Wallets Selection Section
+            VStack(alignment: .leading, spacing: AppSpacing.spacing(2.0)) {
+                Text("Select Wallet")
+                    .textLG(weight: .medium)
+                    .foregroundColor(Color.TON.gray900)
+                
+                ScrollView {
+                    VStack(spacing: AppSpacing.spacing(2.0)) {
+                        ForEach(viewModel.wallets) { wallet in
+                            WalletSelectionRow(
+                                wallet: wallet,
+                                isSelected: viewModel.selectedWallet?.id == wallet.id,
+                                onTap: {
+                                    viewModel.selectedWallet = wallet
+                                }
+                            )
+                        }
+                    }
+                    .padding(.vertical, AppSpacing.spacing(1.0))
+                }
+                .frame(maxHeight: 200)
+            }
+            
             Text("Only connect to trusted applications. This will give the dApp access to your wallet address and allow it to request transactions.")
                 .textSM()
-                .foregroundStyle(Color.TON.yellow800)
+                .foregroundColor(Color.TON.yellow800)
                 .multilineTextAlignment(.leading)
                 .widget(style: .block(.warning))
                 .fixedSize(horizontal: false, vertical: true)
@@ -99,5 +122,67 @@ struct WalletConnectionRequestView: View {
         }
         .padding(AppSpacing.spacing(4.0))
         .onReceive(viewModel.dismiss) { dismiss() }
+    }
+}
+
+struct WalletSelectionRow: View {
+    let wallet: WalletConnectionRequestViewModel.SelectableWallet
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: AppSpacing.spacing(3.0)) {
+                // Wallet Icon/Initial
+                Circle()
+                    .fill(Color.TON.blue500)
+                    .frame(width: 40, height: 40)
+                    .overlay(
+                        Text(String(wallet.address.prefix(2)))
+                            .textSM(weight: .bold)
+                            .foregroundColor(.white)
+                    )
+                
+                VStack(alignment: .leading, spacing: AppSpacing.spacing(0.5)) {
+                    Text("Wallet")
+                        .textBase(weight: .medium)
+                        .foregroundColor(Color.TON.gray900)
+                        .lineLimit(1)
+                    
+                    Text(formatAddress(wallet.address))
+                        .textSM()
+                        .foregroundColor(Color.TON.gray500)
+                        .lineLimit(1)
+                }
+                
+                Spacer()
+                
+                // Selection Indicator
+                Circle()
+                    .stroke(isSelected ? Color.TON.blue500 : Color.TON.gray300, lineWidth: 2)
+                    .frame(width: 20, height: 20)
+                    .overlay(
+                        Circle()
+                            .fill(Color.TON.blue500)
+                            .frame(width: 12, height: 12)
+                            .opacity(isSelected ? 1 : 0)
+                    )
+            }
+            .padding(AppSpacing.spacing(3.0))
+            .background(isSelected ? Color.TON.blue50 : Color.TON.white)
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.standard)
+                    .stroke(isSelected ? Color.TON.blue500 : Color.TON.gray200, lineWidth: 1)
+            )
+            .cornerRadius(AppRadius.standard)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func formatAddress(_ address: String) -> String {
+        guard address.count > 8 else { return address }
+        let start = String(address.prefix(4))
+        let end = String(address.suffix(4))
+        return "\(start)...\(end)"
     }
 }
