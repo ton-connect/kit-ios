@@ -32,15 +32,25 @@ public extension WKWebView {
     
     func inject(walletKit: TONWalletKit, key: String? = nil) throws {
         #if DEBUG
+        
+        #if os(macOS)
+        if #available(macOS 13.3, *) {
+            self.isInspectable = true
+        }
+        #endif
+        
+        #if os(iOS)
         if #available(iOS 16.4, *) {
             self.isInspectable = true
         }
         #endif
         
+        #endif
+        
         let options = TONBridgeInjectOptions(
             deviceInfo: walletKit.configuration.deviceInfo,
             walletInfo: walletKit.configuration.walletManifest,
-            jsBridgeKey: key,
+            jsBridgeKey: key ?? walletKit.configuration.bridge.webViewInjectionKey,
             injectTonKey: nil,
             isWalletBrowser: true
         )
@@ -116,7 +126,7 @@ private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHan
 
         Task { @MainActor [weak self] in
             do {
-                try await injectableBridge.request(message: eventMessage, request: message.body)
+                try await self?.injectableBridge.request(message: eventMessage, request: message.body)
             } catch {
                 self?.subscribers.removeValue(forKey: messageID)
                 replyHandler(nil, error.localizedDescription)
