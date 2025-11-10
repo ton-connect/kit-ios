@@ -70656,6 +70656,12 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
     isReady() {
       return initialized && walletKit;
     },
+    processInjectedBridgeRequest(messageInfo, request) {
+      return __async(this, null, function* () {
+        if (!initialized) throw new Error("WalletKit Bridge not initialized");
+        return walletKit.processInjectedBridgeRequest(messageInfo, request);
+      });
+    },
     setEventsListeners(callback) {
       if (!initialized) throw new Error("WalletKit Bridge not initialized");
       console.log("🔔 Bridge: Adding event listeners");
@@ -70730,12 +70736,6 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
           client: walletKit.getApiClient(),
           network: parameters.network
         });
-      });
-    },
-    processInjectedBridgeRequest(messageInfo, request) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        return walletKit.processInjectedBridgeRequest(messageInfo, request);
       });
     },
     createV5R1WalletUsingMnemonic(mnemonic2, parameters) {
