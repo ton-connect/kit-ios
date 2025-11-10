@@ -289,6 +289,83 @@ class ExtensionTransport {
     this.extensionId = null;
   }
 }
+class IframeWatcher {
+  onIframeDetected;
+  observer = null;
+  constructor(onIframeDetected) {
+    this.onIframeDetected = onIframeDetected;
+  }
+  /**
+   * Start watching for iframes
+   */
+  start() {
+    if (this.observer) {
+      return;
+    }
+    this.observer = new MutationObserver((mutations) => {
+      this.handleMutations(mutations);
+    });
+    this.observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+  /**
+   * Stop watching for iframes
+   */
+  stop() {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
+  }
+  /**
+   * Handle DOM mutations
+   */
+  handleMutations(mutations) {
+    for (const mutation of mutations) {
+      if (mutation.type !== "childList") {
+        continue;
+      }
+      for (const node of mutation.addedNodes) {
+        this.handleAddedNode(node);
+      }
+    }
+  }
+  /**
+   * Handle a single added node
+   */
+  handleAddedNode(node) {
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return;
+    }
+    const element = node;
+    if (element.tagName === "IFRAME") {
+      this.setupIframeListeners(element);
+      this.onIframeDetected();
+      return;
+    }
+    const iframes = element.querySelectorAll("iframe");
+    if (iframes.length > 0) {
+      iframes.forEach((iframe) => {
+        this.setupIframeListeners(iframe);
+      });
+      this.onIframeDetected();
+    }
+  }
+  /**
+   * Setup event listeners for iframe
+   */
+  setupIframeListeners(iframe) {
+    const handleIframeEvent = () => {
+      this.onIframeDetected();
+    };
+    iframe.removeEventListener("load", handleIframeEvent);
+    iframe.removeEventListener("error", handleIframeEvent);
+    iframe.addEventListener("load", handleIframeEvent);
+    iframe.addEventListener("error", handleIframeEvent);
+  }
+}
 class WindowAccessor {
   window;
   bridgeKey;
@@ -405,6 +482,10 @@ function injectBridge(window2, options, argsTransport) {
   const bridge = new TonConnectBridge(config, transport);
   windowAccessor.injectBridge(bridge);
   console.log(`TonConnect JS Bridge injected for ${config.jsBridgeKey} - forwarding to extension`);
+  const iframeWatcher = new IframeWatcher(() => {
+    transport.requestContentScriptInjection();
+  });
+  iframeWatcher.start();
   return;
 }
 function injectBridgeCode(window2, options, transport) {
@@ -497,7 +578,6 @@ class SwiftTransport {
       let response = yield window.webkit.messageHandlers.walletKitInjectionBridge.postMessage(
         __spreadProps(__spreadValues({}, request), { frameID: window.id, timeout })
       );
-      console.log("SwiftTransport received response:", response);
       if (response.success) {
         return Promise.resolve(response.payload);
       } else {
