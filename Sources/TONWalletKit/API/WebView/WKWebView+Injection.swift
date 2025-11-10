@@ -63,7 +63,7 @@ public extension WKWebView {
         configuration.userContentController.addScriptMessageHandler(
             TONWalletKitInjectionMessagesHandler(injectableBridge: walletKit.injectableBridge()),
             contentWorld: .page,
-            name: "tonConnectBridge"
+            name: "walletKitInjectionBridge"
         )
     }
 }
