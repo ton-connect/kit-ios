@@ -80,7 +80,7 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
 
 extension TONWalletKitConfiguration {
     
-    struct DeviceInfo: Encodable, Hashable {
+    struct DeviceInfo: Codable, Hashable {
         let platform: String
         let appName: String
         let appVersion: String
@@ -101,7 +101,7 @@ extension TONWalletKitConfiguration {
         }
     }
     
-    public struct Manifest: Encodable, Hashable {
+    public struct Manifest: Codable, Hashable {
         let name: String
         let appName: String
         let imageUrl: String
@@ -169,12 +169,12 @@ extension TONWalletKitConfiguration {
         }
     }
     
-    enum FeatureName: String, Encodable {
+    enum FeatureName: String, Codable {
         case sendTransaction = "SendTransaction"
         case signData = "SignData"
     }
     
-    public struct RawFeature: Encodable, Hashable {
+    public struct RawFeature: Codable, Hashable {
         let name: FeatureName
         
         private(set) var types: [TONSignDataType]?

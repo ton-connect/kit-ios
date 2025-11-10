@@ -25,19 +25,33 @@
 //  SOFTWARE.
 
 import Foundation
+import Combine
 import WebKit
 
 public extension WKWebView {
-    func inject(walletKit: TONWalletKit) throws {
+    
+    func inject(walletKit: TONWalletKit, key: String? = nil) throws {
         #if DEBUG
         if #available(iOS 16.4, *) {
             self.isInspectable = true
         }
         #endif
         
+        let options = TONBridgeInjectOptions(
+            deviceInfo: walletKit.configuration.deviceInfo,
+            walletInfo: walletKit.configuration.walletManifest,
+            jsBridgeKey: key,
+            injectTonKey: nil,
+            isWalletBrowser: true
+        )
+        
+        let encoder = JSONEncoder()
+        let jsonData = try encoder.encode(options)
+        let jsonString = String(data: jsonData, encoding: .utf8)!
+        
         let injectionScriptSource = """
             \(try JSWalletKitInjectionScript().load())
-            window.injectWalletKit();
+            window.injectWalletKit(\(jsonString));
         """
         let injectionScript = WKUserScript(
             source: injectionScriptSource,
@@ -47,56 +61,67 @@ public extension WKWebView {
         
         configuration.userContentController.addUserScript(injectionScript)
         configuration.userContentController.addScriptMessageHandler(
-            TONWalletKitInjectionMessagesHandler(walletKit: walletKit),
+            TONWalletKitInjectionMessagesHandler(injectableBridge: walletKit.injectableBridge()),
             contentWorld: .page,
             name: "tonConnectBridge"
         )
     }
 }
 
-private struct JSWalletKitInjectionScript: JSScript {
-
-    func load() throws -> String {
-        let jsFile = "inject"
-        
-        guard let path = Bundle.module.path(forResource: jsFile, ofType: "mjs") else {
-            throw "Unable to find \(jsFile).mjs file"
-        }
-        
-        var code = try String(contentsOfFile: path, encoding: .utf8)
-        
-        code = code.replacingOccurrences(
-            of: "export {\n  A3 as main\n};",
-            with: """
-            var main = A3;
-            main();
-            """
-        )
-        
-        return code
-    }
-}
-
 private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHandlerWithReply {
-    private let walletKit: TONWalletKit
+    private let injectableBridge: TONWalletKit.InjectableBridge
+    private var subscribers: [String: AnyCancellable] = [:]
     
-    init(walletKit: TONWalletKit) {
-        self.walletKit = walletKit
+    private let defaultTimeout: Int = 10000
+    
+    init(injectableBridge: TONWalletKit.InjectableBridge) {
+        self.injectableBridge = injectableBridge
     }
     
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) async -> (Any?, String?) {
+    func userContentController(
+        _ userContentController: WKUserContentController,
+        didReceive message: WKScriptMessage,
+        replyHandler: @escaping @MainActor (Any?, String?) -> Void
+    ) {
         let domain = message.frameInfo.request.url.flatMap {
             let components = URLComponents(url: $0, resolvingAgainstBaseURL: false)
             return components?.host
         }
         
-        let eventMessage = TONBridgeEventMessage(messageId: UUID().uuidString, tabId: "", domain: domain)
+        let messageID = UUID().uuidString
+        let messageDictionary = message.body as? [String: Any]
         
-        do {
-            let result = try await walletKit.processInjectedBridgeRequest(message: eventMessage, request: message.body)
-            return (result, nil)
-        } catch {
-            return (nil, error.localizedDescription)
+        let eventMessage = TONBridgeEventMessage(
+            messageId: messageID,
+            tabId: messageDictionary?["frameID"] as? String,
+            domain: domain
+        )
+        
+        let timeout = messageDictionary?["timeout"] as? Int
+        
+        subscribers[messageID] = injectableBridge.waitForResponse()
+            .filter { $0.messageID == messageID }
+            .prefix(1)
+            .timeout(.milliseconds(timeout ?? defaultTimeout), scheduler: DispatchQueue.main) {
+                "Timeout waiting for response for message with ID \(messageID)"
+            }
+            .sink(receiveCompletion: { [weak self] completion in
+                if case .failure(let error) = completion {
+                    replyHandler(nil, error.localizedDescription)
+                }
+                self?.subscribers.removeValue(forKey: messageID)
+            }, receiveValue: { value in
+                replyHandler(value.message, nil)
+            })
+
+        Task { @MainActor [weak self] in
+            do {
+                try await injectableBridge.request(message: eventMessage, request: message.body)
+            } catch {
+                self?.subscribers.removeValue(forKey: messageID)
+                replyHandler(nil, error.localizedDescription)
+            }
         }
     }
 }
+

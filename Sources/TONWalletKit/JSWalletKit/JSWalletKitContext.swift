@@ -25,10 +25,12 @@
 //  SOFTWARE.
 
 import Foundation
+import Combine
 import JavaScriptCore
 
 class JSWalletKitContext: JSContext {
     private var bridgeEventHandlers: JSBridgeRawEventsHandler?
+    let bridgeTransport = JSBridgeTransport()
     
     override init() {
         super.init()
@@ -48,6 +50,21 @@ class JSWalletKitContext: JSContext {
     func load(script: any JSScript) async throws {
         let code = try await script.load()
         self.evaluateScript(code)
+    }
+    
+    func initializeWalletKit(
+        configuration: any JSValueEncodable,
+        storage: any JSValueEncodable
+    ) async throws {
+        let bridgeTransport: @convention(block) (JSValue) -> Void = { [weak self] response in
+            do {
+                let response: JSBridgeTransportResponse = try response.decode()
+                self?.bridgeTransport.send(response: response)
+            } catch {
+                debugPrint("Swift Bridge: Failed to decode transport response - \(error)")
+            }
+        }
+        try await self.initWalletKit(configuration, storage, AnyJSValueEncodable(bridgeTransport))
     }
     
     func add(eventsHandler: any JSBridgeEventsHandler) async throws {

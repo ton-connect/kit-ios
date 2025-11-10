@@ -25,6 +25,7 @@
 //  SOFTWARE.
 
 import Foundation
+import Combine
 
 public class TONWalletKit {
     private static let sharedPool = TONWalletKitReusableContextPool()
@@ -57,7 +58,10 @@ public class TONWalletKit {
             
             let storage = storage.jsStorage(context: context)
             
-            try await context.initWalletKit(configuration, AnyJSValueEncodable(storage))
+            try await context.initializeWalletKit(
+                configuration: configuration,
+                storage: AnyJSValueEncodable(storage)
+            )
             
             sharedPool.store(configuration: configuration, walletKitContext: context)
             return TONWalletKit(configuration: configuration, context: context)
@@ -159,9 +163,11 @@ public class TONWalletKit {
         }
     }
     
-    func processInjectedBridgeRequest(message: TONBridgeEventMessage, request: Any) async throws -> Any? {
-        let value: JSValue = try await walletKit.processInjectedBridgeRequest(message,AnyJSValueEncodable(request))
-        return value.toObject()
+    func injectableBridge() -> TONWalletKit.InjectableBridge {
+        TONWalletKit.InjectableBridge(
+            walletKit: walletKit,
+            bridgeTransport: context.bridgeTransport
+        )
     }
 }
 
@@ -193,5 +199,46 @@ private extension TONWalletKitStorageType {
                 storage: value
             )
         }
+    }
+}
+
+extension TONWalletKit {
+    
+    class InjectableBridge {
+        private let walletKit: any JSDynamicObject
+        private let bridgeTransport: JSBridgeTransport
+        
+        init(
+            walletKit: any JSDynamicObject,
+            bridgeTransport: JSBridgeTransport
+        ) {
+            self.walletKit = walletKit
+            self.bridgeTransport = bridgeTransport
+        }
+        
+        func request(message: TONBridgeEventMessage, request: Any) async throws {
+            try await walletKit.processInjectedBridgeRequest(message, AnyJSValueEncodable(request))
+        }
+        
+        func waitForResponse() -> AnyPublisher<Response, Error> {
+            bridgeTransport.waitForResponse()
+                .map { response in
+                    Response(
+                        sessionID: response.sessionID,
+                        messageID: response.messageID,
+                        message: response.message
+                    )
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+}
+
+extension TONWalletKit.InjectableBridge {
+    
+    struct Response {
+        let sessionID: String?
+        let messageID: String?
+        let message: Any?
     }
 }

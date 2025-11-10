@@ -70624,21 +70624,19 @@ var __async = (__this, __arguments, generator2) => {
     step((generator2 = generator2.apply(__this, __arguments)).next());
   });
 };
-window.initWalletKit = (configuration, storage) => __async(null, null, function* () {
+window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null, null, function* () {
   console.log("🚀 WalletKit iOS Bridge starting...");
   console.log("Creating WalletKit instance with configuration", configuration);
   console.log("Storage", storage);
+  configuration.bridge.jsBridgeTransport = (sessionID, message) => {
+    bridgeTransport({ sessionID, messageID: message.messageId, message });
+  };
   const walletKit = new TonWalletKit({
     network: configuration.network,
     walletManifest: configuration.walletManifest,
     deviceInfo: configuration.deviceInfo,
-    // apiUrl: 'https://tonapi.io',
-    // config: {
     bridge: configuration.bridge,
-    eventProcessor: {
-      // disableEvents: true,
-    },
-    // },
+    eventProcessor: {},
     apiClient: configuration.apiClient,
     storage: storage ? new SwiftStorageAdapter(storage) : new MemoryStorageAdapter({})
   });
