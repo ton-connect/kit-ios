@@ -239,6 +239,6 @@ extension TONWalletKit.InjectableBridge {
     struct Response {
         let sessionID: String?
         let messageID: String?
-        let message: Any?
+        let message: AnyCodable?
     }
 }

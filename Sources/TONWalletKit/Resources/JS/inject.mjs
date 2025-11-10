@@ -75,7 +75,6 @@ class TonConnectBridge {
     if (protocolVersion < 2) {
       throw new Error("Unsupported protocol version");
     }
-    debugger;
     return this.transport.send({
       method: "connect",
       params: { protocolVersion, ...message }
@@ -465,7 +464,6 @@ window.injectWalletKit = (options) => {
 window.id = crypto.randomUUID();
 class SwiftTransport {
   constructor(window2) {
-    __publicField(this, "frameID");
     __publicField(this, "window");
     __publicField(this, "eventCallback", null);
     __publicField(this, "messageListener", null);
@@ -496,9 +494,10 @@ class SwiftTransport {
   send(request) {
     return __async(this, null, function* () {
       let timeout = request.method === "restoreConnection" ? RESTORE_CONNECTION_TIMEOUT : DEFAULT_REQUEST_TIMEOUT;
-      let response = yield window.webkit.messageHandlers.tonConnectBridge.postMessage(
+      let response = yield window.webkit.messageHandlers.walletKitInjectionBridge.postMessage(
         __spreadProps(__spreadValues({}, request), { frameID: window.id, timeout })
       );
+      console.log("SwiftTransport received response:", response);
       if (response.success) {
         return Promise.resolve(response.payload);
       } else {

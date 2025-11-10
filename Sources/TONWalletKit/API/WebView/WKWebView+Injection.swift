@@ -111,7 +111,7 @@ private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHan
                 }
                 self?.subscribers.removeValue(forKey: messageID)
             }, receiveValue: { value in
-                replyHandler(value.message, nil)
+                replyHandler(value.message?.value, nil)
             })
 
         Task { @MainActor [weak self] in

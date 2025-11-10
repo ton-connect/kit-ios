@@ -12155,9 +12155,14 @@ function requireSha() {
 var native = {};
 var getSecureRandom$1 = {};
 const empty = {};
+function getRandomBytes(size) {
+  const array = new Uint8Array(size);
+  return crypto.getRandomValues(array);
+}
 const empty$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: empty
+  default: empty,
+  getRandomBytes
 }, Symbol.toStringTag, { value: "Module" }));
 const require$$0$4 = /* @__PURE__ */ getAugmentedNamespace(empty$1);
 var hasRequiredGetSecureRandom$1;
@@ -12166,9 +12171,9 @@ function requireGetSecureRandom$1() {
   hasRequiredGetSecureRandom$1 = 1;
   Object.defineProperty(getSecureRandom$1, "__esModule", { value: true });
   getSecureRandom$1.getSecureRandomWords = getSecureRandom$1.getSecureRandomBytes = void 0;
-  const getRandomBytes = require$$0$4.getRandomBytes;
+  const getRandomBytes2 = require$$0$4.getRandomBytes;
   function getSecureRandomBytes(size) {
-    return Buffer.from(getRandomBytes(size));
+    return Buffer.from(getRandomBytes2(size));
   }
   getSecureRandom$1.getSecureRandomBytes = getSecureRandomBytes;
   function getSecureRandomWords(size) {
