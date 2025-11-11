@@ -35,6 +35,7 @@ class WalletsListViewModel: ObservableObject {
     var onRemoveAll: (() -> Void)?
     
     private var subscribers = Set<AnyCancellable>()
+    private(set) var kit: TONWalletKit?
     
     let event = PassthroughSubject<Event, Never>()
 
@@ -74,14 +75,16 @@ class WalletsListViewModel: ObservableObject {
                     self?.event.send(Event(transactionRequest: request))
                 case .signDataRequest(let request):
                     self?.event.send(Event(signDataRequest: request))
+                case .connectRequest(let request):
+                    self?.event.send(Event(connectionRequest: request))
                 default: ()
                 }
             }
             .store(in: &subscribers)
         
         Task {
-            let kit = try await TONWalletKit.mainnet()
-            try await kit.add(eventsHandler: TONEventsHandler.shared)
+            self.kit = try await TONWalletKit.mainnet()
+            try await kit?.add(eventsHandler: TONEventsHandler.shared)
         }
     }
     
@@ -96,13 +99,16 @@ extension WalletsListViewModel {
         let id = UUID()
         let transactionRequest: TONWalletTransactionRequest?
         let signDataRequest: TONWalletSignDataRequest?
+        let connectionRequest: TONWalletConnectionRequest?
         
         init(
             transactionRequest: TONWalletTransactionRequest? = nil,
-            signDataRequest: TONWalletSignDataRequest? = nil
+            signDataRequest: TONWalletSignDataRequest? = nil,
+            connectionRequest: TONWalletConnectionRequest? = nil
         ) {
             self.transactionRequest = transactionRequest
             self.signDataRequest = signDataRequest
+            self.connectionRequest = connectionRequest
         }
     }
 }

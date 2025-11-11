@@ -12155,9 +12155,14 @@ function requireSha() {
 var native = {};
 var getSecureRandom$1 = {};
 const empty = {};
+function getRandomBytes(size) {
+  const array = new Uint8Array(size);
+  return crypto.getRandomValues(array);
+}
 const empty$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: empty
+  default: empty,
+  getRandomBytes
 }, Symbol.toStringTag, { value: "Module" }));
 const require$$0$4 = /* @__PURE__ */ getAugmentedNamespace(empty$1);
 var hasRequiredGetSecureRandom$1;
@@ -12166,9 +12171,9 @@ function requireGetSecureRandom$1() {
   hasRequiredGetSecureRandom$1 = 1;
   Object.defineProperty(getSecureRandom$1, "__esModule", { value: true });
   getSecureRandom$1.getSecureRandomWords = getSecureRandom$1.getSecureRandomBytes = void 0;
-  const getRandomBytes = require$$0$4.getRandomBytes;
+  const getRandomBytes2 = require$$0$4.getRandomBytes;
   function getSecureRandomBytes(size) {
-    return Buffer.from(getRandomBytes(size));
+    return Buffer.from(getRandomBytes2(size));
   }
   getSecureRandom$1.getSecureRandomBytes = getSecureRandomBytes;
   function getSecureRandomWords(size) {
@@ -70624,21 +70629,19 @@ var __async = (__this, __arguments, generator2) => {
     step((generator2 = generator2.apply(__this, __arguments)).next());
   });
 };
-window.initWalletKit = (configuration, storage) => __async(null, null, function* () {
+window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null, null, function* () {
   console.log("🚀 WalletKit iOS Bridge starting...");
   console.log("Creating WalletKit instance with configuration", configuration);
   console.log("Storage", storage);
+  configuration.bridge.jsBridgeTransport = (sessionID, message) => {
+    bridgeTransport({ sessionID, messageID: message.messageId, message });
+  };
   const walletKit = new TonWalletKit({
     network: configuration.network,
     walletManifest: configuration.walletManifest,
     deviceInfo: configuration.deviceInfo,
-    // apiUrl: 'https://tonapi.io',
-    // config: {
     bridge: configuration.bridge,
-    eventProcessor: {
-      // disableEvents: true,
-    },
-    // },
+    eventProcessor: {},
     apiClient: configuration.apiClient,
     storage: storage ? new SwiftStorageAdapter(storage) : new MemoryStorageAdapter({})
   });
@@ -70652,6 +70655,12 @@ window.initWalletKit = (configuration, storage) => __async(null, null, function*
     // Check if initialized
     isReady() {
       return initialized && walletKit;
+    },
+    processInjectedBridgeRequest(messageInfo, request) {
+      return __async(this, null, function* () {
+        if (!initialized) throw new Error("WalletKit Bridge not initialized");
+        return walletKit.processInjectedBridgeRequest(messageInfo, request);
+      });
     },
     setEventsListeners(callback) {
       if (!initialized) throw new Error("WalletKit Bridge not initialized");

@@ -80,13 +80,13 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
 
 extension TONWalletKitConfiguration {
     
-    struct DeviceInfo: Encodable, Hashable {
+    struct DeviceInfo: Codable, Hashable {
         let platform: String
         let appName: String
         let appVersion: String
         
         // Currently just a constant
-        let maxProtocolVersion: Int = 2
+        private var maxProtocolVersion: Int = 2
         let features: [RawFeature]
         
         init(appName: String, features: [RawFeature]) {
@@ -101,13 +101,13 @@ extension TONWalletKitConfiguration {
         }
     }
     
-    public struct Manifest: Encodable, Hashable {
+    public struct Manifest: Codable, Hashable {
         let name: String
         let appName: String
         let imageUrl: String
         let tondns: String?
         let aboutUrl: String
-        let platforms = ["ios"]
+        private var platforms = ["ios"]
         
         let universalLink: String
         let deepLink: String?
@@ -138,6 +138,7 @@ extension TONWalletKitConfiguration {
     
     public struct Bridge: Encodable, Hashable {
         let bridgeUrl: String
+        let webViewInjectionKey: String?
         
         let heartbeatInterval: TimeInterval?
         let reconnectInterval: TimeInterval?
@@ -145,6 +146,7 @@ extension TONWalletKitConfiguration {
         
         public init(
             bridgeUrl: String,
+            webViewInjectionKey: String? = nil,
             heartbeatInterval: TimeInterval? = nil,
             reconnectInterval: TimeInterval? = nil,
             maxReconnectAttempts: Int? = nil
@@ -153,6 +155,7 @@ extension TONWalletKitConfiguration {
             self.heartbeatInterval = heartbeatInterval
             self.reconnectInterval = reconnectInterval
             self.maxReconnectAttempts = maxReconnectAttempts
+            self.webViewInjectionKey = webViewInjectionKey
         }
     }
     
@@ -169,12 +172,12 @@ extension TONWalletKitConfiguration {
         }
     }
     
-    enum FeatureName: String, Encodable {
+    enum FeatureName: String, Codable {
         case sendTransaction = "SendTransaction"
         case signData = "SignData"
     }
     
-    public struct RawFeature: Encodable, Hashable {
+    public struct RawFeature: Codable, Hashable {
         let name: FeatureName
         
         private(set) var types: [TONSignDataType]?

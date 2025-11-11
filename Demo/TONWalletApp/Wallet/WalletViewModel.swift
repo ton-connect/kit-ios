@@ -31,6 +31,7 @@ import TONWalletKit
 @MainActor
 class WalletViewModel: Identifiable, ObservableObject {
     let id = UUID()
+    var address: String { tonWallet.address }
 
     let tonWallet: TONWalletProtocol
     
@@ -82,35 +83,5 @@ class WalletViewModel: Identifiable, ObservableObject {
         } catch {
             debugPrint(error.localizedDescription)
         }
-    }
-}
-
-@MainActor
-class WalletEventsViewModel: ObservableObject {
-    private var subscribers = Set<AnyCancellable>()
-    
-    @Published var event: Event?
-    
-    func waitForEvent() {
-        subscribers.removeAll()
-        
-        TONEventsHandler.shared.events
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] event in
-                switch event {
-                case .connectRequest(let request):
-                    self?.event = Event(conenctionRequest: request)
-                default: ()
-                }
-            }
-            .store(in: &subscribers)
-    }
-}
-
-extension WalletEventsViewModel {
-    
-    struct Event: Identifiable {
-        let id = UUID()
-        let conenctionRequest: TONWalletConnectionRequest
     }
 }

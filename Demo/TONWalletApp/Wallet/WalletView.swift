@@ -29,7 +29,6 @@ import SwiftUI
 
 struct WalletView: View {
     @ObservedObject var viewModel: WalletViewModel
-    @StateObject var eventsViewModel = WalletEventsViewModel()
     
     @EnvironmentObject var appStateManager: TONWalletAppStateManager
     
@@ -60,9 +59,6 @@ struct WalletView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(Color.TON.gray100)
-        .onAppear {
-            eventsViewModel.waitForEvent()
-        }
         .navigationTitle("TON Wallet")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -77,16 +73,6 @@ struct WalletView: View {
                     }
                 )
             }
-        }
-        .sheet(item: $eventsViewModel.event) { event in
-            WalletConnectionRequestView(
-                viewModel: .init(
-                    request: event.conenctionRequest,
-                    wallet: viewModel.tonWallet
-                )
-            )
-            .automaticHeightPresentationDetents()
-            .presentationDragIndicator(.visible)
         }
     }
 }

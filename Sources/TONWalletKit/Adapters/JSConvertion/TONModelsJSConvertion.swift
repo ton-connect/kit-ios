@@ -68,6 +68,8 @@ extension TONSignDataRequestEvent: JSValueEncodable {}
 extension TONTransactionRequestEvent: JSValueEncodable {}
 extension TONDisconnectEvent: JSValueEncodable {}
 extension TONWalletKitConfiguration: JSValueEncodable {}
+extension TONBridgeEventMessage: JSValueEncodable {}
+extension TONBridgeInjectOptions: JSValueEncodable {}
 
 extension TONWallet: JSValueEncodable {
     

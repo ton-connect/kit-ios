@@ -47,6 +47,7 @@ let package = Package(
             ],
             resources: [
                 .process("Resources/JS/walletkit-ios-bridge.mjs"),
+                .process("Resources/JS/inject.mjs"),
                 .process("JSCore/Polyfilling/Fetch/JS")
             ],
             swiftSettings: [

@@ -66,14 +66,14 @@ extension TONWalletKit {
         let configuration = TONWalletKitConfiguration(
             network: .mainnet,
             walletManifest: TONWalletKitConfiguration.Manifest(
-                name: "TON Wallet Demo App",
-                appName: "Wallet",
+                name: "WalletKitDemoWallet",
+                appName: "wallet_kit_demo_wallet",
                 imageUrl: "https://example.com/image.png",
                 aboutUrl: "https://example.com/about",
                 universalLink: "https://example.com/universal-link",
                 bridgeUrl: bridgeURL
             ),
-            bridge: TONWalletKitConfiguration.Bridge(bridgeUrl: bridgeURL),
+            bridge: TONWalletKitConfiguration.Bridge(bridgeUrl: bridgeURL, webViewInjectionKey: "walletKitDemoWallet"),
             apiClient: TONWalletKitConfiguration.APIClient(key: "25a9b2326a34b39a5fa4b264fb78fb4709e1bd576fc5e6b176639f5b71e94b0d"),
             features: [
                 TONWalletKitConfiguration.SendTransactionFeature(maxMessages: 1),

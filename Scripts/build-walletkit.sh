@@ -62,17 +62,24 @@ if ! command -v pnpm &> /dev/null; then
 fi
 
 pnpm install
-pnpm build
+pnpm build --force
 
 # Source file path
-SOURCE_FILE="$WALLETKIT_PATH/packages/walletkit-ios-bridge/build/walletkit-ios-bridge.mjs"
+WALLETKIT_SOURCE_FILE="$WALLETKIT_PATH/packages/walletkit-ios-bridge/build/walletkit-ios-bridge.mjs"
+WALLETKIT_INJECTION_SOURCE_FILE="$WALLETKIT_PATH/packages/walletkit-ios-bridge/build/inject.mjs"
 
 # Destination directory (relative to project root)
 DEST_DIR="$PROJECT_ROOT/Sources/TONWalletKit/Resources/JS"
 
 # Check if source file exists
-if [ ! -f "$SOURCE_FILE" ]; then
-    echo "Error: Source file not found: $SOURCE_FILE"
+if [ ! -f "$WALLETKIT_SOURCE_FILE" ]; then
+    echo "Error: Source file not found: $WALLETKIT_SOURCE_FILE"
+    exit 1
+fi
+
+# Check if source file exists
+if [ ! -f "$WALLETKIT_INJECTION_SOURCE_FILE" ]; then
+    echo "Error: Source file not found: $WALLETKIT_SOURCE_FILE"
     exit 1
 fi
 
@@ -81,7 +88,10 @@ echo "Creating destination directory if needed..."
 mkdir -p "$DEST_DIR"
 
 # Copy the file
-echo "Copying $SOURCE_FILE to $DEST_DIR..."
-cp "$SOURCE_FILE" "$DEST_DIR/"
+echo "Copying $WALLETKIT_SOURCE_FILE to $DEST_DIR..."
+cp "$WALLETKIT_SOURCE_FILE" "$DEST_DIR/"
+
+echo "Copying $WALLETKIT_INJECTION_SOURCE_FILE to $DEST_DIR..."
+cp "$WALLETKIT_INJECTION_SOURCE_FILE" "$DEST_DIR/"
 
 echo "✅ Done! File copied successfully to $DEST_DIR/walletkit-ios-bridge.mjs"
