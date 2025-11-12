@@ -57,6 +57,11 @@ extension Int64: JSValueEncodable {
     func encode(in context: JSContext) throws -> Any { self }
 }
 
+extension UInt8: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any { self }
+}
+
 extension UInt: JSValueEncodable {
     
     func encode(in context: JSContext) throws -> Any { self }

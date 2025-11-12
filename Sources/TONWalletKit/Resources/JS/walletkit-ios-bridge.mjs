@@ -5650,9 +5650,9 @@ function requireBuffer() {
   return buffer;
 }
 var bufferExports = requireBuffer();
-var __defProp$1 = Object.defineProperty;
-var __defNormalProp$1 = (obj, key2, value) => key2 in obj ? __defProp$1(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
-var __publicField$1 = (obj, key2, value) => __defNormalProp$1(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
+var __defProp$2 = Object.defineProperty;
+var __defNormalProp$2 = (obj, key2, value) => key2 in obj ? __defProp$2(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
+var __publicField$2 = (obj, key2, value) => __defNormalProp$2(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
 if (typeof window !== "undefined") {
   window.Buffer = bufferExports.Buffer;
   window.URL = whatwgUrlExports.URL;
@@ -5672,7 +5672,7 @@ if (typeof window !== "undefined") {
   if (typeof EventTarget === "undefined") {
     const EventTargetPolyfill = class EventTarget {
       constructor() {
-        __publicField$1(this, "_listeners", /* @__PURE__ */ new Map());
+        __publicField$2(this, "_listeners", /* @__PURE__ */ new Map());
       }
       addEventListener(type, listener) {
         var _a2;
@@ -5717,9 +5717,9 @@ if (typeof window !== "undefined") {
   if (typeof Event === "undefined") {
     const EventPolyfill = class Event {
       constructor(type, eventInit) {
-        __publicField$1(this, "type");
-        __publicField$1(this, "bubbles");
-        __publicField$1(this, "cancelable");
+        __publicField$2(this, "type");
+        __publicField$2(this, "bubbles");
+        __publicField$2(this, "cancelable");
         this.type = type;
         this.bubbles = (eventInit == null ? void 0 : eventInit.bubbles) || false;
         this.cancelable = (eventInit == null ? void 0 : eventInit.cancelable) || false;
@@ -5732,7 +5732,7 @@ if (typeof window !== "undefined") {
     const CustomEventPolyfill = class CustomEvent extends window.Event {
       constructor(type, eventInit) {
         super(type, eventInit);
-        __publicField$1(this, "detail");
+        __publicField$2(this, "detail");
         this.detail = eventInit == null ? void 0 : eventInit.detail;
       }
     };
@@ -5743,9 +5743,9 @@ if (typeof window !== "undefined") {
     const MessageEventPolyfill = class MessageEvent extends window.Event {
       constructor(type, eventInit) {
         super(type, eventInit);
-        __publicField$1(this, "data");
-        __publicField$1(this, "source");
-        __publicField$1(this, "origin");
+        __publicField$2(this, "data");
+        __publicField$2(this, "source");
+        __publicField$2(this, "origin");
         this.data = eventInit == null ? void 0 : eventInit.data;
         this.source = eventInit == null ? void 0 : eventInit.source;
         this.origin = (eventInit == null ? void 0 : eventInit.origin) || "";
@@ -5827,7 +5827,7 @@ if (typeof window !== "undefined") {
   if (typeof AbortController === "undefined") {
     window.AbortController = class AbortController {
       constructor() {
-        __publicField$1(this, "signal", {
+        __publicField$2(this, "signal", {
           aborted: false,
           addEventListener: () => {
           },
@@ -30006,9 +30006,6 @@ class BridgeManager {
           this.eventEmitter.emit("bridge-storage-updated");
         }
         log$g.info("Event stored durably", { eventId: rawEvent.id, method: rawEvent.method });
-        if (rawEvent.method == "connect") {
-          await this.eventRouter.routeEvent(rawEvent);
-        }
       } catch (error2) {
         log$g.error("Failed to store event durably", {
           eventId: rawEvent.id,
@@ -70560,10 +70557,10 @@ class Signer {
     };
   }
 }
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
-var __publicField = (obj, key2, value) => __defNormalProp(obj, key2 + "", value);
-var __async$1 = (__this, __arguments, generator2) => {
+var __defProp$1 = Object.defineProperty;
+var __defNormalProp$1 = (obj, key2, value) => key2 in obj ? __defProp$1(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
+var __publicField$1 = (obj, key2, value) => __defNormalProp$1(obj, key2 + "", value);
+var __async$2 = (__this, __arguments, generator2) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -70585,27 +70582,90 @@ var __async$1 = (__this, __arguments, generator2) => {
 };
 class SwiftStorageAdapter {
   constructor(swiftStorage) {
-    __publicField(this, "swiftStorage");
+    __publicField$1(this, "swiftStorage");
     this.swiftStorage = swiftStorage;
   }
   get(key2) {
-    return __async$1(this, null, function* () {
+    return __async$2(this, null, function* () {
       return yield this.swiftStorage.get(key2);
     });
   }
   set(key2, value) {
-    return __async$1(this, null, function* () {
+    return __async$2(this, null, function* () {
       yield this.swiftStorage.set(key2, value);
     });
   }
   remove(key2) {
-    return __async$1(this, null, function* () {
+    return __async$2(this, null, function* () {
       yield this.swiftStorage.remove(key2);
     });
   }
   clear() {
-    return __async$1(this, null, function* () {
+    return __async$2(this, null, function* () {
       yield this.swiftStorage.clear();
+    });
+  }
+}
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
+var __publicField = (obj, key2, value) => __defNormalProp(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
+var __async$1 = (__this, __arguments, generator2) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator2.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator2.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x2) => x2.done ? resolve(x2.value) : Promise.resolve(x2.value).then(fulfilled, rejected);
+    step((generator2 = generator2.apply(__this, __arguments)).next());
+  });
+};
+class SwiftWalletAdapter {
+  constructor(swiftWalletAdapter, client) {
+    __publicField(this, "swiftWalletAdapter");
+    __publicField(this, "client");
+    __publicField(this, "publicKey");
+    __publicField(this, "version");
+    this.swiftWalletAdapter = swiftWalletAdapter;
+    this.publicKey = this.swiftWalletAdapter.publicKey;
+    this.version = this.swiftWalletAdapter.version;
+    this.client = client;
+  }
+  getNetwork() {
+    return this.swiftWalletAdapter.getNetwork;
+  }
+  /** Get wallet's TON address */
+  getAddress(options) {
+    return this.swiftWalletAdapter.getAddress(options);
+  }
+  /** Get state init for wallet deployment base64 encoded boc */
+  getStateInit() {
+    return __async$1(this, null, function* () {
+      return this.swiftWalletAdapter.getStateInit();
+    });
+  }
+  getSignedSendTransaction(input, options) {
+    return __async$1(this, null, function* () {
+      return this.swiftWalletAdapter.getSignedSendTransaction(input, options);
+    });
+  }
+  getSignedSignData(input, options) {
+    return __async$1(this, null, function* () {
+      return this.swiftWalletAdapter.getSignedSignData(input, options);
+    });
+  }
+  getSignedTonProof(input, options) {
+    return __async$1(this, null, function* () {
+      return this.swiftWalletAdapter.getSignedTonProof(input, options);
     });
   }
 }
@@ -70656,11 +70716,8 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
     isReady() {
       return initialized && walletKit;
     },
-    processInjectedBridgeRequest(messageInfo, request) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        return walletKit.processInjectedBridgeRequest(messageInfo, request);
-      });
+    jettonsManager() {
+      return walletKit.jettons;
     },
     setEventsListeners(callback) {
       if (!initialized) throw new Error("WalletKit Bridge not initialized");
@@ -70691,41 +70748,30 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
       walletKit.removeDisconnectCallback();
       console.log("🗑️ All event listeners removed");
     },
-    createV4R2WalletUsingMnemonic(mnemonic2, parameters) {
+    createSignerFromMnemonic(mnemonic2) {
+      return __async(this, null, function* () {
+        if (!initialized) throw new Error("WalletKit Bridge not initialized");
+        console.log("➕ Bridge: Creating signer from mnemonic");
+        if (!mnemonic2) {
+          throw new Error("Mnemonic is required to create signer");
+        }
+        return yield Signer.fromMnemonic(mnemonic2, { type: "ton" });
+      });
+    },
+    createSignerFromPrivateKey(privateKey) {
+      return __async(this, null, function* () {
+        if (!initialized) throw new Error("WalletKit Bridge not initialized");
+        console.log("➕ Bridge: Creating signer from private key");
+        if (!privateKey) {
+          throw new Error("Private key is required to create signer");
+        }
+        return yield Signer.fromPrivateKey(privateKey);
+      });
+    },
+    createV4R2WalletAdapter(signer, parameters) {
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Creating V4R2 wallet using mnemonic");
-        if (!mnemonic2) {
-          throw new Error("Mnemonic required for mnemonic wallet type");
-        }
-        const signer = yield Signer.fromMnemonic(mnemonic2, { type: "ton" });
-        return yield WalletV4R2Adapter.create(signer, {
-          client: walletKit.getApiClient(),
-          network: parameters.network
-        });
-      });
-    },
-    createV4R2WalletUsingSecretKey(secretKey, parameters) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating V4R2 wallet using secret key");
-        if (!secretKey) {
-          throw new Error("Secret key required for secret key wallet type");
-        }
-        const signer = yield Signer.fromPrivateKey(secretKey);
-        return yield WalletV4R2Adapter.create(signer, {
-          client: walletKit.getApiClient(),
-          network: parameters.network
-        });
-      });
-    },
-    createV4R2WalletUsingSigner(signer, parameters) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating V4R2 wallet");
-        if (!signer) {
-          throw new Error("Signer required for wallet creation");
-        }
         const customSigner = {
           sign: (bytes) => __async(null, null, function* () {
             return yield signer.sign(bytes);
@@ -70738,41 +70784,10 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
         });
       });
     },
-    createV5R1WalletUsingMnemonic(mnemonic2, parameters) {
+    createV5R1WalletAdapter(signer, parameters) {
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Creating V5R1 wallet using mnemonic");
-        if (!mnemonic2) {
-          throw new Error("Mnemonic required for mnemonic wallet type");
-        }
-        const signer = yield Signer.fromMnemonic(mnemonic2, { type: "ton" });
-        return yield WalletV5R1Adapter.create(signer, {
-          client: walletKit.getApiClient(),
-          network: parameters.network
-        });
-      });
-    },
-    createV5R1WalletUsingSecretKey(secretKey, parameters) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating V5R1 wallet using secret key");
-        if (!secretKey) {
-          throw new Error("Secret key required for secret key wallet type");
-        }
-        const signer = yield Signer.fromPrivateKey(secretKey);
-        return yield WalletV5R1Adapter.create(signer, {
-          client: walletKit.getApiClient(),
-          network: parameters.network
-        });
-      });
-    },
-    createV5R1WalletUsingSigner(signer, parameters) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating V5R1 wallet");
-        if (!signer) {
-          throw new Error("Signer required for wallet creation");
-        }
         const customSigner = {
           sign: (bytes) => __async(null, null, function* () {
             return yield signer.sign(bytes);
@@ -70785,12 +70800,28 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
         });
       });
     },
+    processInjectedBridgeRequest(messageInfo, request) {
+      return __async(this, null, function* () {
+        if (!initialized) throw new Error("WalletKit Bridge not initialized");
+        return walletKit.processInjectedBridgeRequest(messageInfo, request);
+      });
+    },
     // Wallet management
     addWallet(walletAdapter) {
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Adding wallet:");
-        const wallet = yield walletKit.addWallet(walletAdapter);
+        const swiftWalletAdapter = new SwiftWalletAdapter(walletAdapter, walletKit.getApiClient());
+        new Proxy(swiftWalletAdapter, {
+          get: (target, prop) => {
+            if (typeof prop === "symbol") {
+              return target[prop];
+            }
+            const value = target[prop];
+            return value;
+          }
+        });
+        const wallet = yield walletKit.addWallet(swiftWalletAdapter);
         if (wallet) {
           console.log("✅ Wallet added:", wallet.getAddress());
         } else {
@@ -70798,6 +70829,11 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
         }
         return wallet;
       });
+    },
+    getWallet(address) {
+      if (!initialized) throw new Error("WalletKit Bridge not initialized");
+      console.log("🔍 Bridge: Getting wallet for address:", address);
+      return walletKit.getWallet(address);
     },
     removeWallet(address) {
       return __async(this, null, function* () {

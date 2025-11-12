@@ -25,14 +25,15 @@
 //  SOFTWARE.
 
 import Foundation
+import JavaScriptCore
 
 class TONWalletSignerAdapter: NSObject, JSWalletSigner {
     private weak var context: JSContext?
-    private let signer: TONWalletSigner
+    private let signer: any TONWalletSignerProtocol
     
     init(
         context: JSContext,
-        signer: TONWalletSigner
+        signer: any TONWalletSignerProtocol
     ) {
         self.context = context
         self.signer = signer
@@ -41,13 +42,22 @@ class TONWalletSignerAdapter: NSObject, JSWalletSigner {
     @objc(sign:) func sign(data: [UInt8]) -> JSValue {
         let data = Data(data)
         
-        do {
-            let signedData = try signer.sign(data: data)
-            let signedDataArray = [UInt8](signedData)
-            
-            return JSValue(newPromiseResolvedWithResult: signedDataArray, in: context)
-        } catch {
-            return JSValue(newPromiseRejectedWithReason: error.localizedDescription, in: context)
+        return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
+            Task {
+                guard let self else { return }
+                
+                do {
+                    let signedData = try await self.signer.sign(data: data).value
+                    
+                    resolve?.call(withArguments: [signedData])
+                } catch {
+                    reject?.call(withArguments: [error.localizedDescription])
+                }
+            }
         }
+    }
+    
+    @objc func publicKey() -> JSValue {
+        JSValue(object: signer.publicKey().value, in: context)
     }
 }

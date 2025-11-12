@@ -535,12 +535,7 @@ var __async = (__this, __arguments, generator) => {
   });
 };
 window.injectWalletKit = (options) => {
-  try {
-    injectBridgeCode(window, options, new SwiftTransport(window));
-    console.log("TonConnect bridge injected - forwarding to extension");
-  } catch (error) {
-    console.error("Failed to inject TonConnect bridge:", error);
-  }
+  injectBridgeCode(window, options, new SwiftTransport(window));
 };
 window.id = crypto.randomUUID();
 class SwiftTransport {
@@ -575,9 +570,10 @@ class SwiftTransport {
   send(request) {
     return __async(this, null, function* () {
       let timeout = request.method === "restoreConnection" ? RESTORE_CONNECTION_TIMEOUT : DEFAULT_REQUEST_TIMEOUT;
-      let response = yield window.webkit.messageHandlers.walletKitInjectionBridge.postMessage(
-        __spreadProps(__spreadValues({}, request), { frameID: window.id, timeout })
-      );
+      let response = yield window.webkit.messageHandlers.walletKitInjectionBridge.postMessage(__spreadProps(__spreadValues({}, request), {
+        frameID: window.id,
+        timeout
+      }));
       if (response.success) {
         return Promise.resolve(response.payload);
       } else {

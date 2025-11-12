@@ -2,8 +2,8 @@
 //  TONWalletSigner.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 16.10.2025.
-//
+//  Created by Nikita Rodionov on 12.11.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,19 @@
 
 import Foundation
 
-public protocol TONWalletSigner {
+class TONWalletSigner: TONWalletSignerProtocol {
+    let jsWalletSigner: any JSDynamicObject
     
-    func sign(data: Data) throws -> Data
+    init(jsWalletSigner: any JSDynamicObject) {
+        self.jsWalletSigner = jsWalletSigner
+    }
+    
+    func sign(data: Data) async throws -> TONHex {
+        TONHex(hexString: try await jsWalletSigner.sign([UInt8](data)))
+    }
+    
+    func publicKey() -> TONHex {
+        let result: String? = jsWalletSigner.publicKey
+        return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
+    }
 }

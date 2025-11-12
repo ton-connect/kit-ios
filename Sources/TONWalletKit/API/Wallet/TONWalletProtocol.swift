@@ -26,16 +26,16 @@
 
 import Foundation
 
-public protocol TONWalletAdapter {
-    var publicKey: Data { get }
+public protocol TONWalletAdapterProtocol: AnyObject {
+    var publicKey: TONHex { get }
     var version: TONWalletVersion { get }
     var network: TONNetwork { get }
     
     func address(testnet: Bool) throws -> String
-    func stateInit() async throws -> Data
-    func signedSendTransaction(input: TONConnectTransactionParamContent, fakeSignature: Bool) async throws -> String
-    func signedSignData(input: TONPrepareSignDataResult, fakeSignature: Bool) async throws -> Data
-    func signedTonProof(input: TONProofParsedMessage, fakeSignature: Bool) async throws -> Data
+    func stateInit() async throws -> TONBase64
+    func signedSendTransaction(input: TONConnectTransactionParamContent, fakeSignature: Bool?) async throws -> TONBase64
+    func signedSignData(input: TONPrepareSignDataResult, fakeSignature: Bool?) async throws -> TONHex
+    func signedTonProof(input: TONProofParsedMessage, fakeSignature: Bool?) async throws -> TONHex
 }
 
 public protocol TONWalletProtocol {

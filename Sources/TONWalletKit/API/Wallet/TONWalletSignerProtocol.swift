@@ -1,8 +1,8 @@
 //
-//  JSWalletKitStorage.swift
+//  TONWalletSigner.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 09.10.2025.
+//  Created by Nikita Rodionov on 16.10.2025.
 //
 //  Copyright (c) 2025 TON Connect
 //
@@ -25,11 +25,9 @@
 //  SOFTWARE.
 
 import Foundation
-import JavaScriptCore
 
-@objc protocol JSWalletKitStorage: JSExport {
-    @objc(set::) func save(key: String, value: String) -> JSValue
-    @objc(get:) func get(key: String) -> JSValue
-    @objc(remove:) func remove(key: String) -> JSValue
-    @objc func clear() -> JSValue
+public protocol TONWalletSignerProtocol: AnyObject {
+    
+    func sign(data: Data) async throws -> TONHex
+    func publicKey() -> TONHex
 }

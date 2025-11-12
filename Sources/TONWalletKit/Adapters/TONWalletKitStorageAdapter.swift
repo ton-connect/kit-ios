@@ -68,7 +68,7 @@ class TONWalletKitStorageAdapter: NSObject, JSWalletKitStorage {
         }
     }
     
-    @objc(clear) func clear() -> JSValue {
+    @objc func clear() -> JSValue {
         do {
             try storage.clear()
             return JSValue(newPromiseResolvedWithResult: JSValue(undefinedIn: context), in: context)
