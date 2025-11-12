@@ -95,3 +95,8 @@ public class TONWallet: TONWalletProtocol {
         try await jsWallet.getJettons(limit)
     }
 }
+
+extension TONWallet: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any { jsWallet }
+}

@@ -70772,13 +70772,7 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Creating V4R2 wallet using mnemonic");
-        const customSigner = {
-          sign: (bytes) => __async(null, null, function* () {
-            return yield signer.sign(bytes);
-          }),
-          publicKey: signer.publicKey()
-        };
-        return yield WalletV4R2Adapter.create(customSigner, {
+        return yield WalletV4R2Adapter.create(this.jsSigner(signer), {
           client: walletKit.getApiClient(),
           network: parameters.network
         });
@@ -70788,17 +70782,22 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Creating V5R1 wallet using mnemonic");
-        const customSigner = {
+        return yield WalletV5R1Adapter.create(this.jsSigner(signer), {
+          client: walletKit.getApiClient(),
+          network: parameters.network
+        });
+      });
+    },
+    jsSigner(signer) {
+      if (isSwiftObject(signer)) {
+        return {
           sign: (bytes) => __async(null, null, function* () {
             return yield signer.sign(bytes);
           }),
           publicKey: signer.publicKey()
         };
-        return yield WalletV5R1Adapter.create(customSigner, {
-          client: walletKit.getApiClient(),
-          network: parameters.network
-        });
-      });
+      }
+      return signer;
     },
     processInjectedBridgeRequest(messageInfo, request) {
       return __async(this, null, function* () {
@@ -70811,17 +70810,7 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Adding wallet:");
-        const swiftWalletAdapter = new SwiftWalletAdapter(walletAdapter, walletKit.getApiClient());
-        new Proxy(swiftWalletAdapter, {
-          get: (target, prop) => {
-            if (typeof prop === "symbol") {
-              return target[prop];
-            }
-            const value = target[prop];
-            return value;
-          }
-        });
-        const wallet = yield walletKit.addWallet(swiftWalletAdapter);
+        const wallet = yield walletKit.addWallet(this.jsWalletAdapter(walletAdapter));
         if (wallet) {
           console.log("✅ Wallet added:", wallet.getAddress());
         } else {
@@ -70829,6 +70818,12 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
         }
         return wallet;
       });
+    },
+    jsWalletAdapter(walletAdapter) {
+      if (isSwiftObject(walletAdapter)) {
+        return new SwiftWalletAdapter(walletAdapter, walletKit.getApiClient());
+      }
+      return walletAdapter;
     },
     getWallet(address) {
       if (!initialized) throw new Error("WalletKit Bridge not initialized");
@@ -71021,6 +71016,24 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
     }
   };
 });
+function parseSwiftConstructorPattern(str) {
+  const match = str.match(/^\[object ([A-Za-z_$][A-Za-z0-9_$]*)\.([A-Za-z_$][A-Za-z0-9_$]*)Constructor\]$/);
+  if (match) {
+    return {
+      namespace: match[1],
+      className: match[2],
+      fullName: `${match[1]}.${match[2]}`
+    };
+  }
+  return null;
+}
+function isSwiftObject(obj) {
+  if (obj && obj.constructor) {
+    const pattern = parseSwiftConstructorPattern(obj.constructor.toString());
+    return pattern !== null;
+  }
+  return false;
+}
 const main = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null
 }, Symbol.toStringTag, { value: "Module" }));

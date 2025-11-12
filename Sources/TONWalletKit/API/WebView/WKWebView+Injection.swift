@@ -79,12 +79,12 @@ public extension WKWebView {
 }
 
 private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHandlerWithReply {
-    private let injectableBridge: TONWalletKit.InjectableBridge
+    private let injectableBridge: TONWalletKitInjectableBridge
     private var subscribers: [String: AnyCancellable] = [:]
     
     private let defaultTimeout: Int = 10000
     
-    init(injectableBridge: TONWalletKit.InjectableBridge) {
+    init(injectableBridge: TONWalletKitInjectableBridge) {
         self.injectableBridge = injectableBridge
     }
     

@@ -26,7 +26,7 @@
 
 import Foundation
 
-class TONWalletKitStorageAdapter: NSObject, JSWalletKitStorage {
+class TONWalletKitStorageJSAdapter: NSObject, JSWalletKitStorage {
     private weak var context: JSContext?
     private let storage: TONWalletKitStorage
     

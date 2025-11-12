@@ -1,8 +1,8 @@
 //
-//  TONBridgeEventsHandlerAdapter.swift
+//  TONWalletSignerAdapter.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 17.10.2025.
+//  Created by Nikita Rodionov on 16.10.2025.
 //
 //  Copyright (c) 2025 TON Connect
 //
@@ -25,39 +25,39 @@
 //  SOFTWARE.
 
 import Foundation
+import JavaScriptCore
 
-class TONBridgeEventsHandlerAdapter: JSBridgeEventsHandler {
-    private weak var handler: TONBridgeEventsHandler?
+class TONWalletSignerJSAdapter: NSObject, JSWalletSigner {
     private weak var context: JSContext?
+    private let signer: any TONWalletSignerProtocol
     
-    var isValid: Bool {
-        return handler != nil && context != nil
-    }
-    
-    init(handler: TONBridgeEventsHandler, context: JSContext) {
-        self.handler = handler
+    init(
+        context: JSContext,
+        signer: any TONWalletSignerProtocol
+    ) {
         self.context = context
+        self.signer = signer
     }
     
-    func handle(event: JSWalletKitSwiftBridgeEvent) throws {
-        guard let handler, let context else {
-            throw "Unable to handle event: \(event.type)"
-        }
+    @objc(sign:) func sign(data: [UInt8]) -> JSValue {
+        let data = Data(data)
         
-        let event = try TONWalletKitEvent(bridgeEvent: event, context: context)
-        
-        try handler.handle(event: event)
-    }
-    
-    func invalidate() {
-        handler = nil
-        context = nil
-    }
-    
-    static func == (lhs: TONBridgeEventsHandlerAdapter, rhs: TONBridgeEventsHandler) -> Bool {
-        guard let lhs = lhs.handler else {
-            return false
+        return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
+            Task {
+                guard let self else { return }
+                
+                do {
+                    let signedData = try await self.signer.sign(data: data).value
+                    
+                    resolve?.call(withArguments: [signedData])
+                } catch {
+                    reject?.call(withArguments: [error.localizedDescription])
+                }
+            }
         }
-        return lhs === rhs
+    }
+    
+    @objc func publicKey() -> JSValue {
+        JSValue(object: signer.publicKey().value, in: context)
     }
 }

@@ -91,3 +91,8 @@ struct TONSignedSendTransactionAllOptions: Codable, JSValueDecodable, JSValueEnc
 struct TONGetAddressOptions: Codable, JSValueDecodable, JSValueEncodable {
     let testnet: Bool?
 }
+
+extension TONWalletAdapter: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any { jsWalletAdapter }
+}

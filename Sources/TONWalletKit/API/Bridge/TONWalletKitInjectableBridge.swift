@@ -1,9 +1,9 @@
 //
-//  TONWalletSignerAdapter.swift
+//  TONWalletKitInjectableBridge.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 16.10.2025.
-//
+//  Created by Nikita Rodionov on 12.11.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,39 +25,42 @@
 //  SOFTWARE.
 
 import Foundation
-import JavaScriptCore
+import Combine
 
-class TONWalletSignerAdapter: NSObject, JSWalletSigner {
-    private weak var context: JSContext?
-    private let signer: any TONWalletSignerProtocol
+class TONWalletKitInjectableBridge {
+    private let walletKit: any JSDynamicObject
+    private let bridgeTransport: JSBridgeTransport
     
     init(
-        context: JSContext,
-        signer: any TONWalletSignerProtocol
+        walletKit: any JSDynamicObject,
+        bridgeTransport: JSBridgeTransport
     ) {
-        self.context = context
-        self.signer = signer
+        self.walletKit = walletKit
+        self.bridgeTransport = bridgeTransport
     }
     
-    @objc(sign:) func sign(data: [UInt8]) -> JSValue {
-        let data = Data(data)
-        
-        return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
-            Task {
-                guard let self else { return }
-                
-                do {
-                    let signedData = try await self.signer.sign(data: data).value
-                    
-                    resolve?.call(withArguments: [signedData])
-                } catch {
-                    reject?.call(withArguments: [error.localizedDescription])
-                }
+    func request(message: TONBridgeEventMessage, request: Any) async throws {
+        try await walletKit.processInjectedBridgeRequest(message, AnyJSValueEncodable(request))
+    }
+    
+    func waitForResponse() -> AnyPublisher<Response, Error> {
+        bridgeTransport.waitForResponse()
+            .map { response in
+                Response(
+                    sessionID: response.sessionID,
+                    messageID: response.messageID,
+                    message: response.message
+                )
             }
-        }
+            .eraseToAnyPublisher()
     }
+}
+
+extension TONWalletKitInjectableBridge {
     
-    @objc func publicKey() -> JSValue {
-        JSValue(object: signer.publicKey().value, in: context)
+    struct Response {
+        let sessionID: String?
+        let messageID: String?
+        let message: AnyCodable?
     }
 }

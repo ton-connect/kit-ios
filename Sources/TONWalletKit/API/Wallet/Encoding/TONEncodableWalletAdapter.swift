@@ -1,5 +1,5 @@
 //
-//  TONWalletSigner.swift
+//  TONEncodableWalletAdapter.swift
 //  TONWalletKit
 //
 //  Created by Nikita Rodionov on 12.11.2025.
@@ -26,24 +26,17 @@
 
 import Foundation
 
-class TONWalletSigner: TONWalletSignerProtocol {
-    let jsWalletSigner: any JSDynamicObject
+class TONEncodableWalletAdapter: JSValueEncodable {
+    let walletAdapter: any TONWalletAdapterProtocol
     
-    init(jsWalletSigner: any JSDynamicObject) {
-        self.jsWalletSigner = jsWalletSigner
+    init(walletAdapter: any TONWalletAdapterProtocol) {
+        self.walletAdapter = walletAdapter
     }
     
-    func sign(data: Data) async throws -> TONHex {
-        TONHex(hexString: try await jsWalletSigner.sign([UInt8](data)))
+    func encode(in context: JSContext) throws -> Any {
+        if let value = walletAdapter as? JSValueEncodable {
+            return try value.encode(in: context)
+        }
+        return TONWalletAdapterJSAdapter(context: context, walletAdapter: walletAdapter)
     }
-    
-    func publicKey() -> TONHex {
-        let result: String? = jsWalletSigner.publicKey
-        return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
-    }
-}
-
-extension TONWalletSigner: JSValueEncodable {
-    
-    func encode(in context: JSContext) throws -> Any { jsWalletSigner }
 }

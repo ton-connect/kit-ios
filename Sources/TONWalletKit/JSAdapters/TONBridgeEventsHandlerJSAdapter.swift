@@ -1,9 +1,9 @@
 //
-//  TONWalletSigner.swift
+//  TONBridgeEventsHandlerAdapter.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 12.11.2025.
-//  
+//  Created by Nikita Rodionov on 17.10.2025.
+//
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,24 +26,38 @@
 
 import Foundation
 
-class TONWalletSigner: TONWalletSignerProtocol {
-    let jsWalletSigner: any JSDynamicObject
+class TONBridgeEventsHandlerJSAdapter: JSBridgeEventsHandler {
+    private weak var handler: TONBridgeEventsHandler?
+    private weak var context: JSContext?
     
-    init(jsWalletSigner: any JSDynamicObject) {
-        self.jsWalletSigner = jsWalletSigner
+    var isValid: Bool {
+        return handler != nil && context != nil
     }
     
-    func sign(data: Data) async throws -> TONHex {
-        TONHex(hexString: try await jsWalletSigner.sign([UInt8](data)))
+    init(handler: TONBridgeEventsHandler, context: JSContext) {
+        self.handler = handler
+        self.context = context
     }
     
-    func publicKey() -> TONHex {
-        let result: String? = jsWalletSigner.publicKey
-        return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
+    func handle(event: JSWalletKitSwiftBridgeEvent) throws {
+        guard let handler, let context else {
+            throw "Unable to handle event: \(event.type)"
+        }
+        
+        let event = try TONWalletKitEvent(bridgeEvent: event, context: context)
+        
+        try handler.handle(event: event)
     }
-}
-
-extension TONWalletSigner: JSValueEncodable {
     
-    func encode(in context: JSContext) throws -> Any { jsWalletSigner }
+    func invalidate() {
+        handler = nil
+        context = nil
+    }
+    
+    static func == (lhs: TONBridgeEventsHandlerJSAdapter, rhs: TONBridgeEventsHandler) -> Bool {
+        guard let lhs = lhs.handler else {
+            return false
+        }
+        return lhs === rhs
+    }
 }

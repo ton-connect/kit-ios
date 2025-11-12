@@ -29,22 +29,22 @@ import JavaScriptCore
 
 class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     private weak var context: JSContext?
-    private let wallet: any TONWalletAdapterProtocol
+    private let walletAdapter: any TONWalletAdapterProtocol
     
-    init(context: JSContext, wallet: any TONWalletAdapterProtocol) {
+    init(context: JSContext, walletAdapter: any TONWalletAdapterProtocol) {
         self.context = context
-        self.wallet = wallet
+        self.walletAdapter = walletAdapter
     }
     
-    @objc(publicKey) var publicKey: JSValue { JSValue(object: wallet.publicKey.value, in: context) }
-    @objc(version) var version: JSValue { JSValue(object: wallet.version.rawValue, in: context) }
-    @objc(getNetwork) var network: JSValue { JSValue(object: wallet.network.rawValue, in: context) }
+    @objc(publicKey) var publicKey: JSValue { JSValue(object: walletAdapter.publicKey.value, in: context) }
+    @objc(version) var version: JSValue { JSValue(object: walletAdapter.version.rawValue, in: context) }
+    @objc(getNetwork) var network: JSValue { JSValue(object: walletAdapter.network.rawValue, in: context) }
     
     @objc(getAddress:) func address(options: JSValue) -> JSValue {
         let options: TONGetAddressOptions? = try? options.decode()
         
         do {
-            let address = try wallet.address(testnet: options?.testnet == true)
+            let address = try walletAdapter.address(testnet: options?.testnet == true)
             return JSValue(object: address, in: context)
         } catch {
             return JSValue(undefinedIn: context)
@@ -57,7 +57,7 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
                 guard let self else { return }
                 
                 do {
-                    let value = try await self.wallet.stateInit().value
+                    let value = try await self.walletAdapter.stateInit().value
                     
                     resolve?.call(withArguments: [value])
                 } catch {
@@ -78,7 +78,7 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
                     guard let self else { return }
                     
                     do {
-                        let value = try await self.wallet.signedSendTransaction(
+                        let value = try await self.walletAdapter.signedSendTransaction(
                             input: input,
                             fakeSignature: options?.fakeSignature
                         ).value
@@ -105,7 +105,7 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
                     guard let self else { return }
                     
                     do {
-                        let value = try await self.wallet.signedSignData(
+                        let value = try await self.walletAdapter.signedSignData(
                             input: input,
                             fakeSignature: options?.fakeSignature
                         ).value
@@ -132,7 +132,7 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
                     guard let self else { return }
                     
                     do {
-                        let value = try await self.wallet.signedTonProof(
+                        let value = try await self.walletAdapter.signedTonProof(
                             input: input,
                             fakeSignature: options?.fakeSignature
                         ).value

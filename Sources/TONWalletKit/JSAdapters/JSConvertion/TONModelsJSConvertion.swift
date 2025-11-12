@@ -73,11 +73,6 @@ extension TONBridgeInjectOptions: JSValueEncodable {}
 extension TONPrepareSignDataResult: JSValueEncodable {}
 extension TONProofParsedMessage: JSValueEncodable {}
 
-extension TONWallet: JSValueEncodable {
-    
-    func encode(in context: JSContext) throws -> Any { self.jsWallet }
-}
-
 extension TONBalance: JSValueEncodable {
     
     func encode(in context: JSContext) throws -> Any { String(nanoUnits) }
