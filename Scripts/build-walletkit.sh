@@ -65,8 +65,8 @@ pnpm install
 pnpm build --force
 
 # Source file path
-WALLETKIT_SOURCE_FILE="$WALLETKIT_PATH/packages/walletkit-ios-bridge/build/walletkit-ios-bridge.mjs"
-WALLETKIT_INJECTION_SOURCE_FILE="$WALLETKIT_PATH/packages/walletkit-ios-bridge/build/inject.mjs"
+WALLETKIT_SOURCE_FILE="$WALLETKIT_PATH/packages/walletkit-ios-bridge/dist/walletkit-ios-bridge.mjs"
+WALLETKIT_INJECTION_SOURCE_FILE="$WALLETKIT_PATH/packages/walletkit-ios-bridge/dist/inject.mjs"
 
 # Destination directory (relative to project root)
 DEST_DIR="$PROJECT_ROOT/Sources/TONWalletKit/Resources/JS"
