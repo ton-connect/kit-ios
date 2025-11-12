@@ -36,7 +36,7 @@ struct JSWalletKitScript: JSScript {
         let jsFile = "walletkit-ios-bridge"
         
         guard let path = Bundle.module.path(forResource: jsFile, ofType: "mjs") else {
-            throw "Unable to find walletkit.mjs file"
+            throw "Unable to find walletkit-ios-bridge.mjs file"
         }
         
         var code = try String(contentsOfFile: path, encoding: .utf8)
