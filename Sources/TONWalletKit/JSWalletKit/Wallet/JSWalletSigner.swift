@@ -27,6 +27,7 @@
 import Foundation
 import JavaScriptCore
 
-@objc protocol JSWalletSigner {
+@objc protocol JSWalletSigner: JSExport {
     @objc(sign:) func sign(data: [UInt8]) -> JSValue
+    @objc func publicKey() -> JSValue
 }

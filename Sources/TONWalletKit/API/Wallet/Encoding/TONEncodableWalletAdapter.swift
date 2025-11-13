@@ -1,9 +1,9 @@
 //
-//  JSWalletAdapter.swift
+//  TONEncodableWalletAdapter.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 17.10.2025.
-//
+//  Created by Nikita Rodionov on 12.11.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,16 +25,18 @@
 //  SOFTWARE.
 
 import Foundation
-import JavaScriptCore
 
-@objc public protocol JSWalletAdapter: JSExport {
-    @objc(getPublicKey) func publicKey() -> JSValue
-    @objc(getNetwork) func network() -> JSValue
+class TONEncodableWalletAdapter: JSValueEncodable {
+    let walletAdapter: any TONWalletAdapterProtocol
     
-    @objc(getAddress:) func address(options: JSValue) -> JSValue
-    @objc(getStateInit) func stateInit() -> JSValue
+    init(walletAdapter: any TONWalletAdapterProtocol) {
+        self.walletAdapter = walletAdapter
+    }
     
-    @objc(getSignedSendTransaction::) func signedSendTransaction(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedSignData::) func signedSignData(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedTonProof::) func signedTonProof(input: JSValue, options: JSValue) -> JSValue
+    func encode(in context: JSContext) throws -> Any {
+        if let value = walletAdapter as? JSValueEncodable {
+            return try value.encode(in: context)
+        }
+        return TONWalletAdapterJSAdapter(context: context, walletAdapter: walletAdapter)
+    }
 }

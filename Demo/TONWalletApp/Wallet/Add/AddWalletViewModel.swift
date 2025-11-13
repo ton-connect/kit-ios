@@ -55,13 +55,15 @@ class AddWalletViewModel: ObservableObject {
         )
         
         do {
-            let tonWallet = try await TONWalletKit.mainnet().addV5R1Wallet(
-                mnemonic: mnemonic,
+            let kit = try await TONWalletKit.mainnet()
+            let signer = try await kit.signer(mnemonic: mnemonic)
+            let adapter = try await kit.walletV5R1Adapter(
+                signer: signer,
                 parameters: TONV5R1WalletParameters(
                     network: .mainnet
                 )
             )
-            
+            let tonWallet = try await kit.add(walletAdapter: adapter)
             try storage.add(wallet: WalletEntity(address: tonWallet.address, data: data))
             
             return tonWallet

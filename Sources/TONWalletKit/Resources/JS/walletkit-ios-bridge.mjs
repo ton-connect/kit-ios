@@ -224,7 +224,14 @@ if (typeof self !== "undefined") {
     self.fetch = window.fetch;
   }
 }
-Promise.resolve().then(() => firstPolyfill);
+Promise.resolve().then(() => firstPolyfill).then(() => {
+  Promise.resolve().then(() => main).then(() => {
+  }).catch((error2) => {
+    console.error("🔍 Error loading main:", error2.toString());
+  });
+}).catch((error2) => {
+  console.error("🔍 Error loading polyfills:", error2.toString());
+});
 var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x2) {
   return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
@@ -3968,7 +3975,6 @@ function requireBase64Js() {
   return base64Js;
 }
 var ieee754 = {};
-/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 var hasRequiredIeee754;
 function requireIeee754() {
   if (hasRequiredIeee754) return ieee754;
@@ -4052,12 +4058,6 @@ function requireIeee754() {
   };
   return ieee754;
 }
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <https://feross.org>
- * @license  MIT
- */
 var hasRequiredBuffer;
 function requireBuffer() {
   if (hasRequiredBuffer) return buffer;
@@ -5650,9 +5650,6 @@ function requireBuffer() {
   return buffer;
 }
 var bufferExports = requireBuffer();
-var __defProp$1 = Object.defineProperty;
-var __defNormalProp$1 = (obj, key2, value) => key2 in obj ? __defProp$1(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
-var __publicField$1 = (obj, key2, value) => __defNormalProp$1(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
 if (typeof window !== "undefined") {
   window.Buffer = bufferExports.Buffer;
   window.URL = whatwgUrlExports.URL;
@@ -5672,7 +5669,7 @@ if (typeof window !== "undefined") {
   if (typeof EventTarget === "undefined") {
     const EventTargetPolyfill = class EventTarget {
       constructor() {
-        __publicField$1(this, "_listeners", /* @__PURE__ */ new Map());
+        this._listeners = /* @__PURE__ */ new Map();
       }
       addEventListener(type, listener) {
         var _a2;
@@ -5717,9 +5714,6 @@ if (typeof window !== "undefined") {
   if (typeof Event === "undefined") {
     const EventPolyfill = class Event {
       constructor(type, eventInit) {
-        __publicField$1(this, "type");
-        __publicField$1(this, "bubbles");
-        __publicField$1(this, "cancelable");
         this.type = type;
         this.bubbles = (eventInit == null ? void 0 : eventInit.bubbles) || false;
         this.cancelable = (eventInit == null ? void 0 : eventInit.cancelable) || false;
@@ -5732,7 +5726,6 @@ if (typeof window !== "undefined") {
     const CustomEventPolyfill = class CustomEvent extends window.Event {
       constructor(type, eventInit) {
         super(type, eventInit);
-        __publicField$1(this, "detail");
         this.detail = eventInit == null ? void 0 : eventInit.detail;
       }
     };
@@ -5743,9 +5736,6 @@ if (typeof window !== "undefined") {
     const MessageEventPolyfill = class MessageEvent extends window.Event {
       constructor(type, eventInit) {
         super(type, eventInit);
-        __publicField$1(this, "data");
-        __publicField$1(this, "source");
-        __publicField$1(this, "origin");
         this.data = eventInit == null ? void 0 : eventInit.data;
         this.source = eventInit == null ? void 0 : eventInit.source;
         this.origin = (eventInit == null ? void 0 : eventInit.origin) || "";
@@ -5827,13 +5817,13 @@ if (typeof window !== "undefined") {
   if (typeof AbortController === "undefined") {
     window.AbortController = class AbortController {
       constructor() {
-        __publicField$1(this, "signal", {
+        this.signal = {
           aborted: false,
           addEventListener: () => {
           },
           removeEventListener: () => {
           }
-        });
+        };
       }
       abort() {
         this.signal.aborted = true;
@@ -5900,7 +5890,6 @@ if (typeof window !== "undefined") {
     };
   }
 }
-Promise.resolve().then(() => main);
 const firstPolyfill = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null
 }, Symbol.toStringTag, { value: "Module" }));
@@ -8375,8 +8364,8 @@ class SessionCrypto {
     };
   }
 }
-var dist$5 = {};
-var Address = {};
+var dist$6 = {};
+var Address$1 = {};
 var symbol_inspect;
 var hasRequiredSymbol_inspect;
 function requireSymbol_inspect() {
@@ -8386,14 +8375,14 @@ function requireSymbol_inspect() {
   symbol_inspect = SymbolInspect;
   return symbol_inspect;
 }
-var crc16 = {};
-var hasRequiredCrc16;
-function requireCrc16() {
-  if (hasRequiredCrc16) return crc16;
-  hasRequiredCrc16 = 1;
-  Object.defineProperty(crc16, "__esModule", { value: true });
-  crc16.crc16 = void 0;
-  function crc16$1(data) {
+var crc16$1 = {};
+var hasRequiredCrc16$1;
+function requireCrc16$1() {
+  if (hasRequiredCrc16$1) return crc16$1;
+  hasRequiredCrc16$1 = 1;
+  Object.defineProperty(crc16$1, "__esModule", { value: true });
+  crc16$1.crc16 = void 0;
+  function crc162(data) {
     const poly = 4129;
     let reg = 0;
     const message = Buffer.alloc(data.length + 2);
@@ -8414,26 +8403,26 @@ function requireCrc16() {
     }
     return Buffer.from([Math.floor(reg / 256), reg % 256]);
   }
-  crc16.crc16 = crc16$1;
-  return crc16;
+  crc16$1.crc16 = crc162;
+  return crc16$1;
 }
-var hasRequiredAddress;
-function requireAddress() {
-  if (hasRequiredAddress) return Address;
-  hasRequiredAddress = 1;
-  var __importDefault = Address && Address.__importDefault || function(mod) {
+var hasRequiredAddress$1;
+function requireAddress$1() {
+  if (hasRequiredAddress$1) return Address$1;
+  hasRequiredAddress$1 = 1;
+  var __importDefault = Address$1 && Address$1.__importDefault || function(mod) {
     return mod && mod.__esModule ? mod : { "default": mod };
   };
   var _a2;
-  Object.defineProperty(Address, "__esModule", { value: true });
-  Address.address = Address.Address = void 0;
+  Object.defineProperty(Address$1, "__esModule", { value: true });
+  Address$1.address = Address$1.Address = void 0;
   const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
-  const crc16_1 = requireCrc16();
+  const crc16_1 = requireCrc16$1();
   const bounceable_tag = 17;
   const non_bounceable_tag = 81;
   const test_flag = 128;
   function parseFriendlyAddress(src2) {
-    if (typeof src2 === "string" && !Address$1.isFriendly(src2)) {
+    if (typeof src2 === "string" && !Address2.isFriendly(src2)) {
       throw new Error("Unknown address type");
     }
     const data = Buffer.isBuffer(src2) ? src2 : Buffer.from(src2, "base64");
@@ -8465,7 +8454,7 @@ function requireAddress() {
     const hashPart = addr.subarray(2, 34);
     return { isTestOnly, isBounceable, workchain, hashPart };
   }
-  let Address$1 = class Address2 {
+  class Address2 {
     static isAddress(src2) {
       return src2 instanceof Address2;
     }
@@ -8582,28 +8571,28 @@ function requireAddress() {
       }
       return src2.hash.equals(this.hash);
     }
-  };
-  Address.Address = Address$1;
+  }
+  Address$1.Address = Address2;
   _a2 = symbol_inspect_1.default;
   function address(src2) {
-    return Address$1.parse(src2);
+    return Address2.parse(src2);
   }
-  Address.address = address;
-  return Address;
+  Address$1.address = address;
+  return Address$1;
 }
-var ExternalAddress = {};
-var hasRequiredExternalAddress;
-function requireExternalAddress() {
-  if (hasRequiredExternalAddress) return ExternalAddress;
-  hasRequiredExternalAddress = 1;
-  var __importDefault = ExternalAddress && ExternalAddress.__importDefault || function(mod) {
+var ExternalAddress$1 = {};
+var hasRequiredExternalAddress$1;
+function requireExternalAddress$1() {
+  if (hasRequiredExternalAddress$1) return ExternalAddress$1;
+  hasRequiredExternalAddress$1 = 1;
+  var __importDefault = ExternalAddress$1 && ExternalAddress$1.__importDefault || function(mod) {
     return mod && mod.__esModule ? mod : { "default": mod };
   };
   var _a2;
-  Object.defineProperty(ExternalAddress, "__esModule", { value: true });
-  ExternalAddress.ExternalAddress = void 0;
+  Object.defineProperty(ExternalAddress$1, "__esModule", { value: true });
+  ExternalAddress$1.ExternalAddress = void 0;
   const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
-  let ExternalAddress$1 = class ExternalAddress2 {
+  class ExternalAddress2 {
     static isAddress(src2) {
       return src2 instanceof ExternalAddress2;
     }
@@ -8615,19 +8604,19 @@ function requireExternalAddress() {
     toString() {
       return `External<${this.bits}:${this.value}>`;
     }
-  };
-  ExternalAddress.ExternalAddress = ExternalAddress$1;
+  }
+  ExternalAddress$1.ExternalAddress = ExternalAddress2;
   _a2 = symbol_inspect_1.default;
-  return ExternalAddress;
+  return ExternalAddress$1;
 }
-var ADNLAddress = {};
-var base32 = {};
-var hasRequiredBase32;
-function requireBase32() {
-  if (hasRequiredBase32) return base32;
-  hasRequiredBase32 = 1;
-  Object.defineProperty(base32, "__esModule", { value: true });
-  base32.base32Decode = base32.base32Encode = void 0;
+var ADNLAddress$1 = {};
+var base32$1 = {};
+var hasRequiredBase32$1;
+function requireBase32$1() {
+  if (hasRequiredBase32$1) return base32$1;
+  hasRequiredBase32$1 = 1;
+  Object.defineProperty(base32$1, "__esModule", { value: true });
+  base32$1.base32Decode = base32$1.base32Encode = void 0;
   const alphabet = "abcdefghijklmnopqrstuvwxyz234567";
   function base32Encode(buffer2) {
     const length = buffer2.byteLength;
@@ -8647,7 +8636,7 @@ function requireBase32() {
     }
     return output;
   }
-  base32.base32Encode = base32Encode;
+  base32$1.base32Encode = base32Encode;
   function readChar(alphabet2, char) {
     const idx = alphabet2.indexOf(char);
     if (idx === -1) {
@@ -8673,23 +8662,23 @@ function requireBase32() {
     }
     return output;
   }
-  base32.base32Decode = base32Decode;
-  return base32;
+  base32$1.base32Decode = base32Decode;
+  return base32$1;
 }
-var hasRequiredADNLAddress;
-function requireADNLAddress() {
-  if (hasRequiredADNLAddress) return ADNLAddress;
-  hasRequiredADNLAddress = 1;
-  var __importDefault = ADNLAddress && ADNLAddress.__importDefault || function(mod) {
+var hasRequiredADNLAddress$1;
+function requireADNLAddress$1() {
+  if (hasRequiredADNLAddress$1) return ADNLAddress$1;
+  hasRequiredADNLAddress$1 = 1;
+  var __importDefault = ADNLAddress$1 && ADNLAddress$1.__importDefault || function(mod) {
     return mod && mod.__esModule ? mod : { "default": mod };
   };
   var _a2;
-  Object.defineProperty(ADNLAddress, "__esModule", { value: true });
-  ADNLAddress.ADNLAddress = void 0;
+  Object.defineProperty(ADNLAddress$1, "__esModule", { value: true });
+  ADNLAddress$1.ADNLAddress = void 0;
   const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
-  const base32_1 = requireBase32();
-  const crc16_1 = requireCrc16();
-  let ADNLAddress$1 = class ADNLAddress2 {
+  const base32_1 = requireBase32$1();
+  const crc16_1 = requireCrc16$1();
+  class ADNLAddress2 {
     static parseFriendly(src2) {
       if (src2.length !== 55) {
         throw Error("Invalid address");
@@ -8729,24 +8718,24 @@ function requireADNLAddress() {
     equals(b2) {
       return this.address.equals(b2.address);
     }
-  };
-  ADNLAddress.ADNLAddress = ADNLAddress$1;
+  }
+  ADNLAddress$1.ADNLAddress = ADNLAddress2;
   _a2 = symbol_inspect_1.default;
-  return ADNLAddress;
+  return ADNLAddress$1;
 }
-var contractAddress = {};
-var Builder$3 = {};
-var BitBuilder = {};
-var BitString = {};
-var paddedBits = {};
-var hasRequiredPaddedBits;
-function requirePaddedBits() {
-  if (hasRequiredPaddedBits) return paddedBits;
-  hasRequiredPaddedBits = 1;
-  Object.defineProperty(paddedBits, "__esModule", { value: true });
-  paddedBits.paddedBufferToBits = paddedBits.bitsToPaddedBuffer = void 0;
-  const BitBuilder_1 = requireBitBuilder();
-  const BitString_1 = requireBitString();
+var contractAddress$1 = {};
+var Builder$4 = {};
+var BitBuilder$1 = {};
+var BitString$1 = {};
+var paddedBits$1 = {};
+var hasRequiredPaddedBits$1;
+function requirePaddedBits$1() {
+  if (hasRequiredPaddedBits$1) return paddedBits$1;
+  hasRequiredPaddedBits$1 = 1;
+  Object.defineProperty(paddedBits$1, "__esModule", { value: true });
+  paddedBits$1.paddedBufferToBits = paddedBits$1.bitsToPaddedBuffer = void 0;
+  const BitBuilder_1 = requireBitBuilder$1();
+  const BitString_1 = requireBitString$1();
   function bitsToPaddedBuffer(bits) {
     let builder2 = new BitBuilder_1.BitBuilder(Math.ceil(bits.length / 8) * 8);
     builder2.writeBits(bits);
@@ -8760,7 +8749,7 @@ function requirePaddedBits() {
     }
     return builder2.buffer();
   }
-  paddedBits.bitsToPaddedBuffer = bitsToPaddedBuffer;
+  paddedBits$1.bitsToPaddedBuffer = bitsToPaddedBuffer;
   function paddedBufferToBits(buff) {
     let bitLen = 0;
     for (let i = buff.length - 1; i >= 0; i--) {
@@ -8779,22 +8768,22 @@ function requirePaddedBits() {
     }
     return new BitString_1.BitString(buff, 0, bitLen);
   }
-  paddedBits.paddedBufferToBits = paddedBufferToBits;
-  return paddedBits;
+  paddedBits$1.paddedBufferToBits = paddedBufferToBits;
+  return paddedBits$1;
 }
-var hasRequiredBitString;
-function requireBitString() {
-  if (hasRequiredBitString) return BitString;
-  hasRequiredBitString = 1;
-  var __importDefault = BitString && BitString.__importDefault || function(mod) {
+var hasRequiredBitString$1;
+function requireBitString$1() {
+  if (hasRequiredBitString$1) return BitString$1;
+  hasRequiredBitString$1 = 1;
+  var __importDefault = BitString$1 && BitString$1.__importDefault || function(mod) {
     return mod && mod.__esModule ? mod : { "default": mod };
   };
   var _a2;
-  Object.defineProperty(BitString, "__esModule", { value: true });
-  BitString.BitString = void 0;
-  const paddedBits_1 = requirePaddedBits();
+  Object.defineProperty(BitString$1, "__esModule", { value: true });
+  BitString$1.BitString = void 0;
+  const paddedBits_1 = requirePaddedBits$1();
   const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
-  let BitString$1 = class BitString2 {
+  class BitString2 {
     /**
      * Checks if supplied object is BitString
      * @param src is unknow object
@@ -8926,22 +8915,22 @@ function requireBitString() {
         }
       }
     }
-  };
-  BitString.BitString = BitString$1;
+  }
+  BitString$1.BitString = BitString2;
   _a2 = symbol_inspect_1.default;
-  BitString$1.EMPTY = new BitString$1(Buffer.alloc(0), 0, 0);
-  return BitString;
+  BitString2.EMPTY = new BitString2(Buffer.alloc(0), 0, 0);
+  return BitString$1;
 }
-var hasRequiredBitBuilder;
-function requireBitBuilder() {
-  if (hasRequiredBitBuilder) return BitBuilder;
-  hasRequiredBitBuilder = 1;
-  Object.defineProperty(BitBuilder, "__esModule", { value: true });
-  BitBuilder.BitBuilder = void 0;
-  const Address_1 = requireAddress();
-  const ExternalAddress_1 = requireExternalAddress();
-  const BitString_1 = requireBitString();
-  let BitBuilder$1 = class BitBuilder {
+var hasRequiredBitBuilder$1;
+function requireBitBuilder$1() {
+  if (hasRequiredBitBuilder$1) return BitBuilder$1;
+  hasRequiredBitBuilder$1 = 1;
+  Object.defineProperty(BitBuilder$1, "__esModule", { value: true });
+  BitBuilder$1.BitBuilder = void 0;
+  const Address_1 = requireAddress$1();
+  const ExternalAddress_1 = requireExternalAddress$1();
+  const BitString_1 = requireBitString$1();
+  class BitBuilder2 {
     constructor(size = 1023) {
       this._buffer = Buffer.alloc(Math.ceil(size / 8));
       this._length = 0;
@@ -9063,7 +9052,7 @@ function requireBitBuilder() {
         if (v2 !== -1n && v2 !== 0n) {
           throw Error(`value is not zero or -1 for ${bits} bits. Got ${value}`);
         } else {
-          this.writeBit(value === -1n);
+          this.writeBit(v2 === -1n);
           return;
         }
       }
@@ -9169,59 +9158,59 @@ function requireBitBuilder() {
       }
       return this._buffer.subarray(0, this._length / 8);
     }
-  };
-  BitBuilder.BitBuilder = BitBuilder$1;
-  return BitBuilder;
+  }
+  BitBuilder$1.BitBuilder = BitBuilder2;
+  return BitBuilder$1;
 }
-var Cell = {};
-var CellType = {};
-var hasRequiredCellType;
-function requireCellType() {
-  if (hasRequiredCellType) return CellType;
-  hasRequiredCellType = 1;
-  Object.defineProperty(CellType, "__esModule", { value: true });
-  CellType.CellType = void 0;
-  var CellType$1;
-  (function(CellType2) {
-    CellType2[CellType2["Ordinary"] = -1] = "Ordinary";
-    CellType2[CellType2["PrunedBranch"] = 1] = "PrunedBranch";
-    CellType2[CellType2["Library"] = 2] = "Library";
-    CellType2[CellType2["MerkleProof"] = 3] = "MerkleProof";
-    CellType2[CellType2["MerkleUpdate"] = 4] = "MerkleUpdate";
-  })(CellType$1 || (CellType.CellType = CellType$1 = {}));
-  return CellType;
+var Cell$1 = {};
+var CellType$1 = {};
+var hasRequiredCellType$1;
+function requireCellType$1() {
+  if (hasRequiredCellType$1) return CellType$1;
+  hasRequiredCellType$1 = 1;
+  Object.defineProperty(CellType$1, "__esModule", { value: true });
+  CellType$1.CellType = void 0;
+  var CellType2;
+  (function(CellType3) {
+    CellType3[CellType3["Ordinary"] = -1] = "Ordinary";
+    CellType3[CellType3["PrunedBranch"] = 1] = "PrunedBranch";
+    CellType3[CellType3["Library"] = 2] = "Library";
+    CellType3[CellType3["MerkleProof"] = 3] = "MerkleProof";
+    CellType3[CellType3["MerkleUpdate"] = 4] = "MerkleUpdate";
+  })(CellType2 || (CellType$1.CellType = CellType2 = {}));
+  return CellType$1;
 }
-var Slice = {};
-var Dictionary = {};
-var generateMerkleProof = {};
-var readUnaryLength = {};
-var hasRequiredReadUnaryLength;
-function requireReadUnaryLength() {
-  if (hasRequiredReadUnaryLength) return readUnaryLength;
-  hasRequiredReadUnaryLength = 1;
-  Object.defineProperty(readUnaryLength, "__esModule", { value: true });
-  readUnaryLength.readUnaryLength = void 0;
-  function readUnaryLength$1(slice) {
+var Slice$1 = {};
+var Dictionary$1 = {};
+var generateMerkleProof$1 = {};
+var readUnaryLength$1 = {};
+var hasRequiredReadUnaryLength$1;
+function requireReadUnaryLength$1() {
+  if (hasRequiredReadUnaryLength$1) return readUnaryLength$1;
+  hasRequiredReadUnaryLength$1 = 1;
+  Object.defineProperty(readUnaryLength$1, "__esModule", { value: true });
+  readUnaryLength$1.readUnaryLength = void 0;
+  function readUnaryLength2(slice) {
     let res = 0;
     while (slice.loadBit()) {
       res++;
     }
     return res;
   }
-  readUnaryLength.readUnaryLength = readUnaryLength$1;
-  return readUnaryLength;
+  readUnaryLength$1.readUnaryLength = readUnaryLength2;
+  return readUnaryLength$1;
 }
-var exoticMerkleProof = {};
-var BitReader = {};
-var hasRequiredBitReader;
-function requireBitReader() {
-  if (hasRequiredBitReader) return BitReader;
-  hasRequiredBitReader = 1;
-  Object.defineProperty(BitReader, "__esModule", { value: true });
-  BitReader.BitReader = void 0;
-  const Address_1 = requireAddress();
-  const ExternalAddress_1 = requireExternalAddress();
-  let BitReader$1 = class BitReader2 {
+var exoticMerkleProof$1 = {};
+var BitReader$1 = {};
+var hasRequiredBitReader$1;
+function requireBitReader$1() {
+  if (hasRequiredBitReader$1) return BitReader$1;
+  hasRequiredBitReader$1 = 1;
+  Object.defineProperty(BitReader$1, "__esModule", { value: true });
+  BitReader$1.BitReader = void 0;
+  const Address_1 = requireAddress$1();
+  const ExternalAddress_1 = requireExternalAddress$1();
+  class BitReader2 {
     constructor(bits, offset = 0) {
       this._checkpoints = [];
       this._bits = bits;
@@ -9675,19 +9664,19 @@ function requireBitReader() {
       }
       return Number(src2);
     }
-  };
-  BitReader.BitReader = BitReader$1;
-  return BitReader;
+  }
+  BitReader$1.BitReader = BitReader2;
+  return BitReader$1;
 }
-var hasRequiredExoticMerkleProof;
-function requireExoticMerkleProof() {
-  if (hasRequiredExoticMerkleProof) return exoticMerkleProof;
-  hasRequiredExoticMerkleProof = 1;
-  Object.defineProperty(exoticMerkleProof, "__esModule", { value: true });
-  exoticMerkleProof.convertToMerkleProof = exoticMerkleProof.exoticMerkleProof = void 0;
-  const BitReader_1 = requireBitReader();
-  const Builder_12 = requireBuilder$1();
-  function exoticMerkleProof$1(bits, refs) {
+var hasRequiredExoticMerkleProof$1;
+function requireExoticMerkleProof$1() {
+  if (hasRequiredExoticMerkleProof$1) return exoticMerkleProof$1;
+  hasRequiredExoticMerkleProof$1 = 1;
+  Object.defineProperty(exoticMerkleProof$1, "__esModule", { value: true });
+  exoticMerkleProof$1.convertToMerkleProof = exoticMerkleProof$1.exoticMerkleProof = void 0;
+  const BitReader_1 = requireBitReader$1();
+  const Builder_12 = requireBuilder$3();
+  function exoticMerkleProof2(bits, refs) {
     const reader2 = new BitReader_1.BitReader(bits);
     const size = 8 + 256 + 16;
     if (bits.length !== size) {
@@ -9715,22 +9704,22 @@ function requireExoticMerkleProof() {
       proofHash
     };
   }
-  exoticMerkleProof.exoticMerkleProof = exoticMerkleProof$1;
+  exoticMerkleProof$1.exoticMerkleProof = exoticMerkleProof2;
   function convertToMerkleProof(c) {
     return (0, Builder_12.beginCell)().storeUint(3, 8).storeBuffer(c.hash(0)).storeUint(c.depth(0), 16).storeRef(c).endCell({ exotic: true });
   }
-  exoticMerkleProof.convertToMerkleProof = convertToMerkleProof;
-  return exoticMerkleProof;
+  exoticMerkleProof$1.convertToMerkleProof = convertToMerkleProof;
+  return exoticMerkleProof$1;
 }
-var hasRequiredGenerateMerkleProof;
-function requireGenerateMerkleProof() {
-  if (hasRequiredGenerateMerkleProof) return generateMerkleProof;
-  hasRequiredGenerateMerkleProof = 1;
-  Object.defineProperty(generateMerkleProof, "__esModule", { value: true });
-  generateMerkleProof.generateMerkleProof = generateMerkleProof.generateMerkleProofDirect = void 0;
-  const Builder_12 = requireBuilder$1();
-  const readUnaryLength_1 = requireReadUnaryLength();
-  const exoticMerkleProof_1 = requireExoticMerkleProof();
+var hasRequiredGenerateMerkleProof$1;
+function requireGenerateMerkleProof$1() {
+  if (hasRequiredGenerateMerkleProof$1) return generateMerkleProof$1;
+  hasRequiredGenerateMerkleProof$1 = 1;
+  Object.defineProperty(generateMerkleProof$1, "__esModule", { value: true });
+  generateMerkleProof$1.generateMerkleProof = generateMerkleProof$1.generateMerkleProofDirect = void 0;
+  const Builder_12 = requireBuilder$3();
+  const readUnaryLength_1 = requireReadUnaryLength$1();
+  const exoticMerkleProof_1 = requireExoticMerkleProof$1();
   function convertToPrunedBranch(c) {
     return (0, Builder_12.beginCell)().storeUint(1, 8).storeUint(1, 8).storeBuffer(c.hash(0)).storeUint(c.depth(0), 16).endCell({ exotic: true });
   }
@@ -9792,41 +9781,41 @@ function requireGenerateMerkleProof() {
     const s2 = (0, Builder_12.beginCell)().storeDictDirect(dict).asSlice();
     return doGenerateMerkleProof("", s2, keyObject.bits, keys.map((key2) => keyObject.serialize(key2).toString(2).padStart(keyObject.bits, "0")));
   }
-  generateMerkleProof.generateMerkleProofDirect = generateMerkleProofDirect;
-  function generateMerkleProof$1(dict, keys, keyObject) {
+  generateMerkleProof$1.generateMerkleProofDirect = generateMerkleProofDirect;
+  function generateMerkleProof2(dict, keys, keyObject) {
     return (0, exoticMerkleProof_1.convertToMerkleProof)(generateMerkleProofDirect(dict, keys, keyObject));
   }
-  generateMerkleProof.generateMerkleProof = generateMerkleProof$1;
-  return generateMerkleProof;
+  generateMerkleProof$1.generateMerkleProof = generateMerkleProof2;
+  return generateMerkleProof$1;
 }
-var generateMerkleUpdate = {};
-var hasRequiredGenerateMerkleUpdate;
-function requireGenerateMerkleUpdate() {
-  if (hasRequiredGenerateMerkleUpdate) return generateMerkleUpdate;
-  hasRequiredGenerateMerkleUpdate = 1;
-  Object.defineProperty(generateMerkleUpdate, "__esModule", { value: true });
-  generateMerkleUpdate.generateMerkleUpdate = void 0;
-  const Builder_12 = requireBuilder$1();
-  const generateMerkleProof_1 = requireGenerateMerkleProof();
+var generateMerkleUpdate$1 = {};
+var hasRequiredGenerateMerkleUpdate$1;
+function requireGenerateMerkleUpdate$1() {
+  if (hasRequiredGenerateMerkleUpdate$1) return generateMerkleUpdate$1;
+  hasRequiredGenerateMerkleUpdate$1 = 1;
+  Object.defineProperty(generateMerkleUpdate$1, "__esModule", { value: true });
+  generateMerkleUpdate$1.generateMerkleUpdate = void 0;
+  const Builder_12 = requireBuilder$3();
+  const generateMerkleProof_1 = requireGenerateMerkleProof$1();
   function convertToMerkleUpdate(c1, c2) {
     return (0, Builder_12.beginCell)().storeUint(4, 8).storeBuffer(c1.hash(0)).storeBuffer(c2.hash(0)).storeUint(c1.depth(0), 16).storeUint(c2.depth(0), 16).storeRef(c1).storeRef(c2).endCell({ exotic: true });
   }
-  function generateMerkleUpdate$1(dict, key2, keyObject, newValue) {
+  function generateMerkleUpdate2(dict, key2, keyObject, newValue) {
     const oldProof = (0, generateMerkleProof_1.generateMerkleProof)(dict, [key2], keyObject).refs[0];
     dict.set(key2, newValue);
     const newProof = (0, generateMerkleProof_1.generateMerkleProof)(dict, [key2], keyObject).refs[0];
     return convertToMerkleUpdate(oldProof, newProof);
   }
-  generateMerkleUpdate.generateMerkleUpdate = generateMerkleUpdate$1;
-  return generateMerkleUpdate;
+  generateMerkleUpdate$1.generateMerkleUpdate = generateMerkleUpdate2;
+  return generateMerkleUpdate$1;
 }
-var parseDict = {};
-var hasRequiredParseDict;
-function requireParseDict() {
-  if (hasRequiredParseDict) return parseDict;
-  hasRequiredParseDict = 1;
-  Object.defineProperty(parseDict, "__esModule", { value: true });
-  parseDict.parseDict = void 0;
+var parseDict$1 = {};
+var hasRequiredParseDict$1;
+function requireParseDict$1() {
+  if (hasRequiredParseDict$1) return parseDict$1;
+  hasRequiredParseDict$1 = 1;
+  Object.defineProperty(parseDict$1, "__esModule", { value: true });
+  parseDict$1.parseDict = void 0;
   function readUnaryLength2(slice) {
     let res = 0;
     while (slice.loadBit()) {
@@ -9871,25 +9860,25 @@ function requireParseDict() {
       }
     }
   }
-  function parseDict$1(sc, keySize, extractor) {
+  function parseDict2(sc, keySize, extractor) {
     let res = /* @__PURE__ */ new Map();
     if (sc) {
       doParse("", sc, keySize, res, extractor);
     }
     return res;
   }
-  parseDict.parseDict = parseDict$1;
-  return parseDict;
+  parseDict$1.parseDict = parseDict2;
+  return parseDict$1;
 }
-var serializeDict = {};
-var findCommonPrefix = {};
-var hasRequiredFindCommonPrefix;
-function requireFindCommonPrefix() {
-  if (hasRequiredFindCommonPrefix) return findCommonPrefix;
-  hasRequiredFindCommonPrefix = 1;
-  Object.defineProperty(findCommonPrefix, "__esModule", { value: true });
-  findCommonPrefix.findCommonPrefix = void 0;
-  function findCommonPrefix$1(src2, startPos = 0) {
+var serializeDict$1 = {};
+var findCommonPrefix$1 = {};
+var hasRequiredFindCommonPrefix$1;
+function requireFindCommonPrefix$1() {
+  if (hasRequiredFindCommonPrefix$1) return findCommonPrefix$1;
+  hasRequiredFindCommonPrefix$1 = 1;
+  Object.defineProperty(findCommonPrefix$1, "__esModule", { value: true });
+  findCommonPrefix$1.findCommonPrefix = void 0;
+  function findCommonPrefix2(src2, startPos = 0) {
     if (src2.length === 0) {
       return "";
     }
@@ -9905,17 +9894,17 @@ function requireFindCommonPrefix() {
     }
     return r;
   }
-  findCommonPrefix.findCommonPrefix = findCommonPrefix$1;
-  return findCommonPrefix;
+  findCommonPrefix$1.findCommonPrefix = findCommonPrefix2;
+  return findCommonPrefix$1;
 }
-var hasRequiredSerializeDict;
-function requireSerializeDict() {
-  if (hasRequiredSerializeDict) return serializeDict;
-  hasRequiredSerializeDict = 1;
-  Object.defineProperty(serializeDict, "__esModule", { value: true });
-  serializeDict.serializeDict = serializeDict.detectLabelType = serializeDict.writeLabelSame = serializeDict.writeLabelLong = serializeDict.writeLabelShort = serializeDict.buildTree = void 0;
-  const Builder_12 = requireBuilder$1();
-  const findCommonPrefix_1 = requireFindCommonPrefix();
+var hasRequiredSerializeDict$1;
+function requireSerializeDict$1() {
+  if (hasRequiredSerializeDict$1) return serializeDict$1;
+  hasRequiredSerializeDict$1 = 1;
+  Object.defineProperty(serializeDict$1, "__esModule", { value: true });
+  serializeDict$1.serializeDict = serializeDict$1.detectLabelType = serializeDict$1.writeLabelSame = serializeDict$1.writeLabelLong = serializeDict$1.writeLabelShort = serializeDict$1.buildTree = void 0;
+  const Builder_12 = requireBuilder$3();
+  const findCommonPrefix_1 = requireFindCommonPrefix$1();
   function pad(src2, size) {
     while (src2.length < size) {
       src2 = "0" + src2;
@@ -9972,7 +9961,7 @@ function requireSerializeDict() {
     }
     return buildEdge(converted);
   }
-  serializeDict.buildTree = buildTree;
+  serializeDict$1.buildTree = buildTree;
   function writeLabelShort(src2, to2) {
     to2.storeBit(0);
     for (let i = 0; i < src2.length; i++) {
@@ -9984,7 +9973,7 @@ function requireSerializeDict() {
     }
     return to2;
   }
-  serializeDict.writeLabelShort = writeLabelShort;
+  serializeDict$1.writeLabelShort = writeLabelShort;
   function labelShortLength(src2) {
     return 1 + src2.length + 1 + src2.length;
   }
@@ -9998,7 +9987,7 @@ function requireSerializeDict() {
     }
     return to2;
   }
-  serializeDict.writeLabelLong = writeLabelLong;
+  serializeDict$1.writeLabelLong = writeLabelLong;
   function labelLongLength(src2, keyLength) {
     return 1 + 1 + Math.ceil(Math.log2(keyLength + 1)) + src2.length;
   }
@@ -10009,7 +9998,7 @@ function requireSerializeDict() {
     let lenLen = Math.ceil(Math.log2(keyLength + 1));
     to2.storeUint(length, lenLen);
   }
-  serializeDict.writeLabelSame = writeLabelSame;
+  serializeDict$1.writeLabelSame = writeLabelSame;
   function labelSameLength(keyLength) {
     return 1 + 1 + 1 + Math.ceil(Math.log2(keyLength + 1));
   }
@@ -10041,7 +10030,7 @@ function requireSerializeDict() {
     }
     return kind;
   }
-  serializeDict.detectLabelType = detectLabelType;
+  serializeDict$1.detectLabelType = detectLabelType;
   function writeLabel(src2, keyLength, to2) {
     let type = detectLabelType(src2, keyLength);
     if (type === "short") {
@@ -10069,23 +10058,23 @@ function requireSerializeDict() {
     writeLabel(src2.label, keyLength, to2);
     writeNode(src2.node, keyLength - src2.label.length, serializer, to2);
   }
-  function serializeDict$1(src2, keyLength, serializer, to2) {
+  function serializeDict2(src2, keyLength, serializer, to2) {
     const tree = buildTree(src2, keyLength);
     writeEdge(tree, keyLength, serializer, to2);
   }
-  serializeDict.serializeDict = serializeDict$1;
-  return serializeDict;
+  serializeDict$1.serializeDict = serializeDict2;
+  return serializeDict$1;
 }
-var internalKeySerializer = {};
-var hasRequiredInternalKeySerializer;
-function requireInternalKeySerializer() {
-  if (hasRequiredInternalKeySerializer) return internalKeySerializer;
-  hasRequiredInternalKeySerializer = 1;
-  Object.defineProperty(internalKeySerializer, "__esModule", { value: true });
-  internalKeySerializer.deserializeInternalKey = internalKeySerializer.serializeInternalKey = void 0;
-  const Address_1 = requireAddress();
-  const BitString_1 = requireBitString();
-  const paddedBits_1 = requirePaddedBits();
+var internalKeySerializer$1 = {};
+var hasRequiredInternalKeySerializer$1;
+function requireInternalKeySerializer$1() {
+  if (hasRequiredInternalKeySerializer$1) return internalKeySerializer$1;
+  hasRequiredInternalKeySerializer$1 = 1;
+  Object.defineProperty(internalKeySerializer$1, "__esModule", { value: true });
+  internalKeySerializer$1.deserializeInternalKey = internalKeySerializer$1.serializeInternalKey = void 0;
+  const Address_1 = requireAddress$1();
+  const BitString_1 = requireBitString$1();
+  const paddedBits_1 = requirePaddedBits$1();
   function serializeInternalKey(value) {
     if (typeof value === "number") {
       if (!Number.isSafeInteger(value)) {
@@ -10104,7 +10093,7 @@ function requireInternalKeySerializer() {
       throw Error("Invalid key type");
     }
   }
-  internalKeySerializer.serializeInternalKey = serializeInternalKey;
+  internalKeySerializer$1.serializeInternalKey = serializeInternalKey;
   function deserializeInternalKey(value) {
     let k2 = value.slice(0, 2);
     let v2 = value.slice(2);
@@ -10133,25 +10122,25 @@ function requireInternalKeySerializer() {
     }
     throw Error("Invalid key type: " + k2);
   }
-  internalKeySerializer.deserializeInternalKey = deserializeInternalKey;
-  return internalKeySerializer;
+  internalKeySerializer$1.deserializeInternalKey = deserializeInternalKey;
+  return internalKeySerializer$1;
 }
-var hasRequiredDictionary;
-function requireDictionary() {
-  if (hasRequiredDictionary) return Dictionary;
-  hasRequiredDictionary = 1;
-  Object.defineProperty(Dictionary, "__esModule", { value: true });
-  Dictionary.Dictionary = void 0;
-  const Address_1 = requireAddress();
-  const Builder_12 = requireBuilder$1();
-  const Cell_1 = requireCell();
-  const BitString_1 = requireBitString();
-  const generateMerkleProof_1 = requireGenerateMerkleProof();
-  const generateMerkleUpdate_1 = requireGenerateMerkleUpdate();
-  const parseDict_1 = requireParseDict();
-  const serializeDict_1 = requireSerializeDict();
-  const internalKeySerializer_1 = requireInternalKeySerializer();
-  let Dictionary$1 = class Dictionary2 {
+var hasRequiredDictionary$1;
+function requireDictionary$1() {
+  if (hasRequiredDictionary$1) return Dictionary$1;
+  hasRequiredDictionary$1 = 1;
+  Object.defineProperty(Dictionary$1, "__esModule", { value: true });
+  Dictionary$1.Dictionary = void 0;
+  const Address_1 = requireAddress$1();
+  const Builder_12 = requireBuilder$3();
+  const Cell_1 = requireCell$1();
+  const BitString_1 = requireBitString$1();
+  const generateMerkleProof_1 = requireGenerateMerkleProof$1();
+  const generateMerkleUpdate_1 = requireGenerateMerkleUpdate$1();
+  const parseDict_1 = requireParseDict$1();
+  const serializeDict_1 = requireSerializeDict$1();
+  const internalKeySerializer_1 = requireInternalKeySerializer$1();
+  class Dictionary2 {
     /**
      * Create an empty map
      * @param key key type
@@ -10324,9 +10313,9 @@ function requireDictionary() {
     generateMerkleUpdate(key2, newValue) {
       return (0, generateMerkleUpdate_1.generateMerkleUpdate)(this, key2, this._key, newValue);
     }
-  };
-  Dictionary.Dictionary = Dictionary$1;
-  Dictionary$1.Keys = {
+  }
+  Dictionary$1.Dictionary = Dictionary2;
+  Dictionary2.Keys = {
     /**
      * Standard address key
      * @returns DictionaryKey<Address>
@@ -10386,7 +10375,7 @@ function requireDictionary() {
       return createBitStringKey(bits);
     }
   };
-  Dictionary$1.Values = {
+  Dictionary2.Values = {
     /**
      * Create standard integer value
      * @returns DictionaryValue<bigint>
@@ -10704,7 +10693,7 @@ function requireDictionary() {
         src2.store(buidler);
       },
       parse: (src2) => {
-        let dict = Dictionary$1.load(key2, value, src2);
+        let dict = Dictionary2.load(key2, value, src2);
         src2.endParse();
         return dict;
       }
@@ -10740,16 +10729,16 @@ function requireDictionary() {
       }
     };
   }
-  return Dictionary;
+  return Dictionary$1;
 }
-var strings = {};
-var hasRequiredStrings;
-function requireStrings() {
-  if (hasRequiredStrings) return strings;
-  hasRequiredStrings = 1;
-  Object.defineProperty(strings, "__esModule", { value: true });
-  strings.writeString = strings.stringToCell = strings.readString = void 0;
-  const Builder_12 = requireBuilder$1();
+var strings$1 = {};
+var hasRequiredStrings$1;
+function requireStrings$1() {
+  if (hasRequiredStrings$1) return strings$1;
+  hasRequiredStrings$1 = 1;
+  Object.defineProperty(strings$1, "__esModule", { value: true });
+  strings$1.writeString = strings$1.stringToCell = strings$1.readString = void 0;
+  const Builder_12 = requireBuilder$3();
   function readBuffer(slice) {
     if (slice.remainingBits % 8 !== 0) {
       throw new Error(`Invalid string length: ${slice.remainingBits}`);
@@ -10771,7 +10760,7 @@ function requireStrings() {
   function readString(slice) {
     return readBuffer(slice).toString();
   }
-  strings.readString = readString;
+  strings$1.readString = readString;
   function writeBuffer(src2, builder2) {
     if (src2.length > 0) {
       let bytes = Math.floor(builder2.availableBits / 8);
@@ -10792,28 +10781,28 @@ function requireStrings() {
     writeBuffer(Buffer.from(src2), builder2);
     return builder2.endCell();
   }
-  strings.stringToCell = stringToCell;
+  strings$1.stringToCell = stringToCell;
   function writeString(src2, builder2) {
     writeBuffer(Buffer.from(src2), builder2);
   }
-  strings.writeString = writeString;
-  return strings;
+  strings$1.writeString = writeString;
+  return strings$1;
 }
-var hasRequiredSlice;
-function requireSlice() {
-  if (hasRequiredSlice) return Slice;
-  hasRequiredSlice = 1;
-  var __importDefault = Slice && Slice.__importDefault || function(mod) {
+var hasRequiredSlice$1;
+function requireSlice$1() {
+  if (hasRequiredSlice$1) return Slice$1;
+  hasRequiredSlice$1 = 1;
+  var __importDefault = Slice$1 && Slice$1.__importDefault || function(mod) {
     return mod && mod.__esModule ? mod : { "default": mod };
   };
   var _a2;
-  Object.defineProperty(Slice, "__esModule", { value: true });
-  Slice.Slice = void 0;
+  Object.defineProperty(Slice$1, "__esModule", { value: true });
+  Slice$1.Slice = void 0;
   const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
-  const Dictionary_1 = requireDictionary();
-  const Builder_12 = requireBuilder$1();
-  const strings_1 = requireStrings();
-  let Slice$1 = class Slice2 {
+  const Dictionary_1 = requireDictionary$1();
+  const Builder_12 = requireBuilder$3();
+  const strings_1 = requireStrings$1();
+  class Slice2 {
     constructor(reader2, refs) {
       this[_a2] = () => this.toString();
       this._reader = reader2.clone();
@@ -11291,21 +11280,21 @@ function requireSlice() {
     toString() {
       return this.asCell().toString();
     }
-  };
-  Slice.Slice = Slice$1;
+  }
+  Slice$1.Slice = Slice2;
   _a2 = symbol_inspect_1.default;
-  return Slice;
+  return Slice$1;
 }
-var resolveExotic = {};
-var exoticLibrary = {};
-var hasRequiredExoticLibrary;
-function requireExoticLibrary() {
-  if (hasRequiredExoticLibrary) return exoticLibrary;
-  hasRequiredExoticLibrary = 1;
-  Object.defineProperty(exoticLibrary, "__esModule", { value: true });
-  exoticLibrary.exoticLibrary = void 0;
-  const BitReader_1 = requireBitReader();
-  function exoticLibrary$1(bits, refs) {
+var resolveExotic$1 = {};
+var exoticLibrary$1 = {};
+var hasRequiredExoticLibrary$1;
+function requireExoticLibrary$1() {
+  if (hasRequiredExoticLibrary$1) return exoticLibrary$1;
+  hasRequiredExoticLibrary$1 = 1;
+  Object.defineProperty(exoticLibrary$1, "__esModule", { value: true });
+  exoticLibrary$1.exoticLibrary = void 0;
+  const BitReader_1 = requireBitReader$1();
+  function exoticLibrary2(bits, refs) {
     const reader2 = new BitReader_1.BitReader(bits);
     const size = 8 + 256;
     if (bits.length !== size) {
@@ -11317,18 +11306,18 @@ function requireExoticLibrary() {
     }
     return {};
   }
-  exoticLibrary.exoticLibrary = exoticLibrary$1;
-  return exoticLibrary;
+  exoticLibrary$1.exoticLibrary = exoticLibrary2;
+  return exoticLibrary$1;
 }
-var exoticMerkleUpdate = {};
-var hasRequiredExoticMerkleUpdate;
-function requireExoticMerkleUpdate() {
-  if (hasRequiredExoticMerkleUpdate) return exoticMerkleUpdate;
-  hasRequiredExoticMerkleUpdate = 1;
-  Object.defineProperty(exoticMerkleUpdate, "__esModule", { value: true });
-  exoticMerkleUpdate.exoticMerkleUpdate = void 0;
-  const BitReader_1 = requireBitReader();
-  function exoticMerkleUpdate$1(bits, refs) {
+var exoticMerkleUpdate$1 = {};
+var hasRequiredExoticMerkleUpdate$1;
+function requireExoticMerkleUpdate$1() {
+  if (hasRequiredExoticMerkleUpdate$1) return exoticMerkleUpdate$1;
+  hasRequiredExoticMerkleUpdate$1 = 1;
+  Object.defineProperty(exoticMerkleUpdate$1, "__esModule", { value: true });
+  exoticMerkleUpdate$1.exoticMerkleUpdate = void 0;
+  const BitReader_1 = requireBitReader$1();
+  function exoticMerkleUpdate2(bits, refs) {
     const reader2 = new BitReader_1.BitReader(bits);
     const size = 8 + 2 * (256 + 16);
     if (bits.length !== size) {
@@ -11364,18 +11353,18 @@ function requireExoticMerkleUpdate() {
       proofHash2
     };
   }
-  exoticMerkleUpdate.exoticMerkleUpdate = exoticMerkleUpdate$1;
-  return exoticMerkleUpdate;
+  exoticMerkleUpdate$1.exoticMerkleUpdate = exoticMerkleUpdate2;
+  return exoticMerkleUpdate$1;
 }
-var exoticPruned = {};
-var LevelMask = {};
-var hasRequiredLevelMask;
-function requireLevelMask() {
-  if (hasRequiredLevelMask) return LevelMask;
-  hasRequiredLevelMask = 1;
-  Object.defineProperty(LevelMask, "__esModule", { value: true });
-  LevelMask.LevelMask = void 0;
-  let LevelMask$1 = class LevelMask2 {
+var exoticPruned$1 = {};
+var LevelMask$1 = {};
+var hasRequiredLevelMask$1;
+function requireLevelMask$1() {
+  if (hasRequiredLevelMask$1) return LevelMask$1;
+  hasRequiredLevelMask$1 = 1;
+  Object.defineProperty(LevelMask$1, "__esModule", { value: true });
+  LevelMask$1.LevelMask = void 0;
+  class LevelMask2 {
     constructor(mask = 0) {
       this._mask = 0;
       this._mask = mask;
@@ -11401,24 +11390,24 @@ function requireLevelMask() {
       let res = level === 0 || (this._mask >> level - 1) % 2 !== 0;
       return res;
     }
-  };
-  LevelMask.LevelMask = LevelMask$1;
+  }
+  LevelMask$1.LevelMask = LevelMask2;
   function countSetBits(n) {
     n = n - (n >> 1 & 1431655765);
     n = (n & 858993459) + (n >> 2 & 858993459);
     return (n + (n >> 4) & 252645135) * 16843009 >> 24;
   }
-  return LevelMask;
+  return LevelMask$1;
 }
-var hasRequiredExoticPruned;
-function requireExoticPruned() {
-  if (hasRequiredExoticPruned) return exoticPruned;
-  hasRequiredExoticPruned = 1;
-  Object.defineProperty(exoticPruned, "__esModule", { value: true });
-  exoticPruned.exoticPruned = void 0;
-  const BitReader_1 = requireBitReader();
-  const LevelMask_1 = requireLevelMask();
-  function exoticPruned$1(bits, refs) {
+var hasRequiredExoticPruned$1;
+function requireExoticPruned$1() {
+  if (hasRequiredExoticPruned$1) return exoticPruned$1;
+  hasRequiredExoticPruned$1 = 1;
+  Object.defineProperty(exoticPruned$1, "__esModule", { value: true });
+  exoticPruned$1.exoticPruned = void 0;
+  const BitReader_1 = requireBitReader$1();
+  const LevelMask_1 = requireLevelMask$1();
+  function exoticPruned2(bits, refs) {
     let reader2 = new BitReader_1.BitReader(bits);
     let type = reader2.loadUint(8);
     if (type !== 1) {
@@ -11460,22 +11449,22 @@ function requireExoticPruned() {
       pruned
     };
   }
-  exoticPruned.exoticPruned = exoticPruned$1;
-  return exoticPruned;
+  exoticPruned$1.exoticPruned = exoticPruned2;
+  return exoticPruned$1;
 }
-var hasRequiredResolveExotic;
-function requireResolveExotic() {
-  if (hasRequiredResolveExotic) return resolveExotic;
-  hasRequiredResolveExotic = 1;
-  Object.defineProperty(resolveExotic, "__esModule", { value: true });
-  resolveExotic.resolveExotic = void 0;
-  const BitReader_1 = requireBitReader();
-  const CellType_1 = requireCellType();
-  const exoticLibrary_1 = requireExoticLibrary();
-  const exoticMerkleProof_1 = requireExoticMerkleProof();
-  const exoticMerkleUpdate_1 = requireExoticMerkleUpdate();
-  const exoticPruned_1 = requireExoticPruned();
-  const LevelMask_1 = requireLevelMask();
+var hasRequiredResolveExotic$1;
+function requireResolveExotic$1() {
+  if (hasRequiredResolveExotic$1) return resolveExotic$1;
+  hasRequiredResolveExotic$1 = 1;
+  Object.defineProperty(resolveExotic$1, "__esModule", { value: true });
+  resolveExotic$1.resolveExotic = void 0;
+  const BitReader_1 = requireBitReader$1();
+  const CellType_1 = requireCellType$1();
+  const exoticLibrary_1 = requireExoticLibrary$1();
+  const exoticMerkleProof_1 = requireExoticMerkleProof$1();
+  const exoticMerkleUpdate_1 = requireExoticMerkleUpdate$1();
+  const exoticPruned_1 = requireExoticPruned$1();
+  const LevelMask_1 = requireLevelMask$1();
   function resolvePruned(bits, refs) {
     let pruned = (0, exoticPruned_1.exoticPruned)(bits, refs);
     let depths = [];
@@ -11528,7 +11517,7 @@ function requireResolveExotic() {
       mask
     };
   }
-  function resolveExotic$1(bits, refs) {
+  function resolveExotic2(bits, refs) {
     let reader2 = new BitReader_1.BitReader(bits);
     let type = reader2.preloadUint(8);
     if (type === 1) {
@@ -11545,28 +11534,28 @@ function requireResolveExotic() {
     }
     throw Error("Invalid exotic cell type: " + type);
   }
-  resolveExotic.resolveExotic = resolveExotic$1;
-  return resolveExotic;
+  resolveExotic$1.resolveExotic = resolveExotic2;
+  return resolveExotic$1;
 }
-var wonderCalculator = {};
-var descriptor = {};
-var hasRequiredDescriptor;
-function requireDescriptor() {
-  if (hasRequiredDescriptor) return descriptor;
-  hasRequiredDescriptor = 1;
-  Object.defineProperty(descriptor, "__esModule", { value: true });
-  descriptor.getRepr = descriptor.getBitsDescriptor = descriptor.getRefsDescriptor = void 0;
-  const CellType_1 = requireCellType();
-  const paddedBits_1 = requirePaddedBits();
+var wonderCalculator$1 = {};
+var descriptor$1 = {};
+var hasRequiredDescriptor$1;
+function requireDescriptor$1() {
+  if (hasRequiredDescriptor$1) return descriptor$1;
+  hasRequiredDescriptor$1 = 1;
+  Object.defineProperty(descriptor$1, "__esModule", { value: true });
+  descriptor$1.getRepr = descriptor$1.getBitsDescriptor = descriptor$1.getRefsDescriptor = void 0;
+  const CellType_1 = requireCellType$1();
+  const paddedBits_1 = requirePaddedBits$1();
   function getRefsDescriptor(refs, levelMask, type) {
     return refs.length + (type !== CellType_1.CellType.Ordinary ? 1 : 0) * 8 + levelMask * 32;
   }
-  descriptor.getRefsDescriptor = getRefsDescriptor;
+  descriptor$1.getRefsDescriptor = getRefsDescriptor;
   function getBitsDescriptor(bits) {
     let len = bits.length;
     return Math.ceil(len / 8) + Math.floor(len / 8);
   }
-  descriptor.getBitsDescriptor = getBitsDescriptor;
+  descriptor$1.getBitsDescriptor = getBitsDescriptor;
   function getRepr(originalBits, bits, refs, level, levelMask, type) {
     const bitsLen = Math.ceil(bits.length / 8);
     const repr = Buffer.alloc(2 + bitsLen + (2 + 32) * refs.length);
@@ -11597,10 +11586,10 @@ function requireDescriptor() {
     }
     return repr;
   }
-  descriptor.getRepr = getRepr;
-  return descriptor;
+  descriptor$1.getRepr = getRepr;
+  return descriptor$1;
 }
-var dist$4 = {};
+var dist$5 = {};
 var sha256$2 = {};
 var sha$1 = { exports: {} };
 var sha = sha$1.exports;
@@ -12154,17 +12143,17 @@ function requireSha() {
 }
 var native = {};
 var getSecureRandom$1 = {};
-const empty = {};
+const expoCrypto = {};
 function getRandomBytes(size) {
   const array = new Uint8Array(size);
   return crypto.getRandomValues(array);
 }
-const empty$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const expoCrypto$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: empty,
+  default: expoCrypto,
   getRandomBytes
 }, Symbol.toStringTag, { value: "Module" }));
-const require$$0$4 = /* @__PURE__ */ getAugmentedNamespace(empty$1);
+const require$$0$4 = /* @__PURE__ */ getAugmentedNamespace(expoCrypto$1);
 var hasRequiredGetSecureRandom$1;
 function requireGetSecureRandom$1() {
   if (hasRequiredGetSecureRandom$1) return getSecureRandom$1;
@@ -20286,7 +20275,7 @@ function requireNewSecurePassphrase() {
   hasRequiredNewSecurePassphrase = 1;
   Object.defineProperty(newSecurePassphrase, "__esModule", { value: true });
   newSecurePassphrase.newSecurePassphrase = void 0;
-  const __1 = requireDist$5();
+  const __1 = requireDist$6();
   async function newSecurePassphrase$1(size = 6) {
     return (await (0, __1.newSecureWords)(size)).join("-");
   }
@@ -22734,10 +22723,10 @@ function requireMnemonics() {
   mnemonics.deriveMnemonicsPath = deriveMnemonicsPath;
   return mnemonics;
 }
-var hasRequiredDist$5;
-function requireDist$5() {
-  if (hasRequiredDist$5) return dist$4;
-  hasRequiredDist$5 = 1;
+var hasRequiredDist$6;
+function requireDist$6() {
+  if (hasRequiredDist$6) return dist$5;
+  hasRequiredDist$6 = 1;
   (function(exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getMnemonicsMasterKeyFromSeed = exports.deriveMnemonicHardenedKey = exports.deriveMnemonicsPath = exports.deriveSymmetricPath = exports.deriveSymmetricHardenedKey = exports.getSymmetricMasterKeyFromSeed = exports.deriveEd25519Path = exports.deriveED25519HardenedKey = exports.getED25519MasterKeyFromSeed = exports.signVerify = exports.sign = exports.keyPairFromSecretKey = exports.keyPairFromSeed = exports.openBox = exports.sealBox = exports.mnemonicWordList = exports.mnemonicToHDSeed = exports.mnemonicToSeed = exports.mnemonicToWalletKey = exports.mnemonicToPrivateKey = exports.mnemonicValidate = exports.mnemonicNew = exports.newSecurePassphrase = exports.newSecureWords = exports.getSecureRandomNumber = exports.getSecureRandomWords = exports.getSecureRandomBytes = exports.hmac_sha512 = exports.pbkdf2_sha512 = exports.sha512_sync = exports.sha512 = exports.sha256_sync = exports.sha256 = void 0;
@@ -22854,25 +22843,25 @@ function requireDist$5() {
     Object.defineProperty(exports, "getMnemonicsMasterKeyFromSeed", { enumerable: true, get: function() {
       return mnemonics_1.getMnemonicsMasterKeyFromSeed;
     } });
-  })(dist$4);
-  return dist$4;
+  })(dist$5);
+  return dist$5;
 }
-var hasRequiredWonderCalculator;
-function requireWonderCalculator() {
-  if (hasRequiredWonderCalculator) return wonderCalculator;
-  hasRequiredWonderCalculator = 1;
-  Object.defineProperty(wonderCalculator, "__esModule", { value: true });
-  wonderCalculator.wonderCalculator = void 0;
-  const BitString_1 = requireBitString();
-  const CellType_1 = requireCellType();
-  const LevelMask_1 = requireLevelMask();
-  const exoticPruned_1 = requireExoticPruned();
-  const exoticMerkleProof_1 = requireExoticMerkleProof();
-  const descriptor_1 = requireDescriptor();
-  const crypto_1 = requireDist$5();
-  const exoticMerkleUpdate_1 = requireExoticMerkleUpdate();
-  const exoticLibrary_1 = requireExoticLibrary();
-  function wonderCalculator$1(type, bits, refs) {
+var hasRequiredWonderCalculator$1;
+function requireWonderCalculator$1() {
+  if (hasRequiredWonderCalculator$1) return wonderCalculator$1;
+  hasRequiredWonderCalculator$1 = 1;
+  Object.defineProperty(wonderCalculator$1, "__esModule", { value: true });
+  wonderCalculator$1.wonderCalculator = void 0;
+  const BitString_1 = requireBitString$1();
+  const CellType_1 = requireCellType$1();
+  const LevelMask_1 = requireLevelMask$1();
+  const exoticPruned_1 = requireExoticPruned$1();
+  const exoticMerkleProof_1 = requireExoticMerkleProof$1();
+  const descriptor_1 = requireDescriptor$1();
+  const crypto_1 = requireDist$6();
+  const exoticMerkleUpdate_1 = requireExoticMerkleUpdate$1();
+  const exoticLibrary_1 = requireExoticLibrary$1();
+  function wonderCalculator2(type, bits, refs) {
     let levelMask;
     let pruned = null;
     if (type === CellType_1.CellType.Ordinary) {
@@ -22967,18 +22956,18 @@ function requireWonderCalculator() {
       depths: resolvedDepths
     };
   }
-  wonderCalculator.wonderCalculator = wonderCalculator$1;
-  return wonderCalculator;
+  wonderCalculator$1.wonderCalculator = wonderCalculator2;
+  return wonderCalculator$1;
 }
-var serialization = {};
-var topologicalSort = {};
-var hasRequiredTopologicalSort;
-function requireTopologicalSort() {
-  if (hasRequiredTopologicalSort) return topologicalSort;
-  hasRequiredTopologicalSort = 1;
-  Object.defineProperty(topologicalSort, "__esModule", { value: true });
-  topologicalSort.topologicalSort = void 0;
-  function topologicalSort$1(src2) {
+var serialization$1 = {};
+var topologicalSort$1 = {};
+var hasRequiredTopologicalSort$1;
+function requireTopologicalSort$1() {
+  if (hasRequiredTopologicalSort$1) return topologicalSort$1;
+  hasRequiredTopologicalSort$1 = 1;
+  Object.defineProperty(topologicalSort$1, "__esModule", { value: true });
+  topologicalSort$1.topologicalSort = void 0;
+  function topologicalSort2(src2) {
     let pending = [src2];
     let allCells = /* @__PURE__ */ new Map();
     let notPermCells = /* @__PURE__ */ new Set();
@@ -23031,17 +23020,17 @@ function requireTopologicalSort() {
     }
     return result;
   }
-  topologicalSort.topologicalSort = topologicalSort$1;
-  return topologicalSort;
+  topologicalSort$1.topologicalSort = topologicalSort2;
+  return topologicalSort$1;
 }
-var bitsForNumber = {};
-var hasRequiredBitsForNumber;
-function requireBitsForNumber() {
-  if (hasRequiredBitsForNumber) return bitsForNumber;
-  hasRequiredBitsForNumber = 1;
-  Object.defineProperty(bitsForNumber, "__esModule", { value: true });
-  bitsForNumber.bitsForNumber = void 0;
-  function bitsForNumber$1(src2, mode) {
+var bitsForNumber$1 = {};
+var hasRequiredBitsForNumber$1;
+function requireBitsForNumber$1() {
+  if (hasRequiredBitsForNumber$1) return bitsForNumber$1;
+  hasRequiredBitsForNumber$1 = 1;
+  Object.defineProperty(bitsForNumber$1, "__esModule", { value: true });
+  bitsForNumber$1.bitsForNumber = void 0;
+  function bitsForNumber2(src2, mode) {
     let v2 = BigInt(src2);
     if (mode === "int") {
       if (v2 === 0n || v2 === -1n) {
@@ -23058,18 +23047,18 @@ function requireBitsForNumber() {
       throw Error(`invalid mode. Got ${mode}`);
     }
   }
-  bitsForNumber.bitsForNumber = bitsForNumber$1;
-  return bitsForNumber;
+  bitsForNumber$1.bitsForNumber = bitsForNumber2;
+  return bitsForNumber$1;
 }
-var crc32c = {};
-var hasRequiredCrc32c;
-function requireCrc32c() {
-  if (hasRequiredCrc32c) return crc32c;
-  hasRequiredCrc32c = 1;
-  Object.defineProperty(crc32c, "__esModule", { value: true });
-  crc32c.crc32c = void 0;
+var crc32c$1 = {};
+var hasRequiredCrc32c$1;
+function requireCrc32c$1() {
+  if (hasRequiredCrc32c$1) return crc32c$1;
+  hasRequiredCrc32c$1 = 1;
+  Object.defineProperty(crc32c$1, "__esModule", { value: true });
+  crc32c$1.crc32c = void 0;
   const POLY = 2197175160;
-  function crc32c$1(source) {
+  function crc32c2(source) {
     let crc = 0 ^ 4294967295;
     for (let n = 0; n < source.length; n++) {
       crc ^= source[n];
@@ -23087,24 +23076,24 @@ function requireCrc32c() {
     res.writeInt32LE(crc);
     return res;
   }
-  crc32c.crc32c = crc32c$1;
-  return crc32c;
+  crc32c$1.crc32c = crc32c2;
+  return crc32c$1;
 }
-var hasRequiredSerialization;
-function requireSerialization() {
-  if (hasRequiredSerialization) return serialization;
-  hasRequiredSerialization = 1;
-  Object.defineProperty(serialization, "__esModule", { value: true });
-  serialization.serializeBoc = serialization.deserializeBoc = serialization.parseBoc = void 0;
-  const BitReader_1 = requireBitReader();
-  const BitString_1 = requireBitString();
-  const Cell_1 = requireCell();
-  const topologicalSort_1 = requireTopologicalSort();
-  const bitsForNumber_1 = requireBitsForNumber();
-  const BitBuilder_1 = requireBitBuilder();
-  const descriptor_1 = requireDescriptor();
-  const paddedBits_1 = requirePaddedBits();
-  const crc32c_1 = requireCrc32c();
+var hasRequiredSerialization$1;
+function requireSerialization$1() {
+  if (hasRequiredSerialization$1) return serialization$1;
+  hasRequiredSerialization$1 = 1;
+  Object.defineProperty(serialization$1, "__esModule", { value: true });
+  serialization$1.serializeBoc = serialization$1.deserializeBoc = serialization$1.parseBoc = void 0;
+  const BitReader_1 = requireBitReader$1();
+  const BitString_1 = requireBitString$1();
+  const Cell_1 = requireCell$1();
+  const topologicalSort_1 = requireTopologicalSort$1();
+  const bitsForNumber_1 = requireBitsForNumber$1();
+  const BitBuilder_1 = requireBitBuilder$1();
+  const descriptor_1 = requireDescriptor$1();
+  const paddedBits_1 = requirePaddedBits$1();
+  const crc32c_1 = requireCrc32c$1();
   function getHashesCount(levelMask) {
     return getHashesCountFromMask(levelMask & 7);
   }
@@ -23239,7 +23228,7 @@ function requireSerialization() {
       throw Error("Invalid magic");
     }
   }
-  serialization.parseBoc = parseBoc;
+  serialization$1.parseBoc = parseBoc;
   function deserializeBoc(src2) {
     let boc = parseBoc(src2);
     let reader2 = new BitReader_1.BitReader(new BitString_1.BitString(boc.cellData, 0, boc.cellData.length * 8));
@@ -23267,7 +23256,7 @@ function requireSerialization() {
     }
     return roots;
   }
-  serialization.deserializeBoc = deserializeBoc;
+  serialization$1.deserializeBoc = deserializeBoc;
   function writeCellToBuilder(cell, refs, sizeBytes, to2) {
     let d1 = (0, descriptor_1.getRefsDescriptor)(cell.refs, cell.mask.value, cell.type);
     let d2 = (0, descriptor_1.getBitsDescriptor)(cell.bits);
@@ -23332,29 +23321,29 @@ function requireSerialization() {
     }
     return res;
   }
-  serialization.serializeBoc = serializeBoc;
-  return serialization;
+  serialization$1.serializeBoc = serializeBoc;
+  return serialization$1;
 }
-var hasRequiredCell;
-function requireCell() {
-  if (hasRequiredCell) return Cell;
-  hasRequiredCell = 1;
-  var __importDefault = Cell && Cell.__importDefault || function(mod) {
+var hasRequiredCell$1;
+function requireCell$1() {
+  if (hasRequiredCell$1) return Cell$1;
+  hasRequiredCell$1 = 1;
+  var __importDefault = Cell$1 && Cell$1.__importDefault || function(mod) {
     return mod && mod.__esModule ? mod : { "default": mod };
   };
   var _a2;
-  Object.defineProperty(Cell, "__esModule", { value: true });
-  Cell.Cell = void 0;
+  Object.defineProperty(Cell$1, "__esModule", { value: true });
+  Cell$1.Cell = void 0;
   const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
-  const BitString_1 = requireBitString();
-  const CellType_1 = requireCellType();
-  const Slice_1 = requireSlice();
-  const resolveExotic_1 = requireResolveExotic();
-  const wonderCalculator_1 = requireWonderCalculator();
-  const serialization_1 = requireSerialization();
-  const BitReader_1 = requireBitReader();
-  const Builder_12 = requireBuilder$1();
-  let Cell$1 = class Cell2 {
+  const BitString_1 = requireBitString$1();
+  const CellType_1 = requireCellType$1();
+  const Slice_1 = requireSlice$1();
+  const resolveExotic_1 = requireResolveExotic$1();
+  const wonderCalculator_1 = requireWonderCalculator$1();
+  const serialization_1 = requireSerialization$1();
+  const BitReader_1 = requireBitReader$1();
+  const Builder_12 = requireBuilder$3();
+  class Cell2 {
     /**
      * Deserialize cells from BOC
      * @param src source buffer
@@ -23505,25 +23494,25 @@ function requireCell() {
     asBuilder() {
       return (0, Builder_12.beginCell)().storeSlice(this.asSlice());
     }
-  };
-  Cell.Cell = Cell$1;
+  }
+  Cell$1.Cell = Cell2;
   _a2 = symbol_inspect_1.default;
-  Cell$1.EMPTY = new Cell$1();
-  return Cell;
+  Cell2.EMPTY = new Cell2();
+  return Cell$1;
 }
-var hasRequiredBuilder$1;
-function requireBuilder$1() {
-  if (hasRequiredBuilder$1) return Builder$3;
-  hasRequiredBuilder$1 = 1;
-  Object.defineProperty(Builder$3, "__esModule", { value: true });
-  Builder$3.Builder = Builder$3.beginCell = void 0;
-  const BitBuilder_1 = requireBitBuilder();
-  const Cell_1 = requireCell();
-  const strings_1 = requireStrings();
+var hasRequiredBuilder$3;
+function requireBuilder$3() {
+  if (hasRequiredBuilder$3) return Builder$4;
+  hasRequiredBuilder$3 = 1;
+  Object.defineProperty(Builder$4, "__esModule", { value: true });
+  Builder$4.Builder = Builder$4.beginCell = void 0;
+  const BitBuilder_1 = requireBitBuilder$1();
+  const Cell_1 = requireCell$1();
+  const strings_1 = requireStrings$1();
   function beginCell() {
     return new Builder2();
   }
-  Builder$3.beginCell = beginCell;
+  Builder$4.beginCell = beginCell;
   class Builder2 {
     constructor() {
       this._bits = new BitBuilder_1.BitBuilder();
@@ -23944,32 +23933,32 @@ function requireBuilder$1() {
       return this.endCell().beginParse();
     }
   }
-  Builder$3.Builder = Builder2;
-  return Builder$3;
+  Builder$4.Builder = Builder2;
+  return Builder$4;
 }
-var StateInit = {};
-var SimpleLibrary = {};
-var hasRequiredSimpleLibrary;
-function requireSimpleLibrary() {
-  if (hasRequiredSimpleLibrary) return SimpleLibrary;
-  hasRequiredSimpleLibrary = 1;
-  Object.defineProperty(SimpleLibrary, "__esModule", { value: true });
-  SimpleLibrary.SimpleLibraryValue = SimpleLibrary.storeSimpleLibrary = SimpleLibrary.loadSimpleLibrary = void 0;
+var StateInit$1 = {};
+var SimpleLibrary$1 = {};
+var hasRequiredSimpleLibrary$1;
+function requireSimpleLibrary$1() {
+  if (hasRequiredSimpleLibrary$1) return SimpleLibrary$1;
+  hasRequiredSimpleLibrary$1 = 1;
+  Object.defineProperty(SimpleLibrary$1, "__esModule", { value: true });
+  SimpleLibrary$1.SimpleLibraryValue = SimpleLibrary$1.storeSimpleLibrary = SimpleLibrary$1.loadSimpleLibrary = void 0;
   function loadSimpleLibrary(slice) {
     return {
       public: slice.loadBit(),
       root: slice.loadRef()
     };
   }
-  SimpleLibrary.loadSimpleLibrary = loadSimpleLibrary;
+  SimpleLibrary$1.loadSimpleLibrary = loadSimpleLibrary;
   function storeSimpleLibrary(src2) {
     return (builder2) => {
       builder2.storeBit(src2.public);
       builder2.storeRef(src2.root);
     };
   }
-  SimpleLibrary.storeSimpleLibrary = storeSimpleLibrary;
-  SimpleLibrary.SimpleLibraryValue = {
+  SimpleLibrary$1.storeSimpleLibrary = storeSimpleLibrary;
+  SimpleLibrary$1.SimpleLibraryValue = {
     serialize(src2, builder2) {
       storeSimpleLibrary(src2)(builder2);
     },
@@ -23977,40 +23966,40 @@ function requireSimpleLibrary() {
       return loadSimpleLibrary(src2);
     }
   };
-  return SimpleLibrary;
+  return SimpleLibrary$1;
 }
-var TickTock = {};
-var hasRequiredTickTock;
-function requireTickTock() {
-  if (hasRequiredTickTock) return TickTock;
-  hasRequiredTickTock = 1;
-  Object.defineProperty(TickTock, "__esModule", { value: true });
-  TickTock.storeTickTock = TickTock.loadTickTock = void 0;
+var TickTock$1 = {};
+var hasRequiredTickTock$1;
+function requireTickTock$1() {
+  if (hasRequiredTickTock$1) return TickTock$1;
+  hasRequiredTickTock$1 = 1;
+  Object.defineProperty(TickTock$1, "__esModule", { value: true });
+  TickTock$1.storeTickTock = TickTock$1.loadTickTock = void 0;
   function loadTickTock(slice) {
     return {
       tick: slice.loadBit(),
       tock: slice.loadBit()
     };
   }
-  TickTock.loadTickTock = loadTickTock;
+  TickTock$1.loadTickTock = loadTickTock;
   function storeTickTock(src2) {
     return (builder2) => {
       builder2.storeBit(src2.tick);
       builder2.storeBit(src2.tock);
     };
   }
-  TickTock.storeTickTock = storeTickTock;
-  return TickTock;
+  TickTock$1.storeTickTock = storeTickTock;
+  return TickTock$1;
 }
-var hasRequiredStateInit;
-function requireStateInit() {
-  if (hasRequiredStateInit) return StateInit;
-  hasRequiredStateInit = 1;
-  Object.defineProperty(StateInit, "__esModule", { value: true });
-  StateInit.storeStateInit = StateInit.loadStateInit = void 0;
-  const Dictionary_1 = requireDictionary();
-  const SimpleLibrary_1 = requireSimpleLibrary();
-  const TickTock_1 = requireTickTock();
+var hasRequiredStateInit$1;
+function requireStateInit$1() {
+  if (hasRequiredStateInit$1) return StateInit$1;
+  hasRequiredStateInit$1 = 1;
+  Object.defineProperty(StateInit$1, "__esModule", { value: true });
+  StateInit$1.storeStateInit = StateInit$1.loadStateInit = void 0;
+  const Dictionary_1 = requireDictionary$1();
+  const SimpleLibrary_1 = requireSimpleLibrary$1();
+  const TickTock_1 = requireTickTock$1();
   function loadStateInit(slice) {
     let splitDepth;
     if (slice.loadBit()) {
@@ -24034,7 +24023,7 @@ function requireStateInit() {
       libraries
     };
   }
-  StateInit.loadStateInit = loadStateInit;
+  StateInit$1.loadStateInit = loadStateInit;
   function storeStateInit(src2) {
     return (builder2) => {
       if (src2.splitDepth !== null && src2.splitDepth !== void 0) {
@@ -24054,33 +24043,33 @@ function requireStateInit() {
       builder2.storeDict(src2.libraries);
     };
   }
-  StateInit.storeStateInit = storeStateInit;
-  return StateInit;
+  StateInit$1.storeStateInit = storeStateInit;
+  return StateInit$1;
 }
-var hasRequiredContractAddress;
-function requireContractAddress() {
-  if (hasRequiredContractAddress) return contractAddress;
-  hasRequiredContractAddress = 1;
-  Object.defineProperty(contractAddress, "__esModule", { value: true });
-  contractAddress.contractAddress = void 0;
-  const Builder_12 = requireBuilder$1();
-  const StateInit_1 = requireStateInit();
-  const Address_1 = requireAddress();
-  function contractAddress$1(workchain, init) {
+var hasRequiredContractAddress$1;
+function requireContractAddress$1() {
+  if (hasRequiredContractAddress$1) return contractAddress$1;
+  hasRequiredContractAddress$1 = 1;
+  Object.defineProperty(contractAddress$1, "__esModule", { value: true });
+  contractAddress$1.contractAddress = void 0;
+  const Builder_12 = requireBuilder$3();
+  const StateInit_1 = requireStateInit$1();
+  const Address_1 = requireAddress$1();
+  function contractAddress2(workchain, init) {
     let hash = (0, Builder_12.beginCell)().store((0, StateInit_1.storeStateInit)(init)).endCell().hash();
     return new Address_1.Address(workchain, hash);
   }
-  contractAddress.contractAddress = contractAddress$1;
-  return contractAddress;
+  contractAddress$1.contractAddress = contractAddress2;
+  return contractAddress$1;
 }
-var tuple = {};
-var hasRequiredTuple;
-function requireTuple() {
-  if (hasRequiredTuple) return tuple;
-  hasRequiredTuple = 1;
-  Object.defineProperty(tuple, "__esModule", { value: true });
-  tuple.parseTuple = tuple.serializeTuple = void 0;
-  const Builder_12 = requireBuilder$1();
+var tuple$1 = {};
+var hasRequiredTuple$1;
+function requireTuple$1() {
+  if (hasRequiredTuple$1) return tuple$1;
+  hasRequiredTuple$1 = 1;
+  Object.defineProperty(tuple$1, "__esModule", { value: true });
+  tuple$1.parseTuple = tuple$1.serializeTuple = tuple$1.parseTupleItem = tuple$1.serializeTupleItem = void 0;
+  const Builder_12 = requireBuilder$3();
   const INT64_MIN = BigInt("-9223372036854775808");
   const INT64_MAX = BigInt("9223372036854775807");
   function serializeTupleItem(src2, builder2) {
@@ -24135,7 +24124,8 @@ function requireTuple() {
       throw Error("Invalid value");
     }
   }
-  function parseStackItem(cs) {
+  tuple$1.serializeTupleItem = serializeTupleItem;
+  function parseTupleItem(cs) {
     let kind = cs.loadUint(8);
     if (kind === 0) {
       return { type: "null" };
@@ -24176,22 +24166,23 @@ function requireTuple() {
       if (length > 1) {
         let head = cs.loadRef().beginParse();
         let tail = cs.loadRef().beginParse();
-        items.unshift(parseStackItem(tail));
+        items.unshift(parseTupleItem(tail));
         for (let i = 0; i < length - 2; i++) {
           let ohead = head;
           head = ohead.loadRef().beginParse();
           tail = ohead.loadRef().beginParse();
-          items.unshift(parseStackItem(tail));
+          items.unshift(parseTupleItem(tail));
         }
-        items.unshift(parseStackItem(head));
+        items.unshift(parseTupleItem(head));
       } else if (length === 1) {
-        items.push(parseStackItem(cs.loadRef().beginParse()));
+        items.push(parseTupleItem(cs.loadRef().beginParse()));
       }
       return { type: "tuple", items };
     } else {
       throw Error("Unsupported stack item");
     }
   }
+  tuple$1.parseTupleItem = parseTupleItem;
   function serializeTupleTail(src2, builder2) {
     if (src2.length > 0) {
       let tail = (0, Builder_12.beginCell)();
@@ -24207,28 +24198,28 @@ function requireTuple() {
     serializeTupleTail(r, builder2);
     return builder2.endCell();
   }
-  tuple.serializeTuple = serializeTuple;
+  tuple$1.serializeTuple = serializeTuple;
   function parseTuple(src2) {
     let res = [];
     let cs = src2.beginParse();
     let size = cs.loadUint(24);
     for (let i = 0; i < size; i++) {
       let next = cs.loadRef();
-      res.unshift(parseStackItem(cs));
+      res.unshift(parseTupleItem(cs));
       cs = next.beginParse();
     }
     return res;
   }
-  tuple.parseTuple = parseTuple;
-  return tuple;
+  tuple$1.parseTuple = parseTuple;
+  return tuple$1;
 }
-var reader = {};
-var hasRequiredReader;
-function requireReader() {
-  if (hasRequiredReader) return reader;
-  hasRequiredReader = 1;
-  Object.defineProperty(reader, "__esModule", { value: true });
-  reader.TupleReader = void 0;
+var reader$1 = {};
+var hasRequiredReader$1;
+function requireReader$1() {
+  if (hasRequiredReader$1) return reader$1;
+  hasRequiredReader$1 = 1;
+  Object.defineProperty(reader$1, "__esModule", { value: true });
+  reader$1.TupleReader = void 0;
   class TupleReader {
     constructor(items) {
       this.items = [...items];
@@ -24404,19 +24395,19 @@ function requireReader() {
       }
     }
   }
-  reader.TupleReader = TupleReader;
-  return reader;
+  reader$1.TupleReader = TupleReader;
+  return reader$1;
 }
-var builder = {};
-var hasRequiredBuilder;
-function requireBuilder() {
-  if (hasRequiredBuilder) return builder;
-  hasRequiredBuilder = 1;
-  Object.defineProperty(builder, "__esModule", { value: true });
-  builder.TupleBuilder = void 0;
-  const Builder_12 = requireBuilder$1();
-  const Cell_1 = requireCell();
-  const Slice_1 = requireSlice();
+var builder$1 = {};
+var hasRequiredBuilder$2;
+function requireBuilder$2() {
+  if (hasRequiredBuilder$2) return builder$1;
+  hasRequiredBuilder$2 = 1;
+  Object.defineProperty(builder$1, "__esModule", { value: true });
+  builder$1.TupleBuilder = void 0;
+  const Builder_12 = requireBuilder$3();
+  const Cell_1 = requireCell$1();
+  const Slice_1 = requireSlice$1();
   class TupleBuilder {
     constructor() {
       this._tuple = [];
@@ -24500,18 +24491,18 @@ function requireBuilder() {
       return [...this._tuple];
     }
   }
-  builder.TupleBuilder = TupleBuilder;
-  return builder;
+  builder$1.TupleBuilder = TupleBuilder;
+  return builder$1;
 }
-var _export = {};
-var _helpers = {};
-var convert = {};
-var hasRequiredConvert;
-function requireConvert() {
-  if (hasRequiredConvert) return convert;
-  hasRequiredConvert = 1;
-  Object.defineProperty(convert, "__esModule", { value: true });
-  convert.fromNano = convert.toNano = void 0;
+var _export$1 = {};
+var _helpers$1 = {};
+var convert$1 = {};
+var hasRequiredConvert$1;
+function requireConvert$1() {
+  if (hasRequiredConvert$1) return convert$1;
+  hasRequiredConvert$1 = 1;
+  Object.defineProperty(convert$1, "__esModule", { value: true });
+  convert$1.fromNano = convert$1.toNano = void 0;
   function toNano(src2) {
     if (typeof src2 === "bigint") {
       return src2 * 1000000000n;
@@ -24561,7 +24552,7 @@ function requireConvert() {
       return r;
     }
   }
-  convert.toNano = toNano;
+  convert$1.toNano = toNano;
   function fromNano(src2) {
     let v2 = BigInt(src2);
     let neg = false;
@@ -24583,18 +24574,18 @@ function requireConvert() {
     }
     return value;
   }
-  convert.fromNano = fromNano;
-  return convert;
+  convert$1.fromNano = fromNano;
+  return convert$1;
 }
-var ExtraCurrency = {};
-var hasRequiredExtraCurrency;
-function requireExtraCurrency() {
-  if (hasRequiredExtraCurrency) return ExtraCurrency;
-  hasRequiredExtraCurrency = 1;
-  Object.defineProperty(ExtraCurrency, "__esModule", { value: true });
-  ExtraCurrency.packExtraCurrencyCell = ExtraCurrency.packExtraCurrencyDict = ExtraCurrency.storeExtraCurrency = ExtraCurrency.loadMaybeExtraCurrency = ExtraCurrency.loadExtraCurrency = void 0;
-  const Builder_12 = requireBuilder$1();
-  const Dictionary_1 = requireDictionary();
+var ExtraCurrency$1 = {};
+var hasRequiredExtraCurrency$1;
+function requireExtraCurrency$1() {
+  if (hasRequiredExtraCurrency$1) return ExtraCurrency$1;
+  hasRequiredExtraCurrency$1 = 1;
+  Object.defineProperty(ExtraCurrency$1, "__esModule", { value: true });
+  ExtraCurrency$1.packExtraCurrencyCell = ExtraCurrency$1.packExtraCurrencyDict = ExtraCurrency$1.storeExtraCurrency = ExtraCurrency$1.loadMaybeExtraCurrency = ExtraCurrency$1.loadExtraCurrency = void 0;
+  const Builder_12 = requireBuilder$3();
+  const Dictionary_1 = requireDictionary$1();
   function loadExtraCurrency(data) {
     let ecDict = data instanceof Dictionary_1.Dictionary ? data : Dictionary_1.Dictionary.loadDirect(Dictionary_1.Dictionary.Keys.Uint(32), Dictionary_1.Dictionary.Values.BigVarUint(5), data);
     let ecMap = {};
@@ -24603,41 +24594,41 @@ function requireExtraCurrency() {
     }
     return ecMap;
   }
-  ExtraCurrency.loadExtraCurrency = loadExtraCurrency;
+  ExtraCurrency$1.loadExtraCurrency = loadExtraCurrency;
   function loadMaybeExtraCurrency(data) {
     const ecData = data.loadMaybeRef();
     return ecData === null ? ecData : loadExtraCurrency(ecData);
   }
-  ExtraCurrency.loadMaybeExtraCurrency = loadMaybeExtraCurrency;
+  ExtraCurrency$1.loadMaybeExtraCurrency = loadMaybeExtraCurrency;
   function storeExtraCurrency(extracurrency) {
     return (builder2) => {
       builder2.storeDict(packExtraCurrencyDict(extracurrency));
     };
   }
-  ExtraCurrency.storeExtraCurrency = storeExtraCurrency;
+  ExtraCurrency$1.storeExtraCurrency = storeExtraCurrency;
   function packExtraCurrencyDict(extracurrency) {
     const resEc = Dictionary_1.Dictionary.empty(Dictionary_1.Dictionary.Keys.Uint(32), Dictionary_1.Dictionary.Values.BigVarUint(5));
     Object.entries(extracurrency).map(([k2, v2]) => resEc.set(Number(k2), v2));
     return resEc;
   }
-  ExtraCurrency.packExtraCurrencyDict = packExtraCurrencyDict;
+  ExtraCurrency$1.packExtraCurrencyDict = packExtraCurrencyDict;
   function packExtraCurrencyCell(extracurrency) {
     return (0, Builder_12.beginCell)().storeDictDirect(packExtraCurrencyDict(extracurrency)).endCell();
   }
-  ExtraCurrency.packExtraCurrencyCell = packExtraCurrencyCell;
-  return ExtraCurrency;
+  ExtraCurrency$1.packExtraCurrencyCell = packExtraCurrencyCell;
+  return ExtraCurrency$1;
 }
-var hasRequired_helpers;
-function require_helpers() {
-  if (hasRequired_helpers) return _helpers;
-  hasRequired_helpers = 1;
-  Object.defineProperty(_helpers, "__esModule", { value: true });
-  _helpers.comment = _helpers.external = _helpers.internal = void 0;
-  const Address_1 = requireAddress();
-  const Cell_1 = requireCell();
-  const Builder_12 = requireBuilder$1();
-  const convert_1 = requireConvert();
-  const ExtraCurrency_1 = requireExtraCurrency();
+var hasRequired_helpers$1;
+function require_helpers$1() {
+  if (hasRequired_helpers$1) return _helpers$1;
+  hasRequired_helpers$1 = 1;
+  Object.defineProperty(_helpers$1, "__esModule", { value: true });
+  _helpers$1.comment = _helpers$1.external = _helpers$1.internal = void 0;
+  const Address_1 = requireAddress$1();
+  const Cell_1 = requireCell$1();
+  const Builder_12 = requireBuilder$3();
+  const convert_1 = requireConvert$1();
+  const ExtraCurrency_1 = requireExtraCurrency$1();
   function internal(src2) {
     let bounce = true;
     if (src2.bounce !== null && src2.bounce !== void 0) {
@@ -24684,7 +24675,7 @@ function require_helpers() {
       body
     };
   }
-  _helpers.internal = internal;
+  _helpers$1.internal = internal;
   function external2(src2) {
     let to2;
     if (typeof src2.to === "string") {
@@ -24704,23 +24695,23 @@ function require_helpers() {
       body: src2.body || Cell_1.Cell.EMPTY
     };
   }
-  _helpers.external = external2;
+  _helpers$1.external = external2;
   function comment(src2) {
     return (0, Builder_12.beginCell)().storeUint(0, 32).storeStringTail(src2).endCell();
   }
-  _helpers.comment = comment;
-  return _helpers;
+  _helpers$1.comment = comment;
+  return _helpers$1;
 }
-var Account = {};
-var AccountStorage = {};
-var AccountState = {};
-var hasRequiredAccountState;
-function requireAccountState() {
-  if (hasRequiredAccountState) return AccountState;
-  hasRequiredAccountState = 1;
-  Object.defineProperty(AccountState, "__esModule", { value: true });
-  AccountState.storeAccountState = AccountState.loadAccountState = void 0;
-  const StateInit_1 = requireStateInit();
+var Account$1 = {};
+var AccountStorage$1 = {};
+var AccountState$1 = {};
+var hasRequiredAccountState$1;
+function requireAccountState$1() {
+  if (hasRequiredAccountState$1) return AccountState$1;
+  hasRequiredAccountState$1 = 1;
+  Object.defineProperty(AccountState$1, "__esModule", { value: true });
+  AccountState$1.storeAccountState = AccountState$1.loadAccountState = void 0;
+  const StateInit_1 = requireStateInit$1();
   function loadAccountState(cs) {
     if (cs.loadBit()) {
       return { type: "active", state: (0, StateInit_1.loadStateInit)(cs) };
@@ -24730,7 +24721,7 @@ function requireAccountState() {
       return { type: "uninit" };
     }
   }
-  AccountState.loadAccountState = loadAccountState;
+  AccountState$1.loadAccountState = loadAccountState;
   function storeAccountState(src2) {
     return (builder2) => {
       if (src2.type === "active") {
@@ -24746,17 +24737,17 @@ function requireAccountState() {
       }
     };
   }
-  AccountState.storeAccountState = storeAccountState;
-  return AccountState;
+  AccountState$1.storeAccountState = storeAccountState;
+  return AccountState$1;
 }
-var CurrencyCollection = {};
-var hasRequiredCurrencyCollection;
-function requireCurrencyCollection() {
-  if (hasRequiredCurrencyCollection) return CurrencyCollection;
-  hasRequiredCurrencyCollection = 1;
-  Object.defineProperty(CurrencyCollection, "__esModule", { value: true });
-  CurrencyCollection.storeCurrencyCollection = CurrencyCollection.loadCurrencyCollection = void 0;
-  const Dictionary_1 = requireDictionary();
+var CurrencyCollection$1 = {};
+var hasRequiredCurrencyCollection$1;
+function requireCurrencyCollection$1() {
+  if (hasRequiredCurrencyCollection$1) return CurrencyCollection$1;
+  hasRequiredCurrencyCollection$1 = 1;
+  Object.defineProperty(CurrencyCollection$1, "__esModule", { value: true });
+  CurrencyCollection$1.storeCurrencyCollection = CurrencyCollection$1.loadCurrencyCollection = void 0;
+  const Dictionary_1 = requireDictionary$1();
   function loadCurrencyCollection(slice) {
     const coins = slice.loadCoins();
     const other = slice.loadDict(Dictionary_1.Dictionary.Keys.Uint(32), Dictionary_1.Dictionary.Values.BigVarUint(
@@ -24769,7 +24760,7 @@ function requireCurrencyCollection() {
       return { other, coins };
     }
   }
-  CurrencyCollection.loadCurrencyCollection = loadCurrencyCollection;
+  CurrencyCollection$1.loadCurrencyCollection = loadCurrencyCollection;
   function storeCurrencyCollection(collection) {
     return (builder2) => {
       builder2.storeCoins(collection.coins);
@@ -24780,17 +24771,17 @@ function requireCurrencyCollection() {
       }
     };
   }
-  CurrencyCollection.storeCurrencyCollection = storeCurrencyCollection;
-  return CurrencyCollection;
+  CurrencyCollection$1.storeCurrencyCollection = storeCurrencyCollection;
+  return CurrencyCollection$1;
 }
-var hasRequiredAccountStorage;
-function requireAccountStorage() {
-  if (hasRequiredAccountStorage) return AccountStorage;
-  hasRequiredAccountStorage = 1;
-  Object.defineProperty(AccountStorage, "__esModule", { value: true });
-  AccountStorage.storeAccountStorage = AccountStorage.loadAccountStorage = void 0;
-  const AccountState_1 = requireAccountState();
-  const CurrencyCollection_1 = requireCurrencyCollection();
+var hasRequiredAccountStorage$1;
+function requireAccountStorage$1() {
+  if (hasRequiredAccountStorage$1) return AccountStorage$1;
+  hasRequiredAccountStorage$1 = 1;
+  Object.defineProperty(AccountStorage$1, "__esModule", { value: true });
+  AccountStorage$1.storeAccountStorage = AccountStorage$1.loadAccountStorage = void 0;
+  const AccountState_1 = requireAccountState$1();
+  const CurrencyCollection_1 = requireCurrencyCollection$1();
   function loadAccountStorage(slice) {
     return {
       lastTransLt: slice.loadUintBig(64),
@@ -24798,7 +24789,7 @@ function requireAccountStorage() {
       state: (0, AccountState_1.loadAccountState)(slice)
     };
   }
-  AccountStorage.loadAccountStorage = loadAccountStorage;
+  AccountStorage$1.loadAccountStorage = loadAccountStorage;
   function storeAccountStorage(src2) {
     return (builder2) => {
       builder2.storeUint(src2.lastTransLt, 64);
@@ -24806,17 +24797,17 @@ function requireAccountStorage() {
       builder2.store((0, AccountState_1.storeAccountState)(src2.state));
     };
   }
-  AccountStorage.storeAccountStorage = storeAccountStorage;
-  return AccountStorage;
+  AccountStorage$1.storeAccountStorage = storeAccountStorage;
+  return AccountStorage$1;
 }
-var StorageInfo = {};
-var StorageExtraInfo = {};
-var hasRequiredStorageExtraInfo;
-function requireStorageExtraInfo() {
-  if (hasRequiredStorageExtraInfo) return StorageExtraInfo;
-  hasRequiredStorageExtraInfo = 1;
-  Object.defineProperty(StorageExtraInfo, "__esModule", { value: true });
-  StorageExtraInfo.storeStorageExtraInfo = StorageExtraInfo.loadStorageExtraInfo = void 0;
+var StorageInfo$1 = {};
+var StorageExtraInfo$1 = {};
+var hasRequiredStorageExtraInfo$1;
+function requireStorageExtraInfo$1() {
+  if (hasRequiredStorageExtraInfo$1) return StorageExtraInfo$1;
+  hasRequiredStorageExtraInfo$1 = 1;
+  Object.defineProperty(StorageExtraInfo$1, "__esModule", { value: true });
+  StorageExtraInfo$1.storeStorageExtraInfo = StorageExtraInfo$1.loadStorageExtraInfo = void 0;
   function loadStorageExtraInfo(slice) {
     let header = slice.loadUint(3);
     if (header === 0) {
@@ -24829,10 +24820,10 @@ function requireStorageExtraInfo() {
     }
     throw new Error(`Invalid storage extra info header: ${header}`);
   }
-  StorageExtraInfo.loadStorageExtraInfo = loadStorageExtraInfo;
+  StorageExtraInfo$1.loadStorageExtraInfo = loadStorageExtraInfo;
   function storeStorageExtraInfo(src2) {
     return (builder2) => {
-      if (src2 === null) {
+      if (src2 === null || typeof src2 === "undefined") {
         builder2.storeUint(0, 3);
       } else {
         builder2.storeUint(1, 3);
@@ -24840,40 +24831,40 @@ function requireStorageExtraInfo() {
       }
     };
   }
-  StorageExtraInfo.storeStorageExtraInfo = storeStorageExtraInfo;
-  return StorageExtraInfo;
+  StorageExtraInfo$1.storeStorageExtraInfo = storeStorageExtraInfo;
+  return StorageExtraInfo$1;
 }
-var StorageUsed = {};
-var hasRequiredStorageUsed;
-function requireStorageUsed() {
-  if (hasRequiredStorageUsed) return StorageUsed;
-  hasRequiredStorageUsed = 1;
-  Object.defineProperty(StorageUsed, "__esModule", { value: true });
-  StorageUsed.storeStorageUsed = StorageUsed.loadStorageUsed = void 0;
+var StorageUsed$1 = {};
+var hasRequiredStorageUsed$1;
+function requireStorageUsed$1() {
+  if (hasRequiredStorageUsed$1) return StorageUsed$1;
+  hasRequiredStorageUsed$1 = 1;
+  Object.defineProperty(StorageUsed$1, "__esModule", { value: true });
+  StorageUsed$1.storeStorageUsed = StorageUsed$1.loadStorageUsed = void 0;
   function loadStorageUsed(cs) {
     return {
       cells: cs.loadVarUintBig(3),
       bits: cs.loadVarUintBig(3)
     };
   }
-  StorageUsed.loadStorageUsed = loadStorageUsed;
+  StorageUsed$1.loadStorageUsed = loadStorageUsed;
   function storeStorageUsed(src2) {
     return (builder2) => {
       builder2.storeVarUint(src2.cells, 3);
       builder2.storeVarUint(src2.bits, 3);
     };
   }
-  StorageUsed.storeStorageUsed = storeStorageUsed;
-  return StorageUsed;
+  StorageUsed$1.storeStorageUsed = storeStorageUsed;
+  return StorageUsed$1;
 }
-var hasRequiredStorageInfo;
-function requireStorageInfo() {
-  if (hasRequiredStorageInfo) return StorageInfo;
-  hasRequiredStorageInfo = 1;
-  Object.defineProperty(StorageInfo, "__esModule", { value: true });
-  StorageInfo.storeStorageInfo = StorageInfo.loadStorageInfo = void 0;
-  const StorageExtraInfo_1 = requireStorageExtraInfo();
-  const StorageUsed_1 = requireStorageUsed();
+var hasRequiredStorageInfo$1;
+function requireStorageInfo$1() {
+  if (hasRequiredStorageInfo$1) return StorageInfo$1;
+  hasRequiredStorageInfo$1 = 1;
+  Object.defineProperty(StorageInfo$1, "__esModule", { value: true });
+  StorageInfo$1.storeStorageInfo = StorageInfo$1.loadStorageInfo = void 0;
+  const StorageExtraInfo_1 = requireStorageExtraInfo$1();
+  const StorageUsed_1 = requireStorageUsed$1();
   function loadStorageInfo(slice) {
     return {
       used: (0, StorageUsed_1.loadStorageUsed)(slice),
@@ -24882,7 +24873,7 @@ function requireStorageInfo() {
       duePayment: slice.loadMaybeCoins()
     };
   }
-  StorageInfo.loadStorageInfo = loadStorageInfo;
+  StorageInfo$1.loadStorageInfo = loadStorageInfo;
   function storeStorageInfo(src2) {
     return (builder2) => {
       builder2.store((0, StorageUsed_1.storeStorageUsed)(src2.used));
@@ -24891,17 +24882,17 @@ function requireStorageInfo() {
       builder2.storeMaybeCoins(src2.duePayment);
     };
   }
-  StorageInfo.storeStorageInfo = storeStorageInfo;
-  return StorageInfo;
+  StorageInfo$1.storeStorageInfo = storeStorageInfo;
+  return StorageInfo$1;
 }
-var hasRequiredAccount;
-function requireAccount() {
-  if (hasRequiredAccount) return Account;
-  hasRequiredAccount = 1;
-  Object.defineProperty(Account, "__esModule", { value: true });
-  Account.storeAccount = Account.loadAccount = void 0;
-  const AccountStorage_1 = requireAccountStorage();
-  const StorageInfo_1 = requireStorageInfo();
+var hasRequiredAccount$1;
+function requireAccount$1() {
+  if (hasRequiredAccount$1) return Account$1;
+  hasRequiredAccount$1 = 1;
+  Object.defineProperty(Account$1, "__esModule", { value: true });
+  Account$1.storeAccount = Account$1.loadAccount = void 0;
+  const AccountStorage_1 = requireAccountStorage$1();
+  const StorageInfo_1 = requireStorageInfo$1();
   function loadAccount(slice) {
     return {
       addr: slice.loadAddress(),
@@ -24909,7 +24900,7 @@ function requireAccount() {
       storage: (0, AccountStorage_1.loadAccountStorage)(slice)
     };
   }
-  Account.loadAccount = loadAccount;
+  Account$1.loadAccount = loadAccount;
   function storeAccount(src2) {
     return (builder2) => {
       builder2.storeAddress(src2.addr);
@@ -24917,16 +24908,16 @@ function requireAccount() {
       builder2.store((0, AccountStorage_1.storeAccountStorage)(src2.storage));
     };
   }
-  Account.storeAccount = storeAccount;
-  return Account;
+  Account$1.storeAccount = storeAccount;
+  return Account$1;
 }
-var AccountStatus = {};
-var hasRequiredAccountStatus;
-function requireAccountStatus() {
-  if (hasRequiredAccountStatus) return AccountStatus;
-  hasRequiredAccountStatus = 1;
-  Object.defineProperty(AccountStatus, "__esModule", { value: true });
-  AccountStatus.storeAccountStatus = AccountStatus.loadAccountStatus = void 0;
+var AccountStatus$1 = {};
+var hasRequiredAccountStatus$1;
+function requireAccountStatus$1() {
+  if (hasRequiredAccountStatus$1) return AccountStatus$1;
+  hasRequiredAccountStatus$1 = 1;
+  Object.defineProperty(AccountStatus$1, "__esModule", { value: true });
+  AccountStatus$1.storeAccountStatus = AccountStatus$1.loadAccountStatus = void 0;
   function loadAccountStatus(slice) {
     const status = slice.loadUint(2);
     if (status === 0) {
@@ -24943,7 +24934,7 @@ function requireAccountStatus() {
     }
     throw Error("Invalid data");
   }
-  AccountStatus.loadAccountStatus = loadAccountStatus;
+  AccountStatus$1.loadAccountStatus = loadAccountStatus;
   function storeAccountStatus(src2) {
     return (builder2) => {
       if (src2 === "uninitialized") {
@@ -24960,16 +24951,16 @@ function requireAccountStatus() {
       return builder2;
     };
   }
-  AccountStatus.storeAccountStatus = storeAccountStatus;
-  return AccountStatus;
+  AccountStatus$1.storeAccountStatus = storeAccountStatus;
+  return AccountStatus$1;
 }
-var AccountStatusChange = {};
-var hasRequiredAccountStatusChange;
-function requireAccountStatusChange() {
-  if (hasRequiredAccountStatusChange) return AccountStatusChange;
-  hasRequiredAccountStatusChange = 1;
-  Object.defineProperty(AccountStatusChange, "__esModule", { value: true });
-  AccountStatusChange.storeAccountStatusChange = AccountStatusChange.loadAccountStatusChange = void 0;
+var AccountStatusChange$1 = {};
+var hasRequiredAccountStatusChange$1;
+function requireAccountStatusChange$1() {
+  if (hasRequiredAccountStatusChange$1) return AccountStatusChange$1;
+  hasRequiredAccountStatusChange$1 = 1;
+  Object.defineProperty(AccountStatusChange$1, "__esModule", { value: true });
+  AccountStatusChange$1.storeAccountStatusChange = AccountStatusChange$1.loadAccountStatusChange = void 0;
   function loadAccountStatusChange(slice) {
     if (!slice.loadBit()) {
       return "unchanged";
@@ -24980,7 +24971,7 @@ function requireAccountStatusChange() {
       return "frozen";
     }
   }
-  AccountStatusChange.loadAccountStatusChange = loadAccountStatusChange;
+  AccountStatusChange$1.loadAccountStatusChange = loadAccountStatusChange;
   function storeAccountStatusChange(src2) {
     return (builder2) => {
       if (src2 == "unchanged") {
@@ -24996,19 +24987,19 @@ function requireAccountStatusChange() {
       }
     };
   }
-  AccountStatusChange.storeAccountStatusChange = storeAccountStatusChange;
-  return AccountStatusChange;
+  AccountStatusChange$1.storeAccountStatusChange = storeAccountStatusChange;
+  return AccountStatusChange$1;
 }
-var OutList = {};
-var MessageRelaxed = {};
-var CommonMessageInfoRelaxed = {};
-var hasRequiredCommonMessageInfoRelaxed;
-function requireCommonMessageInfoRelaxed() {
-  if (hasRequiredCommonMessageInfoRelaxed) return CommonMessageInfoRelaxed;
-  hasRequiredCommonMessageInfoRelaxed = 1;
-  Object.defineProperty(CommonMessageInfoRelaxed, "__esModule", { value: true });
-  CommonMessageInfoRelaxed.storeCommonMessageInfoRelaxed = CommonMessageInfoRelaxed.loadCommonMessageInfoRelaxed = void 0;
-  const CurrencyCollection_1 = requireCurrencyCollection();
+var OutList$1 = {};
+var MessageRelaxed$1 = {};
+var CommonMessageInfoRelaxed$1 = {};
+var hasRequiredCommonMessageInfoRelaxed$1;
+function requireCommonMessageInfoRelaxed$1() {
+  if (hasRequiredCommonMessageInfoRelaxed$1) return CommonMessageInfoRelaxed$1;
+  hasRequiredCommonMessageInfoRelaxed$1 = 1;
+  Object.defineProperty(CommonMessageInfoRelaxed$1, "__esModule", { value: true });
+  CommonMessageInfoRelaxed$1.storeCommonMessageInfoRelaxed = CommonMessageInfoRelaxed$1.loadCommonMessageInfoRelaxed = void 0;
+  const CurrencyCollection_1 = requireCurrencyCollection$1();
   function loadCommonMessageInfoRelaxed(slice) {
     if (!slice.loadBit()) {
       const ihrDisabled = slice.loadBit();
@@ -25050,7 +25041,7 @@ function requireCommonMessageInfoRelaxed() {
       createdAt
     };
   }
-  CommonMessageInfoRelaxed.loadCommonMessageInfoRelaxed = loadCommonMessageInfoRelaxed;
+  CommonMessageInfoRelaxed$1.loadCommonMessageInfoRelaxed = loadCommonMessageInfoRelaxed;
   function storeCommonMessageInfoRelaxed(source) {
     return (builder2) => {
       if (source.type === "internal") {
@@ -25077,18 +25068,18 @@ function requireCommonMessageInfoRelaxed() {
       }
     };
   }
-  CommonMessageInfoRelaxed.storeCommonMessageInfoRelaxed = storeCommonMessageInfoRelaxed;
-  return CommonMessageInfoRelaxed;
+  CommonMessageInfoRelaxed$1.storeCommonMessageInfoRelaxed = storeCommonMessageInfoRelaxed;
+  return CommonMessageInfoRelaxed$1;
 }
-var hasRequiredMessageRelaxed;
-function requireMessageRelaxed() {
-  if (hasRequiredMessageRelaxed) return MessageRelaxed;
-  hasRequiredMessageRelaxed = 1;
-  Object.defineProperty(MessageRelaxed, "__esModule", { value: true });
-  MessageRelaxed.storeMessageRelaxed = MessageRelaxed.loadMessageRelaxed = void 0;
-  const Builder_12 = requireBuilder$1();
-  const CommonMessageInfoRelaxed_1 = requireCommonMessageInfoRelaxed();
-  const StateInit_1 = requireStateInit();
+var hasRequiredMessageRelaxed$1;
+function requireMessageRelaxed$1() {
+  if (hasRequiredMessageRelaxed$1) return MessageRelaxed$1;
+  hasRequiredMessageRelaxed$1 = 1;
+  Object.defineProperty(MessageRelaxed$1, "__esModule", { value: true });
+  MessageRelaxed$1.storeMessageRelaxed = MessageRelaxed$1.loadMessageRelaxed = void 0;
+  const Builder_12 = requireBuilder$3();
+  const CommonMessageInfoRelaxed_1 = requireCommonMessageInfoRelaxed$1();
+  const StateInit_1 = requireStateInit$1();
   function loadMessageRelaxed(slice) {
     const info = (0, CommonMessageInfoRelaxed_1.loadCommonMessageInfoRelaxed)(slice);
     let init = null;
@@ -25106,7 +25097,7 @@ function requireMessageRelaxed() {
       body
     };
   }
-  MessageRelaxed.loadMessageRelaxed = loadMessageRelaxed;
+  MessageRelaxed$1.loadMessageRelaxed = loadMessageRelaxed;
   function storeMessageRelaxed(message, opts) {
     return (builder2) => {
       builder2.store((0, CommonMessageInfoRelaxed_1.storeCommonMessageInfoRelaxed)(message.info));
@@ -25152,16 +25143,16 @@ function requireMessageRelaxed() {
       }
     };
   }
-  MessageRelaxed.storeMessageRelaxed = storeMessageRelaxed;
-  return MessageRelaxed;
+  MessageRelaxed$1.storeMessageRelaxed = storeMessageRelaxed;
+  return MessageRelaxed$1;
 }
-var LibRef = {};
-var hasRequiredLibRef;
-function requireLibRef() {
-  if (hasRequiredLibRef) return LibRef;
-  hasRequiredLibRef = 1;
-  Object.defineProperty(LibRef, "__esModule", { value: true });
-  LibRef.storeLibRef = LibRef.loadLibRef = void 0;
+var LibRef$1 = {};
+var hasRequiredLibRef$1;
+function requireLibRef$1() {
+  if (hasRequiredLibRef$1) return LibRef$1;
+  hasRequiredLibRef$1 = 1;
+  Object.defineProperty(LibRef$1, "__esModule", { value: true });
+  LibRef$1.storeLibRef = LibRef$1.loadLibRef = void 0;
   function loadLibRef(slice) {
     const type = slice.loadUint(1);
     if (type === 0) {
@@ -25176,7 +25167,7 @@ function requireLibRef() {
       };
     }
   }
-  LibRef.loadLibRef = loadLibRef;
+  LibRef$1.loadLibRef = loadLibRef;
   function storeLibRef(src2) {
     return (builder2) => {
       if (src2.type === "hash") {
@@ -25188,19 +25179,19 @@ function requireLibRef() {
       }
     };
   }
-  LibRef.storeLibRef = storeLibRef;
-  return LibRef;
+  LibRef$1.storeLibRef = storeLibRef;
+  return LibRef$1;
 }
-var hasRequiredOutList;
-function requireOutList() {
-  if (hasRequiredOutList) return OutList;
-  hasRequiredOutList = 1;
-  Object.defineProperty(OutList, "__esModule", { value: true });
-  OutList.loadOutList = OutList.storeOutList = OutList.loadOutAction = OutList.storeOutAction = void 0;
-  const MessageRelaxed_1 = requireMessageRelaxed();
-  const Builder_12 = requireBuilder$1();
-  const CurrencyCollection_1 = requireCurrencyCollection();
-  const LibRef_1 = requireLibRef();
+var hasRequiredOutList$1;
+function requireOutList$1() {
+  if (hasRequiredOutList$1) return OutList$1;
+  hasRequiredOutList$1 = 1;
+  Object.defineProperty(OutList$1, "__esModule", { value: true });
+  OutList$1.loadOutList = OutList$1.storeOutList = OutList$1.loadOutAction = OutList$1.storeOutAction = void 0;
+  const MessageRelaxed_1 = requireMessageRelaxed$1();
+  const Builder_12 = requireBuilder$3();
+  const CurrencyCollection_1 = requireCurrencyCollection$1();
+  const LibRef_1 = requireLibRef$1();
   function storeOutAction(action) {
     switch (action.type) {
       case "sendMsg":
@@ -25215,7 +25206,7 @@ function requireOutList() {
         throw new Error(`Unknown action type ${action.type}`);
     }
   }
-  OutList.storeOutAction = storeOutAction;
+  OutList$1.storeOutAction = storeOutAction;
   const outActionSendMsgTag = 247711853;
   function storeOutActionSendMsg(action) {
     return (builder2) => {
@@ -25278,14 +25269,14 @@ function requireOutList() {
     }
     throw new Error(`Unknown out action tag 0x${tag.toString(16)}`);
   }
-  OutList.loadOutAction = loadOutAction;
+  OutList$1.loadOutAction = loadOutAction;
   function storeOutList(actions) {
     const cell = actions.reduce((cell2, action) => (0, Builder_12.beginCell)().storeRef(cell2).store(storeOutAction(action)).endCell(), (0, Builder_12.beginCell)().endCell());
     return (builder2) => {
       builder2.storeSlice(cell.beginParse());
     };
   }
-  OutList.storeOutList = storeOutList;
+  OutList$1.storeOutList = storeOutList;
   function loadOutList(slice) {
     const actions = [];
     while (slice.remainingRefs) {
@@ -25295,17 +25286,17 @@ function requireOutList() {
     }
     return actions.reverse();
   }
-  OutList.loadOutList = loadOutList;
-  return OutList;
+  OutList$1.loadOutList = loadOutList;
+  return OutList$1;
 }
-var CommonMessageInfo = {};
-var hasRequiredCommonMessageInfo;
-function requireCommonMessageInfo() {
-  if (hasRequiredCommonMessageInfo) return CommonMessageInfo;
-  hasRequiredCommonMessageInfo = 1;
-  Object.defineProperty(CommonMessageInfo, "__esModule", { value: true });
-  CommonMessageInfo.storeCommonMessageInfo = CommonMessageInfo.loadCommonMessageInfo = void 0;
-  const CurrencyCollection_1 = requireCurrencyCollection();
+var CommonMessageInfo$1 = {};
+var hasRequiredCommonMessageInfo$1;
+function requireCommonMessageInfo$1() {
+  if (hasRequiredCommonMessageInfo$1) return CommonMessageInfo$1;
+  hasRequiredCommonMessageInfo$1 = 1;
+  Object.defineProperty(CommonMessageInfo$1, "__esModule", { value: true });
+  CommonMessageInfo$1.storeCommonMessageInfo = CommonMessageInfo$1.loadCommonMessageInfo = void 0;
+  const CurrencyCollection_1 = requireCurrencyCollection$1();
   function loadCommonMessageInfo(slice) {
     if (!slice.loadBit()) {
       const ihrDisabled = slice.loadBit();
@@ -25355,7 +25346,7 @@ function requireCommonMessageInfo() {
       createdAt
     };
   }
-  CommonMessageInfo.loadCommonMessageInfo = loadCommonMessageInfo;
+  CommonMessageInfo$1.loadCommonMessageInfo = loadCommonMessageInfo;
   function storeCommonMessageInfo(source) {
     return (builder2) => {
       if (source.type === "internal") {
@@ -25388,16 +25379,16 @@ function requireCommonMessageInfo() {
       }
     };
   }
-  CommonMessageInfo.storeCommonMessageInfo = storeCommonMessageInfo;
-  return CommonMessageInfo;
+  CommonMessageInfo$1.storeCommonMessageInfo = storeCommonMessageInfo;
+  return CommonMessageInfo$1;
 }
-var ComputeSkipReason = {};
-var hasRequiredComputeSkipReason;
-function requireComputeSkipReason() {
-  if (hasRequiredComputeSkipReason) return ComputeSkipReason;
-  hasRequiredComputeSkipReason = 1;
-  Object.defineProperty(ComputeSkipReason, "__esModule", { value: true });
-  ComputeSkipReason.storeComputeSkipReason = ComputeSkipReason.loadComputeSkipReason = void 0;
+var ComputeSkipReason$1 = {};
+var hasRequiredComputeSkipReason$1;
+function requireComputeSkipReason$1() {
+  if (hasRequiredComputeSkipReason$1) return ComputeSkipReason$1;
+  hasRequiredComputeSkipReason$1 = 1;
+  Object.defineProperty(ComputeSkipReason$1, "__esModule", { value: true });
+  ComputeSkipReason$1.storeComputeSkipReason = ComputeSkipReason$1.loadComputeSkipReason = void 0;
   function loadComputeSkipReason(slice) {
     let reason = slice.loadUint(2);
     if (reason === 0) {
@@ -25409,7 +25400,7 @@ function requireComputeSkipReason() {
     }
     throw new Error(`Unknown ComputeSkipReason: ${reason}`);
   }
-  ComputeSkipReason.loadComputeSkipReason = loadComputeSkipReason;
+  ComputeSkipReason$1.loadComputeSkipReason = loadComputeSkipReason;
   function storeComputeSkipReason(src2) {
     return (builder2) => {
       if (src2 === "no-state") {
@@ -25423,17 +25414,17 @@ function requireComputeSkipReason() {
       }
     };
   }
-  ComputeSkipReason.storeComputeSkipReason = storeComputeSkipReason;
-  return ComputeSkipReason;
+  ComputeSkipReason$1.storeComputeSkipReason = storeComputeSkipReason;
+  return ComputeSkipReason$1;
 }
-var DepthBalanceInfo = {};
-var hasRequiredDepthBalanceInfo;
-function requireDepthBalanceInfo() {
-  if (hasRequiredDepthBalanceInfo) return DepthBalanceInfo;
-  hasRequiredDepthBalanceInfo = 1;
-  Object.defineProperty(DepthBalanceInfo, "__esModule", { value: true });
-  DepthBalanceInfo.storeDepthBalanceInfo = DepthBalanceInfo.loadDepthBalanceInfo = void 0;
-  const CurrencyCollection_1 = requireCurrencyCollection();
+var DepthBalanceInfo$1 = {};
+var hasRequiredDepthBalanceInfo$1;
+function requireDepthBalanceInfo$1() {
+  if (hasRequiredDepthBalanceInfo$1) return DepthBalanceInfo$1;
+  hasRequiredDepthBalanceInfo$1 = 1;
+  Object.defineProperty(DepthBalanceInfo$1, "__esModule", { value: true });
+  DepthBalanceInfo$1.storeDepthBalanceInfo = DepthBalanceInfo$1.loadDepthBalanceInfo = void 0;
+  const CurrencyCollection_1 = requireCurrencyCollection$1();
   function loadDepthBalanceInfo(slice) {
     let splitDepth = slice.loadUint(5);
     return {
@@ -25441,23 +25432,23 @@ function requireDepthBalanceInfo() {
       balance: (0, CurrencyCollection_1.loadCurrencyCollection)(slice)
     };
   }
-  DepthBalanceInfo.loadDepthBalanceInfo = loadDepthBalanceInfo;
+  DepthBalanceInfo$1.loadDepthBalanceInfo = loadDepthBalanceInfo;
   function storeDepthBalanceInfo(src2) {
     return (builder2) => {
       builder2.storeUint(src2.splitDepth, 5);
       builder2.store((0, CurrencyCollection_1.storeCurrencyCollection)(src2.balance));
     };
   }
-  DepthBalanceInfo.storeDepthBalanceInfo = storeDepthBalanceInfo;
-  return DepthBalanceInfo;
+  DepthBalanceInfo$1.storeDepthBalanceInfo = storeDepthBalanceInfo;
+  return DepthBalanceInfo$1;
 }
-var HashUpdate = {};
-var hasRequiredHashUpdate;
-function requireHashUpdate() {
-  if (hasRequiredHashUpdate) return HashUpdate;
-  hasRequiredHashUpdate = 1;
-  Object.defineProperty(HashUpdate, "__esModule", { value: true });
-  HashUpdate.storeHashUpdate = HashUpdate.loadHashUpdate = void 0;
+var HashUpdate$1 = {};
+var hasRequiredHashUpdate$1;
+function requireHashUpdate$1() {
+  if (hasRequiredHashUpdate$1) return HashUpdate$1;
+  hasRequiredHashUpdate$1 = 1;
+  Object.defineProperty(HashUpdate$1, "__esModule", { value: true });
+  HashUpdate$1.storeHashUpdate = HashUpdate$1.loadHashUpdate = void 0;
   function loadHashUpdate(slice) {
     if (slice.loadUint(8) !== 114) {
       throw Error("Invalid data");
@@ -25466,7 +25457,7 @@ function requireHashUpdate() {
     const newHash = slice.loadBuffer(32);
     return { oldHash, newHash };
   }
-  HashUpdate.loadHashUpdate = loadHashUpdate;
+  HashUpdate$1.loadHashUpdate = loadHashUpdate;
   function storeHashUpdate(src2) {
     return (builder2) => {
       builder2.storeUint(114, 8);
@@ -25474,18 +25465,18 @@ function requireHashUpdate() {
       builder2.storeBuffer(src2.newHash);
     };
   }
-  HashUpdate.storeHashUpdate = storeHashUpdate;
-  return HashUpdate;
+  HashUpdate$1.storeHashUpdate = storeHashUpdate;
+  return HashUpdate$1;
 }
-var MasterchainStateExtra = {};
-var hasRequiredMasterchainStateExtra;
-function requireMasterchainStateExtra() {
-  if (hasRequiredMasterchainStateExtra) return MasterchainStateExtra;
-  hasRequiredMasterchainStateExtra = 1;
-  Object.defineProperty(MasterchainStateExtra, "__esModule", { value: true });
-  MasterchainStateExtra.loadMasterchainStateExtra = void 0;
-  const Dictionary_1 = requireDictionary();
-  const CurrencyCollection_1 = requireCurrencyCollection();
+var MasterchainStateExtra$1 = {};
+var hasRequiredMasterchainStateExtra$1;
+function requireMasterchainStateExtra$1() {
+  if (hasRequiredMasterchainStateExtra$1) return MasterchainStateExtra$1;
+  hasRequiredMasterchainStateExtra$1 = 1;
+  Object.defineProperty(MasterchainStateExtra$1, "__esModule", { value: true });
+  MasterchainStateExtra$1.loadMasterchainStateExtra = void 0;
+  const Dictionary_1 = requireDictionary$1();
+  const CurrencyCollection_1 = requireCurrencyCollection$1();
   function loadMasterchainStateExtra(cs) {
     if (cs.loadUint(16) !== 52262) {
       throw Error("Invalid data");
@@ -25502,19 +25493,19 @@ function requireMasterchainStateExtra() {
       globalBalance
     };
   }
-  MasterchainStateExtra.loadMasterchainStateExtra = loadMasterchainStateExtra;
-  return MasterchainStateExtra;
+  MasterchainStateExtra$1.loadMasterchainStateExtra = loadMasterchainStateExtra;
+  return MasterchainStateExtra$1;
 }
-var Message = {};
-var hasRequiredMessage;
-function requireMessage() {
-  if (hasRequiredMessage) return Message;
-  hasRequiredMessage = 1;
-  Object.defineProperty(Message, "__esModule", { value: true });
-  Message.MessageValue = Message.storeMessage = Message.loadMessage = void 0;
-  const Builder_12 = requireBuilder$1();
-  const CommonMessageInfo_1 = requireCommonMessageInfo();
-  const StateInit_1 = requireStateInit();
+var Message$1 = {};
+var hasRequiredMessage$1;
+function requireMessage$1() {
+  if (hasRequiredMessage$1) return Message$1;
+  hasRequiredMessage$1 = 1;
+  Object.defineProperty(Message$1, "__esModule", { value: true });
+  Message$1.MessageValue = Message$1.storeMessage = Message$1.loadMessage = void 0;
+  const Builder_12 = requireBuilder$3();
+  const CommonMessageInfo_1 = requireCommonMessageInfo$1();
+  const StateInit_1 = requireStateInit$1();
   function loadMessage(slice) {
     const info = (0, CommonMessageInfo_1.loadCommonMessageInfo)(slice);
     let init = null;
@@ -25532,7 +25523,7 @@ function requireMessage() {
       body
     };
   }
-  Message.loadMessage = loadMessage;
+  Message$1.loadMessage = loadMessage;
   function storeMessage(message, opts) {
     return (builder2) => {
       builder2.store((0, CommonMessageInfo_1.storeCommonMessageInfo)(message.info));
@@ -25570,8 +25561,8 @@ function requireMessage() {
       }
     };
   }
-  Message.storeMessage = storeMessage;
-  Message.MessageValue = {
+  Message$1.storeMessage = storeMessage;
+  Message$1.MessageValue = {
     serialize(src2, builder2) {
       builder2.storeRef((0, Builder_12.beginCell)().store(storeMessage(src2)));
     },
@@ -25579,55 +25570,55 @@ function requireMessage() {
       return loadMessage(slice.loadRef().beginParse());
     }
   };
-  return Message;
+  return Message$1;
 }
-var SendMode = {};
-var hasRequiredSendMode;
-function requireSendMode() {
-  if (hasRequiredSendMode) return SendMode;
-  hasRequiredSendMode = 1;
-  Object.defineProperty(SendMode, "__esModule", { value: true });
-  SendMode.SendMode = void 0;
-  var SendMode$1;
-  (function(SendMode2) {
-    SendMode2[SendMode2["CARRY_ALL_REMAINING_BALANCE"] = 128] = "CARRY_ALL_REMAINING_BALANCE";
-    SendMode2[SendMode2["CARRY_ALL_REMAINING_INCOMING_VALUE"] = 64] = "CARRY_ALL_REMAINING_INCOMING_VALUE";
-    SendMode2[SendMode2["DESTROY_ACCOUNT_IF_ZERO"] = 32] = "DESTROY_ACCOUNT_IF_ZERO";
-    SendMode2[SendMode2["PAY_GAS_SEPARATELY"] = 1] = "PAY_GAS_SEPARATELY";
-    SendMode2[SendMode2["IGNORE_ERRORS"] = 2] = "IGNORE_ERRORS";
-    SendMode2[SendMode2["NONE"] = 0] = "NONE";
-  })(SendMode$1 || (SendMode.SendMode = SendMode$1 = {}));
-  return SendMode;
+var SendMode$1 = {};
+var hasRequiredSendMode$1;
+function requireSendMode$1() {
+  if (hasRequiredSendMode$1) return SendMode$1;
+  hasRequiredSendMode$1 = 1;
+  Object.defineProperty(SendMode$1, "__esModule", { value: true });
+  SendMode$1.SendMode = void 0;
+  var SendMode2;
+  (function(SendMode3) {
+    SendMode3[SendMode3["CARRY_ALL_REMAINING_BALANCE"] = 128] = "CARRY_ALL_REMAINING_BALANCE";
+    SendMode3[SendMode3["CARRY_ALL_REMAINING_INCOMING_VALUE"] = 64] = "CARRY_ALL_REMAINING_INCOMING_VALUE";
+    SendMode3[SendMode3["DESTROY_ACCOUNT_IF_ZERO"] = 32] = "DESTROY_ACCOUNT_IF_ZERO";
+    SendMode3[SendMode3["PAY_GAS_SEPARATELY"] = 1] = "PAY_GAS_SEPARATELY";
+    SendMode3[SendMode3["IGNORE_ERRORS"] = 2] = "IGNORE_ERRORS";
+    SendMode3[SendMode3["NONE"] = 0] = "NONE";
+  })(SendMode2 || (SendMode$1.SendMode = SendMode2 = {}));
+  return SendMode$1;
 }
-var ReserveMode = {};
-var hasRequiredReserveMode;
-function requireReserveMode() {
-  if (hasRequiredReserveMode) return ReserveMode;
-  hasRequiredReserveMode = 1;
-  Object.defineProperty(ReserveMode, "__esModule", { value: true });
-  ReserveMode.ReserveMode = void 0;
-  var ReserveMode$1;
-  (function(ReserveMode2) {
-    ReserveMode2[ReserveMode2["THIS_AMOUNT"] = 0] = "THIS_AMOUNT";
-    ReserveMode2[ReserveMode2["LEAVE_THIS_AMOUNT"] = 1] = "LEAVE_THIS_AMOUNT";
-    ReserveMode2[ReserveMode2["AT_MOST_THIS_AMOUNT"] = 2] = "AT_MOST_THIS_AMOUNT";
-    ReserveMode2[ReserveMode2["LEAVE_MAX_THIS_AMOUNT"] = 3] = "LEAVE_MAX_THIS_AMOUNT";
-    ReserveMode2[ReserveMode2["BEFORE_BALANCE_PLUS_THIS_AMOUNT"] = 4] = "BEFORE_BALANCE_PLUS_THIS_AMOUNT";
-    ReserveMode2[ReserveMode2["LEAVE_BBALANCE_PLUS_THIS_AMOUNT"] = 5] = "LEAVE_BBALANCE_PLUS_THIS_AMOUNT";
-    ReserveMode2[ReserveMode2["BEFORE_BALANCE_MINUS_THIS_AMOUNT"] = 12] = "BEFORE_BALANCE_MINUS_THIS_AMOUNT";
-    ReserveMode2[ReserveMode2["LEAVE_BEFORE_BALANCE_MINUS_THIS_AMOUNT"] = 13] = "LEAVE_BEFORE_BALANCE_MINUS_THIS_AMOUNT";
-  })(ReserveMode$1 || (ReserveMode.ReserveMode = ReserveMode$1 = {}));
-  return ReserveMode;
+var ReserveMode$1 = {};
+var hasRequiredReserveMode$1;
+function requireReserveMode$1() {
+  if (hasRequiredReserveMode$1) return ReserveMode$1;
+  hasRequiredReserveMode$1 = 1;
+  Object.defineProperty(ReserveMode$1, "__esModule", { value: true });
+  ReserveMode$1.ReserveMode = void 0;
+  var ReserveMode2;
+  (function(ReserveMode3) {
+    ReserveMode3[ReserveMode3["THIS_AMOUNT"] = 0] = "THIS_AMOUNT";
+    ReserveMode3[ReserveMode3["LEAVE_THIS_AMOUNT"] = 1] = "LEAVE_THIS_AMOUNT";
+    ReserveMode3[ReserveMode3["AT_MOST_THIS_AMOUNT"] = 2] = "AT_MOST_THIS_AMOUNT";
+    ReserveMode3[ReserveMode3["LEAVE_MAX_THIS_AMOUNT"] = 3] = "LEAVE_MAX_THIS_AMOUNT";
+    ReserveMode3[ReserveMode3["BEFORE_BALANCE_PLUS_THIS_AMOUNT"] = 4] = "BEFORE_BALANCE_PLUS_THIS_AMOUNT";
+    ReserveMode3[ReserveMode3["LEAVE_BBALANCE_PLUS_THIS_AMOUNT"] = 5] = "LEAVE_BBALANCE_PLUS_THIS_AMOUNT";
+    ReserveMode3[ReserveMode3["BEFORE_BALANCE_MINUS_THIS_AMOUNT"] = 12] = "BEFORE_BALANCE_MINUS_THIS_AMOUNT";
+    ReserveMode3[ReserveMode3["LEAVE_BEFORE_BALANCE_MINUS_THIS_AMOUNT"] = 13] = "LEAVE_BEFORE_BALANCE_MINUS_THIS_AMOUNT";
+  })(ReserveMode2 || (ReserveMode$1.ReserveMode = ReserveMode2 = {}));
+  return ReserveMode$1;
 }
-var ShardAccount = {};
-var hasRequiredShardAccount;
-function requireShardAccount() {
-  if (hasRequiredShardAccount) return ShardAccount;
-  hasRequiredShardAccount = 1;
-  Object.defineProperty(ShardAccount, "__esModule", { value: true });
-  ShardAccount.storeShardAccount = ShardAccount.loadShardAccount = void 0;
-  const Builder_12 = requireBuilder$1();
-  const Account_1 = requireAccount();
+var ShardAccount$1 = {};
+var hasRequiredShardAccount$1;
+function requireShardAccount$1() {
+  if (hasRequiredShardAccount$1) return ShardAccount$1;
+  hasRequiredShardAccount$1 = 1;
+  Object.defineProperty(ShardAccount$1, "__esModule", { value: true });
+  ShardAccount$1.storeShardAccount = ShardAccount$1.loadShardAccount = void 0;
+  const Builder_12 = requireBuilder$3();
+  const Account_1 = requireAccount$1();
   function loadShardAccount(slice) {
     let accountRef = slice.loadRef();
     let account = void 0;
@@ -25643,7 +25634,7 @@ function requireShardAccount() {
       lastTransactionLt: slice.loadUintBig(64)
     };
   }
-  ShardAccount.loadShardAccount = loadShardAccount;
+  ShardAccount$1.loadShardAccount = loadShardAccount;
   function storeShardAccount(src2) {
     return (builder2) => {
       if (src2.account) {
@@ -25655,20 +25646,20 @@ function requireShardAccount() {
       builder2.storeUint(src2.lastTransactionLt, 64);
     };
   }
-  ShardAccount.storeShardAccount = storeShardAccount;
-  return ShardAccount;
+  ShardAccount$1.storeShardAccount = storeShardAccount;
+  return ShardAccount$1;
 }
-var ShardAccounts = {};
-var hasRequiredShardAccounts;
-function requireShardAccounts() {
-  if (hasRequiredShardAccounts) return ShardAccounts;
-  hasRequiredShardAccounts = 1;
+var ShardAccounts$1 = {};
+var hasRequiredShardAccounts$1;
+function requireShardAccounts$1() {
+  if (hasRequiredShardAccounts$1) return ShardAccounts$1;
+  hasRequiredShardAccounts$1 = 1;
   (function(exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.storeShardAccounts = exports.loadShardAccounts = exports.ShardAccountRefValue = void 0;
-    const Dictionary_1 = requireDictionary();
-    const DepthBalanceInfo_1 = requireDepthBalanceInfo();
-    const ShardAccount_1 = requireShardAccount();
+    const Dictionary_1 = requireDictionary$1();
+    const DepthBalanceInfo_1 = requireDepthBalanceInfo$1();
+    const ShardAccount_1 = requireShardAccount$1();
     exports.ShardAccountRefValue = {
       parse: (cs) => {
         let depthBalanceInfo = (0, DepthBalanceInfo_1.loadDepthBalanceInfo)(cs);
@@ -25693,16 +25684,16 @@ function requireShardAccounts() {
       };
     }
     exports.storeShardAccounts = storeShardAccounts;
-  })(ShardAccounts);
-  return ShardAccounts;
+  })(ShardAccounts$1);
+  return ShardAccounts$1;
 }
-var ShardIdent = {};
-var hasRequiredShardIdent;
-function requireShardIdent() {
-  if (hasRequiredShardIdent) return ShardIdent;
-  hasRequiredShardIdent = 1;
-  Object.defineProperty(ShardIdent, "__esModule", { value: true });
-  ShardIdent.storeShardIdent = ShardIdent.loadShardIdent = void 0;
+var ShardIdent$1 = {};
+var hasRequiredShardIdent$1;
+function requireShardIdent$1() {
+  if (hasRequiredShardIdent$1) return ShardIdent$1;
+  hasRequiredShardIdent$1 = 1;
+  Object.defineProperty(ShardIdent$1, "__esModule", { value: true });
+  ShardIdent$1.storeShardIdent = ShardIdent$1.loadShardIdent = void 0;
   function loadShardIdent(slice) {
     if (slice.loadUint(2) !== 0) {
       throw Error("Invalid data");
@@ -25713,7 +25704,7 @@ function requireShardIdent() {
       shardPrefix: slice.loadUintBig(64)
     };
   }
-  ShardIdent.loadShardIdent = loadShardIdent;
+  ShardIdent$1.loadShardIdent = loadShardIdent;
   function storeShardIdent(src2) {
     return (builder2) => {
       builder2.storeUint(0, 2);
@@ -25722,19 +25713,19 @@ function requireShardIdent() {
       builder2.storeUint(src2.shardPrefix, 64);
     };
   }
-  ShardIdent.storeShardIdent = storeShardIdent;
-  return ShardIdent;
+  ShardIdent$1.storeShardIdent = storeShardIdent;
+  return ShardIdent$1;
 }
-var ShardStateUnsplit = {};
-var hasRequiredShardStateUnsplit;
-function requireShardStateUnsplit() {
-  if (hasRequiredShardStateUnsplit) return ShardStateUnsplit;
-  hasRequiredShardStateUnsplit = 1;
-  Object.defineProperty(ShardStateUnsplit, "__esModule", { value: true });
-  ShardStateUnsplit.loadShardStateUnsplit = void 0;
-  const MasterchainStateExtra_1 = requireMasterchainStateExtra();
-  const ShardAccounts_1 = requireShardAccounts();
-  const ShardIdent_1 = requireShardIdent();
+var ShardStateUnsplit$1 = {};
+var hasRequiredShardStateUnsplit$1;
+function requireShardStateUnsplit$1() {
+  if (hasRequiredShardStateUnsplit$1) return ShardStateUnsplit$1;
+  hasRequiredShardStateUnsplit$1 = 1;
+  Object.defineProperty(ShardStateUnsplit$1, "__esModule", { value: true });
+  ShardStateUnsplit$1.loadShardStateUnsplit = void 0;
+  const MasterchainStateExtra_1 = requireMasterchainStateExtra$1();
+  const ShardAccounts_1 = requireShardAccounts$1();
+  const ShardIdent_1 = requireShardIdent$1();
   function loadShardStateUnsplit(cs) {
     if (cs.loadUint(32) !== 2418257890) {
       throw Error("Invalid data");
@@ -25775,16 +25766,16 @@ function requireShardStateUnsplit() {
       extras: extras2
     };
   }
-  ShardStateUnsplit.loadShardStateUnsplit = loadShardStateUnsplit;
-  return ShardStateUnsplit;
+  ShardStateUnsplit$1.loadShardStateUnsplit = loadShardStateUnsplit;
+  return ShardStateUnsplit$1;
 }
-var SplitMergeInfo = {};
-var hasRequiredSplitMergeInfo;
-function requireSplitMergeInfo() {
-  if (hasRequiredSplitMergeInfo) return SplitMergeInfo;
-  hasRequiredSplitMergeInfo = 1;
-  Object.defineProperty(SplitMergeInfo, "__esModule", { value: true });
-  SplitMergeInfo.storeSplitMergeInfo = SplitMergeInfo.loadSplitMergeInfo = void 0;
+var SplitMergeInfo$1 = {};
+var hasRequiredSplitMergeInfo$1;
+function requireSplitMergeInfo$1() {
+  if (hasRequiredSplitMergeInfo$1) return SplitMergeInfo$1;
+  hasRequiredSplitMergeInfo$1 = 1;
+  Object.defineProperty(SplitMergeInfo$1, "__esModule", { value: true });
+  SplitMergeInfo$1.storeSplitMergeInfo = SplitMergeInfo$1.loadSplitMergeInfo = void 0;
   function loadSplitMergeInfo(slice) {
     let currentShardPrefixLength = slice.loadUint(6);
     let accountSplitDepth = slice.loadUint(6);
@@ -25797,7 +25788,7 @@ function requireSplitMergeInfo() {
       siblingAddress
     };
   }
-  SplitMergeInfo.loadSplitMergeInfo = loadSplitMergeInfo;
+  SplitMergeInfo$1.loadSplitMergeInfo = loadSplitMergeInfo;
   function storeSplitMergeInfo(src2) {
     return (builder2) => {
       builder2.storeUint(src2.currentShardPrefixLength, 6);
@@ -25806,20 +25797,20 @@ function requireSplitMergeInfo() {
       builder2.storeUint(src2.siblingAddress, 256);
     };
   }
-  SplitMergeInfo.storeSplitMergeInfo = storeSplitMergeInfo;
-  return SplitMergeInfo;
+  SplitMergeInfo$1.storeSplitMergeInfo = storeSplitMergeInfo;
+  return SplitMergeInfo$1;
 }
-var Transaction = {};
-var TransactionDescription = {};
-var TransactionActionPhase = {};
-var hasRequiredTransactionActionPhase;
-function requireTransactionActionPhase() {
-  if (hasRequiredTransactionActionPhase) return TransactionActionPhase;
-  hasRequiredTransactionActionPhase = 1;
-  Object.defineProperty(TransactionActionPhase, "__esModule", { value: true });
-  TransactionActionPhase.storeTransactionActionPhase = TransactionActionPhase.loadTransactionActionPhase = void 0;
-  const AccountStatusChange_1 = requireAccountStatusChange();
-  const StorageUsed_1 = requireStorageUsed();
+var Transaction$1 = {};
+var TransactionDescription$1 = {};
+var TransactionActionPhase$1 = {};
+var hasRequiredTransactionActionPhase$1;
+function requireTransactionActionPhase$1() {
+  if (hasRequiredTransactionActionPhase$1) return TransactionActionPhase$1;
+  hasRequiredTransactionActionPhase$1 = 1;
+  Object.defineProperty(TransactionActionPhase$1, "__esModule", { value: true });
+  TransactionActionPhase$1.storeTransactionActionPhase = TransactionActionPhase$1.loadTransactionActionPhase = void 0;
+  const AccountStatusChange_1 = requireAccountStatusChange$1();
+  const StorageUsed_1 = requireStorageUsed$1();
   function loadTransactionActionPhase(slice) {
     let success = slice.loadBit();
     let valid = slice.loadBit();
@@ -25852,7 +25843,7 @@ function requireTransactionActionPhase() {
       totalMessageSize
     };
   }
-  TransactionActionPhase.loadTransactionActionPhase = loadTransactionActionPhase;
+  TransactionActionPhase$1.loadTransactionActionPhase = loadTransactionActionPhase;
   function storeTransactionActionPhase(src2) {
     return (builder2) => {
       builder2.storeBit(src2.success);
@@ -25871,17 +25862,17 @@ function requireTransactionActionPhase() {
       builder2.store((0, StorageUsed_1.storeStorageUsed)(src2.totalMessageSize));
     };
   }
-  TransactionActionPhase.storeTransactionActionPhase = storeTransactionActionPhase;
-  return TransactionActionPhase;
+  TransactionActionPhase$1.storeTransactionActionPhase = storeTransactionActionPhase;
+  return TransactionActionPhase$1;
 }
-var TransactionBouncePhase = {};
-var hasRequiredTransactionBouncePhase;
-function requireTransactionBouncePhase() {
-  if (hasRequiredTransactionBouncePhase) return TransactionBouncePhase;
-  hasRequiredTransactionBouncePhase = 1;
-  Object.defineProperty(TransactionBouncePhase, "__esModule", { value: true });
-  TransactionBouncePhase.storeTransactionBouncePhase = TransactionBouncePhase.loadTransactionBouncePhase = void 0;
-  const StorageUsed_1 = requireStorageUsed();
+var TransactionBouncePhase$1 = {};
+var hasRequiredTransactionBouncePhase$1;
+function requireTransactionBouncePhase$1() {
+  if (hasRequiredTransactionBouncePhase$1) return TransactionBouncePhase$1;
+  hasRequiredTransactionBouncePhase$1 = 1;
+  Object.defineProperty(TransactionBouncePhase$1, "__esModule", { value: true });
+  TransactionBouncePhase$1.storeTransactionBouncePhase = TransactionBouncePhase$1.loadTransactionBouncePhase = void 0;
+  const StorageUsed_1 = requireStorageUsed$1();
   function loadTransactionBouncePhase(slice) {
     if (slice.loadBit()) {
       let messageSize = (0, StorageUsed_1.loadStorageUsed)(slice);
@@ -25907,7 +25898,7 @@ function requireTransactionBouncePhase() {
       type: "negative-funds"
     };
   }
-  TransactionBouncePhase.loadTransactionBouncePhase = loadTransactionBouncePhase;
+  TransactionBouncePhase$1.loadTransactionBouncePhase = loadTransactionBouncePhase;
   function storeTransactionBouncePhase(src2) {
     return (builder2) => {
       if (src2.type === "ok") {
@@ -25928,18 +25919,18 @@ function requireTransactionBouncePhase() {
       }
     };
   }
-  TransactionBouncePhase.storeTransactionBouncePhase = storeTransactionBouncePhase;
-  return TransactionBouncePhase;
+  TransactionBouncePhase$1.storeTransactionBouncePhase = storeTransactionBouncePhase;
+  return TransactionBouncePhase$1;
 }
-var TransactionComputePhase = {};
-var hasRequiredTransactionComputePhase;
-function requireTransactionComputePhase() {
-  if (hasRequiredTransactionComputePhase) return TransactionComputePhase;
-  hasRequiredTransactionComputePhase = 1;
-  Object.defineProperty(TransactionComputePhase, "__esModule", { value: true });
-  TransactionComputePhase.storeTransactionComputePhase = TransactionComputePhase.loadTransactionComputePhase = void 0;
-  const Builder_12 = requireBuilder$1();
-  const ComputeSkipReason_1 = requireComputeSkipReason();
+var TransactionComputePhase$1 = {};
+var hasRequiredTransactionComputePhase$1;
+function requireTransactionComputePhase$1() {
+  if (hasRequiredTransactionComputePhase$1) return TransactionComputePhase$1;
+  hasRequiredTransactionComputePhase$1 = 1;
+  Object.defineProperty(TransactionComputePhase$1, "__esModule", { value: true });
+  TransactionComputePhase$1.storeTransactionComputePhase = TransactionComputePhase$1.loadTransactionComputePhase = void 0;
+  const Builder_12 = requireBuilder$3();
+  const ComputeSkipReason_1 = requireComputeSkipReason$1();
   function loadTransactionComputePhase(slice) {
     if (!slice.loadBit()) {
       let reason = (0, ComputeSkipReason_1.loadComputeSkipReason)(slice);
@@ -25979,7 +25970,7 @@ function requireTransactionComputePhase() {
       vmFinalStateHash
     };
   }
-  TransactionComputePhase.loadTransactionComputePhase = loadTransactionComputePhase;
+  TransactionComputePhase$1.loadTransactionComputePhase = loadTransactionComputePhase;
   function storeTransactionComputePhase(src2) {
     return (builder2) => {
       if (src2.type === "skipped") {
@@ -25995,17 +25986,17 @@ function requireTransactionComputePhase() {
       builder2.storeRef((0, Builder_12.beginCell)().storeVarUint(src2.gasUsed, 3).storeVarUint(src2.gasLimit, 3).store((b2) => src2.gasCredit !== void 0 && src2.gasCredit !== null ? b2.storeBit(1).storeVarUint(src2.gasCredit, 2) : b2.storeBit(0)).storeUint(src2.mode, 8).storeInt(src2.exitCode, 32).store((b2) => src2.exitArg !== void 0 && src2.exitArg !== null ? b2.storeBit(1).storeInt(src2.exitArg, 32) : b2.storeBit(0)).storeUint(src2.vmSteps, 32).storeUint(src2.vmInitStateHash, 256).storeUint(src2.vmFinalStateHash, 256).endCell());
     };
   }
-  TransactionComputePhase.storeTransactionComputePhase = storeTransactionComputePhase;
-  return TransactionComputePhase;
+  TransactionComputePhase$1.storeTransactionComputePhase = storeTransactionComputePhase;
+  return TransactionComputePhase$1;
 }
-var TransactionCreditPhase = {};
-var hasRequiredTransactionCreditPhase;
-function requireTransactionCreditPhase() {
-  if (hasRequiredTransactionCreditPhase) return TransactionCreditPhase;
-  hasRequiredTransactionCreditPhase = 1;
-  Object.defineProperty(TransactionCreditPhase, "__esModule", { value: true });
-  TransactionCreditPhase.storeTransactionCreditPhase = TransactionCreditPhase.loadTransactionCreditPhase = void 0;
-  const CurrencyCollection_1 = requireCurrencyCollection();
+var TransactionCreditPhase$1 = {};
+var hasRequiredTransactionCreditPhase$1;
+function requireTransactionCreditPhase$1() {
+  if (hasRequiredTransactionCreditPhase$1) return TransactionCreditPhase$1;
+  hasRequiredTransactionCreditPhase$1 = 1;
+  Object.defineProperty(TransactionCreditPhase$1, "__esModule", { value: true });
+  TransactionCreditPhase$1.storeTransactionCreditPhase = TransactionCreditPhase$1.loadTransactionCreditPhase = void 0;
+  const CurrencyCollection_1 = requireCurrencyCollection$1();
   function loadTransactionCreditPhase(slice) {
     const dueFeesColelcted = slice.loadBit() ? slice.loadCoins() : void 0;
     const credit = (0, CurrencyCollection_1.loadCurrencyCollection)(slice);
@@ -26014,7 +26005,7 @@ function requireTransactionCreditPhase() {
       credit
     };
   }
-  TransactionCreditPhase.loadTransactionCreditPhase = loadTransactionCreditPhase;
+  TransactionCreditPhase$1.loadTransactionCreditPhase = loadTransactionCreditPhase;
   function storeTransactionCreditPhase(src2) {
     return (builder2) => {
       if (src2.dueFeesColelcted === null || src2.dueFeesColelcted === void 0) {
@@ -26026,17 +26017,17 @@ function requireTransactionCreditPhase() {
       builder2.store((0, CurrencyCollection_1.storeCurrencyCollection)(src2.credit));
     };
   }
-  TransactionCreditPhase.storeTransactionCreditPhase = storeTransactionCreditPhase;
-  return TransactionCreditPhase;
+  TransactionCreditPhase$1.storeTransactionCreditPhase = storeTransactionCreditPhase;
+  return TransactionCreditPhase$1;
 }
-var TransactionStoragePhase = {};
-var hasRequiredTransactionStoragePhase;
-function requireTransactionStoragePhase() {
-  if (hasRequiredTransactionStoragePhase) return TransactionStoragePhase;
-  hasRequiredTransactionStoragePhase = 1;
-  Object.defineProperty(TransactionStoragePhase, "__esModule", { value: true });
-  TransactionStoragePhase.storeTransactionsStoragePhase = TransactionStoragePhase.loadTransactionStoragePhase = void 0;
-  const AccountStatusChange_1 = requireAccountStatusChange();
+var TransactionStoragePhase$1 = {};
+var hasRequiredTransactionStoragePhase$1;
+function requireTransactionStoragePhase$1() {
+  if (hasRequiredTransactionStoragePhase$1) return TransactionStoragePhase$1;
+  hasRequiredTransactionStoragePhase$1 = 1;
+  Object.defineProperty(TransactionStoragePhase$1, "__esModule", { value: true });
+  TransactionStoragePhase$1.storeTransactionsStoragePhase = TransactionStoragePhase$1.loadTransactionStoragePhase = void 0;
+  const AccountStatusChange_1 = requireAccountStatusChange$1();
   function loadTransactionStoragePhase(slice) {
     const storageFeesCollected = slice.loadCoins();
     let storageFeesDue = void 0;
@@ -26050,7 +26041,7 @@ function requireTransactionStoragePhase() {
       statusChange
     };
   }
-  TransactionStoragePhase.loadTransactionStoragePhase = loadTransactionStoragePhase;
+  TransactionStoragePhase$1.loadTransactionStoragePhase = loadTransactionStoragePhase;
   function storeTransactionsStoragePhase(src2) {
     return (builder2) => {
       builder2.storeCoins(src2.storageFeesCollected);
@@ -26063,23 +26054,23 @@ function requireTransactionStoragePhase() {
       builder2.store((0, AccountStatusChange_1.storeAccountStatusChange)(src2.statusChange));
     };
   }
-  TransactionStoragePhase.storeTransactionsStoragePhase = storeTransactionsStoragePhase;
-  return TransactionStoragePhase;
+  TransactionStoragePhase$1.storeTransactionsStoragePhase = storeTransactionsStoragePhase;
+  return TransactionStoragePhase$1;
 }
-var hasRequiredTransactionDescription;
-function requireTransactionDescription() {
-  if (hasRequiredTransactionDescription) return TransactionDescription;
-  hasRequiredTransactionDescription = 1;
-  Object.defineProperty(TransactionDescription, "__esModule", { value: true });
-  TransactionDescription.storeTransactionDescription = TransactionDescription.loadTransactionDescription = void 0;
-  const Builder_12 = requireBuilder$1();
-  const SplitMergeInfo_1 = requireSplitMergeInfo();
-  const Transaction_1 = requireTransaction();
-  const TransactionActionPhase_1 = requireTransactionActionPhase();
-  const TransactionBouncePhase_1 = requireTransactionBouncePhase();
-  const TransactionComputePhase_1 = requireTransactionComputePhase();
-  const TransactionCreditPhase_1 = requireTransactionCreditPhase();
-  const TransactionStoragePhase_1 = requireTransactionStoragePhase();
+var hasRequiredTransactionDescription$1;
+function requireTransactionDescription$1() {
+  if (hasRequiredTransactionDescription$1) return TransactionDescription$1;
+  hasRequiredTransactionDescription$1 = 1;
+  Object.defineProperty(TransactionDescription$1, "__esModule", { value: true });
+  TransactionDescription$1.storeTransactionDescription = TransactionDescription$1.loadTransactionDescription = void 0;
+  const Builder_12 = requireBuilder$3();
+  const SplitMergeInfo_1 = requireSplitMergeInfo$1();
+  const Transaction_1 = requireTransaction$1();
+  const TransactionActionPhase_1 = requireTransactionActionPhase$1();
+  const TransactionBouncePhase_1 = requireTransactionBouncePhase$1();
+  const TransactionComputePhase_1 = requireTransactionComputePhase$1();
+  const TransactionCreditPhase_1 = requireTransactionCreditPhase$1();
+  const TransactionStoragePhase_1 = requireTransactionStoragePhase$1();
   function loadTransactionDescription(slice) {
     let type = slice.loadUint(4);
     if (type === 0) {
@@ -26177,7 +26168,7 @@ function requireTransactionDescription() {
     }
     throw Error(`Unsupported transaction description type ${type}`);
   }
-  TransactionDescription.loadTransactionDescription = loadTransactionDescription;
+  TransactionDescription$1.loadTransactionDescription = loadTransactionDescription;
   function storeTransactionDescription(src2) {
     return (builder2) => {
       if (src2.type === "generic") {
@@ -26253,22 +26244,22 @@ function requireTransactionDescription() {
       }
     };
   }
-  TransactionDescription.storeTransactionDescription = storeTransactionDescription;
-  return TransactionDescription;
+  TransactionDescription$1.storeTransactionDescription = storeTransactionDescription;
+  return TransactionDescription$1;
 }
-var hasRequiredTransaction;
-function requireTransaction() {
-  if (hasRequiredTransaction) return Transaction;
-  hasRequiredTransaction = 1;
-  Object.defineProperty(Transaction, "__esModule", { value: true });
-  Transaction.storeTransaction = Transaction.loadTransaction = void 0;
-  const Builder_12 = requireBuilder$1();
-  const Dictionary_1 = requireDictionary();
-  const AccountStatus_1 = requireAccountStatus();
-  const CurrencyCollection_1 = requireCurrencyCollection();
-  const HashUpdate_1 = requireHashUpdate();
-  const Message_1 = requireMessage();
-  const TransactionDescription_1 = requireTransactionDescription();
+var hasRequiredTransaction$1;
+function requireTransaction$1() {
+  if (hasRequiredTransaction$1) return Transaction$1;
+  hasRequiredTransaction$1 = 1;
+  Object.defineProperty(Transaction$1, "__esModule", { value: true });
+  Transaction$1.storeTransaction = Transaction$1.loadTransaction = void 0;
+  const Builder_12 = requireBuilder$3();
+  const Dictionary_1 = requireDictionary$1();
+  const AccountStatus_1 = requireAccountStatus$1();
+  const CurrencyCollection_1 = requireCurrencyCollection$1();
+  const HashUpdate_1 = requireHashUpdate$1();
+  const Message_1 = requireMessage$1();
+  const TransactionDescription_1 = requireTransactionDescription$1();
   function loadTransaction(slice) {
     let raw = slice.asCell();
     if (slice.loadUint(4) !== 7) {
@@ -26308,7 +26299,7 @@ function requireTransaction() {
       hash: () => raw.hash()
     };
   }
-  Transaction.loadTransaction = loadTransaction;
+  Transaction$1.loadTransaction = loadTransaction;
   function storeTransaction(src2) {
     return (builder2) => {
       builder2.storeUint(7, 4);
@@ -26334,18 +26325,18 @@ function requireTransaction() {
       builder2.storeRef((0, Builder_12.beginCell)().store((0, TransactionDescription_1.storeTransactionDescription)(src2.description)));
     };
   }
-  Transaction.storeTransaction = storeTransaction;
-  return Transaction;
+  Transaction$1.storeTransaction = storeTransaction;
+  return Transaction$1;
 }
-var hasRequired_export;
-function require_export() {
-  if (hasRequired_export) return _export;
-  hasRequired_export = 1;
+var hasRequired_export$1;
+function require_export$1() {
+  if (hasRequired_export$1) return _export$1;
+  hasRequired_export$1 = 1;
   (function(exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.loadSimpleLibrary = exports.loadShardStateUnsplit = exports.storeShardIdent = exports.loadShardIdent = exports.storeShardAccounts = exports.loadShardAccounts = exports.ShardAccountRefValue = exports.storeShardAccount = exports.loadShardAccount = exports.ReserveMode = exports.SendMode = exports.storeMessageRelaxed = exports.loadMessageRelaxed = exports.storeMessage = exports.loadMessage = exports.loadMasterchainStateExtra = exports.storeHashUpdate = exports.loadHashUpdate = exports.storeExtraCurrency = exports.loadMaybeExtraCurrency = exports.loadExtraCurrency = exports.packExtraCurrencyDict = exports.packExtraCurrencyCell = exports.storeDepthBalanceInfo = exports.loadDepthBalanceInfo = exports.storeCurrencyCollection = exports.loadCurrencyCollection = exports.storeComputeSkipReason = exports.loadComputeSkipReason = exports.storeCommonMessageInfoRelaxed = exports.loadCommonMessageInfoRelaxed = exports.storeCommonMessageInfo = exports.loadCommonMessageInfo = exports.storeOutList = exports.loadOutList = exports.storeOutAction = exports.loadOutAction = exports.storeAccountStorage = exports.loadAccountStorage = exports.storeAccountStatusChange = exports.loadAccountStatusChange = exports.storeAccountStatus = exports.loadAccountStatus = exports.storeAccountState = exports.loadAccountState = exports.storeAccount = exports.loadAccount = exports.comment = exports.external = exports.internal = void 0;
     exports.storeTransactionsStoragePhase = exports.loadTransactionStoragePhase = exports.storeTransactionDescription = exports.loadTransactionDescription = exports.storeTransactionCreditPhase = exports.loadTransactionCreditPhase = exports.storeTransactionComputePhase = exports.loadTransactionComputePhase = exports.storeTransactionBouncePhase = exports.loadTransactionBouncePhase = exports.storeTransactionActionPhase = exports.loadTransactionActionPhase = exports.storeTransaction = exports.loadTransaction = exports.storeTickTock = exports.loadTickTock = exports.storeStorageUsed = exports.loadStorageUsed = exports.storeStorageInfo = exports.loadStorageInfo = exports.storeStateInit = exports.loadStateInit = exports.storeSplitMergeInfo = exports.loadSplitMergeInfo = exports.storeLibRef = exports.loadLibRef = exports.storeSimpleLibrary = void 0;
-    var _helpers_1 = require_helpers();
+    var _helpers_1 = require_helpers$1();
     Object.defineProperty(exports, "internal", { enumerable: true, get: function() {
       return _helpers_1.internal;
     } });
@@ -26355,42 +26346,42 @@ function require_export() {
     Object.defineProperty(exports, "comment", { enumerable: true, get: function() {
       return _helpers_1.comment;
     } });
-    var Account_1 = requireAccount();
+    var Account_1 = requireAccount$1();
     Object.defineProperty(exports, "loadAccount", { enumerable: true, get: function() {
       return Account_1.loadAccount;
     } });
     Object.defineProperty(exports, "storeAccount", { enumerable: true, get: function() {
       return Account_1.storeAccount;
     } });
-    var AccountState_1 = requireAccountState();
+    var AccountState_1 = requireAccountState$1();
     Object.defineProperty(exports, "loadAccountState", { enumerable: true, get: function() {
       return AccountState_1.loadAccountState;
     } });
     Object.defineProperty(exports, "storeAccountState", { enumerable: true, get: function() {
       return AccountState_1.storeAccountState;
     } });
-    var AccountStatus_1 = requireAccountStatus();
+    var AccountStatus_1 = requireAccountStatus$1();
     Object.defineProperty(exports, "loadAccountStatus", { enumerable: true, get: function() {
       return AccountStatus_1.loadAccountStatus;
     } });
     Object.defineProperty(exports, "storeAccountStatus", { enumerable: true, get: function() {
       return AccountStatus_1.storeAccountStatus;
     } });
-    var AccountStatusChange_1 = requireAccountStatusChange();
+    var AccountStatusChange_1 = requireAccountStatusChange$1();
     Object.defineProperty(exports, "loadAccountStatusChange", { enumerable: true, get: function() {
       return AccountStatusChange_1.loadAccountStatusChange;
     } });
     Object.defineProperty(exports, "storeAccountStatusChange", { enumerable: true, get: function() {
       return AccountStatusChange_1.storeAccountStatusChange;
     } });
-    var AccountStorage_1 = requireAccountStorage();
+    var AccountStorage_1 = requireAccountStorage$1();
     Object.defineProperty(exports, "loadAccountStorage", { enumerable: true, get: function() {
       return AccountStorage_1.loadAccountStorage;
     } });
     Object.defineProperty(exports, "storeAccountStorage", { enumerable: true, get: function() {
       return AccountStorage_1.storeAccountStorage;
     } });
-    var OutList_1 = requireOutList();
+    var OutList_1 = requireOutList$1();
     Object.defineProperty(exports, "loadOutAction", { enumerable: true, get: function() {
       return OutList_1.loadOutAction;
     } });
@@ -26403,42 +26394,42 @@ function require_export() {
     Object.defineProperty(exports, "storeOutList", { enumerable: true, get: function() {
       return OutList_1.storeOutList;
     } });
-    var CommonMessageInfo_1 = requireCommonMessageInfo();
+    var CommonMessageInfo_1 = requireCommonMessageInfo$1();
     Object.defineProperty(exports, "loadCommonMessageInfo", { enumerable: true, get: function() {
       return CommonMessageInfo_1.loadCommonMessageInfo;
     } });
     Object.defineProperty(exports, "storeCommonMessageInfo", { enumerable: true, get: function() {
       return CommonMessageInfo_1.storeCommonMessageInfo;
     } });
-    var CommonMessageInfoRelaxed_1 = requireCommonMessageInfoRelaxed();
+    var CommonMessageInfoRelaxed_1 = requireCommonMessageInfoRelaxed$1();
     Object.defineProperty(exports, "loadCommonMessageInfoRelaxed", { enumerable: true, get: function() {
       return CommonMessageInfoRelaxed_1.loadCommonMessageInfoRelaxed;
     } });
     Object.defineProperty(exports, "storeCommonMessageInfoRelaxed", { enumerable: true, get: function() {
       return CommonMessageInfoRelaxed_1.storeCommonMessageInfoRelaxed;
     } });
-    var ComputeSkipReason_1 = requireComputeSkipReason();
+    var ComputeSkipReason_1 = requireComputeSkipReason$1();
     Object.defineProperty(exports, "loadComputeSkipReason", { enumerable: true, get: function() {
       return ComputeSkipReason_1.loadComputeSkipReason;
     } });
     Object.defineProperty(exports, "storeComputeSkipReason", { enumerable: true, get: function() {
       return ComputeSkipReason_1.storeComputeSkipReason;
     } });
-    var CurrencyCollection_1 = requireCurrencyCollection();
+    var CurrencyCollection_1 = requireCurrencyCollection$1();
     Object.defineProperty(exports, "loadCurrencyCollection", { enumerable: true, get: function() {
       return CurrencyCollection_1.loadCurrencyCollection;
     } });
     Object.defineProperty(exports, "storeCurrencyCollection", { enumerable: true, get: function() {
       return CurrencyCollection_1.storeCurrencyCollection;
     } });
-    var DepthBalanceInfo_1 = requireDepthBalanceInfo();
+    var DepthBalanceInfo_1 = requireDepthBalanceInfo$1();
     Object.defineProperty(exports, "loadDepthBalanceInfo", { enumerable: true, get: function() {
       return DepthBalanceInfo_1.loadDepthBalanceInfo;
     } });
     Object.defineProperty(exports, "storeDepthBalanceInfo", { enumerable: true, get: function() {
       return DepthBalanceInfo_1.storeDepthBalanceInfo;
     } });
-    var ExtraCurrency_1 = requireExtraCurrency();
+    var ExtraCurrency_1 = requireExtraCurrency$1();
     Object.defineProperty(exports, "packExtraCurrencyCell", { enumerable: true, get: function() {
       return ExtraCurrency_1.packExtraCurrencyCell;
     } });
@@ -26454,47 +26445,47 @@ function require_export() {
     Object.defineProperty(exports, "storeExtraCurrency", { enumerable: true, get: function() {
       return ExtraCurrency_1.storeExtraCurrency;
     } });
-    var HashUpdate_1 = requireHashUpdate();
+    var HashUpdate_1 = requireHashUpdate$1();
     Object.defineProperty(exports, "loadHashUpdate", { enumerable: true, get: function() {
       return HashUpdate_1.loadHashUpdate;
     } });
     Object.defineProperty(exports, "storeHashUpdate", { enumerable: true, get: function() {
       return HashUpdate_1.storeHashUpdate;
     } });
-    var MasterchainStateExtra_1 = requireMasterchainStateExtra();
+    var MasterchainStateExtra_1 = requireMasterchainStateExtra$1();
     Object.defineProperty(exports, "loadMasterchainStateExtra", { enumerable: true, get: function() {
       return MasterchainStateExtra_1.loadMasterchainStateExtra;
     } });
-    var Message_1 = requireMessage();
+    var Message_1 = requireMessage$1();
     Object.defineProperty(exports, "loadMessage", { enumerable: true, get: function() {
       return Message_1.loadMessage;
     } });
     Object.defineProperty(exports, "storeMessage", { enumerable: true, get: function() {
       return Message_1.storeMessage;
     } });
-    var MessageRelaxed_1 = requireMessageRelaxed();
+    var MessageRelaxed_1 = requireMessageRelaxed$1();
     Object.defineProperty(exports, "loadMessageRelaxed", { enumerable: true, get: function() {
       return MessageRelaxed_1.loadMessageRelaxed;
     } });
     Object.defineProperty(exports, "storeMessageRelaxed", { enumerable: true, get: function() {
       return MessageRelaxed_1.storeMessageRelaxed;
     } });
-    var SendMode_1 = requireSendMode();
+    var SendMode_1 = requireSendMode$1();
     Object.defineProperty(exports, "SendMode", { enumerable: true, get: function() {
       return SendMode_1.SendMode;
     } });
-    var ReserveMode_1 = requireReserveMode();
+    var ReserveMode_1 = requireReserveMode$1();
     Object.defineProperty(exports, "ReserveMode", { enumerable: true, get: function() {
       return ReserveMode_1.ReserveMode;
     } });
-    var ShardAccount_1 = requireShardAccount();
+    var ShardAccount_1 = requireShardAccount$1();
     Object.defineProperty(exports, "loadShardAccount", { enumerable: true, get: function() {
       return ShardAccount_1.loadShardAccount;
     } });
     Object.defineProperty(exports, "storeShardAccount", { enumerable: true, get: function() {
       return ShardAccount_1.storeShardAccount;
     } });
-    var ShardAccounts_1 = requireShardAccounts();
+    var ShardAccounts_1 = requireShardAccounts$1();
     Object.defineProperty(exports, "ShardAccountRefValue", { enumerable: true, get: function() {
       return ShardAccounts_1.ShardAccountRefValue;
     } });
@@ -26504,128 +26495,128 @@ function require_export() {
     Object.defineProperty(exports, "storeShardAccounts", { enumerable: true, get: function() {
       return ShardAccounts_1.storeShardAccounts;
     } });
-    var ShardIdent_1 = requireShardIdent();
+    var ShardIdent_1 = requireShardIdent$1();
     Object.defineProperty(exports, "loadShardIdent", { enumerable: true, get: function() {
       return ShardIdent_1.loadShardIdent;
     } });
     Object.defineProperty(exports, "storeShardIdent", { enumerable: true, get: function() {
       return ShardIdent_1.storeShardIdent;
     } });
-    var ShardStateUnsplit_1 = requireShardStateUnsplit();
+    var ShardStateUnsplit_1 = requireShardStateUnsplit$1();
     Object.defineProperty(exports, "loadShardStateUnsplit", { enumerable: true, get: function() {
       return ShardStateUnsplit_1.loadShardStateUnsplit;
     } });
-    var SimpleLibrary_1 = requireSimpleLibrary();
+    var SimpleLibrary_1 = requireSimpleLibrary$1();
     Object.defineProperty(exports, "loadSimpleLibrary", { enumerable: true, get: function() {
       return SimpleLibrary_1.loadSimpleLibrary;
     } });
     Object.defineProperty(exports, "storeSimpleLibrary", { enumerable: true, get: function() {
       return SimpleLibrary_1.storeSimpleLibrary;
     } });
-    var LibRef_1 = requireLibRef();
+    var LibRef_1 = requireLibRef$1();
     Object.defineProperty(exports, "loadLibRef", { enumerable: true, get: function() {
       return LibRef_1.loadLibRef;
     } });
     Object.defineProperty(exports, "storeLibRef", { enumerable: true, get: function() {
       return LibRef_1.storeLibRef;
     } });
-    var SplitMergeInfo_1 = requireSplitMergeInfo();
+    var SplitMergeInfo_1 = requireSplitMergeInfo$1();
     Object.defineProperty(exports, "loadSplitMergeInfo", { enumerable: true, get: function() {
       return SplitMergeInfo_1.loadSplitMergeInfo;
     } });
     Object.defineProperty(exports, "storeSplitMergeInfo", { enumerable: true, get: function() {
       return SplitMergeInfo_1.storeSplitMergeInfo;
     } });
-    var StateInit_1 = requireStateInit();
+    var StateInit_1 = requireStateInit$1();
     Object.defineProperty(exports, "loadStateInit", { enumerable: true, get: function() {
       return StateInit_1.loadStateInit;
     } });
     Object.defineProperty(exports, "storeStateInit", { enumerable: true, get: function() {
       return StateInit_1.storeStateInit;
     } });
-    var StorageInfo_1 = requireStorageInfo();
+    var StorageInfo_1 = requireStorageInfo$1();
     Object.defineProperty(exports, "loadStorageInfo", { enumerable: true, get: function() {
       return StorageInfo_1.loadStorageInfo;
     } });
     Object.defineProperty(exports, "storeStorageInfo", { enumerable: true, get: function() {
       return StorageInfo_1.storeStorageInfo;
     } });
-    var StorageUsed_1 = requireStorageUsed();
+    var StorageUsed_1 = requireStorageUsed$1();
     Object.defineProperty(exports, "loadStorageUsed", { enumerable: true, get: function() {
       return StorageUsed_1.loadStorageUsed;
     } });
     Object.defineProperty(exports, "storeStorageUsed", { enumerable: true, get: function() {
       return StorageUsed_1.storeStorageUsed;
     } });
-    var TickTock_1 = requireTickTock();
+    var TickTock_1 = requireTickTock$1();
     Object.defineProperty(exports, "loadTickTock", { enumerable: true, get: function() {
       return TickTock_1.loadTickTock;
     } });
     Object.defineProperty(exports, "storeTickTock", { enumerable: true, get: function() {
       return TickTock_1.storeTickTock;
     } });
-    var Transaction_1 = requireTransaction();
+    var Transaction_1 = requireTransaction$1();
     Object.defineProperty(exports, "loadTransaction", { enumerable: true, get: function() {
       return Transaction_1.loadTransaction;
     } });
     Object.defineProperty(exports, "storeTransaction", { enumerable: true, get: function() {
       return Transaction_1.storeTransaction;
     } });
-    var TransactionActionPhase_1 = requireTransactionActionPhase();
+    var TransactionActionPhase_1 = requireTransactionActionPhase$1();
     Object.defineProperty(exports, "loadTransactionActionPhase", { enumerable: true, get: function() {
       return TransactionActionPhase_1.loadTransactionActionPhase;
     } });
     Object.defineProperty(exports, "storeTransactionActionPhase", { enumerable: true, get: function() {
       return TransactionActionPhase_1.storeTransactionActionPhase;
     } });
-    var TransactionBouncePhase_1 = requireTransactionBouncePhase();
+    var TransactionBouncePhase_1 = requireTransactionBouncePhase$1();
     Object.defineProperty(exports, "loadTransactionBouncePhase", { enumerable: true, get: function() {
       return TransactionBouncePhase_1.loadTransactionBouncePhase;
     } });
     Object.defineProperty(exports, "storeTransactionBouncePhase", { enumerable: true, get: function() {
       return TransactionBouncePhase_1.storeTransactionBouncePhase;
     } });
-    var TransactionComputePhase_1 = requireTransactionComputePhase();
+    var TransactionComputePhase_1 = requireTransactionComputePhase$1();
     Object.defineProperty(exports, "loadTransactionComputePhase", { enumerable: true, get: function() {
       return TransactionComputePhase_1.loadTransactionComputePhase;
     } });
     Object.defineProperty(exports, "storeTransactionComputePhase", { enumerable: true, get: function() {
       return TransactionComputePhase_1.storeTransactionComputePhase;
     } });
-    var TransactionCreditPhase_1 = requireTransactionCreditPhase();
+    var TransactionCreditPhase_1 = requireTransactionCreditPhase$1();
     Object.defineProperty(exports, "loadTransactionCreditPhase", { enumerable: true, get: function() {
       return TransactionCreditPhase_1.loadTransactionCreditPhase;
     } });
     Object.defineProperty(exports, "storeTransactionCreditPhase", { enumerable: true, get: function() {
       return TransactionCreditPhase_1.storeTransactionCreditPhase;
     } });
-    var TransactionDescription_1 = requireTransactionDescription();
+    var TransactionDescription_1 = requireTransactionDescription$1();
     Object.defineProperty(exports, "loadTransactionDescription", { enumerable: true, get: function() {
       return TransactionDescription_1.loadTransactionDescription;
     } });
     Object.defineProperty(exports, "storeTransactionDescription", { enumerable: true, get: function() {
       return TransactionDescription_1.storeTransactionDescription;
     } });
-    var TransactionStoragePhase_1 = requireTransactionStoragePhase();
+    var TransactionStoragePhase_1 = requireTransactionStoragePhase$1();
     Object.defineProperty(exports, "loadTransactionStoragePhase", { enumerable: true, get: function() {
       return TransactionStoragePhase_1.loadTransactionStoragePhase;
     } });
     Object.defineProperty(exports, "storeTransactionsStoragePhase", { enumerable: true, get: function() {
       return TransactionStoragePhase_1.storeTransactionsStoragePhase;
     } });
-  })(_export);
-  return _export;
+  })(_export$1);
+  return _export$1;
 }
-var openContract = {};
-var hasRequiredOpenContract;
-function requireOpenContract() {
-  if (hasRequiredOpenContract) return openContract;
-  hasRequiredOpenContract = 1;
-  Object.defineProperty(openContract, "__esModule", { value: true });
-  openContract.openContract = void 0;
-  const Address_1 = requireAddress();
-  const Cell_1 = requireCell();
-  function openContract$1(src2, factory) {
+var openContract$1 = {};
+var hasRequiredOpenContract$1;
+function requireOpenContract$1() {
+  if (hasRequiredOpenContract$1) return openContract$1;
+  hasRequiredOpenContract$1 = 1;
+  Object.defineProperty(openContract$1, "__esModule", { value: true });
+  openContract$1.openContract = void 0;
+  const Address_1 = requireAddress$1();
+  const Cell_1 = requireCell$1();
+  function openContract2(src2, factory) {
     let address;
     let init = null;
     if (!Address_1.Address.isAddress(src2.address)) {
@@ -26654,17 +26645,17 @@ function requireOpenContract() {
       }
     });
   }
-  openContract.openContract = openContract$1;
-  return openContract;
+  openContract$1.openContract = openContract2;
+  return openContract$1;
 }
-var ComputeError = {};
-var hasRequiredComputeError;
-function requireComputeError() {
-  if (hasRequiredComputeError) return ComputeError;
-  hasRequiredComputeError = 1;
-  Object.defineProperty(ComputeError, "__esModule", { value: true });
-  ComputeError.ComputeError = void 0;
-  let ComputeError$1 = class ComputeError2 extends Error {
+var ComputeError$1 = {};
+var hasRequiredComputeError$1;
+function requireComputeError$1() {
+  if (hasRequiredComputeError$1) return ComputeError$1;
+  hasRequiredComputeError$1 = 1;
+  Object.defineProperty(ComputeError$1, "__esModule", { value: true });
+  ComputeError$1.ComputeError = void 0;
+  class ComputeError2 extends Error {
     constructor(message, exitCode, opts) {
       super(message);
       this.exitCode = exitCode;
@@ -26672,17 +26663,17 @@ function requireComputeError() {
       this.logs = opts && opts.logs ? opts.logs : null;
       Object.setPrototypeOf(this, ComputeError2.prototype);
     }
-  };
-  ComputeError.ComputeError = ComputeError$1;
-  return ComputeError;
+  }
+  ComputeError$1.ComputeError = ComputeError2;
+  return ComputeError$1;
 }
-var getMethodId = {};
-var hasRequiredGetMethodId;
-function requireGetMethodId() {
-  if (hasRequiredGetMethodId) return getMethodId;
-  hasRequiredGetMethodId = 1;
-  Object.defineProperty(getMethodId, "__esModule", { value: true });
-  getMethodId.getMethodId = void 0;
+var getMethodId$1 = {};
+var hasRequiredGetMethodId$1;
+function requireGetMethodId$1() {
+  if (hasRequiredGetMethodId$1) return getMethodId$1;
+  hasRequiredGetMethodId$1 = 1;
+  Object.defineProperty(getMethodId$1, "__esModule", { value: true });
+  getMethodId$1.getMethodId = void 0;
   const TABLE = new Int16Array([
     0,
     4129,
@@ -26952,20 +26943,20 @@ function requireGetMethodId() {
     }
     return crc;
   }
-  function getMethodId$1(name) {
+  function getMethodId2(name) {
     return crc162(name) & 65535 | 65536;
   }
-  getMethodId.getMethodId = getMethodId$1;
-  return getMethodId;
+  getMethodId$1.getMethodId = getMethodId2;
+  return getMethodId$1;
 }
-var safeSign = {};
-var hasRequiredSafeSign;
-function requireSafeSign() {
-  if (hasRequiredSafeSign) return safeSign;
-  hasRequiredSafeSign = 1;
-  Object.defineProperty(safeSign, "__esModule", { value: true });
-  safeSign.safeSignVerify = safeSign.safeSign = void 0;
-  const crypto_1 = requireDist$5();
+var safeSign$1 = {};
+var hasRequiredSafeSign$1;
+function requireSafeSign$1() {
+  if (hasRequiredSafeSign$1) return safeSign$1;
+  hasRequiredSafeSign$1 = 1;
+  Object.defineProperty(safeSign$1, "__esModule", { value: true });
+  safeSign$1.safeSignVerify = safeSign$1.safeSign = void 0;
+  const crypto_1 = requireDist$6();
   const MIN_SEED_LENGTH = 8;
   const MAX_SEED_LENGTH = 64;
   function createSafeSignHash(cell, seed) {
@@ -26978,22 +26969,22 @@ function requireSafeSign() {
     }
     return (0, crypto_1.sha256_sync)(Buffer.concat([Buffer.from([255, 255]), seedData, cell.hash()]));
   }
-  function safeSign$1(cell, secretKey, seed = "ton-safe-sign-magic") {
+  function safeSign2(cell, secretKey, seed = "ton-safe-sign-magic") {
     return (0, crypto_1.sign)(createSafeSignHash(cell, seed), secretKey);
   }
-  safeSign.safeSign = safeSign$1;
+  safeSign$1.safeSign = safeSign2;
   function safeSignVerify(cell, signature, publicKey, seed = "ton-safe-sign-magic") {
     return (0, crypto_1.signVerify)(createSafeSignHash(cell, seed), signature, publicKey);
   }
-  safeSign.safeSignVerify = safeSignVerify;
-  return safeSign;
+  safeSign$1.safeSignVerify = safeSignVerify;
+  return safeSign$1;
 }
-var hasRequiredDist$4;
-function requireDist$4() {
-  if (hasRequiredDist$4) return dist$5;
-  hasRequiredDist$4 = 1;
+var hasRequiredDist$5;
+function requireDist$5() {
+  if (hasRequiredDist$5) return dist$6;
+  hasRequiredDist$5 = 1;
   (function(exports) {
-    var __createBinding = dist$5 && dist$5.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
+    var __createBinding = dist$6 && dist$6.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
       if (k22 === void 0) k22 = k2;
       var desc = Object.getOwnPropertyDescriptor(m2, k2);
       if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
@@ -27006,152 +26997,158 @@ function requireDist$4() {
       if (k22 === void 0) k22 = k2;
       o4[k22] = m2[k2];
     }));
-    var __exportStar = dist$5 && dist$5.__exportStar || function(m2, exports2) {
+    var __exportStar = dist$6 && dist$6.__exportStar || function(m2, exports2) {
       for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
     };
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.safeSignVerify = exports.safeSign = exports.getMethodId = exports.base32Encode = exports.base32Decode = exports.crc32c = exports.crc16 = exports.fromNano = exports.toNano = exports.ComputeError = exports.openContract = exports.TupleBuilder = exports.TupleReader = exports.serializeTuple = exports.parseTuple = exports.generateMerkleUpdate = exports.generateMerkleProofDirect = exports.generateMerkleProof = exports.exoticPruned = exports.exoticMerkleUpdate = exports.convertToMerkleProof = exports.exoticMerkleProof = exports.Dictionary = exports.Cell = exports.CellType = exports.Slice = exports.beginCell = exports.Builder = exports.BitBuilder = exports.BitReader = exports.BitString = exports.contractAddress = exports.ADNLAddress = exports.ExternalAddress = exports.address = exports.Address = void 0;
-    var Address_1 = requireAddress();
+    exports.safeSignVerify = exports.safeSign = exports.getMethodId = exports.base32Encode = exports.base32Decode = exports.crc32c = exports.crc16 = exports.fromNano = exports.toNano = exports.ComputeError = exports.openContract = exports.TupleBuilder = exports.TupleReader = exports.serializeTupleItem = exports.parseTupleItem = exports.serializeTuple = exports.parseTuple = exports.generateMerkleUpdate = exports.generateMerkleProofDirect = exports.generateMerkleProof = exports.exoticPruned = exports.exoticMerkleUpdate = exports.convertToMerkleProof = exports.exoticMerkleProof = exports.Dictionary = exports.Cell = exports.CellType = exports.Slice = exports.beginCell = exports.Builder = exports.BitBuilder = exports.BitReader = exports.BitString = exports.contractAddress = exports.ADNLAddress = exports.ExternalAddress = exports.address = exports.Address = void 0;
+    var Address_1 = requireAddress$1();
     Object.defineProperty(exports, "Address", { enumerable: true, get: function() {
       return Address_1.Address;
     } });
     Object.defineProperty(exports, "address", { enumerable: true, get: function() {
       return Address_1.address;
     } });
-    var ExternalAddress_1 = requireExternalAddress();
+    var ExternalAddress_1 = requireExternalAddress$1();
     Object.defineProperty(exports, "ExternalAddress", { enumerable: true, get: function() {
       return ExternalAddress_1.ExternalAddress;
     } });
-    var ADNLAddress_1 = requireADNLAddress();
+    var ADNLAddress_1 = requireADNLAddress$1();
     Object.defineProperty(exports, "ADNLAddress", { enumerable: true, get: function() {
       return ADNLAddress_1.ADNLAddress;
     } });
-    var contractAddress_1 = requireContractAddress();
+    var contractAddress_1 = requireContractAddress$1();
     Object.defineProperty(exports, "contractAddress", { enumerable: true, get: function() {
       return contractAddress_1.contractAddress;
     } });
-    var BitString_1 = requireBitString();
+    var BitString_1 = requireBitString$1();
     Object.defineProperty(exports, "BitString", { enumerable: true, get: function() {
       return BitString_1.BitString;
     } });
-    var BitReader_1 = requireBitReader();
+    var BitReader_1 = requireBitReader$1();
     Object.defineProperty(exports, "BitReader", { enumerable: true, get: function() {
       return BitReader_1.BitReader;
     } });
-    var BitBuilder_1 = requireBitBuilder();
+    var BitBuilder_1 = requireBitBuilder$1();
     Object.defineProperty(exports, "BitBuilder", { enumerable: true, get: function() {
       return BitBuilder_1.BitBuilder;
     } });
-    var Builder_12 = requireBuilder$1();
+    var Builder_12 = requireBuilder$3();
     Object.defineProperty(exports, "Builder", { enumerable: true, get: function() {
       return Builder_12.Builder;
     } });
     Object.defineProperty(exports, "beginCell", { enumerable: true, get: function() {
       return Builder_12.beginCell;
     } });
-    var Slice_1 = requireSlice();
+    var Slice_1 = requireSlice$1();
     Object.defineProperty(exports, "Slice", { enumerable: true, get: function() {
       return Slice_1.Slice;
     } });
-    var CellType_1 = requireCellType();
+    var CellType_1 = requireCellType$1();
     Object.defineProperty(exports, "CellType", { enumerable: true, get: function() {
       return CellType_1.CellType;
     } });
-    var Cell_1 = requireCell();
+    var Cell_1 = requireCell$1();
     Object.defineProperty(exports, "Cell", { enumerable: true, get: function() {
       return Cell_1.Cell;
     } });
-    var Dictionary_1 = requireDictionary();
+    var Dictionary_1 = requireDictionary$1();
     Object.defineProperty(exports, "Dictionary", { enumerable: true, get: function() {
       return Dictionary_1.Dictionary;
     } });
-    var exoticMerkleProof_1 = requireExoticMerkleProof();
+    var exoticMerkleProof_1 = requireExoticMerkleProof$1();
     Object.defineProperty(exports, "exoticMerkleProof", { enumerable: true, get: function() {
       return exoticMerkleProof_1.exoticMerkleProof;
     } });
     Object.defineProperty(exports, "convertToMerkleProof", { enumerable: true, get: function() {
       return exoticMerkleProof_1.convertToMerkleProof;
     } });
-    var exoticMerkleUpdate_1 = requireExoticMerkleUpdate();
+    var exoticMerkleUpdate_1 = requireExoticMerkleUpdate$1();
     Object.defineProperty(exports, "exoticMerkleUpdate", { enumerable: true, get: function() {
       return exoticMerkleUpdate_1.exoticMerkleUpdate;
     } });
-    var exoticPruned_1 = requireExoticPruned();
+    var exoticPruned_1 = requireExoticPruned$1();
     Object.defineProperty(exports, "exoticPruned", { enumerable: true, get: function() {
       return exoticPruned_1.exoticPruned;
     } });
-    var generateMerkleProof_1 = requireGenerateMerkleProof();
+    var generateMerkleProof_1 = requireGenerateMerkleProof$1();
     Object.defineProperty(exports, "generateMerkleProof", { enumerable: true, get: function() {
       return generateMerkleProof_1.generateMerkleProof;
     } });
     Object.defineProperty(exports, "generateMerkleProofDirect", { enumerable: true, get: function() {
       return generateMerkleProof_1.generateMerkleProofDirect;
     } });
-    var generateMerkleUpdate_1 = requireGenerateMerkleUpdate();
+    var generateMerkleUpdate_1 = requireGenerateMerkleUpdate$1();
     Object.defineProperty(exports, "generateMerkleUpdate", { enumerable: true, get: function() {
       return generateMerkleUpdate_1.generateMerkleUpdate;
     } });
-    var tuple_1 = requireTuple();
+    var tuple_1 = requireTuple$1();
     Object.defineProperty(exports, "parseTuple", { enumerable: true, get: function() {
       return tuple_1.parseTuple;
     } });
     Object.defineProperty(exports, "serializeTuple", { enumerable: true, get: function() {
       return tuple_1.serializeTuple;
     } });
-    var reader_1 = requireReader();
+    Object.defineProperty(exports, "parseTupleItem", { enumerable: true, get: function() {
+      return tuple_1.parseTupleItem;
+    } });
+    Object.defineProperty(exports, "serializeTupleItem", { enumerable: true, get: function() {
+      return tuple_1.serializeTupleItem;
+    } });
+    var reader_1 = requireReader$1();
     Object.defineProperty(exports, "TupleReader", { enumerable: true, get: function() {
       return reader_1.TupleReader;
     } });
-    var builder_1 = requireBuilder();
+    var builder_1 = requireBuilder$2();
     Object.defineProperty(exports, "TupleBuilder", { enumerable: true, get: function() {
       return builder_1.TupleBuilder;
     } });
-    __exportStar(require_export(), exports);
-    var openContract_1 = requireOpenContract();
+    __exportStar(require_export$1(), exports);
+    var openContract_1 = requireOpenContract$1();
     Object.defineProperty(exports, "openContract", { enumerable: true, get: function() {
       return openContract_1.openContract;
     } });
-    var ComputeError_1 = requireComputeError();
+    var ComputeError_1 = requireComputeError$1();
     Object.defineProperty(exports, "ComputeError", { enumerable: true, get: function() {
       return ComputeError_1.ComputeError;
     } });
-    var convert_1 = requireConvert();
+    var convert_1 = requireConvert$1();
     Object.defineProperty(exports, "toNano", { enumerable: true, get: function() {
       return convert_1.toNano;
     } });
     Object.defineProperty(exports, "fromNano", { enumerable: true, get: function() {
       return convert_1.fromNano;
     } });
-    var crc16_1 = requireCrc16();
+    var crc16_1 = requireCrc16$1();
     Object.defineProperty(exports, "crc16", { enumerable: true, get: function() {
       return crc16_1.crc16;
     } });
-    var crc32c_1 = requireCrc32c();
+    var crc32c_1 = requireCrc32c$1();
     Object.defineProperty(exports, "crc32c", { enumerable: true, get: function() {
       return crc32c_1.crc32c;
     } });
-    var base32_1 = requireBase32();
+    var base32_1 = requireBase32$1();
     Object.defineProperty(exports, "base32Decode", { enumerable: true, get: function() {
       return base32_1.base32Decode;
     } });
     Object.defineProperty(exports, "base32Encode", { enumerable: true, get: function() {
       return base32_1.base32Encode;
     } });
-    var getMethodId_1 = requireGetMethodId();
+    var getMethodId_1 = requireGetMethodId$1();
     Object.defineProperty(exports, "getMethodId", { enumerable: true, get: function() {
       return getMethodId_1.getMethodId;
     } });
-    var safeSign_1 = requireSafeSign();
+    var safeSign_1 = requireSafeSign$1();
     Object.defineProperty(exports, "safeSign", { enumerable: true, get: function() {
       return safeSign_1.safeSign;
     } });
     Object.defineProperty(exports, "safeSignVerify", { enumerable: true, get: function() {
       return safeSign_1.safeSignVerify;
     } });
-  })(dist$5);
-  return dist$5;
+  })(dist$6);
+  return dist$6;
 }
-var distExports$3 = requireDist$4();
+var distExports$3 = requireDist$5();
 const DEFAULT_DURABLE_EVENTS_CONFIG = {
   recoveryIntervalMs: 10 * 1e3,
   // 10 seconds
@@ -27767,7 +27764,7 @@ class WalletManager {
           return wallet;
         }
       } catch (error2) {
-        log$i.warn("Failed to get address for wallet", { publicKey: wallet.publicKey, error: error2 });
+        log$i.warn("Failed to get address for wallet", { publicKey: wallet.getPublicKey(), error: error2 });
       }
     }
     return null;
@@ -30006,9 +30003,6 @@ class BridgeManager {
           this.eventEmitter.emit("bridge-storage-updated");
         }
         log$g.info("Event stored durably", { eventId: rawEvent.id, method: rawEvent.method });
-        if (rawEvent.method == "connect") {
-          await this.eventRouter.routeEvent(rawEvent);
-        }
       } catch (error2) {
         log$g.error("Failed to store event durably", {
           eventId: rawEvent.id,
@@ -35713,8 +35707,7518 @@ class TransactionHandler extends BasicHandler {
     return { result: validUntil, isValid: errors2.length === 0, errors: errors2 };
   }
 }
-var dist$3 = {};
+var dist$4 = {};
 var parser = {};
+var dist$3 = {};
+var Address = {};
+var crc16 = {};
+var hasRequiredCrc16;
+function requireCrc16() {
+  if (hasRequiredCrc16) return crc16;
+  hasRequiredCrc16 = 1;
+  Object.defineProperty(crc16, "__esModule", { value: true });
+  crc16.crc16 = void 0;
+  function crc16$12(data) {
+    const poly = 4129;
+    let reg = 0;
+    const message = Buffer.alloc(data.length + 2);
+    message.set(data);
+    for (let byte of message) {
+      let mask = 128;
+      while (mask > 0) {
+        reg <<= 1;
+        if (byte & mask) {
+          reg += 1;
+        }
+        mask >>= 1;
+        if (reg > 65535) {
+          reg &= 65535;
+          reg ^= poly;
+        }
+      }
+    }
+    return Buffer.from([Math.floor(reg / 256), reg % 256]);
+  }
+  crc16.crc16 = crc16$12;
+  return crc16;
+}
+var hasRequiredAddress;
+function requireAddress() {
+  if (hasRequiredAddress) return Address;
+  hasRequiredAddress = 1;
+  var __importDefault = Address && Address.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+  };
+  var _a2;
+  Object.defineProperty(Address, "__esModule", { value: true });
+  Address.address = Address.Address = void 0;
+  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const crc16_1 = requireCrc16();
+  const bounceable_tag = 17;
+  const non_bounceable_tag = 81;
+  const test_flag = 128;
+  function parseFriendlyAddress(src2) {
+    if (typeof src2 === "string" && !Address$12.isFriendly(src2)) {
+      throw new Error("Unknown address type");
+    }
+    const data = Buffer.isBuffer(src2) ? src2 : Buffer.from(src2, "base64");
+    if (data.length !== 36) {
+      throw new Error("Unknown address type: byte length is not equal to 36");
+    }
+    const addr = data.subarray(0, 34);
+    const crc = data.subarray(34, 36);
+    const calcedCrc = (0, crc16_1.crc16)(addr);
+    if (!(calcedCrc[0] === crc[0] && calcedCrc[1] === crc[1])) {
+      throw new Error("Invalid checksum: " + src2);
+    }
+    let tag = addr[0];
+    let isTestOnly = false;
+    let isBounceable = false;
+    if (tag & test_flag) {
+      isTestOnly = true;
+      tag = tag ^ test_flag;
+    }
+    if (tag !== bounceable_tag && tag !== non_bounceable_tag)
+      throw "Unknown address tag";
+    isBounceable = tag === bounceable_tag;
+    let workchain = null;
+    if (addr[1] === 255) {
+      workchain = -1;
+    } else {
+      workchain = addr[1];
+    }
+    const hashPart = addr.subarray(2, 34);
+    return { isTestOnly, isBounceable, workchain, hashPart };
+  }
+  let Address$12 = class Address2 {
+    static isAddress(src2) {
+      return src2 instanceof Address2;
+    }
+    static isFriendly(source) {
+      if (source.length !== 48) {
+        return false;
+      }
+      if (!/^[A-Za-z0-9+/_-]+$/.test(source)) {
+        return false;
+      }
+      return true;
+    }
+    static isRaw(source) {
+      if (source.indexOf(":") === -1) {
+        return false;
+      }
+      let [wc, hash] = source.split(":");
+      if (!Number.isInteger(parseFloat(wc))) {
+        return false;
+      }
+      if (!/[a-f0-9]+/.test(hash.toLowerCase())) {
+        return false;
+      }
+      if (hash.length !== 64) {
+        return false;
+      }
+      return true;
+    }
+    static normalize(source) {
+      if (typeof source === "string") {
+        return Address2.parse(source).toString();
+      } else {
+        return source.toString();
+      }
+    }
+    static parse(source) {
+      if (Address2.isFriendly(source)) {
+        return this.parseFriendly(source).address;
+      } else if (Address2.isRaw(source)) {
+        return this.parseRaw(source);
+      } else {
+        throw new Error("Unknown address type: " + source);
+      }
+    }
+    static parseRaw(source) {
+      let workChain = parseInt(source.split(":")[0]);
+      let hash = Buffer.from(source.split(":")[1], "hex");
+      return new Address2(workChain, hash);
+    }
+    static parseFriendly(source) {
+      if (Buffer.isBuffer(source)) {
+        let r = parseFriendlyAddress(source);
+        return {
+          isBounceable: r.isBounceable,
+          isTestOnly: r.isTestOnly,
+          address: new Address2(r.workchain, r.hashPart)
+        };
+      } else {
+        let addr = source.replace(/\-/g, "+").replace(/_/g, "/");
+        let r = parseFriendlyAddress(addr);
+        return {
+          isBounceable: r.isBounceable,
+          isTestOnly: r.isTestOnly,
+          address: new Address2(r.workchain, r.hashPart)
+        };
+      }
+    }
+    constructor(workChain, hash) {
+      this.toRawString = () => {
+        return this.workChain + ":" + this.hash.toString("hex");
+      };
+      this.toRaw = () => {
+        const addressWithChecksum = Buffer.alloc(36);
+        addressWithChecksum.set(this.hash);
+        addressWithChecksum.set([this.workChain, this.workChain, this.workChain, this.workChain], 32);
+        return addressWithChecksum;
+      };
+      this.toStringBuffer = (args) => {
+        let testOnly = args && args.testOnly !== void 0 ? args.testOnly : false;
+        let bounceable = args && args.bounceable !== void 0 ? args.bounceable : true;
+        let tag = bounceable ? bounceable_tag : non_bounceable_tag;
+        if (testOnly) {
+          tag |= test_flag;
+        }
+        const addr = Buffer.alloc(34);
+        addr[0] = tag;
+        addr[1] = this.workChain;
+        addr.set(this.hash, 2);
+        const addressWithChecksum = Buffer.alloc(36);
+        addressWithChecksum.set(addr);
+        addressWithChecksum.set((0, crc16_1.crc16)(addr), 34);
+        return addressWithChecksum;
+      };
+      this.toString = (args) => {
+        let urlSafe = args && args.urlSafe !== void 0 ? args.urlSafe : true;
+        let buffer2 = this.toStringBuffer(args);
+        if (urlSafe) {
+          return buffer2.toString("base64").replace(/\+/g, "-").replace(/\//g, "_");
+        } else {
+          return buffer2.toString("base64");
+        }
+      };
+      this[_a2] = () => this.toString();
+      if (hash.length !== 32) {
+        throw new Error("Invalid address hash length: " + hash.length);
+      }
+      this.workChain = workChain;
+      this.hash = hash;
+      Object.freeze(this);
+    }
+    equals(src2) {
+      if (src2.workChain !== this.workChain) {
+        return false;
+      }
+      return src2.hash.equals(this.hash);
+    }
+  };
+  Address.Address = Address$12;
+  _a2 = symbol_inspect_1.default;
+  function address(src2) {
+    return Address$12.parse(src2);
+  }
+  Address.address = address;
+  return Address;
+}
+var ExternalAddress = {};
+var hasRequiredExternalAddress;
+function requireExternalAddress() {
+  if (hasRequiredExternalAddress) return ExternalAddress;
+  hasRequiredExternalAddress = 1;
+  var __importDefault = ExternalAddress && ExternalAddress.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+  };
+  var _a2;
+  Object.defineProperty(ExternalAddress, "__esModule", { value: true });
+  ExternalAddress.ExternalAddress = void 0;
+  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  let ExternalAddress$12 = class ExternalAddress2 {
+    static isAddress(src2) {
+      return src2 instanceof ExternalAddress2;
+    }
+    constructor(value, bits) {
+      this[_a2] = () => this.toString();
+      this.value = value;
+      this.bits = bits;
+    }
+    toString() {
+      return `External<${this.bits}:${this.value}>`;
+    }
+  };
+  ExternalAddress.ExternalAddress = ExternalAddress$12;
+  _a2 = symbol_inspect_1.default;
+  return ExternalAddress;
+}
+var ADNLAddress = {};
+var base32 = {};
+var hasRequiredBase32;
+function requireBase32() {
+  if (hasRequiredBase32) return base32;
+  hasRequiredBase32 = 1;
+  Object.defineProperty(base32, "__esModule", { value: true });
+  base32.base32Decode = base32.base32Encode = void 0;
+  const alphabet = "abcdefghijklmnopqrstuvwxyz234567";
+  function base32Encode(buffer2) {
+    const length = buffer2.byteLength;
+    let bits = 0;
+    let value = 0;
+    let output = "";
+    for (let i = 0; i < length; i++) {
+      value = value << 8 | buffer2[i];
+      bits += 8;
+      while (bits >= 5) {
+        output += alphabet[value >>> bits - 5 & 31];
+        bits -= 5;
+      }
+    }
+    if (bits > 0) {
+      output += alphabet[value << 5 - bits & 31];
+    }
+    return output;
+  }
+  base32.base32Encode = base32Encode;
+  function readChar(alphabet2, char) {
+    const idx = alphabet2.indexOf(char);
+    if (idx === -1) {
+      throw new Error("Invalid character found: " + char);
+    }
+    return idx;
+  }
+  function base32Decode(input) {
+    let cleanedInput;
+    cleanedInput = input.toLowerCase();
+    const { length } = cleanedInput;
+    let bits = 0;
+    let value = 0;
+    let index = 0;
+    const output = Buffer.alloc(length * 5 / 8 | 0);
+    for (let i = 0; i < length; i++) {
+      value = value << 5 | readChar(alphabet, cleanedInput[i]);
+      bits += 5;
+      if (bits >= 8) {
+        output[index++] = value >>> bits - 8 & 255;
+        bits -= 8;
+      }
+    }
+    return output;
+  }
+  base32.base32Decode = base32Decode;
+  return base32;
+}
+var hasRequiredADNLAddress;
+function requireADNLAddress() {
+  if (hasRequiredADNLAddress) return ADNLAddress;
+  hasRequiredADNLAddress = 1;
+  var __importDefault = ADNLAddress && ADNLAddress.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+  };
+  var _a2;
+  Object.defineProperty(ADNLAddress, "__esModule", { value: true });
+  ADNLAddress.ADNLAddress = void 0;
+  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const base32_1 = requireBase32();
+  const crc16_1 = requireCrc16();
+  let ADNLAddress$12 = class ADNLAddress2 {
+    static parseFriendly(src2) {
+      if (src2.length !== 55) {
+        throw Error("Invalid address");
+      }
+      src2 = "f" + src2;
+      let decoded = (0, base32_1.base32Decode)(src2);
+      if (decoded[0] !== 45) {
+        throw Error("Invalid address");
+      }
+      let gotHash = decoded.slice(33);
+      let hash = (0, crc16_1.crc16)(decoded.slice(0, 33));
+      if (!hash.equals(gotHash)) {
+        throw Error("Invalid address");
+      }
+      return new ADNLAddress2(decoded.slice(1, 33));
+    }
+    static parseRaw(src2) {
+      const data = Buffer.from(src2, "base64");
+      return new ADNLAddress2(data);
+    }
+    constructor(address) {
+      this.toRaw = () => {
+        return this.address.toString("hex").toUpperCase();
+      };
+      this.toString = () => {
+        let data = Buffer.concat([Buffer.from([45]), this.address]);
+        let hash = (0, crc16_1.crc16)(data);
+        data = Buffer.concat([data, hash]);
+        return (0, base32_1.base32Encode)(data).slice(1);
+      };
+      this[_a2] = () => this.toString();
+      if (address.length !== 32) {
+        throw Error("Invalid address");
+      }
+      this.address = address;
+    }
+    equals(b2) {
+      return this.address.equals(b2.address);
+    }
+  };
+  ADNLAddress.ADNLAddress = ADNLAddress$12;
+  _a2 = symbol_inspect_1.default;
+  return ADNLAddress;
+}
+var contractAddress = {};
+var Builder$3 = {};
+var BitBuilder = {};
+var BitString = {};
+var paddedBits = {};
+var hasRequiredPaddedBits;
+function requirePaddedBits() {
+  if (hasRequiredPaddedBits) return paddedBits;
+  hasRequiredPaddedBits = 1;
+  Object.defineProperty(paddedBits, "__esModule", { value: true });
+  paddedBits.paddedBufferToBits = paddedBits.bitsToPaddedBuffer = void 0;
+  const BitBuilder_1 = requireBitBuilder();
+  const BitString_1 = requireBitString();
+  function bitsToPaddedBuffer(bits) {
+    let builder2 = new BitBuilder_1.BitBuilder(Math.ceil(bits.length / 8) * 8);
+    builder2.writeBits(bits);
+    let padding = Math.ceil(bits.length / 8) * 8 - bits.length;
+    for (let i = 0; i < padding; i++) {
+      if (i === 0) {
+        builder2.writeBit(1);
+      } else {
+        builder2.writeBit(0);
+      }
+    }
+    return builder2.buffer();
+  }
+  paddedBits.bitsToPaddedBuffer = bitsToPaddedBuffer;
+  function paddedBufferToBits(buff) {
+    let bitLen = 0;
+    for (let i = buff.length - 1; i >= 0; i--) {
+      if (buff[i] !== 0) {
+        const testByte = buff[i];
+        let bitPos = testByte & -testByte;
+        if ((bitPos & 1) == 0) {
+          bitPos = Math.log2(bitPos) + 1;
+        }
+        if (i > 0) {
+          bitLen = i << 3;
+        }
+        bitLen += 8 - bitPos;
+        break;
+      }
+    }
+    return new BitString_1.BitString(buff, 0, bitLen);
+  }
+  paddedBits.paddedBufferToBits = paddedBufferToBits;
+  return paddedBits;
+}
+var hasRequiredBitString;
+function requireBitString() {
+  if (hasRequiredBitString) return BitString;
+  hasRequiredBitString = 1;
+  var __importDefault = BitString && BitString.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+  };
+  var _a2;
+  Object.defineProperty(BitString, "__esModule", { value: true });
+  BitString.BitString = void 0;
+  const paddedBits_1 = requirePaddedBits();
+  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  let BitString$12 = class BitString2 {
+    /**
+     * Checks if supplied object is BitString
+     * @param src is unknow object
+     * @returns true if object is BitString and false otherwise
+     **/
+    static isBitString(src2) {
+      return src2 instanceof BitString2;
+    }
+    /**
+     * Constructing BitString from a buffer
+     * @param data data that contains the bitstring data. NOTE: We are expecting this buffer to be NOT modified
+     * @param offset offset in bits from the start of the buffer
+     * @param length length of the bitstring in bits
+     */
+    constructor(data, offset, length) {
+      this[_a2] = () => this.toString();
+      if (length < 0) {
+        throw new Error(`Length ${length} is out of bounds`);
+      }
+      this._length = length;
+      this._data = data;
+      this._offset = offset;
+    }
+    /**
+     * Returns the length of the bitstring
+     */
+    get length() {
+      return this._length;
+    }
+    /**
+     * Returns the bit at the specified index
+     * @param index index of the bit
+     * @throws Error if index is out of bounds
+     * @returns true if the bit is set, false otherwise
+     */
+    at(index) {
+      if (index >= this._length) {
+        throw new Error(`Index ${index} > ${this._length} is out of bounds`);
+      }
+      if (index < 0) {
+        throw new Error(`Index ${index} < 0 is out of bounds`);
+      }
+      let byteIndex = this._offset + index >> 3;
+      let bitIndex = 7 - (this._offset + index) % 8;
+      return (this._data[byteIndex] & 1 << bitIndex) !== 0;
+    }
+    /**
+     * Get a subscring of the bitstring
+     * @param offset
+     * @param length
+     * @returns
+     */
+    substring(offset, length) {
+      if (offset > this._length) {
+        throw new Error(`Offset(${offset}) > ${this._length} is out of bounds`);
+      }
+      if (offset < 0) {
+        throw new Error(`Offset(${offset}) < 0 is out of bounds`);
+      }
+      if (length === 0) {
+        return BitString2.EMPTY;
+      }
+      if (offset + length > this._length) {
+        throw new Error(`Offset ${offset} + Length ${length} > ${this._length} is out of bounds`);
+      }
+      return new BitString2(this._data, this._offset + offset, length);
+    }
+    /**
+     * Try to get a buffer from the bitstring without allocations
+     * @param offset offset in bits
+     * @param length length in bits
+     * @returns buffer if the bitstring is aligned to bytes, null otherwise
+     */
+    subbuffer(offset, length) {
+      if (offset > this._length) {
+        throw new Error(`Offset ${offset} is out of bounds`);
+      }
+      if (offset < 0) {
+        throw new Error(`Offset ${offset} is out of bounds`);
+      }
+      if (offset + length > this._length) {
+        throw new Error(`Offset + Lenght = ${offset + length} is out of bounds`);
+      }
+      if (length % 8 !== 0) {
+        return null;
+      }
+      if ((this._offset + offset) % 8 !== 0) {
+        return null;
+      }
+      let start = this._offset + offset >> 3;
+      let end2 = start + (length >> 3);
+      return this._data.subarray(start, end2);
+    }
+    /**
+     * Checks for equality
+     * @param b other bitstring
+     * @returns true if the bitstrings are equal, false otherwise
+     */
+    equals(b2) {
+      if (this._length !== b2._length) {
+        return false;
+      }
+      for (let i = 0; i < this._length; i++) {
+        if (this.at(i) !== b2.at(i)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    /**
+     * Format to canonical string
+     * @returns formatted bits as a string
+     */
+    toString() {
+      const padded = (0, paddedBits_1.bitsToPaddedBuffer)(this);
+      if (this._length % 4 === 0) {
+        const s2 = padded.subarray(0, Math.ceil(this._length / 8)).toString("hex").toUpperCase();
+        if (this._length % 8 === 0) {
+          return s2;
+        } else {
+          return s2.substring(0, s2.length - 1);
+        }
+      } else {
+        const hex = padded.toString("hex").toUpperCase();
+        if (this._length % 8 <= 4) {
+          return hex.substring(0, hex.length - 1) + "_";
+        } else {
+          return hex + "_";
+        }
+      }
+    }
+  };
+  BitString.BitString = BitString$12;
+  _a2 = symbol_inspect_1.default;
+  BitString$12.EMPTY = new BitString$12(Buffer.alloc(0), 0, 0);
+  return BitString;
+}
+var hasRequiredBitBuilder;
+function requireBitBuilder() {
+  if (hasRequiredBitBuilder) return BitBuilder;
+  hasRequiredBitBuilder = 1;
+  Object.defineProperty(BitBuilder, "__esModule", { value: true });
+  BitBuilder.BitBuilder = void 0;
+  const Address_1 = requireAddress();
+  const ExternalAddress_1 = requireExternalAddress();
+  const BitString_1 = requireBitString();
+  let BitBuilder$12 = class BitBuilder {
+    constructor(size = 1023) {
+      this._buffer = Buffer.alloc(Math.ceil(size / 8));
+      this._length = 0;
+    }
+    /**
+     * Current number of bits written
+     */
+    get length() {
+      return this._length;
+    }
+    /**
+     * Write a single bit
+     * @param value bit to write, true or positive number for 1, false or zero or negative for 0
+     */
+    writeBit(value) {
+      let n = this._length;
+      if (n > this._buffer.length * 8) {
+        throw new Error("BitBuilder overflow");
+      }
+      if (typeof value === "boolean" && value === true || typeof value === "number" && value > 0) {
+        this._buffer[n / 8 | 0] |= 1 << 7 - n % 8;
+      }
+      this._length++;
+    }
+    /**
+     * Copy bits from BitString
+     * @param src source bits
+     */
+    writeBits(src2) {
+      for (let i = 0; i < src2.length; i++) {
+        this.writeBit(src2.at(i));
+      }
+    }
+    /**
+     * Write bits from buffer
+     * @param src source buffer
+     */
+    writeBuffer(src2) {
+      if (this._length % 8 === 0) {
+        if (this._length + src2.length * 8 > this._buffer.length * 8) {
+          throw new Error("BitBuilder overflow");
+        }
+        src2.copy(this._buffer, this._length / 8);
+        this._length += src2.length * 8;
+      } else {
+        for (let i = 0; i < src2.length; i++) {
+          this.writeUint(src2[i], 8);
+        }
+      }
+    }
+    /**
+     * Write uint value
+     * @param value value as bigint or number
+     * @param bits number of bits to write
+     */
+    writeUint(value, bits) {
+      if (bits < 0 || !Number.isSafeInteger(bits)) {
+        throw Error(`invalid bit length. Got ${bits}`);
+      }
+      const v2 = BigInt(value);
+      if (bits === 0) {
+        if (v2 !== 0n) {
+          throw Error(`value is not zero for ${bits} bits. Got ${value}`);
+        } else {
+          return;
+        }
+      }
+      const vBits = 1n << BigInt(bits);
+      if (v2 < 0 || v2 >= vBits) {
+        throw Error(`bitLength is too small for a value ${value}. Got ${bits}`);
+      }
+      if (this._length + bits > this._buffer.length * 8) {
+        throw new Error("BitBuilder overflow");
+      }
+      const tillByte = 8 - this._length % 8;
+      if (tillByte > 0) {
+        const bidx = Math.floor(this._length / 8);
+        if (bits < tillByte) {
+          const wb = Number(v2);
+          this._buffer[bidx] |= wb << tillByte - bits;
+          this._length += bits;
+        } else {
+          const wb = Number(v2 >> BigInt(bits - tillByte));
+          this._buffer[bidx] |= wb;
+          this._length += tillByte;
+        }
+      }
+      bits -= tillByte;
+      while (bits > 0) {
+        if (bits >= 8) {
+          this._buffer[this._length / 8] = Number(v2 >> BigInt(bits - 8) & 0xffn);
+          this._length += 8;
+          bits -= 8;
+        } else {
+          this._buffer[this._length / 8] = Number(v2 << BigInt(8 - bits) & 0xffn);
+          this._length += bits;
+          bits = 0;
+        }
+      }
+    }
+    /**
+     * Write int value
+     * @param value value as bigint or number
+     * @param bits number of bits to write
+     */
+    writeInt(value, bits) {
+      let v2 = BigInt(value);
+      if (bits < 0 || !Number.isSafeInteger(bits)) {
+        throw Error(`invalid bit length. Got ${bits}`);
+      }
+      if (bits === 0) {
+        if (v2 !== 0n) {
+          throw Error(`value is not zero for ${bits} bits. Got ${value}`);
+        } else {
+          return;
+        }
+      }
+      if (bits === 1) {
+        if (v2 !== -1n && v2 !== 0n) {
+          throw Error(`value is not zero or -1 for ${bits} bits. Got ${value}`);
+        } else {
+          this.writeBit(value === -1n);
+          return;
+        }
+      }
+      let vBits = 1n << BigInt(bits) - 1n;
+      if (v2 < -vBits || v2 >= vBits) {
+        throw Error(`value is out of range for ${bits} bits. Got ${value}`);
+      }
+      if (v2 < 0) {
+        this.writeBit(true);
+        v2 = vBits + v2;
+      } else {
+        this.writeBit(false);
+      }
+      this.writeUint(v2, bits - 1);
+    }
+    /**
+     * Wrtie var uint value, used for serializing coins
+     * @param value value to write as bigint or number
+     * @param bits header bits to write size
+     */
+    writeVarUint(value, bits) {
+      let v2 = BigInt(value);
+      if (bits < 0 || !Number.isSafeInteger(bits)) {
+        throw Error(`invalid bit length. Got ${bits}`);
+      }
+      if (v2 < 0) {
+        throw Error(`value is negative. Got ${value}`);
+      }
+      if (v2 === 0n) {
+        this.writeUint(0, bits);
+        return;
+      }
+      const sizeBytes = Math.ceil(v2.toString(2).length / 8);
+      const sizeBits = sizeBytes * 8;
+      this.writeUint(sizeBytes, bits);
+      this.writeUint(v2, sizeBits);
+    }
+    /**
+     * Wrtie var int value, used for serializing coins
+     * @param value value to write as bigint or number
+     * @param bits header bits to write size
+     */
+    writeVarInt(value, bits) {
+      let v2 = BigInt(value);
+      if (bits < 0 || !Number.isSafeInteger(bits)) {
+        throw Error(`invalid bit length. Got ${bits}`);
+      }
+      if (v2 === 0n) {
+        this.writeUint(0, bits);
+        return;
+      }
+      let v22 = v2 > 0 ? v2 : -v2;
+      const sizeBytes = Math.ceil((v22.toString(2).length + 1) / 8);
+      const sizeBits = sizeBytes * 8;
+      this.writeUint(sizeBytes, bits);
+      this.writeInt(v2, sizeBits);
+    }
+    /**
+     * Write coins in var uint format
+     * @param amount amount to write
+     */
+    writeCoins(amount) {
+      this.writeVarUint(amount, 4);
+    }
+    /**
+     * Write address
+     * @param address write address or address external
+     */
+    writeAddress(address) {
+      if (address === null || address === void 0) {
+        this.writeUint(0, 2);
+        return;
+      }
+      if (Address_1.Address.isAddress(address)) {
+        this.writeUint(2, 2);
+        this.writeUint(0, 1);
+        this.writeInt(address.workChain, 8);
+        this.writeBuffer(address.hash);
+        return;
+      }
+      if (ExternalAddress_1.ExternalAddress.isAddress(address)) {
+        this.writeUint(1, 2);
+        this.writeUint(address.bits, 9);
+        this.writeUint(address.value, address.bits);
+        return;
+      }
+      throw Error(`Invalid address. Got ${address}`);
+    }
+    /**
+     * Build BitString
+     * @returns result bit string
+     */
+    build() {
+      return new BitString_1.BitString(this._buffer, 0, this._length);
+    }
+    /**
+     * Build into Buffer
+     * @returns result buffer
+     */
+    buffer() {
+      if (this._length % 8 !== 0) {
+        throw new Error("BitBuilder buffer is not byte aligned");
+      }
+      return this._buffer.subarray(0, this._length / 8);
+    }
+  };
+  BitBuilder.BitBuilder = BitBuilder$12;
+  return BitBuilder;
+}
+var Cell = {};
+var CellType = {};
+var hasRequiredCellType;
+function requireCellType() {
+  if (hasRequiredCellType) return CellType;
+  hasRequiredCellType = 1;
+  Object.defineProperty(CellType, "__esModule", { value: true });
+  CellType.CellType = void 0;
+  var CellType$12;
+  (function(CellType2) {
+    CellType2[CellType2["Ordinary"] = -1] = "Ordinary";
+    CellType2[CellType2["PrunedBranch"] = 1] = "PrunedBranch";
+    CellType2[CellType2["Library"] = 2] = "Library";
+    CellType2[CellType2["MerkleProof"] = 3] = "MerkleProof";
+    CellType2[CellType2["MerkleUpdate"] = 4] = "MerkleUpdate";
+  })(CellType$12 || (CellType.CellType = CellType$12 = {}));
+  return CellType;
+}
+var Slice = {};
+var Dictionary = {};
+var generateMerkleProof = {};
+var readUnaryLength = {};
+var hasRequiredReadUnaryLength;
+function requireReadUnaryLength() {
+  if (hasRequiredReadUnaryLength) return readUnaryLength;
+  hasRequiredReadUnaryLength = 1;
+  Object.defineProperty(readUnaryLength, "__esModule", { value: true });
+  readUnaryLength.readUnaryLength = void 0;
+  function readUnaryLength$12(slice) {
+    let res = 0;
+    while (slice.loadBit()) {
+      res++;
+    }
+    return res;
+  }
+  readUnaryLength.readUnaryLength = readUnaryLength$12;
+  return readUnaryLength;
+}
+var exoticMerkleProof = {};
+var BitReader = {};
+var hasRequiredBitReader;
+function requireBitReader() {
+  if (hasRequiredBitReader) return BitReader;
+  hasRequiredBitReader = 1;
+  Object.defineProperty(BitReader, "__esModule", { value: true });
+  BitReader.BitReader = void 0;
+  const Address_1 = requireAddress();
+  const ExternalAddress_1 = requireExternalAddress();
+  let BitReader$12 = class BitReader2 {
+    constructor(bits, offset = 0) {
+      this._checkpoints = [];
+      this._bits = bits;
+      this._offset = offset;
+    }
+    /**
+     * Offset in source bit string
+     */
+    get offset() {
+      return this._offset;
+    }
+    /**
+     * Number of bits remaining
+     */
+    get remaining() {
+      return this._bits.length - this._offset;
+    }
+    /**
+     * Skip bits
+     * @param bits number of bits to skip
+     */
+    skip(bits) {
+      if (bits < 0 || this._offset + bits > this._bits.length) {
+        throw new Error(`Index ${this._offset + bits} is out of bounds`);
+      }
+      this._offset += bits;
+    }
+    /**
+     * Reset to the beginning or latest checkpoint
+     */
+    reset() {
+      if (this._checkpoints.length > 0) {
+        this._offset = this._checkpoints.pop();
+      } else {
+        this._offset = 0;
+      }
+    }
+    /**
+     * Save checkpoint
+     */
+    save() {
+      this._checkpoints.push(this._offset);
+    }
+    /**
+     * Load a single bit
+     * @returns true if the bit is set, false otherwise
+     */
+    loadBit() {
+      let r = this._bits.at(this._offset);
+      this._offset++;
+      return r;
+    }
+    /**
+     * Preload bit
+     * @returns true if the bit is set, false otherwise
+     */
+    preloadBit() {
+      return this._bits.at(this._offset);
+    }
+    /**
+     * Load bit string
+     * @param bits number of bits to read
+     * @returns new bitstring
+     */
+    loadBits(bits) {
+      let r = this._bits.substring(this._offset, bits);
+      this._offset += bits;
+      return r;
+    }
+    /**
+     * Preload bit string
+     * @param bits number of bits to read
+     * @returns new bitstring
+     */
+    preloadBits(bits) {
+      return this._bits.substring(this._offset, bits);
+    }
+    /**
+     * Load buffer
+     * @param bytes number of bytes
+     * @returns new buffer
+     */
+    loadBuffer(bytes) {
+      let buf2 = this._preloadBuffer(bytes, this._offset);
+      this._offset += bytes * 8;
+      return buf2;
+    }
+    /**
+     * Preload buffer
+     * @param bytes number of bytes
+     * @returns new buffer
+     */
+    preloadBuffer(bytes) {
+      return this._preloadBuffer(bytes, this._offset);
+    }
+    /**
+     * Load uint value
+     * @param bits uint bits
+     * @returns read value as number
+     */
+    loadUint(bits) {
+      return this._toSafeInteger(this.loadUintBig(bits), "loadUintBig");
+    }
+    /**
+     * Load uint value as bigint
+     * @param bits uint bits
+     * @returns read value as bigint
+     */
+    loadUintBig(bits) {
+      let loaded = this.preloadUintBig(bits);
+      this._offset += bits;
+      return loaded;
+    }
+    /**
+     * Preload uint value
+     * @param bits uint bits
+     * @returns read value as number
+     */
+    preloadUint(bits) {
+      return this._toSafeInteger(this._preloadUint(bits, this._offset), "preloadUintBig");
+    }
+    /**
+     * Preload uint value as bigint
+     * @param bits uint bits
+     * @returns read value as bigint
+     */
+    preloadUintBig(bits) {
+      return this._preloadUint(bits, this._offset);
+    }
+    /**
+     * Load int value
+     * @param bits int bits
+     * @returns read value as bigint
+     */
+    loadInt(bits) {
+      let res = this._preloadInt(bits, this._offset);
+      this._offset += bits;
+      return this._toSafeInteger(res, "loadUintBig");
+    }
+    /**
+     * Load int value as bigint
+     * @param bits int bits
+     * @returns read value as bigint
+     */
+    loadIntBig(bits) {
+      let res = this._preloadInt(bits, this._offset);
+      this._offset += bits;
+      return res;
+    }
+    /**
+     * Preload int value
+     * @param bits int bits
+     * @returns read value as bigint
+     */
+    preloadInt(bits) {
+      return this._toSafeInteger(this._preloadInt(bits, this._offset), "preloadIntBig");
+    }
+    /**
+     * Preload int value
+     * @param bits int bits
+     * @returns read value as bigint
+     */
+    preloadIntBig(bits) {
+      return this._preloadInt(bits, this._offset);
+    }
+    /**
+     * Load varuint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    loadVarUint(bits) {
+      let size = Number(this.loadUint(bits));
+      return this._toSafeInteger(this.loadUintBig(size * 8), "loadVarUintBig");
+    }
+    /**
+     * Load varuint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    loadVarUintBig(bits) {
+      let size = Number(this.loadUint(bits));
+      return this.loadUintBig(size * 8);
+    }
+    /**
+     * Preload varuint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    preloadVarUint(bits) {
+      let size = Number(this._preloadUint(bits, this._offset));
+      return this._toSafeInteger(this._preloadUint(size * 8, this._offset + bits), "preloadVarUintBig");
+    }
+    /**
+     * Preload varuint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    preloadVarUintBig(bits) {
+      let size = Number(this._preloadUint(bits, this._offset));
+      return this._preloadUint(size * 8, this._offset + bits);
+    }
+    /**
+     * Load varint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    loadVarInt(bits) {
+      let size = Number(this.loadUint(bits));
+      return this._toSafeInteger(this.loadIntBig(size * 8), "loadVarIntBig");
+    }
+    /**
+     * Load varint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    loadVarIntBig(bits) {
+      let size = Number(this.loadUint(bits));
+      return this.loadIntBig(size * 8);
+    }
+    /**
+     * Preload varint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    preloadVarInt(bits) {
+      let size = Number(this._preloadUint(bits, this._offset));
+      return this._toSafeInteger(this._preloadInt(size * 8, this._offset + bits), "preloadVarIntBig");
+    }
+    /**
+     * Preload varint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    preloadVarIntBig(bits) {
+      let size = Number(this._preloadUint(bits, this._offset));
+      return this._preloadInt(size * 8, this._offset + bits);
+    }
+    /**
+     * Load coins value
+     * @returns read value as bigint
+     */
+    loadCoins() {
+      return this.loadVarUintBig(4);
+    }
+    /**
+     * Preload coins value
+     * @returns read value as bigint
+     */
+    preloadCoins() {
+      return this.preloadVarUintBig(4);
+    }
+    /**
+     * Load Address
+     * @returns Address
+     */
+    loadAddress() {
+      let type = Number(this._preloadUint(2, this._offset));
+      if (type === 2) {
+        return this._loadInternalAddress();
+      } else {
+        throw new Error("Invalid address: " + type);
+      }
+    }
+    /**
+     * Load internal address
+     * @returns Address or null
+     */
+    loadMaybeAddress() {
+      let type = Number(this._preloadUint(2, this._offset));
+      if (type === 0) {
+        this._offset += 2;
+        return null;
+      } else if (type === 2) {
+        return this._loadInternalAddress();
+      } else {
+        throw new Error("Invalid address");
+      }
+    }
+    /**
+     * Load external address
+     * @returns ExternalAddress
+     */
+    loadExternalAddress() {
+      let type = Number(this._preloadUint(2, this._offset));
+      if (type === 1) {
+        return this._loadExternalAddress();
+      } else {
+        throw new Error("Invalid address");
+      }
+    }
+    /**
+     * Load external address
+     * @returns ExternalAddress or null
+     */
+    loadMaybeExternalAddress() {
+      let type = Number(this._preloadUint(2, this._offset));
+      if (type === 0) {
+        this._offset += 2;
+        return null;
+      } else if (type === 1) {
+        return this._loadExternalAddress();
+      } else {
+        throw new Error("Invalid address");
+      }
+    }
+    /**
+     * Read address of any type
+     * @returns Address or ExternalAddress or null
+     */
+    loadAddressAny() {
+      let type = Number(this._preloadUint(2, this._offset));
+      if (type === 0) {
+        this._offset += 2;
+        return null;
+      } else if (type === 2) {
+        return this._loadInternalAddress();
+      } else if (type === 1) {
+        return this._loadExternalAddress();
+      } else if (type === 3) {
+        throw Error("Unsupported");
+      } else {
+        throw Error("Unreachable");
+      }
+    }
+    /**
+     * Load bit string that was padded to make it byte alligned. Used in BOC serialization
+     * @param bytes number of bytes to read
+     */
+    loadPaddedBits(bits) {
+      if (bits % 8 !== 0) {
+        throw new Error("Invalid number of bits");
+      }
+      let length = bits;
+      while (true) {
+        if (this._bits.at(this._offset + length - 1)) {
+          length--;
+          break;
+        } else {
+          length--;
+        }
+      }
+      let r = this._bits.substring(this._offset, length);
+      this._offset += bits;
+      return r;
+    }
+    /**
+     * Clone BitReader
+     */
+    clone() {
+      return new BitReader2(this._bits, this._offset);
+    }
+    /**
+     * Preload int from specific offset
+     * @param bits bits to preload
+     * @param offset offset to start from
+     * @returns read value as bigint
+     */
+    _preloadInt(bits, offset) {
+      if (bits == 0) {
+        return 0n;
+      }
+      let sign = this._bits.at(offset);
+      let res = 0n;
+      for (let i = 0; i < bits - 1; i++) {
+        if (this._bits.at(offset + 1 + i)) {
+          res += 1n << BigInt(bits - i - 1 - 1);
+        }
+      }
+      if (sign) {
+        res = res - (1n << BigInt(bits - 1));
+      }
+      return res;
+    }
+    /**
+     * Preload uint from specific offset
+     * @param bits bits to preload
+     * @param offset offset to start from
+     * @returns read value as bigint
+     */
+    _preloadUint(bits, offset) {
+      if (bits == 0) {
+        return 0n;
+      }
+      let res = 0n;
+      for (let i = 0; i < bits; i++) {
+        if (this._bits.at(offset + i)) {
+          res += 1n << BigInt(bits - i - 1);
+        }
+      }
+      return res;
+    }
+    _preloadBuffer(bytes, offset) {
+      let fastBuffer = this._bits.subbuffer(offset, bytes * 8);
+      if (fastBuffer) {
+        return fastBuffer;
+      }
+      let buf2 = Buffer.alloc(bytes);
+      for (let i = 0; i < bytes; i++) {
+        buf2[i] = Number(this._preloadUint(8, offset + i * 8));
+      }
+      return buf2;
+    }
+    _loadInternalAddress() {
+      let type = Number(this._preloadUint(2, this._offset));
+      if (type !== 2) {
+        throw Error("Invalid address");
+      }
+      let rewrite_pfx = void 0;
+      let rewrite_depth = void 0;
+      if (this._preloadUint(1, this._offset + 2) !== 0n) {
+        rewrite_depth = Number(this._preloadUint(5, this._offset + 3));
+        rewrite_pfx = this._preloadUint(rewrite_depth, this._offset + 8);
+        this._offset += 5 + rewrite_depth;
+      }
+      let wc = Number(this._preloadInt(8, this._offset + 3));
+      let hash = this._preloadBuffer(32, this._offset + 11);
+      if (rewrite_depth !== void 0 && rewrite_pfx !== void 0) {
+        let pfx = Number(rewrite_pfx);
+        let byteIndex = 0;
+        let bitIndex = 0;
+        let bitsRemaining = rewrite_depth;
+        while (bitsRemaining > 0) {
+          let bitsInThisByte = Math.min(8 - bitIndex, bitsRemaining);
+          let mask = (1 << bitsInThisByte) - 1 << 8 - bitIndex - bitsInThisByte;
+          let bits = (pfx >> bitsRemaining - bitsInThisByte & (1 << bitsInThisByte) - 1) << 8 - bitIndex - bitsInThisByte;
+          hash[byteIndex] = hash[byteIndex] & ~mask | bits;
+          bitsRemaining -= bitsInThisByte;
+          bitIndex += bitsInThisByte;
+          if (bitIndex === 8) {
+            byteIndex++;
+            bitIndex = 0;
+          }
+        }
+      }
+      this._offset += 267;
+      return new Address_1.Address(wc, hash);
+    }
+    _loadExternalAddress() {
+      let type = Number(this._preloadUint(2, this._offset));
+      if (type !== 1) {
+        throw Error("Invalid address");
+      }
+      let bits = Number(this._preloadUint(9, this._offset + 2));
+      let value = this._preloadUint(bits, this._offset + 11);
+      this._offset += 11 + bits;
+      return new ExternalAddress_1.ExternalAddress(value, bits);
+    }
+    _toSafeInteger(src2, alt) {
+      if (BigInt(Number.MAX_SAFE_INTEGER) < src2 || src2 < BigInt(Number.MIN_SAFE_INTEGER)) {
+        throw new TypeError(`${src2} is out of safe integer range. Use ${alt} instead`);
+      }
+      return Number(src2);
+    }
+  };
+  BitReader.BitReader = BitReader$12;
+  return BitReader;
+}
+var hasRequiredExoticMerkleProof;
+function requireExoticMerkleProof() {
+  if (hasRequiredExoticMerkleProof) return exoticMerkleProof;
+  hasRequiredExoticMerkleProof = 1;
+  Object.defineProperty(exoticMerkleProof, "__esModule", { value: true });
+  exoticMerkleProof.convertToMerkleProof = exoticMerkleProof.exoticMerkleProof = void 0;
+  const BitReader_1 = requireBitReader();
+  const Builder_12 = requireBuilder$1();
+  function exoticMerkleProof$12(bits, refs) {
+    const reader2 = new BitReader_1.BitReader(bits);
+    const size = 8 + 256 + 16;
+    if (bits.length !== size) {
+      throw new Error(`Merkle Proof cell must have exactly (8 + 256 + 16) bits, got "${bits.length}"`);
+    }
+    if (refs.length !== 1) {
+      throw new Error(`Merkle Proof cell must have exactly 1 ref, got "${refs.length}"`);
+    }
+    let type = reader2.loadUint(8);
+    if (type !== 3) {
+      throw new Error(`Merkle Proof cell must have type 3, got "${type}"`);
+    }
+    const proofHash = reader2.loadBuffer(32);
+    const proofDepth = reader2.loadUint(16);
+    const refHash = refs[0].hash(0);
+    const refDepth = refs[0].depth(0);
+    if (proofDepth !== refDepth) {
+      throw new Error(`Merkle Proof cell ref depth must be exactly "${proofDepth}", got "${refDepth}"`);
+    }
+    if (!proofHash.equals(refHash)) {
+      throw new Error(`Merkle Proof cell ref hash must be exactly "${proofHash.toString("hex")}", got "${refHash.toString("hex")}"`);
+    }
+    return {
+      proofDepth,
+      proofHash
+    };
+  }
+  exoticMerkleProof.exoticMerkleProof = exoticMerkleProof$12;
+  function convertToMerkleProof(c) {
+    return (0, Builder_12.beginCell)().storeUint(3, 8).storeBuffer(c.hash(0)).storeUint(c.depth(0), 16).storeRef(c).endCell({ exotic: true });
+  }
+  exoticMerkleProof.convertToMerkleProof = convertToMerkleProof;
+  return exoticMerkleProof;
+}
+var hasRequiredGenerateMerkleProof;
+function requireGenerateMerkleProof() {
+  if (hasRequiredGenerateMerkleProof) return generateMerkleProof;
+  hasRequiredGenerateMerkleProof = 1;
+  Object.defineProperty(generateMerkleProof, "__esModule", { value: true });
+  generateMerkleProof.generateMerkleProof = generateMerkleProof.generateMerkleProofDirect = void 0;
+  const Builder_12 = requireBuilder$1();
+  const readUnaryLength_1 = requireReadUnaryLength();
+  const exoticMerkleProof_1 = requireExoticMerkleProof();
+  function convertToPrunedBranch(c) {
+    return (0, Builder_12.beginCell)().storeUint(1, 8).storeUint(1, 8).storeBuffer(c.hash(0)).storeUint(c.depth(0), 16).endCell({ exotic: true });
+  }
+  function doGenerateMerkleProof(prefix, slice, n, keys) {
+    const originalCell = slice.asCell();
+    if (keys.length == 0) {
+      return convertToPrunedBranch(originalCell);
+    }
+    let lb0 = slice.loadBit() ? 1 : 0;
+    let prefixLength = 0;
+    let pp = prefix;
+    if (lb0 === 0) {
+      prefixLength = (0, readUnaryLength_1.readUnaryLength)(slice);
+      for (let i = 0; i < prefixLength; i++) {
+        pp += slice.loadBit() ? "1" : "0";
+      }
+    } else {
+      let lb1 = slice.loadBit() ? 1 : 0;
+      if (lb1 === 0) {
+        prefixLength = slice.loadUint(Math.ceil(Math.log2(n + 1)));
+        for (let i = 0; i < prefixLength; i++) {
+          pp += slice.loadBit() ? "1" : "0";
+        }
+      } else {
+        let bit = slice.loadBit() ? "1" : "0";
+        prefixLength = slice.loadUint(Math.ceil(Math.log2(n + 1)));
+        for (let i = 0; i < prefixLength; i++) {
+          pp += bit;
+        }
+      }
+    }
+    if (n - prefixLength === 0) {
+      return originalCell;
+    } else {
+      let sl = originalCell.beginParse();
+      let left = sl.loadRef();
+      let right = sl.loadRef();
+      if (!left.isExotic) {
+        const leftKeys = keys.filter((key2) => {
+          return pp + "0" === key2.slice(0, pp.length + 1);
+        });
+        left = doGenerateMerkleProof(pp + "0", left.beginParse(), n - prefixLength - 1, leftKeys);
+      }
+      if (!right.isExotic) {
+        const rightKeys = keys.filter((key2) => {
+          return pp + "1" === key2.slice(0, pp.length + 1);
+        });
+        right = doGenerateMerkleProof(pp + "1", right.beginParse(), n - prefixLength - 1, rightKeys);
+      }
+      return (0, Builder_12.beginCell)().storeSlice(sl).storeRef(left).storeRef(right).endCell();
+    }
+  }
+  function generateMerkleProofDirect(dict, keys, keyObject) {
+    keys.forEach((key2) => {
+      if (!dict.has(key2)) {
+        throw new Error(`Trying to generate merkle proof for a missing key "${key2}"`);
+      }
+    });
+    const s2 = (0, Builder_12.beginCell)().storeDictDirect(dict).asSlice();
+    return doGenerateMerkleProof("", s2, keyObject.bits, keys.map((key2) => keyObject.serialize(key2).toString(2).padStart(keyObject.bits, "0")));
+  }
+  generateMerkleProof.generateMerkleProofDirect = generateMerkleProofDirect;
+  function generateMerkleProof$12(dict, keys, keyObject) {
+    return (0, exoticMerkleProof_1.convertToMerkleProof)(generateMerkleProofDirect(dict, keys, keyObject));
+  }
+  generateMerkleProof.generateMerkleProof = generateMerkleProof$12;
+  return generateMerkleProof;
+}
+var generateMerkleUpdate = {};
+var hasRequiredGenerateMerkleUpdate;
+function requireGenerateMerkleUpdate() {
+  if (hasRequiredGenerateMerkleUpdate) return generateMerkleUpdate;
+  hasRequiredGenerateMerkleUpdate = 1;
+  Object.defineProperty(generateMerkleUpdate, "__esModule", { value: true });
+  generateMerkleUpdate.generateMerkleUpdate = void 0;
+  const Builder_12 = requireBuilder$1();
+  const generateMerkleProof_1 = requireGenerateMerkleProof();
+  function convertToMerkleUpdate(c1, c2) {
+    return (0, Builder_12.beginCell)().storeUint(4, 8).storeBuffer(c1.hash(0)).storeBuffer(c2.hash(0)).storeUint(c1.depth(0), 16).storeUint(c2.depth(0), 16).storeRef(c1).storeRef(c2).endCell({ exotic: true });
+  }
+  function generateMerkleUpdate$12(dict, key2, keyObject, newValue) {
+    const oldProof = (0, generateMerkleProof_1.generateMerkleProof)(dict, [key2], keyObject).refs[0];
+    dict.set(key2, newValue);
+    const newProof = (0, generateMerkleProof_1.generateMerkleProof)(dict, [key2], keyObject).refs[0];
+    return convertToMerkleUpdate(oldProof, newProof);
+  }
+  generateMerkleUpdate.generateMerkleUpdate = generateMerkleUpdate$12;
+  return generateMerkleUpdate;
+}
+var parseDict = {};
+var hasRequiredParseDict;
+function requireParseDict() {
+  if (hasRequiredParseDict) return parseDict;
+  hasRequiredParseDict = 1;
+  Object.defineProperty(parseDict, "__esModule", { value: true });
+  parseDict.parseDict = void 0;
+  function readUnaryLength2(slice) {
+    let res = 0;
+    while (slice.loadBit()) {
+      res++;
+    }
+    return res;
+  }
+  function doParse(prefix, slice, n, res, extractor) {
+    let lb0 = slice.loadBit() ? 1 : 0;
+    let prefixLength = 0;
+    let pp = prefix;
+    if (lb0 === 0) {
+      prefixLength = readUnaryLength2(slice);
+      for (let i = 0; i < prefixLength; i++) {
+        pp += slice.loadBit() ? "1" : "0";
+      }
+    } else {
+      let lb1 = slice.loadBit() ? 1 : 0;
+      if (lb1 === 0) {
+        prefixLength = slice.loadUint(Math.ceil(Math.log2(n + 1)));
+        for (let i = 0; i < prefixLength; i++) {
+          pp += slice.loadBit() ? "1" : "0";
+        }
+      } else {
+        let bit = slice.loadBit() ? "1" : "0";
+        prefixLength = slice.loadUint(Math.ceil(Math.log2(n + 1)));
+        for (let i = 0; i < prefixLength; i++) {
+          pp += bit;
+        }
+      }
+    }
+    if (n - prefixLength === 0) {
+      res.set(BigInt("0b" + pp), extractor(slice));
+    } else {
+      let left = slice.loadRef();
+      let right = slice.loadRef();
+      if (!left.isExotic) {
+        doParse(pp + "0", left.beginParse(), n - prefixLength - 1, res, extractor);
+      }
+      if (!right.isExotic) {
+        doParse(pp + "1", right.beginParse(), n - prefixLength - 1, res, extractor);
+      }
+    }
+  }
+  function parseDict$12(sc, keySize, extractor) {
+    let res = /* @__PURE__ */ new Map();
+    if (sc) {
+      doParse("", sc, keySize, res, extractor);
+    }
+    return res;
+  }
+  parseDict.parseDict = parseDict$12;
+  return parseDict;
+}
+var serializeDict = {};
+var findCommonPrefix = {};
+var hasRequiredFindCommonPrefix;
+function requireFindCommonPrefix() {
+  if (hasRequiredFindCommonPrefix) return findCommonPrefix;
+  hasRequiredFindCommonPrefix = 1;
+  Object.defineProperty(findCommonPrefix, "__esModule", { value: true });
+  findCommonPrefix.findCommonPrefix = void 0;
+  function findCommonPrefix$12(src2, startPos = 0) {
+    if (src2.length === 0) {
+      return "";
+    }
+    let r = src2[0].slice(startPos);
+    for (let i = 1; i < src2.length; i++) {
+      const s2 = src2[i];
+      while (s2.indexOf(r, startPos) !== startPos) {
+        r = r.substring(0, r.length - 1);
+        if (r === "") {
+          return r;
+        }
+      }
+    }
+    return r;
+  }
+  findCommonPrefix.findCommonPrefix = findCommonPrefix$12;
+  return findCommonPrefix;
+}
+var hasRequiredSerializeDict;
+function requireSerializeDict() {
+  if (hasRequiredSerializeDict) return serializeDict;
+  hasRequiredSerializeDict = 1;
+  Object.defineProperty(serializeDict, "__esModule", { value: true });
+  serializeDict.serializeDict = serializeDict.detectLabelType = serializeDict.writeLabelSame = serializeDict.writeLabelLong = serializeDict.writeLabelShort = serializeDict.buildTree = void 0;
+  const Builder_12 = requireBuilder$1();
+  const findCommonPrefix_1 = requireFindCommonPrefix();
+  function pad(src2, size) {
+    while (src2.length < size) {
+      src2 = "0" + src2;
+    }
+    return src2;
+  }
+  function forkMap(src2, prefixLen) {
+    if (src2.size === 0) {
+      throw Error("Internal inconsistency");
+    }
+    let left = /* @__PURE__ */ new Map();
+    let right = /* @__PURE__ */ new Map();
+    for (let [k2, d] of src2.entries()) {
+      if (k2[prefixLen] === "0") {
+        left.set(k2, d);
+      } else {
+        right.set(k2, d);
+      }
+    }
+    if (left.size === 0) {
+      throw Error("Internal inconsistency. Left emtpy.");
+    }
+    if (right.size === 0) {
+      throw Error("Internal inconsistency. Right emtpy.");
+    }
+    return { left, right };
+  }
+  function buildNode(src2, prefixLen) {
+    if (src2.size === 0) {
+      throw Error("Internal inconsistency");
+    }
+    if (src2.size === 1) {
+      return { type: "leaf", value: Array.from(src2.values())[0] };
+    }
+    let { left, right } = forkMap(src2, prefixLen);
+    return {
+      type: "fork",
+      left: buildEdge(left, prefixLen + 1),
+      right: buildEdge(right, prefixLen + 1)
+    };
+  }
+  function buildEdge(src2, prefixLen = 0) {
+    if (src2.size === 0) {
+      throw Error("Internal inconsistency");
+    }
+    const label = (0, findCommonPrefix_1.findCommonPrefix)(Array.from(src2.keys()), prefixLen);
+    return { label, node: buildNode(src2, label.length + prefixLen) };
+  }
+  function buildTree(src2, keyLength) {
+    let converted = /* @__PURE__ */ new Map();
+    for (let k2 of Array.from(src2.keys())) {
+      const padded = pad(k2.toString(2), keyLength);
+      converted.set(padded, src2.get(k2));
+    }
+    return buildEdge(converted);
+  }
+  serializeDict.buildTree = buildTree;
+  function writeLabelShort(src2, to2) {
+    to2.storeBit(0);
+    for (let i = 0; i < src2.length; i++) {
+      to2.storeBit(1);
+    }
+    to2.storeBit(0);
+    if (src2.length > 0) {
+      to2.storeUint(BigInt("0b" + src2), src2.length);
+    }
+    return to2;
+  }
+  serializeDict.writeLabelShort = writeLabelShort;
+  function labelShortLength(src2) {
+    return 1 + src2.length + 1 + src2.length;
+  }
+  function writeLabelLong(src2, keyLength, to2) {
+    to2.storeBit(1);
+    to2.storeBit(0);
+    let length = Math.ceil(Math.log2(keyLength + 1));
+    to2.storeUint(src2.length, length);
+    if (src2.length > 0) {
+      to2.storeUint(BigInt("0b" + src2), src2.length);
+    }
+    return to2;
+  }
+  serializeDict.writeLabelLong = writeLabelLong;
+  function labelLongLength(src2, keyLength) {
+    return 1 + 1 + Math.ceil(Math.log2(keyLength + 1)) + src2.length;
+  }
+  function writeLabelSame(value, length, keyLength, to2) {
+    to2.storeBit(1);
+    to2.storeBit(1);
+    to2.storeBit(value);
+    let lenLen = Math.ceil(Math.log2(keyLength + 1));
+    to2.storeUint(length, lenLen);
+  }
+  serializeDict.writeLabelSame = writeLabelSame;
+  function labelSameLength(keyLength) {
+    return 1 + 1 + 1 + Math.ceil(Math.log2(keyLength + 1));
+  }
+  function isSame(src2) {
+    if (src2.length === 0 || src2.length === 1) {
+      return true;
+    }
+    for (let i = 1; i < src2.length; i++) {
+      if (src2[i] !== src2[0]) {
+        return false;
+      }
+    }
+    return true;
+  }
+  function detectLabelType(src2, keyLength) {
+    let kind = "short";
+    let kindLength = labelShortLength(src2);
+    let longLength = labelLongLength(src2, keyLength);
+    if (longLength < kindLength) {
+      kindLength = longLength;
+      kind = "long";
+    }
+    if (isSame(src2)) {
+      let sameLength = labelSameLength(keyLength);
+      if (sameLength < kindLength) {
+        kindLength = sameLength;
+        kind = "same";
+      }
+    }
+    return kind;
+  }
+  serializeDict.detectLabelType = detectLabelType;
+  function writeLabel(src2, keyLength, to2) {
+    let type = detectLabelType(src2, keyLength);
+    if (type === "short") {
+      writeLabelShort(src2, to2);
+    } else if (type === "long") {
+      writeLabelLong(src2, keyLength, to2);
+    } else if (type === "same") {
+      writeLabelSame(src2[0] === "1", src2.length, keyLength, to2);
+    }
+  }
+  function writeNode(src2, keyLength, serializer, to2) {
+    if (src2.type === "leaf") {
+      serializer(src2.value, to2);
+    }
+    if (src2.type === "fork") {
+      const leftCell = (0, Builder_12.beginCell)();
+      const rightCell = (0, Builder_12.beginCell)();
+      writeEdge(src2.left, keyLength - 1, serializer, leftCell);
+      writeEdge(src2.right, keyLength - 1, serializer, rightCell);
+      to2.storeRef(leftCell);
+      to2.storeRef(rightCell);
+    }
+  }
+  function writeEdge(src2, keyLength, serializer, to2) {
+    writeLabel(src2.label, keyLength, to2);
+    writeNode(src2.node, keyLength - src2.label.length, serializer, to2);
+  }
+  function serializeDict$12(src2, keyLength, serializer, to2) {
+    const tree = buildTree(src2, keyLength);
+    writeEdge(tree, keyLength, serializer, to2);
+  }
+  serializeDict.serializeDict = serializeDict$12;
+  return serializeDict;
+}
+var internalKeySerializer = {};
+var hasRequiredInternalKeySerializer;
+function requireInternalKeySerializer() {
+  if (hasRequiredInternalKeySerializer) return internalKeySerializer;
+  hasRequiredInternalKeySerializer = 1;
+  Object.defineProperty(internalKeySerializer, "__esModule", { value: true });
+  internalKeySerializer.deserializeInternalKey = internalKeySerializer.serializeInternalKey = void 0;
+  const Address_1 = requireAddress();
+  const BitString_1 = requireBitString();
+  const paddedBits_1 = requirePaddedBits();
+  function serializeInternalKey(value) {
+    if (typeof value === "number") {
+      if (!Number.isSafeInteger(value)) {
+        throw Error("Invalid key type: not a safe integer: " + value);
+      }
+      return "n:" + value.toString(10);
+    } else if (typeof value === "bigint") {
+      return "b:" + value.toString(10);
+    } else if (Address_1.Address.isAddress(value)) {
+      return "a:" + value.toString();
+    } else if (Buffer.isBuffer(value)) {
+      return "f:" + value.toString("hex");
+    } else if (BitString_1.BitString.isBitString(value)) {
+      return "B:" + value.toString();
+    } else {
+      throw Error("Invalid key type");
+    }
+  }
+  internalKeySerializer.serializeInternalKey = serializeInternalKey;
+  function deserializeInternalKey(value) {
+    let k2 = value.slice(0, 2);
+    let v2 = value.slice(2);
+    if (k2 === "n:") {
+      return parseInt(v2, 10);
+    } else if (k2 === "b:") {
+      return BigInt(v2);
+    } else if (k2 === "a:") {
+      return Address_1.Address.parse(v2);
+    } else if (k2 === "f:") {
+      return Buffer.from(v2, "hex");
+    } else if (k2 === "B:") {
+      const lastDash = v2.slice(-1) == "_";
+      const isPadded = lastDash || v2.length % 2 != 0;
+      if (isPadded) {
+        let charLen = lastDash ? v2.length - 1 : v2.length;
+        const padded = v2.substr(0, charLen) + "0";
+        if (!lastDash && (charLen & 1) !== 0) {
+          return new BitString_1.BitString(Buffer.from(padded, "hex"), 0, charLen << 2);
+        } else {
+          return (0, paddedBits_1.paddedBufferToBits)(Buffer.from(padded, "hex"));
+        }
+      } else {
+        return new BitString_1.BitString(Buffer.from(v2, "hex"), 0, v2.length << 2);
+      }
+    }
+    throw Error("Invalid key type: " + k2);
+  }
+  internalKeySerializer.deserializeInternalKey = deserializeInternalKey;
+  return internalKeySerializer;
+}
+var hasRequiredDictionary;
+function requireDictionary() {
+  if (hasRequiredDictionary) return Dictionary;
+  hasRequiredDictionary = 1;
+  Object.defineProperty(Dictionary, "__esModule", { value: true });
+  Dictionary.Dictionary = void 0;
+  const Address_1 = requireAddress();
+  const Builder_12 = requireBuilder$1();
+  const Cell_1 = requireCell();
+  const BitString_1 = requireBitString();
+  const generateMerkleProof_1 = requireGenerateMerkleProof();
+  const generateMerkleUpdate_1 = requireGenerateMerkleUpdate();
+  const parseDict_1 = requireParseDict();
+  const serializeDict_1 = requireSerializeDict();
+  const internalKeySerializer_1 = requireInternalKeySerializer();
+  let Dictionary$12 = class Dictionary2 {
+    /**
+     * Create an empty map
+     * @param key key type
+     * @param value value type
+     * @returns Dictionary<K, V>
+     */
+    static empty(key2, value) {
+      if (key2 && value) {
+        return new Dictionary2(/* @__PURE__ */ new Map(), key2, value);
+      } else {
+        return new Dictionary2(/* @__PURE__ */ new Map(), null, null);
+      }
+    }
+    /**
+     * Load dictionary from slice
+     * @param key key description
+     * @param value value description
+     * @param src slice
+     * @returns Dictionary<K, V>
+     */
+    static load(key2, value, sc) {
+      let slice;
+      if (sc instanceof Cell_1.Cell) {
+        if (sc.isExotic) {
+          return Dictionary2.empty(key2, value);
+        }
+        slice = sc.beginParse();
+      } else {
+        slice = sc;
+      }
+      let cell = slice.loadMaybeRef();
+      if (cell && !cell.isExotic) {
+        return Dictionary2.loadDirect(key2, value, cell.beginParse());
+      } else {
+        return Dictionary2.empty(key2, value);
+      }
+    }
+    /**
+     * Low level method for rare dictionaries from system contracts.
+     * Loads dictionary from slice directly without going to the ref.
+     *
+     * @param key key description
+     * @param value value description
+     * @param sc slice
+     * @returns Dictionary<K, V>
+     */
+    static loadDirect(key2, value, sc) {
+      if (!sc) {
+        return Dictionary2.empty(key2, value);
+      }
+      let slice;
+      if (sc instanceof Cell_1.Cell) {
+        slice = sc.beginParse();
+      } else {
+        slice = sc;
+      }
+      let values = (0, parseDict_1.parseDict)(slice, key2.bits, value.parse);
+      let prepare = /* @__PURE__ */ new Map();
+      for (let [k2, v2] of values) {
+        prepare.set((0, internalKeySerializer_1.serializeInternalKey)(key2.parse(k2)), v2);
+      }
+      return new Dictionary2(prepare, key2, value);
+    }
+    constructor(values, key2, value) {
+      this._key = key2;
+      this._value = value;
+      this._map = values;
+    }
+    get size() {
+      return this._map.size;
+    }
+    get(key2) {
+      return this._map.get((0, internalKeySerializer_1.serializeInternalKey)(key2));
+    }
+    has(key2) {
+      return this._map.has((0, internalKeySerializer_1.serializeInternalKey)(key2));
+    }
+    set(key2, value) {
+      this._map.set((0, internalKeySerializer_1.serializeInternalKey)(key2), value);
+      return this;
+    }
+    delete(key2) {
+      const k2 = (0, internalKeySerializer_1.serializeInternalKey)(key2);
+      return this._map.delete(k2);
+    }
+    clear() {
+      this._map.clear();
+    }
+    *[Symbol.iterator]() {
+      for (const [k2, v2] of this._map) {
+        const key2 = (0, internalKeySerializer_1.deserializeInternalKey)(k2);
+        yield [key2, v2];
+      }
+    }
+    keys() {
+      return Array.from(this._map.keys()).map((v2) => (0, internalKeySerializer_1.deserializeInternalKey)(v2));
+    }
+    values() {
+      return Array.from(this._map.values());
+    }
+    store(builder2, key2, value) {
+      if (this._map.size === 0) {
+        builder2.storeBit(0);
+      } else {
+        let resolvedKey = this._key;
+        if (key2 !== null && key2 !== void 0) {
+          resolvedKey = key2;
+        }
+        let resolvedValue = this._value;
+        if (value !== null && value !== void 0) {
+          resolvedValue = value;
+        }
+        if (!resolvedKey) {
+          throw Error("Key serializer is not defined");
+        }
+        if (!resolvedValue) {
+          throw Error("Value serializer is not defined");
+        }
+        let prepared = /* @__PURE__ */ new Map();
+        for (const [k2, v2] of this._map) {
+          prepared.set(resolvedKey.serialize((0, internalKeySerializer_1.deserializeInternalKey)(k2)), v2);
+        }
+        builder2.storeBit(1);
+        let dd = (0, Builder_12.beginCell)();
+        (0, serializeDict_1.serializeDict)(prepared, resolvedKey.bits, resolvedValue.serialize, dd);
+        builder2.storeRef(dd.endCell());
+      }
+    }
+    storeDirect(builder2, key2, value) {
+      if (this._map.size === 0) {
+        throw Error("Cannot store empty dictionary directly");
+      }
+      let resolvedKey = this._key;
+      if (key2 !== null && key2 !== void 0) {
+        resolvedKey = key2;
+      }
+      let resolvedValue = this._value;
+      if (value !== null && value !== void 0) {
+        resolvedValue = value;
+      }
+      if (!resolvedKey) {
+        throw Error("Key serializer is not defined");
+      }
+      if (!resolvedValue) {
+        throw Error("Value serializer is not defined");
+      }
+      let prepared = /* @__PURE__ */ new Map();
+      for (const [k2, v2] of this._map) {
+        prepared.set(resolvedKey.serialize((0, internalKeySerializer_1.deserializeInternalKey)(k2)), v2);
+      }
+      (0, serializeDict_1.serializeDict)(prepared, resolvedKey.bits, resolvedValue.serialize, builder2);
+    }
+    /**
+     * Generate merkle proof for multiple keys in the dictionary
+     * @param keys an array of the keys
+     * @returns generated merkle proof cell
+     */
+    generateMerkleProof(keys) {
+      return (0, generateMerkleProof_1.generateMerkleProof)(this, keys, this._key);
+    }
+    /**
+     * Low level method for generating pruned dictionary directly.
+     * The result can be used as a part of a bigger merkle proof
+     * @param keys an array of the keys
+     * @returns cell that contains the pruned dictionary
+     */
+    generateMerkleProofDirect(keys) {
+      return (0, generateMerkleProof_1.generateMerkleProofDirect)(this, keys, this._key);
+    }
+    generateMerkleUpdate(key2, newValue) {
+      return (0, generateMerkleUpdate_1.generateMerkleUpdate)(this, key2, this._key, newValue);
+    }
+  };
+  Dictionary.Dictionary = Dictionary$12;
+  Dictionary$12.Keys = {
+    /**
+     * Standard address key
+     * @returns DictionaryKey<Address>
+     */
+    Address: () => {
+      return createAddressKey();
+    },
+    /**
+     * Create standard big integer key
+     * @param bits number of bits
+     * @returns DictionaryKey<bigint>
+     */
+    BigInt: (bits) => {
+      return createBigIntKey(bits);
+    },
+    /**
+     * Create integer key
+     * @param bits bits of integer
+     * @returns DictionaryKey<number>
+     */
+    Int: (bits) => {
+      return createIntKey(bits);
+    },
+    /**
+     * Create standard unsigned big integer key
+     * @param bits number of bits
+     * @returns DictionaryKey<bigint>
+     */
+    BigUint: (bits) => {
+      return createBigUintKey(bits);
+    },
+    /**
+     * Create standard unsigned integer key
+     * @param bits number of bits
+     * @returns DictionaryKey<number>
+     */
+    Uint: (bits) => {
+      return createUintKey(bits);
+    },
+    /**
+     * Create standard buffer key
+     * @param bytes number of bytes of a buffer
+     * @returns DictionaryKey<Buffer>
+     */
+    Buffer: (bytes) => {
+      return createBufferKey(bytes);
+    },
+    /**
+     * Create BitString key
+     * @param bits key length
+     * @returns DictionaryKey<BitString>
+     * Point is that Buffer has to be 8 bit aligned,
+     * while key is TVM dictionary doesn't have to be
+     * aligned at all.
+     */
+    BitString: (bits) => {
+      return createBitStringKey(bits);
+    }
+  };
+  Dictionary$12.Values = {
+    /**
+     * Create standard integer value
+     * @returns DictionaryValue<bigint>
+     */
+    BigInt: (bits) => {
+      return createBigIntValue(bits);
+    },
+    /**
+     * Create standard integer value
+     * @returns DictionaryValue<number>
+     */
+    Int: (bits) => {
+      return createIntValue(bits);
+    },
+    /**
+     * Create big var int
+     * @param bits nubmer of header bits
+     * @returns DictionaryValue<bigint>
+     */
+    BigVarInt: (bits) => {
+      return createBigVarIntValue(bits);
+    },
+    /**
+     * Create standard unsigned integer value
+     * @param bits number of bits
+     * @returns DictionaryValue<bigint>
+     */
+    BigUint: (bits) => {
+      return createBigUintValue(bits);
+    },
+    /**
+     * Create standard unsigned integer value
+     * @param bits number of bits
+     * @returns DictionaryValue<bigint>
+     */
+    Uint: (bits) => {
+      return createUintValue(bits);
+    },
+    /**
+     * Create big var int
+     * @param bits nubmer of header bits
+     * @returns DictionaryValue<bigint>
+     */
+    BigVarUint: (bits) => {
+      return createBigVarUintValue(bits);
+    },
+    /**
+     * Create standard boolean value
+     * @returns DictionaryValue<boolean>
+     */
+    Bool: () => {
+      return createBooleanValue();
+    },
+    /**
+     * Create standard address value
+     * @returns DictionaryValue<Address>
+     */
+    Address: () => {
+      return createAddressValue();
+    },
+    /**
+     * Create standard cell value
+     * @returns DictionaryValue<Cell>
+     */
+    Cell: () => {
+      return createCellValue();
+    },
+    /**
+     * Create Builder value
+     * @param bytes number of bytes of a buffer
+     * @returns DictionaryValue<Builder>
+     */
+    Buffer: (bytes) => {
+      return createBufferValue(bytes);
+    },
+    /**
+     * Create BitString value
+     * @param requested bit length
+     * @returns DictionaryValue<BitString>
+     * Point is that Buffer is not applicable
+     * when length is not 8 bit alligned.
+     */
+    BitString: (bits) => {
+      return createBitStringValue(bits);
+    },
+    /**
+     * Create dictionary value
+     * @param key
+     * @param value
+     */
+    Dictionary: (key2, value) => {
+      return createDictionaryValue(key2, value);
+    }
+  };
+  function createAddressKey() {
+    return {
+      bits: 267,
+      serialize: (src2) => {
+        if (!Address_1.Address.isAddress(src2)) {
+          throw Error("Key is not an address");
+        }
+        return (0, Builder_12.beginCell)().storeAddress(src2).endCell().beginParse().preloadUintBig(267);
+      },
+      parse: (src2) => {
+        return (0, Builder_12.beginCell)().storeUint(src2, 267).endCell().beginParse().loadAddress();
+      }
+    };
+  }
+  function createBigIntKey(bits) {
+    return {
+      bits,
+      serialize: (src2) => {
+        if (typeof src2 !== "bigint") {
+          throw Error("Key is not a bigint");
+        }
+        return (0, Builder_12.beginCell)().storeInt(src2, bits).endCell().beginParse().loadUintBig(bits);
+      },
+      parse: (src2) => {
+        return (0, Builder_12.beginCell)().storeUint(src2, bits).endCell().beginParse().loadIntBig(bits);
+      }
+    };
+  }
+  function createIntKey(bits) {
+    return {
+      bits,
+      serialize: (src2) => {
+        if (typeof src2 !== "number") {
+          throw Error("Key is not a number");
+        }
+        if (!Number.isSafeInteger(src2)) {
+          throw Error("Key is not a safe integer: " + src2);
+        }
+        return (0, Builder_12.beginCell)().storeInt(src2, bits).endCell().beginParse().loadUintBig(bits);
+      },
+      parse: (src2) => {
+        return (0, Builder_12.beginCell)().storeUint(src2, bits).endCell().beginParse().loadInt(bits);
+      }
+    };
+  }
+  function createBigUintKey(bits) {
+    return {
+      bits,
+      serialize: (src2) => {
+        if (typeof src2 !== "bigint") {
+          throw Error("Key is not a bigint");
+        }
+        if (src2 < 0) {
+          throw Error("Key is negative: " + src2);
+        }
+        return (0, Builder_12.beginCell)().storeUint(src2, bits).endCell().beginParse().loadUintBig(bits);
+      },
+      parse: (src2) => {
+        return (0, Builder_12.beginCell)().storeUint(src2, bits).endCell().beginParse().loadUintBig(bits);
+      }
+    };
+  }
+  function createUintKey(bits) {
+    return {
+      bits,
+      serialize: (src2) => {
+        if (typeof src2 !== "number") {
+          throw Error("Key is not a number");
+        }
+        if (!Number.isSafeInteger(src2)) {
+          throw Error("Key is not a safe integer: " + src2);
+        }
+        if (src2 < 0) {
+          throw Error("Key is negative: " + src2);
+        }
+        return (0, Builder_12.beginCell)().storeUint(src2, bits).endCell().beginParse().loadUintBig(bits);
+      },
+      parse: (src2) => {
+        return Number((0, Builder_12.beginCell)().storeUint(src2, bits).endCell().beginParse().loadUint(bits));
+      }
+    };
+  }
+  function createBufferKey(bytes) {
+    return {
+      bits: bytes * 8,
+      serialize: (src2) => {
+        if (!Buffer.isBuffer(src2)) {
+          throw Error("Key is not a buffer");
+        }
+        return (0, Builder_12.beginCell)().storeBuffer(src2).endCell().beginParse().loadUintBig(bytes * 8);
+      },
+      parse: (src2) => {
+        return (0, Builder_12.beginCell)().storeUint(src2, bytes * 8).endCell().beginParse().loadBuffer(bytes);
+      }
+    };
+  }
+  function createBitStringKey(bits) {
+    return {
+      bits,
+      serialize: (src2) => {
+        if (!BitString_1.BitString.isBitString(src2))
+          throw Error("Key is not a BitString");
+        return (0, Builder_12.beginCell)().storeBits(src2).endCell().beginParse().loadUintBig(bits);
+      },
+      parse: (src2) => {
+        return (0, Builder_12.beginCell)().storeUint(src2, bits).endCell().beginParse().loadBits(bits);
+      }
+    };
+  }
+  function createIntValue(bits) {
+    return {
+      serialize: (src2, buidler) => {
+        buidler.storeInt(src2, bits);
+      },
+      parse: (src2) => {
+        let value = src2.loadInt(bits);
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  function createBigIntValue(bits) {
+    return {
+      serialize: (src2, buidler) => {
+        buidler.storeInt(src2, bits);
+      },
+      parse: (src2) => {
+        let value = src2.loadIntBig(bits);
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  function createBigVarIntValue(bits) {
+    return {
+      serialize: (src2, buidler) => {
+        buidler.storeVarInt(src2, bits);
+      },
+      parse: (src2) => {
+        let value = src2.loadVarIntBig(bits);
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  function createBigVarUintValue(bits) {
+    return {
+      serialize: (src2, buidler) => {
+        buidler.storeVarUint(src2, bits);
+      },
+      parse: (src2) => {
+        let value = src2.loadVarUintBig(bits);
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  function createUintValue(bits) {
+    return {
+      serialize: (src2, buidler) => {
+        buidler.storeUint(src2, bits);
+      },
+      parse: (src2) => {
+        let value = src2.loadUint(bits);
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  function createBigUintValue(bits) {
+    return {
+      serialize: (src2, buidler) => {
+        buidler.storeUint(src2, bits);
+      },
+      parse: (src2) => {
+        let value = src2.loadUintBig(bits);
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  function createBooleanValue() {
+    return {
+      serialize: (src2, buidler) => {
+        buidler.storeBit(src2);
+      },
+      parse: (src2) => {
+        let value = src2.loadBit();
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  function createAddressValue() {
+    return {
+      serialize: (src2, buidler) => {
+        buidler.storeAddress(src2);
+      },
+      parse: (src2) => {
+        let addr = src2.loadAddress();
+        src2.endParse();
+        return addr;
+      }
+    };
+  }
+  function createCellValue() {
+    return {
+      serialize: (src2, buidler) => {
+        buidler.storeRef(src2);
+      },
+      parse: (src2) => {
+        let value = src2.loadRef();
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  function createDictionaryValue(key2, value) {
+    return {
+      serialize: (src2, buidler) => {
+        src2.store(buidler);
+      },
+      parse: (src2) => {
+        let dict = Dictionary$12.load(key2, value, src2);
+        src2.endParse();
+        return dict;
+      }
+    };
+  }
+  function createBufferValue(size) {
+    return {
+      serialize: (src2, buidler) => {
+        if (src2.length !== size) {
+          throw Error("Invalid buffer size");
+        }
+        buidler.storeBuffer(src2);
+      },
+      parse: (src2) => {
+        let value = src2.loadBuffer(size);
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  function createBitStringValue(bits) {
+    return {
+      serialize: (src2, builder2) => {
+        if (src2.length !== bits) {
+          throw Error("Invalid BitString size");
+        }
+        builder2.storeBits(src2);
+      },
+      parse: (src2) => {
+        let value = src2.loadBits(bits);
+        src2.endParse();
+        return value;
+      }
+    };
+  }
+  return Dictionary;
+}
+var strings = {};
+var hasRequiredStrings;
+function requireStrings() {
+  if (hasRequiredStrings) return strings;
+  hasRequiredStrings = 1;
+  Object.defineProperty(strings, "__esModule", { value: true });
+  strings.writeString = strings.stringToCell = strings.readString = void 0;
+  const Builder_12 = requireBuilder$1();
+  function readBuffer(slice) {
+    if (slice.remainingBits % 8 !== 0) {
+      throw new Error(`Invalid string length: ${slice.remainingBits}`);
+    }
+    if (slice.remainingRefs !== 0 && slice.remainingRefs !== 1) {
+      throw new Error(`invalid number of refs: ${slice.remainingRefs}`);
+    }
+    let res;
+    if (slice.remainingBits === 0) {
+      res = Buffer.alloc(0);
+    } else {
+      res = slice.loadBuffer(slice.remainingBits / 8);
+    }
+    if (slice.remainingRefs === 1) {
+      res = Buffer.concat([res, readBuffer(slice.loadRef().beginParse())]);
+    }
+    return res;
+  }
+  function readString(slice) {
+    return readBuffer(slice).toString();
+  }
+  strings.readString = readString;
+  function writeBuffer(src2, builder2) {
+    if (src2.length > 0) {
+      let bytes = Math.floor(builder2.availableBits / 8);
+      if (src2.length > bytes) {
+        let a2 = src2.subarray(0, bytes);
+        let t = src2.subarray(bytes);
+        builder2 = builder2.storeBuffer(a2);
+        let bb = (0, Builder_12.beginCell)();
+        writeBuffer(t, bb);
+        builder2 = builder2.storeRef(bb.endCell());
+      } else {
+        builder2 = builder2.storeBuffer(src2);
+      }
+    }
+  }
+  function stringToCell(src2) {
+    let builder2 = (0, Builder_12.beginCell)();
+    writeBuffer(Buffer.from(src2), builder2);
+    return builder2.endCell();
+  }
+  strings.stringToCell = stringToCell;
+  function writeString(src2, builder2) {
+    writeBuffer(Buffer.from(src2), builder2);
+  }
+  strings.writeString = writeString;
+  return strings;
+}
+var hasRequiredSlice;
+function requireSlice() {
+  if (hasRequiredSlice) return Slice;
+  hasRequiredSlice = 1;
+  var __importDefault = Slice && Slice.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+  };
+  var _a2;
+  Object.defineProperty(Slice, "__esModule", { value: true });
+  Slice.Slice = void 0;
+  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const Dictionary_1 = requireDictionary();
+  const Builder_12 = requireBuilder$1();
+  const strings_1 = requireStrings();
+  let Slice$12 = class Slice2 {
+    constructor(reader2, refs) {
+      this[_a2] = () => this.toString();
+      this._reader = reader2.clone();
+      this._refs = [...refs];
+      this._refsOffset = 0;
+    }
+    /**
+     * Get remaining bits
+     */
+    get remainingBits() {
+      return this._reader.remaining;
+    }
+    /**
+     * Get offset bits
+     */
+    get offsetBits() {
+      return this._reader.offset;
+    }
+    /**
+     * Get remaining refs
+     */
+    get remainingRefs() {
+      return this._refs.length - this._refsOffset;
+    }
+    /**
+     * Get offset refs
+     */
+    get offsetRefs() {
+      return this._refsOffset;
+    }
+    /**
+     * Skip bits
+     * @param bits
+     */
+    skip(bits) {
+      this._reader.skip(bits);
+      return this;
+    }
+    /**
+     * Load a single bit
+     * @returns true or false depending on the bit value
+     */
+    loadBit() {
+      return this._reader.loadBit();
+    }
+    /**
+     * Preload a signle bit
+     * @returns true or false depending on the bit value
+     */
+    preloadBit() {
+      return this._reader.preloadBit();
+    }
+    /**
+     * Load a boolean
+     * @returns true or false depending on the bit value
+     */
+    loadBoolean() {
+      return this.loadBit();
+    }
+    /**
+     * Load maybe boolean
+     * @returns true or false depending on the bit value or null
+     */
+    loadMaybeBoolean() {
+      if (this.loadBit()) {
+        return this.loadBoolean();
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Load bits as a new BitString
+     * @param bits number of bits to read
+     * @returns new BitString
+     */
+    loadBits(bits) {
+      return this._reader.loadBits(bits);
+    }
+    /**
+     * Preload bits as a new BitString
+     * @param bits number of bits to read
+     * @returns new BitString
+     */
+    preloadBits(bits) {
+      return this._reader.preloadBits(bits);
+    }
+    /**
+     * Load uint
+     * @param bits number of bits to read
+     * @returns uint value
+     */
+    loadUint(bits) {
+      return this._reader.loadUint(bits);
+    }
+    /**
+     * Load uint
+     * @param bits number of bits to read
+     * @returns uint value
+     */
+    loadUintBig(bits) {
+      return this._reader.loadUintBig(bits);
+    }
+    /**
+     * Preload uint
+     * @param bits number of bits to read
+     * @returns uint value
+     */
+    preloadUint(bits) {
+      return this._reader.preloadUint(bits);
+    }
+    /**
+     * Preload uint
+     * @param bits number of bits to read
+     * @returns uint value
+     */
+    preloadUintBig(bits) {
+      return this._reader.preloadUintBig(bits);
+    }
+    /**
+     * Load maybe uint
+     * @param bits number of bits to read
+     * @returns uint value or null
+     */
+    loadMaybeUint(bits) {
+      if (this.loadBit()) {
+        return this.loadUint(bits);
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Load maybe uint
+     * @param bits number of bits to read
+     * @returns uint value or null
+     */
+    loadMaybeUintBig(bits) {
+      if (this.loadBit()) {
+        return this.loadUintBig(bits);
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Load int
+     * @param bits number of bits to read
+     * @returns int value
+     */
+    loadInt(bits) {
+      return this._reader.loadInt(bits);
+    }
+    /**
+     * Load int
+     * @param bits number of bits to read
+     * @returns int value
+     */
+    loadIntBig(bits) {
+      return this._reader.loadIntBig(bits);
+    }
+    /**
+     * Preload int
+     * @param bits number of bits to read
+     * @returns int value
+     */
+    preloadInt(bits) {
+      return this._reader.preloadInt(bits);
+    }
+    /**
+     * Preload int
+     * @param bits number of bits to read
+     * @returns int value
+     */
+    preloadIntBig(bits) {
+      return this._reader.preloadIntBig(bits);
+    }
+    /**
+     * Load maybe uint
+     * @param bits number of bits to read
+     * @returns uint value or null
+     */
+    loadMaybeInt(bits) {
+      if (this.loadBit()) {
+        return this.loadInt(bits);
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Load maybe uint
+     * @param bits number of bits to read
+     * @returns uint value or null
+     */
+    loadMaybeIntBig(bits) {
+      if (this.loadBit()) {
+        return this.loadIntBig(bits);
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Load varuint
+     * @param bits number of bits to read in header
+     * @returns varuint value
+     */
+    loadVarUint(bits) {
+      return this._reader.loadVarUint(bits);
+    }
+    /**
+     * Load varuint
+     * @param bits number of bits to read in header
+     * @returns varuint value
+     */
+    loadVarUintBig(bits) {
+      return this._reader.loadVarUintBig(bits);
+    }
+    /**
+     * Preload varuint
+     * @param bits number of bits to read in header
+     * @returns varuint value
+     */
+    preloadVarUint(bits) {
+      return this._reader.preloadVarUint(bits);
+    }
+    /**
+     * Preload varuint
+     * @param bits number of bits to read in header
+     * @returns varuint value
+     */
+    preloadVarUintBig(bits) {
+      return this._reader.preloadVarUintBig(bits);
+    }
+    /**
+     * Load varint
+     * @param bits number of bits to read in header
+     * @returns varint value
+     */
+    loadVarInt(bits) {
+      return this._reader.loadVarInt(bits);
+    }
+    /**
+     * Load varint
+     * @param bits number of bits to read in header
+     * @returns varint value
+     */
+    loadVarIntBig(bits) {
+      return this._reader.loadVarIntBig(bits);
+    }
+    /**
+     * Preload varint
+     * @param bits number of bits to read in header
+     * @returns varint value
+     */
+    preloadVarInt(bits) {
+      return this._reader.preloadVarInt(bits);
+    }
+    /**
+     * Preload varint
+     * @param bits number of bits to read in header
+     * @returns varint value
+     */
+    preloadVarIntBig(bits) {
+      return this._reader.preloadVarIntBig(bits);
+    }
+    /**
+     * Load coins
+     * @returns coins value
+     */
+    loadCoins() {
+      return this._reader.loadCoins();
+    }
+    /**
+     * Preload coins
+     * @returns coins value
+     */
+    preloadCoins() {
+      return this._reader.preloadCoins();
+    }
+    /**
+     * Load maybe coins
+     * @returns coins value or null
+     */
+    loadMaybeCoins() {
+      if (this._reader.loadBit()) {
+        return this._reader.loadCoins();
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Load internal Address
+     * @returns Address
+     */
+    loadAddress() {
+      return this._reader.loadAddress();
+    }
+    /**
+     * Load optional internal Address
+     * @returns Address or null
+     */
+    loadMaybeAddress() {
+      return this._reader.loadMaybeAddress();
+    }
+    /**
+     * Load external address
+     * @returns ExternalAddress
+     */
+    loadExternalAddress() {
+      return this._reader.loadExternalAddress();
+    }
+    /**
+     * Load optional external address
+     * @returns ExternalAddress or null
+     */
+    loadMaybeExternalAddress() {
+      return this._reader.loadMaybeExternalAddress();
+    }
+    /**
+     * Load address
+     * @returns Address, ExternalAddress or null
+     */
+    loadAddressAny() {
+      return this._reader.loadAddressAny();
+    }
+    /**
+     * Load reference
+     * @returns Cell
+     */
+    loadRef() {
+      if (this._refsOffset >= this._refs.length) {
+        throw new Error("No more references");
+      }
+      return this._refs[this._refsOffset++];
+    }
+    /**
+     * Preload reference
+     * @returns Cell
+     */
+    preloadRef() {
+      if (this._refsOffset >= this._refs.length) {
+        throw new Error("No more references");
+      }
+      return this._refs[this._refsOffset];
+    }
+    /**
+     * Load optional reference
+     * @returns Cell or null
+     */
+    loadMaybeRef() {
+      if (this.loadBit()) {
+        return this.loadRef();
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Preload optional reference
+     * @returns Cell or null
+     */
+    preloadMaybeRef() {
+      if (this.preloadBit()) {
+        return this.preloadRef();
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Load byte buffer
+     * @param bytes number of bytes to load
+     * @returns Buffer
+     */
+    loadBuffer(bytes) {
+      return this._reader.loadBuffer(bytes);
+    }
+    /**
+     * Load byte buffer
+     * @param bytes number of bytes to load
+     * @returns Buffer
+     */
+    preloadBuffer(bytes) {
+      return this._reader.preloadBuffer(bytes);
+    }
+    /**
+     * Load string tail
+     */
+    loadStringTail() {
+      return (0, strings_1.readString)(this);
+    }
+    /**
+     * Load maybe string tail
+     * @returns string or null
+     */
+    loadMaybeStringTail() {
+      if (this.loadBit()) {
+        return (0, strings_1.readString)(this);
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Load string tail from ref
+     * @returns string
+     */
+    loadStringRefTail() {
+      return (0, strings_1.readString)(this.loadRef().beginParse());
+    }
+    /**
+     * Load maybe string tail from ref
+     * @returns string or null
+     */
+    loadMaybeStringRefTail() {
+      const ref = this.loadMaybeRef();
+      if (ref) {
+        return (0, strings_1.readString)(ref.beginParse());
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Loads dictionary
+     * @param key key description
+     * @param value value description
+     * @returns Dictionary<K, V>
+     */
+    loadDict(key2, value) {
+      return Dictionary_1.Dictionary.load(key2, value, this);
+    }
+    /**
+     * Loads dictionary directly from current slice
+     * @param key key description
+     * @param value value description
+     * @returns Dictionary<K, V>
+     */
+    loadDictDirect(key2, value) {
+      return Dictionary_1.Dictionary.loadDirect(key2, value, this);
+    }
+    /**
+     * Checks if slice is empty
+     */
+    endParse() {
+      if (this.remainingBits > 0 || this.remainingRefs > 0) {
+        throw new Error("Slice is not empty");
+      }
+    }
+    /**
+     * Convert slice to cell
+     */
+    asCell() {
+      return (0, Builder_12.beginCell)().storeSlice(this).endCell();
+    }
+    /**
+     *
+     * @returns
+     */
+    asBuilder() {
+      return (0, Builder_12.beginCell)().storeSlice(this);
+    }
+    /**
+     * Clone slice
+     * @returns cloned slice
+     */
+    clone(fromStart = false) {
+      if (fromStart) {
+        let reader2 = this._reader.clone();
+        reader2.reset();
+        return new Slice2(reader2, this._refs);
+      } else {
+        let res = new Slice2(this._reader, this._refs);
+        res._refsOffset = this._refsOffset;
+        return res;
+      }
+    }
+    /**
+     * Print slice as string by converting it to cell
+     * @returns string
+     */
+    toString() {
+      return this.asCell().toString();
+    }
+  };
+  Slice.Slice = Slice$12;
+  _a2 = symbol_inspect_1.default;
+  return Slice;
+}
+var resolveExotic = {};
+var exoticLibrary = {};
+var hasRequiredExoticLibrary;
+function requireExoticLibrary() {
+  if (hasRequiredExoticLibrary) return exoticLibrary;
+  hasRequiredExoticLibrary = 1;
+  Object.defineProperty(exoticLibrary, "__esModule", { value: true });
+  exoticLibrary.exoticLibrary = void 0;
+  const BitReader_1 = requireBitReader();
+  function exoticLibrary$12(bits, refs) {
+    const reader2 = new BitReader_1.BitReader(bits);
+    const size = 8 + 256;
+    if (bits.length !== size) {
+      throw new Error(`Library cell must have exactly (8 + 256) bits, got "${bits.length}"`);
+    }
+    let type = reader2.loadUint(8);
+    if (type !== 2) {
+      throw new Error(`Library cell must have type 2, got "${type}"`);
+    }
+    return {};
+  }
+  exoticLibrary.exoticLibrary = exoticLibrary$12;
+  return exoticLibrary;
+}
+var exoticMerkleUpdate = {};
+var hasRequiredExoticMerkleUpdate;
+function requireExoticMerkleUpdate() {
+  if (hasRequiredExoticMerkleUpdate) return exoticMerkleUpdate;
+  hasRequiredExoticMerkleUpdate = 1;
+  Object.defineProperty(exoticMerkleUpdate, "__esModule", { value: true });
+  exoticMerkleUpdate.exoticMerkleUpdate = void 0;
+  const BitReader_1 = requireBitReader();
+  function exoticMerkleUpdate$12(bits, refs) {
+    const reader2 = new BitReader_1.BitReader(bits);
+    const size = 8 + 2 * (256 + 16);
+    if (bits.length !== size) {
+      throw new Error(`Merkle Update cell must have exactly (8 + (2 * (256 + 16))) bits, got "${bits.length}"`);
+    }
+    if (refs.length !== 2) {
+      throw new Error(`Merkle Update cell must have exactly 2 refs, got "${refs.length}"`);
+    }
+    let type = reader2.loadUint(8);
+    if (type !== 4) {
+      throw new Error(`Merkle Update cell type must be exactly 4, got "${type}"`);
+    }
+    const proofHash1 = reader2.loadBuffer(32);
+    const proofHash2 = reader2.loadBuffer(32);
+    const proofDepth1 = reader2.loadUint(16);
+    const proofDepth2 = reader2.loadUint(16);
+    if (proofDepth1 !== refs[0].depth(0)) {
+      throw new Error(`Merkle Update cell ref depth must be exactly "${proofDepth1}", got "${refs[0].depth(0)}"`);
+    }
+    if (!proofHash1.equals(refs[0].hash(0))) {
+      throw new Error(`Merkle Update cell ref hash must be exactly "${proofHash1.toString("hex")}", got "${refs[0].hash(0).toString("hex")}"`);
+    }
+    if (proofDepth2 !== refs[1].depth(0)) {
+      throw new Error(`Merkle Update cell ref depth must be exactly "${proofDepth2}", got "${refs[1].depth(0)}"`);
+    }
+    if (!proofHash2.equals(refs[1].hash(0))) {
+      throw new Error(`Merkle Update cell ref hash must be exactly "${proofHash2.toString("hex")}", got "${refs[1].hash(0).toString("hex")}"`);
+    }
+    return {
+      proofDepth1,
+      proofDepth2,
+      proofHash1,
+      proofHash2
+    };
+  }
+  exoticMerkleUpdate.exoticMerkleUpdate = exoticMerkleUpdate$12;
+  return exoticMerkleUpdate;
+}
+var exoticPruned = {};
+var LevelMask = {};
+var hasRequiredLevelMask;
+function requireLevelMask() {
+  if (hasRequiredLevelMask) return LevelMask;
+  hasRequiredLevelMask = 1;
+  Object.defineProperty(LevelMask, "__esModule", { value: true });
+  LevelMask.LevelMask = void 0;
+  let LevelMask$12 = class LevelMask2 {
+    constructor(mask = 0) {
+      this._mask = 0;
+      this._mask = mask;
+      this._hashIndex = countSetBits(this._mask);
+      this._hashCount = this._hashIndex + 1;
+    }
+    get value() {
+      return this._mask;
+    }
+    get level() {
+      return 32 - Math.clz32(this._mask);
+    }
+    get hashIndex() {
+      return this._hashIndex;
+    }
+    get hashCount() {
+      return this._hashCount;
+    }
+    apply(level) {
+      return new LevelMask2(this._mask & (1 << level) - 1);
+    }
+    isSignificant(level) {
+      let res = level === 0 || (this._mask >> level - 1) % 2 !== 0;
+      return res;
+    }
+  };
+  LevelMask.LevelMask = LevelMask$12;
+  function countSetBits(n) {
+    n = n - (n >> 1 & 1431655765);
+    n = (n & 858993459) + (n >> 2 & 858993459);
+    return (n + (n >> 4) & 252645135) * 16843009 >> 24;
+  }
+  return LevelMask;
+}
+var hasRequiredExoticPruned;
+function requireExoticPruned() {
+  if (hasRequiredExoticPruned) return exoticPruned;
+  hasRequiredExoticPruned = 1;
+  Object.defineProperty(exoticPruned, "__esModule", { value: true });
+  exoticPruned.exoticPruned = void 0;
+  const BitReader_1 = requireBitReader();
+  const LevelMask_1 = requireLevelMask();
+  function exoticPruned$12(bits, refs) {
+    let reader2 = new BitReader_1.BitReader(bits);
+    let type = reader2.loadUint(8);
+    if (type !== 1) {
+      throw new Error(`Pruned branch cell must have type 1, got "${type}"`);
+    }
+    if (refs.length !== 0) {
+      throw new Error(`Pruned Branch cell can't has refs, got "${refs.length}"`);
+    }
+    let mask;
+    if (bits.length === 280) {
+      mask = new LevelMask_1.LevelMask(1);
+    } else {
+      mask = new LevelMask_1.LevelMask(reader2.loadUint(8));
+      if (mask.level < 1 || mask.level > 3) {
+        throw new Error(`Pruned Branch cell level must be >= 1 and <= 3, got "${mask.level}/${mask.value}"`);
+      }
+      const size = 8 + 8 + mask.apply(mask.level - 1).hashCount * (256 + 16);
+      if (bits.length !== size) {
+        throw new Error(`Pruned branch cell must have exactly ${size} bits, got "${bits.length}"`);
+      }
+    }
+    let pruned = [];
+    let hashes = [];
+    let depths = [];
+    for (let i = 0; i < mask.level; i++) {
+      hashes.push(reader2.loadBuffer(32));
+    }
+    for (let i = 0; i < mask.level; i++) {
+      depths.push(reader2.loadUint(16));
+    }
+    for (let i = 0; i < mask.level; i++) {
+      pruned.push({
+        depth: depths[i],
+        hash: hashes[i]
+      });
+    }
+    return {
+      mask: mask.value,
+      pruned
+    };
+  }
+  exoticPruned.exoticPruned = exoticPruned$12;
+  return exoticPruned;
+}
+var hasRequiredResolveExotic;
+function requireResolveExotic() {
+  if (hasRequiredResolveExotic) return resolveExotic;
+  hasRequiredResolveExotic = 1;
+  Object.defineProperty(resolveExotic, "__esModule", { value: true });
+  resolveExotic.resolveExotic = void 0;
+  const BitReader_1 = requireBitReader();
+  const CellType_1 = requireCellType();
+  const exoticLibrary_1 = requireExoticLibrary();
+  const exoticMerkleProof_1 = requireExoticMerkleProof();
+  const exoticMerkleUpdate_1 = requireExoticMerkleUpdate();
+  const exoticPruned_1 = requireExoticPruned();
+  const LevelMask_1 = requireLevelMask();
+  function resolvePruned(bits, refs) {
+    let pruned = (0, exoticPruned_1.exoticPruned)(bits, refs);
+    let depths = [];
+    let hashes = [];
+    let mask = new LevelMask_1.LevelMask(pruned.mask);
+    for (let i = 0; i < pruned.pruned.length; i++) {
+      depths.push(pruned.pruned[i].depth);
+      hashes.push(pruned.pruned[i].hash);
+    }
+    return {
+      type: CellType_1.CellType.PrunedBranch,
+      depths,
+      hashes,
+      mask
+    };
+  }
+  function resolveLibrary(bits, refs) {
+    (0, exoticLibrary_1.exoticLibrary)(bits, refs);
+    let depths = [];
+    let hashes = [];
+    let mask = new LevelMask_1.LevelMask();
+    return {
+      type: CellType_1.CellType.Library,
+      depths,
+      hashes,
+      mask
+    };
+  }
+  function resolveMerkleProof(bits, refs) {
+    (0, exoticMerkleProof_1.exoticMerkleProof)(bits, refs);
+    let depths = [];
+    let hashes = [];
+    let mask = new LevelMask_1.LevelMask(refs[0].level() >> 1);
+    return {
+      type: CellType_1.CellType.MerkleProof,
+      depths,
+      hashes,
+      mask
+    };
+  }
+  function resolveMerkleUpdate(bits, refs) {
+    (0, exoticMerkleUpdate_1.exoticMerkleUpdate)(bits, refs);
+    let depths = [];
+    let hashes = [];
+    let mask = new LevelMask_1.LevelMask((refs[0].level() | refs[1].level()) >> 1);
+    return {
+      type: CellType_1.CellType.MerkleUpdate,
+      depths,
+      hashes,
+      mask
+    };
+  }
+  function resolveExotic$12(bits, refs) {
+    let reader2 = new BitReader_1.BitReader(bits);
+    let type = reader2.preloadUint(8);
+    if (type === 1) {
+      return resolvePruned(bits, refs);
+    }
+    if (type === 2) {
+      return resolveLibrary(bits, refs);
+    }
+    if (type === 3) {
+      return resolveMerkleProof(bits, refs);
+    }
+    if (type === 4) {
+      return resolveMerkleUpdate(bits, refs);
+    }
+    throw Error("Invalid exotic cell type: " + type);
+  }
+  resolveExotic.resolveExotic = resolveExotic$12;
+  return resolveExotic;
+}
+var wonderCalculator = {};
+var descriptor = {};
+var hasRequiredDescriptor;
+function requireDescriptor() {
+  if (hasRequiredDescriptor) return descriptor;
+  hasRequiredDescriptor = 1;
+  Object.defineProperty(descriptor, "__esModule", { value: true });
+  descriptor.getRepr = descriptor.getBitsDescriptor = descriptor.getRefsDescriptor = void 0;
+  const CellType_1 = requireCellType();
+  const paddedBits_1 = requirePaddedBits();
+  function getRefsDescriptor(refs, levelMask, type) {
+    return refs.length + (type !== CellType_1.CellType.Ordinary ? 1 : 0) * 8 + levelMask * 32;
+  }
+  descriptor.getRefsDescriptor = getRefsDescriptor;
+  function getBitsDescriptor(bits) {
+    let len = bits.length;
+    return Math.ceil(len / 8) + Math.floor(len / 8);
+  }
+  descriptor.getBitsDescriptor = getBitsDescriptor;
+  function getRepr(originalBits, bits, refs, level, levelMask, type) {
+    const bitsLen = Math.ceil(bits.length / 8);
+    const repr = Buffer.alloc(2 + bitsLen + (2 + 32) * refs.length);
+    let reprCursor = 0;
+    repr[reprCursor++] = getRefsDescriptor(refs, levelMask, type);
+    repr[reprCursor++] = getBitsDescriptor(originalBits);
+    (0, paddedBits_1.bitsToPaddedBuffer)(bits).copy(repr, reprCursor);
+    reprCursor += bitsLen;
+    for (const c of refs) {
+      let childDepth;
+      if (type == CellType_1.CellType.MerkleProof || type == CellType_1.CellType.MerkleUpdate) {
+        childDepth = c.depth(level + 1);
+      } else {
+        childDepth = c.depth(level);
+      }
+      repr[reprCursor++] = Math.floor(childDepth / 256);
+      repr[reprCursor++] = childDepth % 256;
+    }
+    for (const c of refs) {
+      let childHash;
+      if (type == CellType_1.CellType.MerkleProof || type == CellType_1.CellType.MerkleUpdate) {
+        childHash = c.hash(level + 1);
+      } else {
+        childHash = c.hash(level);
+      }
+      childHash.copy(repr, reprCursor);
+      reprCursor += 32;
+    }
+    return repr;
+  }
+  descriptor.getRepr = getRepr;
+  return descriptor;
+}
+var hasRequiredWonderCalculator;
+function requireWonderCalculator() {
+  if (hasRequiredWonderCalculator) return wonderCalculator;
+  hasRequiredWonderCalculator = 1;
+  Object.defineProperty(wonderCalculator, "__esModule", { value: true });
+  wonderCalculator.wonderCalculator = void 0;
+  const BitString_1 = requireBitString();
+  const CellType_1 = requireCellType();
+  const LevelMask_1 = requireLevelMask();
+  const exoticPruned_1 = requireExoticPruned();
+  const exoticMerkleProof_1 = requireExoticMerkleProof();
+  const descriptor_1 = requireDescriptor();
+  const crypto_1 = requireDist$6();
+  const exoticMerkleUpdate_1 = requireExoticMerkleUpdate();
+  const exoticLibrary_1 = requireExoticLibrary();
+  function wonderCalculator$12(type, bits, refs) {
+    let levelMask;
+    let pruned = null;
+    if (type === CellType_1.CellType.Ordinary) {
+      let mask = 0;
+      for (let r of refs) {
+        mask = mask | r.mask.value;
+      }
+      levelMask = new LevelMask_1.LevelMask(mask);
+    } else if (type === CellType_1.CellType.PrunedBranch) {
+      pruned = (0, exoticPruned_1.exoticPruned)(bits, refs);
+      levelMask = new LevelMask_1.LevelMask(pruned.mask);
+    } else if (type === CellType_1.CellType.MerkleProof) {
+      (0, exoticMerkleProof_1.exoticMerkleProof)(bits, refs);
+      levelMask = new LevelMask_1.LevelMask(refs[0].mask.value >> 1);
+    } else if (type === CellType_1.CellType.MerkleUpdate) {
+      (0, exoticMerkleUpdate_1.exoticMerkleUpdate)(bits, refs);
+      levelMask = new LevelMask_1.LevelMask((refs[0].mask.value | refs[1].mask.value) >> 1);
+    } else if (type === CellType_1.CellType.Library) {
+      (0, exoticLibrary_1.exoticLibrary)(bits, refs);
+      levelMask = new LevelMask_1.LevelMask();
+    } else {
+      throw new Error("Unsupported exotic type");
+    }
+    let depths = [];
+    let hashes = [];
+    let hashCount = type === CellType_1.CellType.PrunedBranch ? 1 : levelMask.hashCount;
+    let totalHashCount = levelMask.hashCount;
+    let hashIOffset = totalHashCount - hashCount;
+    for (let levelI = 0, hashI = 0; levelI <= levelMask.level; levelI++) {
+      if (!levelMask.isSignificant(levelI)) {
+        continue;
+      }
+      if (hashI < hashIOffset) {
+        hashI++;
+        continue;
+      }
+      let currentBits;
+      if (hashI === hashIOffset) {
+        if (!(levelI === 0 || type === CellType_1.CellType.PrunedBranch)) {
+          throw Error("Invalid");
+        }
+        currentBits = bits;
+      } else {
+        if (!(levelI !== 0 && type !== CellType_1.CellType.PrunedBranch)) {
+          throw Error("Invalid: " + levelI + ", " + type);
+        }
+        currentBits = new BitString_1.BitString(hashes[hashI - hashIOffset - 1], 0, 256);
+      }
+      let currentDepth = 0;
+      for (let c of refs) {
+        let childDepth;
+        if (type == CellType_1.CellType.MerkleProof || type == CellType_1.CellType.MerkleUpdate) {
+          childDepth = c.depth(levelI + 1);
+        } else {
+          childDepth = c.depth(levelI);
+        }
+        currentDepth = Math.max(currentDepth, childDepth);
+      }
+      if (refs.length > 0) {
+        currentDepth++;
+      }
+      let repr = (0, descriptor_1.getRepr)(bits, currentBits, refs, levelI, levelMask.apply(levelI).value, type);
+      let hash = (0, crypto_1.sha256_sync)(repr);
+      let destI = hashI - hashIOffset;
+      depths[destI] = currentDepth;
+      hashes[destI] = hash;
+      hashI++;
+    }
+    let resolvedHashes = [];
+    let resolvedDepths = [];
+    if (pruned) {
+      for (let i = 0; i < 4; i++) {
+        const { hashIndex } = levelMask.apply(i);
+        const { hashIndex: thisHashIndex } = levelMask;
+        if (hashIndex !== thisHashIndex) {
+          resolvedHashes.push(pruned.pruned[hashIndex].hash);
+          resolvedDepths.push(pruned.pruned[hashIndex].depth);
+        } else {
+          resolvedHashes.push(hashes[0]);
+          resolvedDepths.push(depths[0]);
+        }
+      }
+    } else {
+      for (let i = 0; i < 4; i++) {
+        resolvedHashes.push(hashes[levelMask.apply(i).hashIndex]);
+        resolvedDepths.push(depths[levelMask.apply(i).hashIndex]);
+      }
+    }
+    return {
+      mask: levelMask,
+      hashes: resolvedHashes,
+      depths: resolvedDepths
+    };
+  }
+  wonderCalculator.wonderCalculator = wonderCalculator$12;
+  return wonderCalculator;
+}
+var serialization = {};
+var topologicalSort = {};
+var hasRequiredTopologicalSort;
+function requireTopologicalSort() {
+  if (hasRequiredTopologicalSort) return topologicalSort;
+  hasRequiredTopologicalSort = 1;
+  Object.defineProperty(topologicalSort, "__esModule", { value: true });
+  topologicalSort.topologicalSort = void 0;
+  function topologicalSort$12(src2) {
+    let pending = [src2];
+    let allCells = /* @__PURE__ */ new Map();
+    let notPermCells = /* @__PURE__ */ new Set();
+    let sorted = [];
+    while (pending.length > 0) {
+      const cells = [...pending];
+      pending = [];
+      for (let cell of cells) {
+        const hash = cell.hash().toString("hex");
+        if (allCells.has(hash)) {
+          continue;
+        }
+        notPermCells.add(hash);
+        allCells.set(hash, { cell, refs: cell.refs.map((v2) => v2.hash().toString("hex")) });
+        for (let r of cell.refs) {
+          pending.push(r);
+        }
+      }
+    }
+    let tempMark = /* @__PURE__ */ new Set();
+    function visit2(hash) {
+      if (!notPermCells.has(hash)) {
+        return;
+      }
+      if (tempMark.has(hash)) {
+        throw Error("Not a DAG");
+      }
+      tempMark.add(hash);
+      let refs = allCells.get(hash).refs;
+      for (let ci = refs.length - 1; ci >= 0; ci--) {
+        visit2(refs[ci]);
+      }
+      sorted.push(hash);
+      tempMark.delete(hash);
+      notPermCells.delete(hash);
+    }
+    while (notPermCells.size > 0) {
+      const id = Array.from(notPermCells)[0];
+      visit2(id);
+    }
+    let indexes = /* @__PURE__ */ new Map();
+    for (let i = 0; i < sorted.length; i++) {
+      indexes.set(sorted[sorted.length - i - 1], i);
+    }
+    let result = [];
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      let ent = sorted[i];
+      const rrr = allCells.get(ent);
+      result.push({ cell: rrr.cell, refs: rrr.refs.map((v2) => indexes.get(v2)) });
+    }
+    return result;
+  }
+  topologicalSort.topologicalSort = topologicalSort$12;
+  return topologicalSort;
+}
+var bitsForNumber = {};
+var hasRequiredBitsForNumber;
+function requireBitsForNumber() {
+  if (hasRequiredBitsForNumber) return bitsForNumber;
+  hasRequiredBitsForNumber = 1;
+  Object.defineProperty(bitsForNumber, "__esModule", { value: true });
+  bitsForNumber.bitsForNumber = void 0;
+  function bitsForNumber$12(src2, mode) {
+    let v2 = BigInt(src2);
+    if (mode === "int") {
+      if (v2 === 0n || v2 === -1n) {
+        return 1;
+      }
+      let v22 = v2 > 0 ? v2 : -v2;
+      return v22.toString(2).length + 1;
+    } else if (mode === "uint") {
+      if (v2 < 0) {
+        throw Error(`value is negative. Got ${src2}`);
+      }
+      return v2.toString(2).length;
+    } else {
+      throw Error(`invalid mode. Got ${mode}`);
+    }
+  }
+  bitsForNumber.bitsForNumber = bitsForNumber$12;
+  return bitsForNumber;
+}
+var crc32c = {};
+var hasRequiredCrc32c;
+function requireCrc32c() {
+  if (hasRequiredCrc32c) return crc32c;
+  hasRequiredCrc32c = 1;
+  Object.defineProperty(crc32c, "__esModule", { value: true });
+  crc32c.crc32c = void 0;
+  const POLY = 2197175160;
+  function crc32c$12(source) {
+    let crc = 0 ^ 4294967295;
+    for (let n = 0; n < source.length; n++) {
+      crc ^= source[n];
+      crc = crc & 1 ? crc >>> 1 ^ POLY : crc >>> 1;
+      crc = crc & 1 ? crc >>> 1 ^ POLY : crc >>> 1;
+      crc = crc & 1 ? crc >>> 1 ^ POLY : crc >>> 1;
+      crc = crc & 1 ? crc >>> 1 ^ POLY : crc >>> 1;
+      crc = crc & 1 ? crc >>> 1 ^ POLY : crc >>> 1;
+      crc = crc & 1 ? crc >>> 1 ^ POLY : crc >>> 1;
+      crc = crc & 1 ? crc >>> 1 ^ POLY : crc >>> 1;
+      crc = crc & 1 ? crc >>> 1 ^ POLY : crc >>> 1;
+    }
+    crc = crc ^ 4294967295;
+    let res = Buffer.alloc(4);
+    res.writeInt32LE(crc);
+    return res;
+  }
+  crc32c.crc32c = crc32c$12;
+  return crc32c;
+}
+var hasRequiredSerialization;
+function requireSerialization() {
+  if (hasRequiredSerialization) return serialization;
+  hasRequiredSerialization = 1;
+  Object.defineProperty(serialization, "__esModule", { value: true });
+  serialization.serializeBoc = serialization.deserializeBoc = serialization.parseBoc = void 0;
+  const BitReader_1 = requireBitReader();
+  const BitString_1 = requireBitString();
+  const Cell_1 = requireCell();
+  const topologicalSort_1 = requireTopologicalSort();
+  const bitsForNumber_1 = requireBitsForNumber();
+  const BitBuilder_1 = requireBitBuilder();
+  const descriptor_1 = requireDescriptor();
+  const paddedBits_1 = requirePaddedBits();
+  const crc32c_1 = requireCrc32c();
+  function getHashesCount(levelMask) {
+    return getHashesCountFromMask(levelMask & 7);
+  }
+  function getHashesCountFromMask(mask) {
+    let n = 0;
+    for (let i = 0; i < 3; i++) {
+      n += mask & 1;
+      mask = mask >> 1;
+    }
+    return n + 1;
+  }
+  function readCell(reader2, sizeBytes) {
+    const d1 = reader2.loadUint(8);
+    const refsCount = d1 % 8;
+    const exotic = !!(d1 & 8);
+    const d2 = reader2.loadUint(8);
+    const dataBytesize = Math.ceil(d2 / 2);
+    const paddingAdded = !!(d2 % 2);
+    const levelMask = d1 >> 5;
+    const hasHashes = (d1 & 16) != 0;
+    const hash_bytes = 32;
+    const hashesSize = hasHashes ? getHashesCount(levelMask) * hash_bytes : 0;
+    const depthSize = hasHashes ? getHashesCount(levelMask) * 2 : 0;
+    reader2.skip(hashesSize * 8);
+    reader2.skip(depthSize * 8);
+    let bits = BitString_1.BitString.EMPTY;
+    if (dataBytesize > 0) {
+      if (paddingAdded) {
+        bits = reader2.loadPaddedBits(dataBytesize * 8);
+      } else {
+        bits = reader2.loadBits(dataBytesize * 8);
+      }
+    }
+    let refs = [];
+    for (let i = 0; i < refsCount; i++) {
+      refs.push(reader2.loadUint(sizeBytes * 8));
+    }
+    return {
+      bits,
+      refs,
+      exotic
+    };
+  }
+  function calcCellSize(cell, sizeBytes) {
+    return 2 + Math.ceil(cell.bits.length / 8) + cell.refs.length * sizeBytes;
+  }
+  function parseBoc(src2) {
+    let reader2 = new BitReader_1.BitReader(new BitString_1.BitString(src2, 0, src2.length * 8));
+    let magic = reader2.loadUint(32);
+    if (magic === 1761568243) {
+      let size = reader2.loadUint(8);
+      let offBytes = reader2.loadUint(8);
+      let cells = reader2.loadUint(size * 8);
+      let roots = reader2.loadUint(size * 8);
+      let absent = reader2.loadUint(size * 8);
+      let totalCellSize = reader2.loadUint(offBytes * 8);
+      let index = reader2.loadBuffer(cells * offBytes);
+      let cellData = reader2.loadBuffer(totalCellSize);
+      return {
+        size,
+        offBytes,
+        cells,
+        roots,
+        absent,
+        totalCellSize,
+        index,
+        cellData,
+        root: [0]
+      };
+    } else if (magic === 2898503464) {
+      let size = reader2.loadUint(8);
+      let offBytes = reader2.loadUint(8);
+      let cells = reader2.loadUint(size * 8);
+      let roots = reader2.loadUint(size * 8);
+      let absent = reader2.loadUint(size * 8);
+      let totalCellSize = reader2.loadUint(offBytes * 8);
+      let index = reader2.loadBuffer(cells * offBytes);
+      let cellData = reader2.loadBuffer(totalCellSize);
+      let crc32 = reader2.loadBuffer(4);
+      if (!(0, crc32c_1.crc32c)(src2.subarray(0, src2.length - 4)).equals(crc32)) {
+        throw Error("Invalid CRC32C");
+      }
+      return {
+        size,
+        offBytes,
+        cells,
+        roots,
+        absent,
+        totalCellSize,
+        index,
+        cellData,
+        root: [0]
+      };
+    } else if (magic === 3052313714) {
+      let hasIdx = reader2.loadUint(1);
+      let hasCrc32c = reader2.loadUint(1);
+      reader2.loadUint(1);
+      reader2.loadUint(2);
+      let size = reader2.loadUint(3);
+      let offBytes = reader2.loadUint(8);
+      let cells = reader2.loadUint(size * 8);
+      let roots = reader2.loadUint(size * 8);
+      let absent = reader2.loadUint(size * 8);
+      let totalCellSize = reader2.loadUint(offBytes * 8);
+      let root = [];
+      for (let i = 0; i < roots; i++) {
+        root.push(reader2.loadUint(size * 8));
+      }
+      let index = null;
+      if (hasIdx) {
+        index = reader2.loadBuffer(cells * offBytes);
+      }
+      let cellData = reader2.loadBuffer(totalCellSize);
+      if (hasCrc32c) {
+        let crc32 = reader2.loadBuffer(4);
+        if (!(0, crc32c_1.crc32c)(src2.subarray(0, src2.length - 4)).equals(crc32)) {
+          throw Error("Invalid CRC32C");
+        }
+      }
+      return {
+        size,
+        offBytes,
+        cells,
+        roots,
+        absent,
+        totalCellSize,
+        index,
+        cellData,
+        root
+      };
+    } else {
+      throw Error("Invalid magic");
+    }
+  }
+  serialization.parseBoc = parseBoc;
+  function deserializeBoc(src2) {
+    let boc = parseBoc(src2);
+    let reader2 = new BitReader_1.BitReader(new BitString_1.BitString(boc.cellData, 0, boc.cellData.length * 8));
+    let cells = [];
+    for (let i = 0; i < boc.cells; i++) {
+      let cll = readCell(reader2, boc.size);
+      cells.push({ ...cll, result: null });
+    }
+    for (let i = cells.length - 1; i >= 0; i--) {
+      if (cells[i].result) {
+        throw Error("Impossible");
+      }
+      let refs = [];
+      for (let r of cells[i].refs) {
+        if (!cells[r].result) {
+          throw Error("Invalid BOC file");
+        }
+        refs.push(cells[r].result);
+      }
+      cells[i].result = new Cell_1.Cell({ bits: cells[i].bits, refs, exotic: cells[i].exotic });
+    }
+    let roots = [];
+    for (let i = 0; i < boc.root.length; i++) {
+      roots.push(cells[boc.root[i]].result);
+    }
+    return roots;
+  }
+  serialization.deserializeBoc = deserializeBoc;
+  function writeCellToBuilder(cell, refs, sizeBytes, to2) {
+    let d1 = (0, descriptor_1.getRefsDescriptor)(cell.refs, cell.mask.value, cell.type);
+    let d2 = (0, descriptor_1.getBitsDescriptor)(cell.bits);
+    to2.writeUint(d1, 8);
+    to2.writeUint(d2, 8);
+    to2.writeBuffer((0, paddedBits_1.bitsToPaddedBuffer)(cell.bits));
+    for (let r of refs) {
+      to2.writeUint(r, sizeBytes * 8);
+    }
+  }
+  function serializeBoc(root, opts) {
+    let allCells = (0, topologicalSort_1.topologicalSort)(root);
+    let cellsNum = allCells.length;
+    let has_idx = opts.idx;
+    let has_crc32c = opts.crc32;
+    let has_cache_bits = false;
+    let flags = 0;
+    let sizeBytes = Math.max(Math.ceil((0, bitsForNumber_1.bitsForNumber)(cellsNum, "uint") / 8), 1);
+    let totalCellSize = 0;
+    let index = [];
+    for (let c of allCells) {
+      let sz = calcCellSize(c.cell, sizeBytes);
+      totalCellSize += sz;
+      index.push(totalCellSize);
+    }
+    let offsetBytes = Math.max(Math.ceil((0, bitsForNumber_1.bitsForNumber)(totalCellSize, "uint") / 8), 1);
+    let totalSize = (4 + // magic
+    1 + // flags and s_bytes
+    1 + // offset_bytes
+    3 * sizeBytes + // cells_num, roots, complete
+    offsetBytes + // full_size
+    1 * sizeBytes + // root_idx
+    (has_idx ? cellsNum * offsetBytes : 0) + totalCellSize + (has_crc32c ? 4 : 0)) * 8;
+    let builder2 = new BitBuilder_1.BitBuilder(totalSize);
+    builder2.writeUint(3052313714, 32);
+    builder2.writeBit(has_idx);
+    builder2.writeBit(has_crc32c);
+    builder2.writeBit(has_cache_bits);
+    builder2.writeUint(flags, 2);
+    builder2.writeUint(sizeBytes, 3);
+    builder2.writeUint(offsetBytes, 8);
+    builder2.writeUint(cellsNum, sizeBytes * 8);
+    builder2.writeUint(1, sizeBytes * 8);
+    builder2.writeUint(0, sizeBytes * 8);
+    builder2.writeUint(totalCellSize, offsetBytes * 8);
+    builder2.writeUint(0, sizeBytes * 8);
+    if (has_idx) {
+      for (let i = 0; i < cellsNum; i++) {
+        builder2.writeUint(index[i], offsetBytes * 8);
+      }
+    }
+    for (let i = 0; i < cellsNum; i++) {
+      writeCellToBuilder(allCells[i].cell, allCells[i].refs, sizeBytes, builder2);
+    }
+    if (has_crc32c) {
+      let crc32 = (0, crc32c_1.crc32c)(builder2.buffer());
+      builder2.writeBuffer(crc32);
+    }
+    let res = builder2.buffer();
+    if (res.length !== totalSize / 8) {
+      throw Error("Internal error");
+    }
+    return res;
+  }
+  serialization.serializeBoc = serializeBoc;
+  return serialization;
+}
+var hasRequiredCell;
+function requireCell() {
+  if (hasRequiredCell) return Cell;
+  hasRequiredCell = 1;
+  var __importDefault = Cell && Cell.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+  };
+  var _a2;
+  Object.defineProperty(Cell, "__esModule", { value: true });
+  Cell.Cell = void 0;
+  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const BitString_1 = requireBitString();
+  const CellType_1 = requireCellType();
+  const Slice_1 = requireSlice();
+  const resolveExotic_1 = requireResolveExotic();
+  const wonderCalculator_1 = requireWonderCalculator();
+  const serialization_1 = requireSerialization();
+  const BitReader_1 = requireBitReader();
+  const Builder_12 = requireBuilder$1();
+  let Cell$12 = class Cell2 {
+    /**
+     * Deserialize cells from BOC
+     * @param src source buffer
+     * @returns array of cells
+     */
+    static fromBoc(src2) {
+      return (0, serialization_1.deserializeBoc)(src2);
+    }
+    /**
+     * Helper function that deserializes a single cell from BOC in base64
+     * @param src source string
+     */
+    static fromBase64(src2) {
+      let parsed = Cell2.fromBoc(Buffer.from(src2, "base64"));
+      if (parsed.length !== 1) {
+        throw new Error("Deserialized more than one cell");
+      }
+      return parsed[0];
+    }
+    /**
+     * Helper function that deserializes a single cell from BOC in hex
+     * @param src source string
+     */
+    static fromHex(src2) {
+      let parsed = Cell2.fromBoc(Buffer.from(src2, "hex"));
+      if (parsed.length !== 1) {
+        throw new Error("Deserialized more than one cell");
+      }
+      return parsed[0];
+    }
+    constructor(opts) {
+      this._hashes = [];
+      this._depths = [];
+      this.beginParse = (allowExotic = false) => {
+        if (this.isExotic && !allowExotic) {
+          throw new Error("Exotic cells cannot be parsed");
+        }
+        return new Slice_1.Slice(new BitReader_1.BitReader(this.bits), this.refs);
+      };
+      this.hash = (level = 3) => {
+        return this._hashes[Math.min(this._hashes.length - 1, level)];
+      };
+      this.depth = (level = 3) => {
+        return this._depths[Math.min(this._depths.length - 1, level)];
+      };
+      this.level = () => {
+        return this.mask.level;
+      };
+      this.equals = (other) => {
+        return this.hash().equals(other.hash());
+      };
+      this[_a2] = () => this.toString();
+      let bits = BitString_1.BitString.EMPTY;
+      if (opts && opts.bits) {
+        bits = opts.bits;
+      }
+      let refs = [];
+      if (opts && opts.refs) {
+        refs = [...opts.refs];
+      }
+      let hashes;
+      let depths;
+      let mask;
+      let type = CellType_1.CellType.Ordinary;
+      if (opts && opts.exotic) {
+        let resolved = (0, resolveExotic_1.resolveExotic)(bits, refs);
+        let wonders = (0, wonderCalculator_1.wonderCalculator)(resolved.type, bits, refs);
+        mask = wonders.mask;
+        depths = wonders.depths;
+        hashes = wonders.hashes;
+        type = resolved.type;
+      } else {
+        if (refs.length > 4) {
+          throw new Error("Invalid number of references");
+        }
+        if (bits.length > 1023) {
+          throw new Error(`Bits overflow: ${bits.length} > 1023`);
+        }
+        let wonders = (0, wonderCalculator_1.wonderCalculator)(CellType_1.CellType.Ordinary, bits, refs);
+        mask = wonders.mask;
+        depths = wonders.depths;
+        hashes = wonders.hashes;
+        type = CellType_1.CellType.Ordinary;
+      }
+      this.type = type;
+      this.bits = bits;
+      this.refs = refs;
+      this.mask = mask;
+      this._depths = depths;
+      this._hashes = hashes;
+      Object.freeze(this);
+      Object.freeze(this.refs);
+      Object.freeze(this.bits);
+      Object.freeze(this.mask);
+      Object.freeze(this._depths);
+      Object.freeze(this._hashes);
+    }
+    /**
+     * Check if cell is exotic
+     */
+    get isExotic() {
+      return this.type !== CellType_1.CellType.Ordinary;
+    }
+    /**
+     * Serializes cell to BOC
+     * @param opts options
+     */
+    toBoc(opts) {
+      let idx = opts && opts.idx !== null && opts.idx !== void 0 ? opts.idx : false;
+      let crc32 = opts && opts.crc32 !== null && opts.crc32 !== void 0 ? opts.crc32 : true;
+      return (0, serialization_1.serializeBoc)(this, { idx, crc32 });
+    }
+    /**
+     * Format cell to string
+     * @param indent indentation
+     * @returns string representation
+     */
+    toString(indent) {
+      let id = indent || "";
+      let t = "x";
+      if (this.isExotic) {
+        if (this.type === CellType_1.CellType.MerkleProof) {
+          t = "p";
+        } else if (this.type === CellType_1.CellType.MerkleUpdate) {
+          t = "u";
+        } else if (this.type === CellType_1.CellType.PrunedBranch) {
+          t = "p";
+        }
+      }
+      let s2 = id + (this.isExotic ? t : "x") + "{" + this.bits.toString() + "}";
+      for (let k2 in this.refs) {
+        const i = this.refs[k2];
+        s2 += "\n" + i.toString(id + " ");
+      }
+      return s2;
+    }
+    /**
+     * Covnert cell to slice
+     * @returns slice
+     */
+    asSlice() {
+      return this.beginParse();
+    }
+    /**
+     * Convert cell to a builder that has this cell stored
+     * @returns builder
+     */
+    asBuilder() {
+      return (0, Builder_12.beginCell)().storeSlice(this.asSlice());
+    }
+  };
+  Cell.Cell = Cell$12;
+  _a2 = symbol_inspect_1.default;
+  Cell$12.EMPTY = new Cell$12();
+  return Cell;
+}
+var hasRequiredBuilder$1;
+function requireBuilder$1() {
+  if (hasRequiredBuilder$1) return Builder$3;
+  hasRequiredBuilder$1 = 1;
+  Object.defineProperty(Builder$3, "__esModule", { value: true });
+  Builder$3.Builder = Builder$3.beginCell = void 0;
+  const BitBuilder_1 = requireBitBuilder();
+  const Cell_1 = requireCell();
+  const strings_1 = requireStrings();
+  function beginCell() {
+    return new Builder2();
+  }
+  Builder$3.beginCell = beginCell;
+  class Builder2 {
+    constructor() {
+      this._bits = new BitBuilder_1.BitBuilder();
+      this._refs = [];
+    }
+    /**
+     * Bits written so far
+     */
+    get bits() {
+      return this._bits.length;
+    }
+    /**
+     * References written so far
+     */
+    get refs() {
+      return this._refs.length;
+    }
+    /**
+     * Available bits
+     */
+    get availableBits() {
+      return 1023 - this.bits;
+    }
+    /**
+     * Available references
+     */
+    get availableRefs() {
+      return 4 - this.refs;
+    }
+    /**
+     * Write a single bit
+     * @param value bit to write, true or positive number for 1, false or zero or negative for 0
+     * @returns this builder
+     */
+    storeBit(value) {
+      this._bits.writeBit(value);
+      return this;
+    }
+    /**
+     * Write bits from BitString
+     * @param src source bits
+     * @returns this builder
+     */
+    storeBits(src2) {
+      this._bits.writeBits(src2);
+      return this;
+    }
+    /**
+     * Store Buffer
+     * @param src source buffer
+     * @param bytes optional number of bytes to write
+     * @returns this builder
+     */
+    storeBuffer(src2, bytes) {
+      if (bytes !== void 0 && bytes !== null) {
+        if (src2.length !== bytes) {
+          throw Error(`Buffer length ${src2.length} is not equal to ${bytes}`);
+        }
+      }
+      this._bits.writeBuffer(src2);
+      return this;
+    }
+    /**
+     * Store Maybe Buffer
+     * @param src source buffer or null
+     * @param bytes optional number of bytes to write
+     * @returns this builder
+     */
+    storeMaybeBuffer(src2, bytes) {
+      if (src2 !== null) {
+        this.storeBit(1);
+        this.storeBuffer(src2, bytes);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store uint value
+     * @param value value as bigint or number
+     * @param bits number of bits to write
+     * @returns this builder
+     */
+    storeUint(value, bits) {
+      this._bits.writeUint(value, bits);
+      return this;
+    }
+    /**
+     * Store maybe uint value
+     * @param value value as bigint or number, null or undefined
+     * @param bits number of bits to write
+     * @returns this builder
+     */
+    storeMaybeUint(value, bits) {
+      if (value !== null && value !== void 0) {
+        this.storeBit(1);
+        this.storeUint(value, bits);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store int value
+     * @param value value as bigint or number
+     * @param bits number of bits to write
+     * @returns this builder
+     */
+    storeInt(value, bits) {
+      this._bits.writeInt(value, bits);
+      return this;
+    }
+    /**
+     * Store maybe int value
+     * @param value value as bigint or number, null or undefined
+     * @param bits number of bits to write
+     * @returns this builder
+     */
+    storeMaybeInt(value, bits) {
+      if (value !== null && value !== void 0) {
+        this.storeBit(1);
+        this.storeInt(value, bits);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store varuint value
+     * @param value value as bigint or number
+     * @param bits number of bits to write to header
+     * @returns this builder
+     */
+    storeVarUint(value, bits) {
+      this._bits.writeVarUint(value, bits);
+      return this;
+    }
+    /**
+     * Store maybe varuint value
+     * @param value value as bigint or number, null or undefined
+     * @param bits number of bits to write to header
+     * @returns this builder
+     */
+    storeMaybeVarUint(value, bits) {
+      if (value !== null && value !== void 0) {
+        this.storeBit(1);
+        this.storeVarUint(value, bits);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store varint value
+     * @param value value as bigint or number
+     * @param bits number of bits to write to header
+     * @returns this builder
+     */
+    storeVarInt(value, bits) {
+      this._bits.writeVarInt(value, bits);
+      return this;
+    }
+    /**
+     * Store maybe varint value
+     * @param value value as bigint or number, null or undefined
+     * @param bits number of bits to write to header
+     * @returns this builder
+     */
+    storeMaybeVarInt(value, bits) {
+      if (value !== null && value !== void 0) {
+        this.storeBit(1);
+        this.storeVarInt(value, bits);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store coins value
+     * @param amount amount of coins
+     * @returns this builder
+     */
+    storeCoins(amount) {
+      this._bits.writeCoins(amount);
+      return this;
+    }
+    /**
+     * Store maybe coins value
+     * @param amount amount of coins, null or undefined
+     * @returns this builder
+     */
+    storeMaybeCoins(amount) {
+      if (amount !== null && amount !== void 0) {
+        this.storeBit(1);
+        this.storeCoins(amount);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store address
+     * @param addres address to store
+     * @returns this builder
+     */
+    storeAddress(address) {
+      this._bits.writeAddress(address);
+      return this;
+    }
+    /**
+     * Store reference
+     * @param cell cell or builder to store
+     * @returns this builder
+     */
+    storeRef(cell) {
+      if (this._refs.length >= 4) {
+        throw new Error("Too many references");
+      }
+      if (cell instanceof Cell_1.Cell) {
+        this._refs.push(cell);
+      } else if (cell instanceof Builder2) {
+        this._refs.push(cell.endCell());
+      } else {
+        throw new Error("Invalid argument");
+      }
+      return this;
+    }
+    /**
+     * Store reference if not null
+     * @param cell cell or builder to store
+     * @returns this builder
+     */
+    storeMaybeRef(cell) {
+      if (cell) {
+        this.storeBit(1);
+        this.storeRef(cell);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store slice it in this builder
+     * @param src source slice
+     */
+    storeSlice(src2) {
+      let c = src2.clone();
+      if (c.remainingBits > 0) {
+        this.storeBits(c.loadBits(c.remainingBits));
+      }
+      while (c.remainingRefs > 0) {
+        this.storeRef(c.loadRef());
+      }
+      return this;
+    }
+    /**
+     * Store slice in this builder if not null
+     * @param src source slice
+     */
+    storeMaybeSlice(src2) {
+      if (src2) {
+        this.storeBit(1);
+        this.storeSlice(src2);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store builder
+     * @param src builder to store
+     * @returns this builder
+     */
+    storeBuilder(src2) {
+      return this.storeSlice(src2.endCell().beginParse());
+    }
+    /**
+     * Store builder if not null
+     * @param src builder to store
+     * @returns this builder
+     */
+    storeMaybeBuilder(src2) {
+      if (src2) {
+        this.storeBit(1);
+        this.storeBuilder(src2);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store writer or builder
+     * @param writer writer or builder to store
+     * @returns this builder
+     */
+    storeWritable(writer) {
+      if (typeof writer === "object") {
+        writer.writeTo(this);
+      } else {
+        writer(this);
+      }
+      return this;
+    }
+    /**
+     * Store writer or builder if not null
+     * @param writer writer or builder to store
+     * @returns this builder
+     */
+    storeMaybeWritable(writer) {
+      if (writer) {
+        this.storeBit(1);
+        this.storeWritable(writer);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store object in this builder
+     * @param writer Writable or writer functuin
+     */
+    store(writer) {
+      this.storeWritable(writer);
+      return this;
+    }
+    /**
+     * Store string tail
+     * @param src source string
+     * @returns this builder
+     */
+    storeStringTail(src2) {
+      (0, strings_1.writeString)(src2, this);
+      return this;
+    }
+    /**
+     * Store string tail
+     * @param src source string
+     * @returns this builder
+     */
+    storeMaybeStringTail(src2) {
+      if (src2 !== null && src2 !== void 0) {
+        this.storeBit(1);
+        (0, strings_1.writeString)(src2, this);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store string tail in ref
+     * @param src source string
+     * @returns this builder
+     */
+    storeStringRefTail(src2) {
+      this.storeRef(beginCell().storeStringTail(src2));
+      return this;
+    }
+    /**
+     * Store maybe string tail in ref
+     * @param src source string
+     * @returns this builder
+     */
+    storeMaybeStringRefTail(src2) {
+      if (src2 !== null && src2 !== void 0) {
+        this.storeBit(1);
+        this.storeStringRefTail(src2);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store dictionary in this builder
+     * @param dict dictionary to store
+     * @returns this builder
+     */
+    storeDict(dict, key2, value) {
+      if (dict) {
+        dict.store(this, key2, value);
+      } else {
+        this.storeBit(0);
+      }
+      return this;
+    }
+    /**
+     * Store dictionary in this builder directly
+     * @param dict dictionary to store
+     * @returns this builder
+     */
+    storeDictDirect(dict, key2, value) {
+      dict.storeDirect(this, key2, value);
+      return this;
+    }
+    /**
+     * Complete cell
+     * @param opts options
+     * @returns cell
+     */
+    endCell(opts) {
+      return new Cell_1.Cell({
+        bits: this._bits.build(),
+        refs: this._refs,
+        exotic: opts?.exotic
+      });
+    }
+    /**
+     * Convert to cell
+     * @returns cell
+     */
+    asCell() {
+      return this.endCell();
+    }
+    /**
+     * Convert to slice
+     * @returns slice
+     */
+    asSlice() {
+      return this.endCell().beginParse();
+    }
+  }
+  Builder$3.Builder = Builder2;
+  return Builder$3;
+}
+var StateInit = {};
+var SimpleLibrary = {};
+var hasRequiredSimpleLibrary;
+function requireSimpleLibrary() {
+  if (hasRequiredSimpleLibrary) return SimpleLibrary;
+  hasRequiredSimpleLibrary = 1;
+  Object.defineProperty(SimpleLibrary, "__esModule", { value: true });
+  SimpleLibrary.SimpleLibraryValue = SimpleLibrary.storeSimpleLibrary = SimpleLibrary.loadSimpleLibrary = void 0;
+  function loadSimpleLibrary(slice) {
+    return {
+      public: slice.loadBit(),
+      root: slice.loadRef()
+    };
+  }
+  SimpleLibrary.loadSimpleLibrary = loadSimpleLibrary;
+  function storeSimpleLibrary(src2) {
+    return (builder2) => {
+      builder2.storeBit(src2.public);
+      builder2.storeRef(src2.root);
+    };
+  }
+  SimpleLibrary.storeSimpleLibrary = storeSimpleLibrary;
+  SimpleLibrary.SimpleLibraryValue = {
+    serialize(src2, builder2) {
+      storeSimpleLibrary(src2)(builder2);
+    },
+    parse(src2) {
+      return loadSimpleLibrary(src2);
+    }
+  };
+  return SimpleLibrary;
+}
+var TickTock = {};
+var hasRequiredTickTock;
+function requireTickTock() {
+  if (hasRequiredTickTock) return TickTock;
+  hasRequiredTickTock = 1;
+  Object.defineProperty(TickTock, "__esModule", { value: true });
+  TickTock.storeTickTock = TickTock.loadTickTock = void 0;
+  function loadTickTock(slice) {
+    return {
+      tick: slice.loadBit(),
+      tock: slice.loadBit()
+    };
+  }
+  TickTock.loadTickTock = loadTickTock;
+  function storeTickTock(src2) {
+    return (builder2) => {
+      builder2.storeBit(src2.tick);
+      builder2.storeBit(src2.tock);
+    };
+  }
+  TickTock.storeTickTock = storeTickTock;
+  return TickTock;
+}
+var hasRequiredStateInit;
+function requireStateInit() {
+  if (hasRequiredStateInit) return StateInit;
+  hasRequiredStateInit = 1;
+  Object.defineProperty(StateInit, "__esModule", { value: true });
+  StateInit.storeStateInit = StateInit.loadStateInit = void 0;
+  const Dictionary_1 = requireDictionary();
+  const SimpleLibrary_1 = requireSimpleLibrary();
+  const TickTock_1 = requireTickTock();
+  function loadStateInit(slice) {
+    let splitDepth;
+    if (slice.loadBit()) {
+      splitDepth = slice.loadUint(5);
+    }
+    let special;
+    if (slice.loadBit()) {
+      special = (0, TickTock_1.loadTickTock)(slice);
+    }
+    let code = slice.loadMaybeRef();
+    let data = slice.loadMaybeRef();
+    let libraries = slice.loadDict(Dictionary_1.Dictionary.Keys.BigUint(256), SimpleLibrary_1.SimpleLibraryValue);
+    if (libraries.size === 0) {
+      libraries = void 0;
+    }
+    return {
+      splitDepth,
+      special,
+      code,
+      data,
+      libraries
+    };
+  }
+  StateInit.loadStateInit = loadStateInit;
+  function storeStateInit(src2) {
+    return (builder2) => {
+      if (src2.splitDepth !== null && src2.splitDepth !== void 0) {
+        builder2.storeBit(true);
+        builder2.storeUint(src2.splitDepth, 5);
+      } else {
+        builder2.storeBit(false);
+      }
+      if (src2.special !== null && src2.special !== void 0) {
+        builder2.storeBit(true);
+        builder2.store((0, TickTock_1.storeTickTock)(src2.special));
+      } else {
+        builder2.storeBit(false);
+      }
+      builder2.storeMaybeRef(src2.code);
+      builder2.storeMaybeRef(src2.data);
+      builder2.storeDict(src2.libraries);
+    };
+  }
+  StateInit.storeStateInit = storeStateInit;
+  return StateInit;
+}
+var hasRequiredContractAddress;
+function requireContractAddress() {
+  if (hasRequiredContractAddress) return contractAddress;
+  hasRequiredContractAddress = 1;
+  Object.defineProperty(contractAddress, "__esModule", { value: true });
+  contractAddress.contractAddress = void 0;
+  const Builder_12 = requireBuilder$1();
+  const StateInit_1 = requireStateInit();
+  const Address_1 = requireAddress();
+  function contractAddress$12(workchain, init) {
+    let hash = (0, Builder_12.beginCell)().store((0, StateInit_1.storeStateInit)(init)).endCell().hash();
+    return new Address_1.Address(workchain, hash);
+  }
+  contractAddress.contractAddress = contractAddress$12;
+  return contractAddress;
+}
+var tuple = {};
+var hasRequiredTuple;
+function requireTuple() {
+  if (hasRequiredTuple) return tuple;
+  hasRequiredTuple = 1;
+  Object.defineProperty(tuple, "__esModule", { value: true });
+  tuple.parseTuple = tuple.serializeTuple = void 0;
+  const Builder_12 = requireBuilder$1();
+  const INT64_MIN = BigInt("-9223372036854775808");
+  const INT64_MAX = BigInt("9223372036854775807");
+  function serializeTupleItem(src2, builder2) {
+    if (src2.type === "null") {
+      builder2.storeUint(0, 8);
+    } else if (src2.type === "int") {
+      if (src2.value <= INT64_MAX && src2.value >= INT64_MIN) {
+        builder2.storeUint(1, 8);
+        builder2.storeInt(src2.value, 64);
+      } else {
+        builder2.storeUint(256, 15);
+        builder2.storeInt(src2.value, 257);
+      }
+    } else if (src2.type === "nan") {
+      builder2.storeInt(767, 16);
+    } else if (src2.type === "cell") {
+      builder2.storeUint(3, 8);
+      builder2.storeRef(src2.cell);
+    } else if (src2.type === "slice") {
+      builder2.storeUint(4, 8);
+      builder2.storeUint(0, 10);
+      builder2.storeUint(src2.cell.bits.length, 10);
+      builder2.storeUint(0, 3);
+      builder2.storeUint(src2.cell.refs.length, 3);
+      builder2.storeRef(src2.cell);
+    } else if (src2.type === "builder") {
+      builder2.storeUint(5, 8);
+      builder2.storeRef(src2.cell);
+    } else if (src2.type === "tuple") {
+      let head = null;
+      let tail = null;
+      for (let i = 0; i < src2.items.length; i++) {
+        let s2 = head;
+        head = tail;
+        tail = s2;
+        if (i > 1) {
+          head = (0, Builder_12.beginCell)().storeRef(tail).storeRef(head).endCell();
+        }
+        let bc = (0, Builder_12.beginCell)();
+        serializeTupleItem(src2.items[i], bc);
+        tail = bc.endCell();
+      }
+      builder2.storeUint(7, 8);
+      builder2.storeUint(src2.items.length, 16);
+      if (head) {
+        builder2.storeRef(head);
+      }
+      if (tail) {
+        builder2.storeRef(tail);
+      }
+    } else {
+      throw Error("Invalid value");
+    }
+  }
+  function parseStackItem(cs) {
+    let kind = cs.loadUint(8);
+    if (kind === 0) {
+      return { type: "null" };
+    } else if (kind === 1) {
+      return { type: "int", value: cs.loadIntBig(64) };
+    } else if (kind === 2) {
+      if (cs.loadUint(7) === 0) {
+        return { type: "int", value: cs.loadIntBig(257) };
+      } else {
+        cs.loadBit();
+        return { type: "nan" };
+      }
+    } else if (kind === 3) {
+      return { type: "cell", cell: cs.loadRef() };
+    } else if (kind === 4) {
+      let startBits = cs.loadUint(10);
+      let endBits = cs.loadUint(10);
+      let startRefs = cs.loadUint(3);
+      let endRefs = cs.loadUint(3);
+      let rs = cs.loadRef().beginParse();
+      rs.skip(startBits);
+      let dt2 = rs.loadBits(endBits - startBits);
+      let builder2 = (0, Builder_12.beginCell)().storeBits(dt2);
+      if (startRefs < endRefs) {
+        for (let i = 0; i < startRefs; i++) {
+          rs.loadRef();
+        }
+        for (let i = 0; i < endRefs - startRefs; i++) {
+          builder2.storeRef(rs.loadRef());
+        }
+      }
+      return { type: "slice", cell: builder2.endCell() };
+    } else if (kind === 5) {
+      return { type: "builder", cell: cs.loadRef() };
+    } else if (kind === 7) {
+      let length = cs.loadUint(16);
+      let items = [];
+      if (length > 1) {
+        let head = cs.loadRef().beginParse();
+        let tail = cs.loadRef().beginParse();
+        items.unshift(parseStackItem(tail));
+        for (let i = 0; i < length - 2; i++) {
+          let ohead = head;
+          head = ohead.loadRef().beginParse();
+          tail = ohead.loadRef().beginParse();
+          items.unshift(parseStackItem(tail));
+        }
+        items.unshift(parseStackItem(head));
+      } else if (length === 1) {
+        items.push(parseStackItem(cs.loadRef().beginParse()));
+      }
+      return { type: "tuple", items };
+    } else {
+      throw Error("Unsupported stack item");
+    }
+  }
+  function serializeTupleTail(src2, builder2) {
+    if (src2.length > 0) {
+      let tail = (0, Builder_12.beginCell)();
+      serializeTupleTail(src2.slice(0, src2.length - 1), tail);
+      builder2.storeRef(tail.endCell());
+      serializeTupleItem(src2[src2.length - 1], builder2);
+    }
+  }
+  function serializeTuple(src2) {
+    let builder2 = (0, Builder_12.beginCell)();
+    builder2.storeUint(src2.length, 24);
+    let r = [...src2];
+    serializeTupleTail(r, builder2);
+    return builder2.endCell();
+  }
+  tuple.serializeTuple = serializeTuple;
+  function parseTuple(src2) {
+    let res = [];
+    let cs = src2.beginParse();
+    let size = cs.loadUint(24);
+    for (let i = 0; i < size; i++) {
+      let next = cs.loadRef();
+      res.unshift(parseStackItem(cs));
+      cs = next.beginParse();
+    }
+    return res;
+  }
+  tuple.parseTuple = parseTuple;
+  return tuple;
+}
+var reader = {};
+var hasRequiredReader;
+function requireReader() {
+  if (hasRequiredReader) return reader;
+  hasRequiredReader = 1;
+  Object.defineProperty(reader, "__esModule", { value: true });
+  reader.TupleReader = void 0;
+  class TupleReader {
+    constructor(items) {
+      this.items = [...items];
+    }
+    get remaining() {
+      return this.items.length;
+    }
+    peek() {
+      if (this.items.length === 0) {
+        throw Error("EOF");
+      }
+      return this.items[0];
+    }
+    pop() {
+      if (this.items.length === 0) {
+        throw Error("EOF");
+      }
+      let res = this.items[0];
+      this.items.splice(0, 1);
+      return res;
+    }
+    skip(num = 1) {
+      for (let i = 0; i < num; i++) {
+        this.pop();
+      }
+      return this;
+    }
+    readBigNumber() {
+      let popped = this.pop();
+      if (popped.type !== "int") {
+        throw Error("Not a number");
+      }
+      return popped.value;
+    }
+    readBigNumberOpt() {
+      let popped = this.pop();
+      if (popped.type === "null") {
+        return null;
+      }
+      if (popped.type !== "int") {
+        throw Error("Not a number");
+      }
+      return popped.value;
+    }
+    readNumber() {
+      return Number(this.readBigNumber());
+    }
+    readNumberOpt() {
+      let r = this.readBigNumberOpt();
+      if (r !== null) {
+        return Number(r);
+      } else {
+        return null;
+      }
+    }
+    readBoolean() {
+      let res = this.readNumber();
+      return res === 0 ? false : true;
+    }
+    readBooleanOpt() {
+      let res = this.readNumberOpt();
+      if (res !== null) {
+        return res === 0 ? false : true;
+      } else {
+        return null;
+      }
+    }
+    readAddress() {
+      let r = this.readCell().beginParse().loadAddress();
+      if (r !== null) {
+        return r;
+      } else {
+        throw Error("Not an address");
+      }
+    }
+    readAddressOpt() {
+      let r = this.readCellOpt();
+      if (r !== null) {
+        return r.beginParse().loadMaybeAddress();
+      } else {
+        return null;
+      }
+    }
+    readCell() {
+      let popped = this.pop();
+      if (popped.type !== "cell" && popped.type !== "slice" && popped.type !== "builder") {
+        throw Error("Not a cell: " + popped.type);
+      }
+      return popped.cell;
+    }
+    readCellOpt() {
+      let popped = this.pop();
+      if (popped.type === "null") {
+        return null;
+      }
+      if (popped.type !== "cell" && popped.type !== "slice" && popped.type !== "builder") {
+        throw Error("Not a cell");
+      }
+      return popped.cell;
+    }
+    readTuple() {
+      let popped = this.pop();
+      if (popped.type !== "tuple") {
+        throw Error("Not a tuple");
+      }
+      return new TupleReader(popped.items);
+    }
+    readTupleOpt() {
+      let popped = this.pop();
+      if (popped.type === "null") {
+        return null;
+      }
+      if (popped.type !== "tuple") {
+        throw Error("Not a tuple");
+      }
+      return new TupleReader(popped.items);
+    }
+    static readLispList(reader2) {
+      const result = [];
+      let tail = reader2;
+      while (tail !== null) {
+        var head = tail.pop();
+        if (tail.items.length === 0 || tail.items[0].type !== "tuple" && tail.items[0].type !== "null") {
+          throw Error("Lisp list consists only from (any, tuple) elements and ends with null");
+        }
+        tail = tail.readTupleOpt();
+        result.push(head);
+      }
+      return result;
+    }
+    readLispListDirect() {
+      if (this.items.length === 1 && this.items[0].type === "null") {
+        return [];
+      }
+      return TupleReader.readLispList(this);
+    }
+    readLispList() {
+      return TupleReader.readLispList(this.readTupleOpt());
+    }
+    readBuffer() {
+      let s2 = this.readCell().beginParse();
+      if (s2.remainingRefs !== 0) {
+        throw Error("Not a buffer");
+      }
+      if (s2.remainingBits % 8 !== 0) {
+        throw Error("Not a buffer");
+      }
+      return s2.loadBuffer(s2.remainingBits / 8);
+    }
+    readBufferOpt() {
+      let r = this.readCellOpt();
+      if (r !== null) {
+        let s2 = r.beginParse();
+        if (s2.remainingRefs !== 0 || s2.remainingBits % 8 !== 0) {
+          throw Error("Not a buffer");
+        }
+        return s2.loadBuffer(s2.remainingBits / 8);
+      } else {
+        return null;
+      }
+    }
+    readString() {
+      let s2 = this.readCell().beginParse();
+      return s2.loadStringTail();
+    }
+    readStringOpt() {
+      let r = this.readCellOpt();
+      if (r !== null) {
+        let s2 = r.beginParse();
+        return s2.loadStringTail();
+      } else {
+        return null;
+      }
+    }
+  }
+  reader.TupleReader = TupleReader;
+  return reader;
+}
+var builder = {};
+var hasRequiredBuilder;
+function requireBuilder() {
+  if (hasRequiredBuilder) return builder;
+  hasRequiredBuilder = 1;
+  Object.defineProperty(builder, "__esModule", { value: true });
+  builder.TupleBuilder = void 0;
+  const Builder_12 = requireBuilder$1();
+  const Cell_1 = requireCell();
+  const Slice_1 = requireSlice();
+  class TupleBuilder {
+    constructor() {
+      this._tuple = [];
+    }
+    writeNumber(v2) {
+      if (v2 === null || v2 === void 0) {
+        this._tuple.push({ type: "null" });
+      } else {
+        this._tuple.push({ type: "int", value: BigInt(v2) });
+      }
+    }
+    writeBoolean(v2) {
+      if (v2 === null || v2 === void 0) {
+        this._tuple.push({ type: "null" });
+      } else {
+        this._tuple.push({ type: "int", value: v2 ? -1n : 0n });
+      }
+    }
+    writeBuffer(v2) {
+      if (v2 === null || v2 === void 0) {
+        this._tuple.push({ type: "null" });
+      } else {
+        this._tuple.push({ type: "slice", cell: (0, Builder_12.beginCell)().storeBuffer(v2).endCell() });
+      }
+    }
+    writeString(v2) {
+      if (v2 === null || v2 === void 0) {
+        this._tuple.push({ type: "null" });
+      } else {
+        this._tuple.push({ type: "slice", cell: (0, Builder_12.beginCell)().storeStringTail(v2).endCell() });
+      }
+    }
+    writeCell(v2) {
+      if (v2 === null || v2 === void 0) {
+        this._tuple.push({ type: "null" });
+      } else {
+        if (v2 instanceof Cell_1.Cell) {
+          this._tuple.push({ type: "cell", cell: v2 });
+        } else if (v2 instanceof Slice_1.Slice) {
+          this._tuple.push({ type: "cell", cell: v2.asCell() });
+        }
+      }
+    }
+    writeSlice(v2) {
+      if (v2 === null || v2 === void 0) {
+        this._tuple.push({ type: "null" });
+      } else {
+        if (v2 instanceof Cell_1.Cell) {
+          this._tuple.push({ type: "slice", cell: v2 });
+        } else if (v2 instanceof Slice_1.Slice) {
+          this._tuple.push({ type: "slice", cell: v2.asCell() });
+        }
+      }
+    }
+    writeBuilder(v2) {
+      if (v2 === null || v2 === void 0) {
+        this._tuple.push({ type: "null" });
+      } else {
+        if (v2 instanceof Cell_1.Cell) {
+          this._tuple.push({ type: "builder", cell: v2 });
+        } else if (v2 instanceof Slice_1.Slice) {
+          this._tuple.push({ type: "builder", cell: v2.asCell() });
+        }
+      }
+    }
+    writeTuple(v2) {
+      if (v2 === null || v2 === void 0) {
+        this._tuple.push({ type: "null" });
+      } else {
+        this._tuple.push({ type: "tuple", items: v2 });
+      }
+    }
+    writeAddress(v2) {
+      if (v2 === null || v2 === void 0) {
+        this._tuple.push({ type: "null" });
+      } else {
+        this._tuple.push({ type: "slice", cell: (0, Builder_12.beginCell)().storeAddress(v2).endCell() });
+      }
+    }
+    build() {
+      return [...this._tuple];
+    }
+  }
+  builder.TupleBuilder = TupleBuilder;
+  return builder;
+}
+var _export = {};
+var _helpers = {};
+var convert = {};
+var hasRequiredConvert;
+function requireConvert() {
+  if (hasRequiredConvert) return convert;
+  hasRequiredConvert = 1;
+  Object.defineProperty(convert, "__esModule", { value: true });
+  convert.fromNano = convert.toNano = void 0;
+  function toNano(src2) {
+    if (typeof src2 === "bigint") {
+      return src2 * 1000000000n;
+    } else {
+      if (typeof src2 === "number") {
+        if (!Number.isFinite(src2)) {
+          throw Error("Invalid number");
+        }
+        if (Math.log10(src2) <= 6) {
+          src2 = src2.toLocaleString("en", { minimumFractionDigits: 9, useGrouping: false });
+        } else if (src2 - Math.trunc(src2) === 0) {
+          src2 = src2.toLocaleString("en", { maximumFractionDigits: 0, useGrouping: false });
+        } else {
+          throw Error("Not enough precision for a number value. Use string value instead");
+        }
+      }
+      let neg = false;
+      while (src2.startsWith("-")) {
+        neg = !neg;
+        src2 = src2.slice(1);
+      }
+      if (src2 === ".") {
+        throw Error("Invalid number");
+      }
+      let parts = src2.split(".");
+      if (parts.length > 2) {
+        throw Error("Invalid number");
+      }
+      let whole = parts[0];
+      let frac = parts[1];
+      if (!whole) {
+        whole = "0";
+      }
+      if (!frac) {
+        frac = "0";
+      }
+      if (frac.length > 9) {
+        throw Error("Invalid number");
+      }
+      while (frac.length < 9) {
+        frac += "0";
+      }
+      let r = BigInt(whole) * 1000000000n + BigInt(frac);
+      if (neg) {
+        r = -r;
+      }
+      return r;
+    }
+  }
+  convert.toNano = toNano;
+  function fromNano(src2) {
+    let v2 = BigInt(src2);
+    let neg = false;
+    if (v2 < 0) {
+      neg = true;
+      v2 = -v2;
+    }
+    let frac = v2 % 1000000000n;
+    let facStr = frac.toString();
+    while (facStr.length < 9) {
+      facStr = "0" + facStr;
+    }
+    facStr = facStr.match(/^([0-9]*[1-9]|0)(0*)/)[1];
+    let whole = v2 / 1000000000n;
+    let wholeStr = whole.toString();
+    let value = `${wholeStr}${facStr === "0" ? "" : `.${facStr}`}`;
+    if (neg) {
+      value = "-" + value;
+    }
+    return value;
+  }
+  convert.fromNano = fromNano;
+  return convert;
+}
+var ExtraCurrency = {};
+var hasRequiredExtraCurrency;
+function requireExtraCurrency() {
+  if (hasRequiredExtraCurrency) return ExtraCurrency;
+  hasRequiredExtraCurrency = 1;
+  Object.defineProperty(ExtraCurrency, "__esModule", { value: true });
+  ExtraCurrency.packExtraCurrencyCell = ExtraCurrency.packExtraCurrencyDict = ExtraCurrency.storeExtraCurrency = ExtraCurrency.loadMaybeExtraCurrency = ExtraCurrency.loadExtraCurrency = void 0;
+  const Builder_12 = requireBuilder$1();
+  const Dictionary_1 = requireDictionary();
+  function loadExtraCurrency(data) {
+    let ecDict = data instanceof Dictionary_1.Dictionary ? data : Dictionary_1.Dictionary.loadDirect(Dictionary_1.Dictionary.Keys.Uint(32), Dictionary_1.Dictionary.Values.BigVarUint(5), data);
+    let ecMap = {};
+    for (let [k2, v2] of ecDict) {
+      ecMap[k2] = v2;
+    }
+    return ecMap;
+  }
+  ExtraCurrency.loadExtraCurrency = loadExtraCurrency;
+  function loadMaybeExtraCurrency(data) {
+    const ecData = data.loadMaybeRef();
+    return ecData === null ? ecData : loadExtraCurrency(ecData);
+  }
+  ExtraCurrency.loadMaybeExtraCurrency = loadMaybeExtraCurrency;
+  function storeExtraCurrency(extracurrency) {
+    return (builder2) => {
+      builder2.storeDict(packExtraCurrencyDict(extracurrency));
+    };
+  }
+  ExtraCurrency.storeExtraCurrency = storeExtraCurrency;
+  function packExtraCurrencyDict(extracurrency) {
+    const resEc = Dictionary_1.Dictionary.empty(Dictionary_1.Dictionary.Keys.Uint(32), Dictionary_1.Dictionary.Values.BigVarUint(5));
+    Object.entries(extracurrency).map(([k2, v2]) => resEc.set(Number(k2), v2));
+    return resEc;
+  }
+  ExtraCurrency.packExtraCurrencyDict = packExtraCurrencyDict;
+  function packExtraCurrencyCell(extracurrency) {
+    return (0, Builder_12.beginCell)().storeDictDirect(packExtraCurrencyDict(extracurrency)).endCell();
+  }
+  ExtraCurrency.packExtraCurrencyCell = packExtraCurrencyCell;
+  return ExtraCurrency;
+}
+var hasRequired_helpers;
+function require_helpers() {
+  if (hasRequired_helpers) return _helpers;
+  hasRequired_helpers = 1;
+  Object.defineProperty(_helpers, "__esModule", { value: true });
+  _helpers.comment = _helpers.external = _helpers.internal = void 0;
+  const Address_1 = requireAddress();
+  const Cell_1 = requireCell();
+  const Builder_12 = requireBuilder$1();
+  const convert_1 = requireConvert();
+  const ExtraCurrency_1 = requireExtraCurrency();
+  function internal(src2) {
+    let bounce = true;
+    if (src2.bounce !== null && src2.bounce !== void 0) {
+      bounce = src2.bounce;
+    }
+    let to2;
+    if (typeof src2.to === "string") {
+      to2 = Address_1.Address.parse(src2.to);
+    } else if (Address_1.Address.isAddress(src2.to)) {
+      to2 = src2.to;
+    } else {
+      throw new Error(`Invalid address ${src2.to}`);
+    }
+    let value;
+    if (typeof src2.value === "string") {
+      value = (0, convert_1.toNano)(src2.value);
+    } else {
+      value = src2.value;
+    }
+    let other;
+    if (src2.extracurrency) {
+      other = (0, ExtraCurrency_1.packExtraCurrencyDict)(src2.extracurrency);
+    }
+    let body = Cell_1.Cell.EMPTY;
+    if (typeof src2.body === "string") {
+      body = (0, Builder_12.beginCell)().storeUint(0, 32).storeStringTail(src2.body).endCell();
+    } else if (src2.body) {
+      body = src2.body;
+    }
+    return {
+      info: {
+        type: "internal",
+        dest: to2,
+        value: { coins: value, other },
+        bounce,
+        ihrDisabled: true,
+        bounced: false,
+        ihrFee: 0n,
+        forwardFee: 0n,
+        createdAt: 0,
+        createdLt: 0n
+      },
+      init: src2.init ?? void 0,
+      body
+    };
+  }
+  _helpers.internal = internal;
+  function external2(src2) {
+    let to2;
+    if (typeof src2.to === "string") {
+      to2 = Address_1.Address.parse(src2.to);
+    } else if (Address_1.Address.isAddress(src2.to)) {
+      to2 = src2.to;
+    } else {
+      throw new Error(`Invalid address ${src2.to}`);
+    }
+    return {
+      info: {
+        type: "external-in",
+        dest: to2,
+        importFee: 0n
+      },
+      init: src2.init ?? void 0,
+      body: src2.body || Cell_1.Cell.EMPTY
+    };
+  }
+  _helpers.external = external2;
+  function comment(src2) {
+    return (0, Builder_12.beginCell)().storeUint(0, 32).storeStringTail(src2).endCell();
+  }
+  _helpers.comment = comment;
+  return _helpers;
+}
+var Account = {};
+var AccountStorage = {};
+var AccountState = {};
+var hasRequiredAccountState;
+function requireAccountState() {
+  if (hasRequiredAccountState) return AccountState;
+  hasRequiredAccountState = 1;
+  Object.defineProperty(AccountState, "__esModule", { value: true });
+  AccountState.storeAccountState = AccountState.loadAccountState = void 0;
+  const StateInit_1 = requireStateInit();
+  function loadAccountState(cs) {
+    if (cs.loadBit()) {
+      return { type: "active", state: (0, StateInit_1.loadStateInit)(cs) };
+    } else if (cs.loadBit()) {
+      return { type: "frozen", stateHash: cs.loadUintBig(256) };
+    } else {
+      return { type: "uninit" };
+    }
+  }
+  AccountState.loadAccountState = loadAccountState;
+  function storeAccountState(src2) {
+    return (builder2) => {
+      if (src2.type === "active") {
+        builder2.storeBit(true);
+        builder2.store((0, StateInit_1.storeStateInit)(src2.state));
+      } else if (src2.type === "frozen") {
+        builder2.storeBit(false);
+        builder2.storeBit(true);
+        builder2.storeUint(src2.stateHash, 256);
+      } else if (src2.type === "uninit") {
+        builder2.storeBit(false);
+        builder2.storeBit(false);
+      }
+    };
+  }
+  AccountState.storeAccountState = storeAccountState;
+  return AccountState;
+}
+var CurrencyCollection = {};
+var hasRequiredCurrencyCollection;
+function requireCurrencyCollection() {
+  if (hasRequiredCurrencyCollection) return CurrencyCollection;
+  hasRequiredCurrencyCollection = 1;
+  Object.defineProperty(CurrencyCollection, "__esModule", { value: true });
+  CurrencyCollection.storeCurrencyCollection = CurrencyCollection.loadCurrencyCollection = void 0;
+  const Dictionary_1 = requireDictionary();
+  function loadCurrencyCollection(slice) {
+    const coins = slice.loadCoins();
+    const other = slice.loadDict(Dictionary_1.Dictionary.Keys.Uint(32), Dictionary_1.Dictionary.Values.BigVarUint(
+      5
+      /* log2(32) */
+    ));
+    if (other.size === 0) {
+      return { coins };
+    } else {
+      return { other, coins };
+    }
+  }
+  CurrencyCollection.loadCurrencyCollection = loadCurrencyCollection;
+  function storeCurrencyCollection(collection) {
+    return (builder2) => {
+      builder2.storeCoins(collection.coins);
+      if (collection.other) {
+        builder2.storeDict(collection.other);
+      } else {
+        builder2.storeBit(0);
+      }
+    };
+  }
+  CurrencyCollection.storeCurrencyCollection = storeCurrencyCollection;
+  return CurrencyCollection;
+}
+var hasRequiredAccountStorage;
+function requireAccountStorage() {
+  if (hasRequiredAccountStorage) return AccountStorage;
+  hasRequiredAccountStorage = 1;
+  Object.defineProperty(AccountStorage, "__esModule", { value: true });
+  AccountStorage.storeAccountStorage = AccountStorage.loadAccountStorage = void 0;
+  const AccountState_1 = requireAccountState();
+  const CurrencyCollection_1 = requireCurrencyCollection();
+  function loadAccountStorage(slice) {
+    return {
+      lastTransLt: slice.loadUintBig(64),
+      balance: (0, CurrencyCollection_1.loadCurrencyCollection)(slice),
+      state: (0, AccountState_1.loadAccountState)(slice)
+    };
+  }
+  AccountStorage.loadAccountStorage = loadAccountStorage;
+  function storeAccountStorage(src2) {
+    return (builder2) => {
+      builder2.storeUint(src2.lastTransLt, 64);
+      builder2.store((0, CurrencyCollection_1.storeCurrencyCollection)(src2.balance));
+      builder2.store((0, AccountState_1.storeAccountState)(src2.state));
+    };
+  }
+  AccountStorage.storeAccountStorage = storeAccountStorage;
+  return AccountStorage;
+}
+var StorageInfo = {};
+var StorageExtraInfo = {};
+var hasRequiredStorageExtraInfo;
+function requireStorageExtraInfo() {
+  if (hasRequiredStorageExtraInfo) return StorageExtraInfo;
+  hasRequiredStorageExtraInfo = 1;
+  Object.defineProperty(StorageExtraInfo, "__esModule", { value: true });
+  StorageExtraInfo.storeStorageExtraInfo = StorageExtraInfo.loadStorageExtraInfo = void 0;
+  function loadStorageExtraInfo(slice) {
+    let header = slice.loadUint(3);
+    if (header === 0) {
+      return null;
+    }
+    if (header === 1) {
+      return {
+        dictHash: slice.loadUintBig(256)
+      };
+    }
+    throw new Error(`Invalid storage extra info header: ${header}`);
+  }
+  StorageExtraInfo.loadStorageExtraInfo = loadStorageExtraInfo;
+  function storeStorageExtraInfo(src2) {
+    return (builder2) => {
+      if (src2 === null) {
+        builder2.storeUint(0, 3);
+      } else {
+        builder2.storeUint(1, 3);
+        builder2.storeUint(src2.dictHash, 256);
+      }
+    };
+  }
+  StorageExtraInfo.storeStorageExtraInfo = storeStorageExtraInfo;
+  return StorageExtraInfo;
+}
+var StorageUsed = {};
+var hasRequiredStorageUsed;
+function requireStorageUsed() {
+  if (hasRequiredStorageUsed) return StorageUsed;
+  hasRequiredStorageUsed = 1;
+  Object.defineProperty(StorageUsed, "__esModule", { value: true });
+  StorageUsed.storeStorageUsed = StorageUsed.loadStorageUsed = void 0;
+  function loadStorageUsed(cs) {
+    return {
+      cells: cs.loadVarUintBig(3),
+      bits: cs.loadVarUintBig(3)
+    };
+  }
+  StorageUsed.loadStorageUsed = loadStorageUsed;
+  function storeStorageUsed(src2) {
+    return (builder2) => {
+      builder2.storeVarUint(src2.cells, 3);
+      builder2.storeVarUint(src2.bits, 3);
+    };
+  }
+  StorageUsed.storeStorageUsed = storeStorageUsed;
+  return StorageUsed;
+}
+var hasRequiredStorageInfo;
+function requireStorageInfo() {
+  if (hasRequiredStorageInfo) return StorageInfo;
+  hasRequiredStorageInfo = 1;
+  Object.defineProperty(StorageInfo, "__esModule", { value: true });
+  StorageInfo.storeStorageInfo = StorageInfo.loadStorageInfo = void 0;
+  const StorageExtraInfo_1 = requireStorageExtraInfo();
+  const StorageUsed_1 = requireStorageUsed();
+  function loadStorageInfo(slice) {
+    return {
+      used: (0, StorageUsed_1.loadStorageUsed)(slice),
+      storageExtra: (0, StorageExtraInfo_1.loadStorageExtraInfo)(slice),
+      lastPaid: slice.loadUint(32),
+      duePayment: slice.loadMaybeCoins()
+    };
+  }
+  StorageInfo.loadStorageInfo = loadStorageInfo;
+  function storeStorageInfo(src2) {
+    return (builder2) => {
+      builder2.store((0, StorageUsed_1.storeStorageUsed)(src2.used));
+      builder2.store((0, StorageExtraInfo_1.storeStorageExtraInfo)(src2.storageExtra));
+      builder2.storeUint(src2.lastPaid, 32);
+      builder2.storeMaybeCoins(src2.duePayment);
+    };
+  }
+  StorageInfo.storeStorageInfo = storeStorageInfo;
+  return StorageInfo;
+}
+var hasRequiredAccount;
+function requireAccount() {
+  if (hasRequiredAccount) return Account;
+  hasRequiredAccount = 1;
+  Object.defineProperty(Account, "__esModule", { value: true });
+  Account.storeAccount = Account.loadAccount = void 0;
+  const AccountStorage_1 = requireAccountStorage();
+  const StorageInfo_1 = requireStorageInfo();
+  function loadAccount(slice) {
+    return {
+      addr: slice.loadAddress(),
+      storageStats: (0, StorageInfo_1.loadStorageInfo)(slice),
+      storage: (0, AccountStorage_1.loadAccountStorage)(slice)
+    };
+  }
+  Account.loadAccount = loadAccount;
+  function storeAccount(src2) {
+    return (builder2) => {
+      builder2.storeAddress(src2.addr);
+      builder2.store((0, StorageInfo_1.storeStorageInfo)(src2.storageStats));
+      builder2.store((0, AccountStorage_1.storeAccountStorage)(src2.storage));
+    };
+  }
+  Account.storeAccount = storeAccount;
+  return Account;
+}
+var AccountStatus = {};
+var hasRequiredAccountStatus;
+function requireAccountStatus() {
+  if (hasRequiredAccountStatus) return AccountStatus;
+  hasRequiredAccountStatus = 1;
+  Object.defineProperty(AccountStatus, "__esModule", { value: true });
+  AccountStatus.storeAccountStatus = AccountStatus.loadAccountStatus = void 0;
+  function loadAccountStatus(slice) {
+    const status = slice.loadUint(2);
+    if (status === 0) {
+      return "uninitialized";
+    }
+    if (status === 1) {
+      return "frozen";
+    }
+    if (status === 2) {
+      return "active";
+    }
+    if (status === 3) {
+      return "non-existing";
+    }
+    throw Error("Invalid data");
+  }
+  AccountStatus.loadAccountStatus = loadAccountStatus;
+  function storeAccountStatus(src2) {
+    return (builder2) => {
+      if (src2 === "uninitialized") {
+        builder2.storeUint(0, 2);
+      } else if (src2 === "frozen") {
+        builder2.storeUint(1, 2);
+      } else if (src2 === "active") {
+        builder2.storeUint(2, 2);
+      } else if (src2 === "non-existing") {
+        builder2.storeUint(3, 2);
+      } else {
+        throw Error("Invalid data");
+      }
+      return builder2;
+    };
+  }
+  AccountStatus.storeAccountStatus = storeAccountStatus;
+  return AccountStatus;
+}
+var AccountStatusChange = {};
+var hasRequiredAccountStatusChange;
+function requireAccountStatusChange() {
+  if (hasRequiredAccountStatusChange) return AccountStatusChange;
+  hasRequiredAccountStatusChange = 1;
+  Object.defineProperty(AccountStatusChange, "__esModule", { value: true });
+  AccountStatusChange.storeAccountStatusChange = AccountStatusChange.loadAccountStatusChange = void 0;
+  function loadAccountStatusChange(slice) {
+    if (!slice.loadBit()) {
+      return "unchanged";
+    }
+    if (slice.loadBit()) {
+      return "deleted";
+    } else {
+      return "frozen";
+    }
+  }
+  AccountStatusChange.loadAccountStatusChange = loadAccountStatusChange;
+  function storeAccountStatusChange(src2) {
+    return (builder2) => {
+      if (src2 == "unchanged") {
+        builder2.storeBit(0);
+      } else if (src2 === "frozen") {
+        builder2.storeBit(1);
+        builder2.storeBit(0);
+      } else if (src2 === "deleted") {
+        builder2.storeBit(1);
+        builder2.storeBit(1);
+      } else {
+        throw Error("Invalid account status change");
+      }
+    };
+  }
+  AccountStatusChange.storeAccountStatusChange = storeAccountStatusChange;
+  return AccountStatusChange;
+}
+var OutList = {};
+var MessageRelaxed = {};
+var CommonMessageInfoRelaxed = {};
+var hasRequiredCommonMessageInfoRelaxed;
+function requireCommonMessageInfoRelaxed() {
+  if (hasRequiredCommonMessageInfoRelaxed) return CommonMessageInfoRelaxed;
+  hasRequiredCommonMessageInfoRelaxed = 1;
+  Object.defineProperty(CommonMessageInfoRelaxed, "__esModule", { value: true });
+  CommonMessageInfoRelaxed.storeCommonMessageInfoRelaxed = CommonMessageInfoRelaxed.loadCommonMessageInfoRelaxed = void 0;
+  const CurrencyCollection_1 = requireCurrencyCollection();
+  function loadCommonMessageInfoRelaxed(slice) {
+    if (!slice.loadBit()) {
+      const ihrDisabled = slice.loadBit();
+      const bounce = slice.loadBit();
+      const bounced = slice.loadBit();
+      const src3 = slice.loadMaybeAddress();
+      const dest2 = slice.loadAddress();
+      const value = (0, CurrencyCollection_1.loadCurrencyCollection)(slice);
+      const ihrFee = slice.loadCoins();
+      const forwardFee = slice.loadCoins();
+      const createdLt2 = slice.loadUintBig(64);
+      const createdAt2 = slice.loadUint(32);
+      return {
+        type: "internal",
+        ihrDisabled,
+        bounce,
+        bounced,
+        src: src3,
+        dest: dest2,
+        value,
+        ihrFee,
+        forwardFee,
+        createdLt: createdLt2,
+        createdAt: createdAt2
+      };
+    }
+    if (!slice.loadBit()) {
+      throw Error("External In message is not possible for CommonMessageInfoRelaxed");
+    }
+    const src2 = slice.loadMaybeAddress();
+    const dest = slice.loadMaybeExternalAddress();
+    const createdLt = slice.loadUintBig(64);
+    const createdAt = slice.loadUint(32);
+    return {
+      type: "external-out",
+      src: src2,
+      dest,
+      createdLt,
+      createdAt
+    };
+  }
+  CommonMessageInfoRelaxed.loadCommonMessageInfoRelaxed = loadCommonMessageInfoRelaxed;
+  function storeCommonMessageInfoRelaxed(source) {
+    return (builder2) => {
+      if (source.type === "internal") {
+        builder2.storeBit(0);
+        builder2.storeBit(source.ihrDisabled);
+        builder2.storeBit(source.bounce);
+        builder2.storeBit(source.bounced);
+        builder2.storeAddress(source.src);
+        builder2.storeAddress(source.dest);
+        builder2.store((0, CurrencyCollection_1.storeCurrencyCollection)(source.value));
+        builder2.storeCoins(source.ihrFee);
+        builder2.storeCoins(source.forwardFee);
+        builder2.storeUint(source.createdLt, 64);
+        builder2.storeUint(source.createdAt, 32);
+      } else if (source.type === "external-out") {
+        builder2.storeBit(1);
+        builder2.storeBit(1);
+        builder2.storeAddress(source.src);
+        builder2.storeAddress(source.dest);
+        builder2.storeUint(source.createdLt, 64);
+        builder2.storeUint(source.createdAt, 32);
+      } else {
+        throw new Error("Unknown CommonMessageInfo type");
+      }
+    };
+  }
+  CommonMessageInfoRelaxed.storeCommonMessageInfoRelaxed = storeCommonMessageInfoRelaxed;
+  return CommonMessageInfoRelaxed;
+}
+var hasRequiredMessageRelaxed;
+function requireMessageRelaxed() {
+  if (hasRequiredMessageRelaxed) return MessageRelaxed;
+  hasRequiredMessageRelaxed = 1;
+  Object.defineProperty(MessageRelaxed, "__esModule", { value: true });
+  MessageRelaxed.storeMessageRelaxed = MessageRelaxed.loadMessageRelaxed = void 0;
+  const Builder_12 = requireBuilder$1();
+  const CommonMessageInfoRelaxed_1 = requireCommonMessageInfoRelaxed();
+  const StateInit_1 = requireStateInit();
+  function loadMessageRelaxed(slice) {
+    const info = (0, CommonMessageInfoRelaxed_1.loadCommonMessageInfoRelaxed)(slice);
+    let init = null;
+    if (slice.loadBit()) {
+      if (!slice.loadBit()) {
+        init = (0, StateInit_1.loadStateInit)(slice);
+      } else {
+        init = (0, StateInit_1.loadStateInit)(slice.loadRef().beginParse());
+      }
+    }
+    const body = slice.loadBit() ? slice.loadRef() : slice.asCell();
+    return {
+      info,
+      init,
+      body
+    };
+  }
+  MessageRelaxed.loadMessageRelaxed = loadMessageRelaxed;
+  function storeMessageRelaxed(message, opts) {
+    return (builder2) => {
+      builder2.store((0, CommonMessageInfoRelaxed_1.storeCommonMessageInfoRelaxed)(message.info));
+      if (message.init) {
+        builder2.storeBit(true);
+        let initCell = (0, Builder_12.beginCell)().store((0, StateInit_1.storeStateInit)(message.init));
+        let needRef2 = false;
+        if (opts && opts.forceRef) {
+          needRef2 = true;
+        } else {
+          if (builder2.availableBits - 2 >= initCell.bits) {
+            needRef2 = false;
+          } else {
+            needRef2 = true;
+          }
+        }
+        if (needRef2) {
+          builder2.storeBit(true);
+          builder2.storeRef(initCell);
+        } else {
+          builder2.storeBit(false);
+          builder2.storeBuilder(initCell);
+        }
+      } else {
+        builder2.storeBit(false);
+      }
+      let needRef = false;
+      if (opts && opts.forceRef) {
+        needRef = true;
+      } else {
+        if (builder2.availableBits - 1 >= message.body.bits.length && builder2.refs + message.body.refs.length <= 4 && !message.body.isExotic) {
+          needRef = false;
+        } else {
+          needRef = true;
+        }
+      }
+      if (needRef) {
+        builder2.storeBit(true);
+        builder2.storeRef(message.body);
+      } else {
+        builder2.storeBit(false);
+        builder2.storeBuilder(message.body.asBuilder());
+      }
+    };
+  }
+  MessageRelaxed.storeMessageRelaxed = storeMessageRelaxed;
+  return MessageRelaxed;
+}
+var LibRef = {};
+var hasRequiredLibRef;
+function requireLibRef() {
+  if (hasRequiredLibRef) return LibRef;
+  hasRequiredLibRef = 1;
+  Object.defineProperty(LibRef, "__esModule", { value: true });
+  LibRef.storeLibRef = LibRef.loadLibRef = void 0;
+  function loadLibRef(slice) {
+    const type = slice.loadUint(1);
+    if (type === 0) {
+      return {
+        type: "hash",
+        libHash: slice.loadBuffer(32)
+      };
+    } else {
+      return {
+        type: "ref",
+        library: slice.loadRef()
+      };
+    }
+  }
+  LibRef.loadLibRef = loadLibRef;
+  function storeLibRef(src2) {
+    return (builder2) => {
+      if (src2.type === "hash") {
+        builder2.storeUint(0, 1);
+        builder2.storeBuffer(src2.libHash);
+      } else {
+        builder2.storeUint(1, 1);
+        builder2.storeRef(src2.library);
+      }
+    };
+  }
+  LibRef.storeLibRef = storeLibRef;
+  return LibRef;
+}
+var hasRequiredOutList;
+function requireOutList() {
+  if (hasRequiredOutList) return OutList;
+  hasRequiredOutList = 1;
+  Object.defineProperty(OutList, "__esModule", { value: true });
+  OutList.loadOutList = OutList.storeOutList = OutList.loadOutAction = OutList.storeOutAction = void 0;
+  const MessageRelaxed_1 = requireMessageRelaxed();
+  const Builder_12 = requireBuilder$1();
+  const CurrencyCollection_1 = requireCurrencyCollection();
+  const LibRef_1 = requireLibRef();
+  function storeOutAction(action) {
+    switch (action.type) {
+      case "sendMsg":
+        return storeOutActionSendMsg(action);
+      case "setCode":
+        return storeOutActionSetCode(action);
+      case "reserve":
+        return storeOutActionReserve(action);
+      case "changeLibrary":
+        return storeOutActionChangeLibrary(action);
+      default:
+        throw new Error(`Unknown action type ${action.type}`);
+    }
+  }
+  OutList.storeOutAction = storeOutAction;
+  const outActionSendMsgTag = 247711853;
+  function storeOutActionSendMsg(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionSendMsgTag, 32).storeUint(action.mode, 8).storeRef((0, Builder_12.beginCell)().store((0, MessageRelaxed_1.storeMessageRelaxed)(action.outMsg)).endCell());
+    };
+  }
+  const outActionSetCodeTag = 2907562126;
+  function storeOutActionSetCode(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionSetCodeTag, 32).storeRef(action.newCode);
+    };
+  }
+  const outActionReserveTag = 921090057;
+  function storeOutActionReserve(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionReserveTag, 32).storeUint(action.mode, 8).store((0, CurrencyCollection_1.storeCurrencyCollection)(action.currency));
+    };
+  }
+  const outActionChangeLibraryTag = 653925844;
+  function storeOutActionChangeLibrary(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionChangeLibraryTag, 32).storeUint(action.mode, 7).store((0, LibRef_1.storeLibRef)(action.libRef));
+    };
+  }
+  function loadOutAction(slice) {
+    const tag = slice.loadUint(32);
+    if (tag === outActionSendMsgTag) {
+      const mode = slice.loadUint(8);
+      const outMsg = (0, MessageRelaxed_1.loadMessageRelaxed)(slice.loadRef().beginParse());
+      return {
+        type: "sendMsg",
+        mode,
+        outMsg
+      };
+    }
+    if (tag === outActionSetCodeTag) {
+      const newCode = slice.loadRef();
+      return {
+        type: "setCode",
+        newCode
+      };
+    }
+    if (tag === outActionReserveTag) {
+      const mode = slice.loadUint(8);
+      const currency = (0, CurrencyCollection_1.loadCurrencyCollection)(slice);
+      return {
+        type: "reserve",
+        mode,
+        currency
+      };
+    }
+    if (tag === outActionChangeLibraryTag) {
+      const mode = slice.loadUint(7);
+      const libRef = (0, LibRef_1.loadLibRef)(slice);
+      return {
+        type: "changeLibrary",
+        mode,
+        libRef
+      };
+    }
+    throw new Error(`Unknown out action tag 0x${tag.toString(16)}`);
+  }
+  OutList.loadOutAction = loadOutAction;
+  function storeOutList(actions) {
+    const cell = actions.reduce((cell2, action) => (0, Builder_12.beginCell)().storeRef(cell2).store(storeOutAction(action)).endCell(), (0, Builder_12.beginCell)().endCell());
+    return (builder2) => {
+      builder2.storeSlice(cell.beginParse());
+    };
+  }
+  OutList.storeOutList = storeOutList;
+  function loadOutList(slice) {
+    const actions = [];
+    while (slice.remainingRefs) {
+      const nextCell = slice.loadRef();
+      actions.push(loadOutAction(slice));
+      slice = nextCell.beginParse();
+    }
+    return actions.reverse();
+  }
+  OutList.loadOutList = loadOutList;
+  return OutList;
+}
+var CommonMessageInfo = {};
+var hasRequiredCommonMessageInfo;
+function requireCommonMessageInfo() {
+  if (hasRequiredCommonMessageInfo) return CommonMessageInfo;
+  hasRequiredCommonMessageInfo = 1;
+  Object.defineProperty(CommonMessageInfo, "__esModule", { value: true });
+  CommonMessageInfo.storeCommonMessageInfo = CommonMessageInfo.loadCommonMessageInfo = void 0;
+  const CurrencyCollection_1 = requireCurrencyCollection();
+  function loadCommonMessageInfo(slice) {
+    if (!slice.loadBit()) {
+      const ihrDisabled = slice.loadBit();
+      const bounce = slice.loadBit();
+      const bounced = slice.loadBit();
+      const src3 = slice.loadAddress();
+      const dest2 = slice.loadAddress();
+      const value = (0, CurrencyCollection_1.loadCurrencyCollection)(slice);
+      const ihrFee = slice.loadCoins();
+      const forwardFee = slice.loadCoins();
+      const createdLt2 = slice.loadUintBig(64);
+      const createdAt2 = slice.loadUint(32);
+      return {
+        type: "internal",
+        ihrDisabled,
+        bounce,
+        bounced,
+        src: src3,
+        dest: dest2,
+        value,
+        ihrFee,
+        forwardFee,
+        createdLt: createdLt2,
+        createdAt: createdAt2
+      };
+    }
+    if (!slice.loadBit()) {
+      const src3 = slice.loadMaybeExternalAddress();
+      const dest2 = slice.loadAddress();
+      const importFee = slice.loadCoins();
+      return {
+        type: "external-in",
+        src: src3,
+        dest: dest2,
+        importFee
+      };
+    }
+    const src2 = slice.loadAddress();
+    const dest = slice.loadMaybeExternalAddress();
+    const createdLt = slice.loadUintBig(64);
+    const createdAt = slice.loadUint(32);
+    return {
+      type: "external-out",
+      src: src2,
+      dest,
+      createdLt,
+      createdAt
+    };
+  }
+  CommonMessageInfo.loadCommonMessageInfo = loadCommonMessageInfo;
+  function storeCommonMessageInfo(source) {
+    return (builder2) => {
+      if (source.type === "internal") {
+        builder2.storeBit(0);
+        builder2.storeBit(source.ihrDisabled);
+        builder2.storeBit(source.bounce);
+        builder2.storeBit(source.bounced);
+        builder2.storeAddress(source.src);
+        builder2.storeAddress(source.dest);
+        builder2.store((0, CurrencyCollection_1.storeCurrencyCollection)(source.value));
+        builder2.storeCoins(source.ihrFee);
+        builder2.storeCoins(source.forwardFee);
+        builder2.storeUint(source.createdLt, 64);
+        builder2.storeUint(source.createdAt, 32);
+      } else if (source.type === "external-in") {
+        builder2.storeBit(1);
+        builder2.storeBit(0);
+        builder2.storeAddress(source.src);
+        builder2.storeAddress(source.dest);
+        builder2.storeCoins(source.importFee);
+      } else if (source.type === "external-out") {
+        builder2.storeBit(1);
+        builder2.storeBit(1);
+        builder2.storeAddress(source.src);
+        builder2.storeAddress(source.dest);
+        builder2.storeUint(source.createdLt, 64);
+        builder2.storeUint(source.createdAt, 32);
+      } else {
+        throw new Error("Unknown CommonMessageInfo type");
+      }
+    };
+  }
+  CommonMessageInfo.storeCommonMessageInfo = storeCommonMessageInfo;
+  return CommonMessageInfo;
+}
+var ComputeSkipReason = {};
+var hasRequiredComputeSkipReason;
+function requireComputeSkipReason() {
+  if (hasRequiredComputeSkipReason) return ComputeSkipReason;
+  hasRequiredComputeSkipReason = 1;
+  Object.defineProperty(ComputeSkipReason, "__esModule", { value: true });
+  ComputeSkipReason.storeComputeSkipReason = ComputeSkipReason.loadComputeSkipReason = void 0;
+  function loadComputeSkipReason(slice) {
+    let reason = slice.loadUint(2);
+    if (reason === 0) {
+      return "no-state";
+    } else if (reason === 1) {
+      return "bad-state";
+    } else if (reason === 2) {
+      return "no-gas";
+    }
+    throw new Error(`Unknown ComputeSkipReason: ${reason}`);
+  }
+  ComputeSkipReason.loadComputeSkipReason = loadComputeSkipReason;
+  function storeComputeSkipReason(src2) {
+    return (builder2) => {
+      if (src2 === "no-state") {
+        builder2.storeUint(0, 2);
+      } else if (src2 === "bad-state") {
+        builder2.storeUint(1, 2);
+      } else if (src2 === "no-gas") {
+        builder2.storeUint(2, 2);
+      } else {
+        throw new Error(`Unknown ComputeSkipReason: ${src2}`);
+      }
+    };
+  }
+  ComputeSkipReason.storeComputeSkipReason = storeComputeSkipReason;
+  return ComputeSkipReason;
+}
+var DepthBalanceInfo = {};
+var hasRequiredDepthBalanceInfo;
+function requireDepthBalanceInfo() {
+  if (hasRequiredDepthBalanceInfo) return DepthBalanceInfo;
+  hasRequiredDepthBalanceInfo = 1;
+  Object.defineProperty(DepthBalanceInfo, "__esModule", { value: true });
+  DepthBalanceInfo.storeDepthBalanceInfo = DepthBalanceInfo.loadDepthBalanceInfo = void 0;
+  const CurrencyCollection_1 = requireCurrencyCollection();
+  function loadDepthBalanceInfo(slice) {
+    let splitDepth = slice.loadUint(5);
+    return {
+      splitDepth,
+      balance: (0, CurrencyCollection_1.loadCurrencyCollection)(slice)
+    };
+  }
+  DepthBalanceInfo.loadDepthBalanceInfo = loadDepthBalanceInfo;
+  function storeDepthBalanceInfo(src2) {
+    return (builder2) => {
+      builder2.storeUint(src2.splitDepth, 5);
+      builder2.store((0, CurrencyCollection_1.storeCurrencyCollection)(src2.balance));
+    };
+  }
+  DepthBalanceInfo.storeDepthBalanceInfo = storeDepthBalanceInfo;
+  return DepthBalanceInfo;
+}
+var HashUpdate = {};
+var hasRequiredHashUpdate;
+function requireHashUpdate() {
+  if (hasRequiredHashUpdate) return HashUpdate;
+  hasRequiredHashUpdate = 1;
+  Object.defineProperty(HashUpdate, "__esModule", { value: true });
+  HashUpdate.storeHashUpdate = HashUpdate.loadHashUpdate = void 0;
+  function loadHashUpdate(slice) {
+    if (slice.loadUint(8) !== 114) {
+      throw Error("Invalid data");
+    }
+    const oldHash = slice.loadBuffer(32);
+    const newHash = slice.loadBuffer(32);
+    return { oldHash, newHash };
+  }
+  HashUpdate.loadHashUpdate = loadHashUpdate;
+  function storeHashUpdate(src2) {
+    return (builder2) => {
+      builder2.storeUint(114, 8);
+      builder2.storeBuffer(src2.oldHash);
+      builder2.storeBuffer(src2.newHash);
+    };
+  }
+  HashUpdate.storeHashUpdate = storeHashUpdate;
+  return HashUpdate;
+}
+var MasterchainStateExtra = {};
+var hasRequiredMasterchainStateExtra;
+function requireMasterchainStateExtra() {
+  if (hasRequiredMasterchainStateExtra) return MasterchainStateExtra;
+  hasRequiredMasterchainStateExtra = 1;
+  Object.defineProperty(MasterchainStateExtra, "__esModule", { value: true });
+  MasterchainStateExtra.loadMasterchainStateExtra = void 0;
+  const Dictionary_1 = requireDictionary();
+  const CurrencyCollection_1 = requireCurrencyCollection();
+  function loadMasterchainStateExtra(cs) {
+    if (cs.loadUint(16) !== 52262) {
+      throw Error("Invalid data");
+    }
+    if (cs.loadBit()) {
+      cs.loadRef();
+    }
+    let configAddress = cs.loadUintBig(256);
+    let config = Dictionary_1.Dictionary.load(Dictionary_1.Dictionary.Keys.Int(32), Dictionary_1.Dictionary.Values.Cell(), cs);
+    const globalBalance = (0, CurrencyCollection_1.loadCurrencyCollection)(cs);
+    return {
+      config,
+      configAddress,
+      globalBalance
+    };
+  }
+  MasterchainStateExtra.loadMasterchainStateExtra = loadMasterchainStateExtra;
+  return MasterchainStateExtra;
+}
+var Message = {};
+var hasRequiredMessage;
+function requireMessage() {
+  if (hasRequiredMessage) return Message;
+  hasRequiredMessage = 1;
+  Object.defineProperty(Message, "__esModule", { value: true });
+  Message.MessageValue = Message.storeMessage = Message.loadMessage = void 0;
+  const Builder_12 = requireBuilder$1();
+  const CommonMessageInfo_1 = requireCommonMessageInfo();
+  const StateInit_1 = requireStateInit();
+  function loadMessage(slice) {
+    const info = (0, CommonMessageInfo_1.loadCommonMessageInfo)(slice);
+    let init = null;
+    if (slice.loadBit()) {
+      if (!slice.loadBit()) {
+        init = (0, StateInit_1.loadStateInit)(slice);
+      } else {
+        init = (0, StateInit_1.loadStateInit)(slice.loadRef().beginParse());
+      }
+    }
+    const body = slice.loadBit() ? slice.loadRef() : slice.asCell();
+    return {
+      info,
+      init,
+      body
+    };
+  }
+  Message.loadMessage = loadMessage;
+  function storeMessage(message, opts) {
+    return (builder2) => {
+      builder2.store((0, CommonMessageInfo_1.storeCommonMessageInfo)(message.info));
+      if (message.init) {
+        builder2.storeBit(true);
+        let initCell = (0, Builder_12.beginCell)().store((0, StateInit_1.storeStateInit)(message.init));
+        let needRef2 = false;
+        if (opts && opts.forceRef) {
+          needRef2 = true;
+        } else {
+          needRef2 = builder2.availableBits - 2 < initCell.bits + message.body.bits.length;
+        }
+        if (needRef2) {
+          builder2.storeBit(true);
+          builder2.storeRef(initCell);
+        } else {
+          builder2.storeBit(false);
+          builder2.storeBuilder(initCell);
+        }
+      } else {
+        builder2.storeBit(false);
+      }
+      let needRef = false;
+      if (opts && opts.forceRef) {
+        needRef = true;
+      } else {
+        needRef = builder2.availableBits - 1 < message.body.bits.length || builder2.refs + message.body.refs.length > 4;
+      }
+      if (needRef) {
+        builder2.storeBit(true);
+        builder2.storeRef(message.body);
+      } else {
+        builder2.storeBit(false);
+        builder2.storeBuilder(message.body.asBuilder());
+      }
+    };
+  }
+  Message.storeMessage = storeMessage;
+  Message.MessageValue = {
+    serialize(src2, builder2) {
+      builder2.storeRef((0, Builder_12.beginCell)().store(storeMessage(src2)));
+    },
+    parse(slice) {
+      return loadMessage(slice.loadRef().beginParse());
+    }
+  };
+  return Message;
+}
+var SendMode = {};
+var hasRequiredSendMode;
+function requireSendMode() {
+  if (hasRequiredSendMode) return SendMode;
+  hasRequiredSendMode = 1;
+  Object.defineProperty(SendMode, "__esModule", { value: true });
+  SendMode.SendMode = void 0;
+  var SendMode$12;
+  (function(SendMode2) {
+    SendMode2[SendMode2["CARRY_ALL_REMAINING_BALANCE"] = 128] = "CARRY_ALL_REMAINING_BALANCE";
+    SendMode2[SendMode2["CARRY_ALL_REMAINING_INCOMING_VALUE"] = 64] = "CARRY_ALL_REMAINING_INCOMING_VALUE";
+    SendMode2[SendMode2["DESTROY_ACCOUNT_IF_ZERO"] = 32] = "DESTROY_ACCOUNT_IF_ZERO";
+    SendMode2[SendMode2["PAY_GAS_SEPARATELY"] = 1] = "PAY_GAS_SEPARATELY";
+    SendMode2[SendMode2["IGNORE_ERRORS"] = 2] = "IGNORE_ERRORS";
+    SendMode2[SendMode2["NONE"] = 0] = "NONE";
+  })(SendMode$12 || (SendMode.SendMode = SendMode$12 = {}));
+  return SendMode;
+}
+var ReserveMode = {};
+var hasRequiredReserveMode;
+function requireReserveMode() {
+  if (hasRequiredReserveMode) return ReserveMode;
+  hasRequiredReserveMode = 1;
+  Object.defineProperty(ReserveMode, "__esModule", { value: true });
+  ReserveMode.ReserveMode = void 0;
+  var ReserveMode$12;
+  (function(ReserveMode2) {
+    ReserveMode2[ReserveMode2["THIS_AMOUNT"] = 0] = "THIS_AMOUNT";
+    ReserveMode2[ReserveMode2["LEAVE_THIS_AMOUNT"] = 1] = "LEAVE_THIS_AMOUNT";
+    ReserveMode2[ReserveMode2["AT_MOST_THIS_AMOUNT"] = 2] = "AT_MOST_THIS_AMOUNT";
+    ReserveMode2[ReserveMode2["LEAVE_MAX_THIS_AMOUNT"] = 3] = "LEAVE_MAX_THIS_AMOUNT";
+    ReserveMode2[ReserveMode2["BEFORE_BALANCE_PLUS_THIS_AMOUNT"] = 4] = "BEFORE_BALANCE_PLUS_THIS_AMOUNT";
+    ReserveMode2[ReserveMode2["LEAVE_BBALANCE_PLUS_THIS_AMOUNT"] = 5] = "LEAVE_BBALANCE_PLUS_THIS_AMOUNT";
+    ReserveMode2[ReserveMode2["BEFORE_BALANCE_MINUS_THIS_AMOUNT"] = 12] = "BEFORE_BALANCE_MINUS_THIS_AMOUNT";
+    ReserveMode2[ReserveMode2["LEAVE_BEFORE_BALANCE_MINUS_THIS_AMOUNT"] = 13] = "LEAVE_BEFORE_BALANCE_MINUS_THIS_AMOUNT";
+  })(ReserveMode$12 || (ReserveMode.ReserveMode = ReserveMode$12 = {}));
+  return ReserveMode;
+}
+var ShardAccount = {};
+var hasRequiredShardAccount;
+function requireShardAccount() {
+  if (hasRequiredShardAccount) return ShardAccount;
+  hasRequiredShardAccount = 1;
+  Object.defineProperty(ShardAccount, "__esModule", { value: true });
+  ShardAccount.storeShardAccount = ShardAccount.loadShardAccount = void 0;
+  const Builder_12 = requireBuilder$1();
+  const Account_1 = requireAccount();
+  function loadShardAccount(slice) {
+    let accountRef = slice.loadRef();
+    let account = void 0;
+    if (!accountRef.isExotic) {
+      let accountSlice = accountRef.beginParse();
+      if (accountSlice.loadBit()) {
+        account = (0, Account_1.loadAccount)(accountSlice);
+      }
+    }
+    return {
+      account,
+      lastTransactionHash: slice.loadUintBig(256),
+      lastTransactionLt: slice.loadUintBig(64)
+    };
+  }
+  ShardAccount.loadShardAccount = loadShardAccount;
+  function storeShardAccount(src2) {
+    return (builder2) => {
+      if (src2.account) {
+        builder2.storeRef((0, Builder_12.beginCell)().storeBit(true).store((0, Account_1.storeAccount)(src2.account)));
+      } else {
+        builder2.storeRef((0, Builder_12.beginCell)().storeBit(false));
+      }
+      builder2.storeUint(src2.lastTransactionHash, 256);
+      builder2.storeUint(src2.lastTransactionLt, 64);
+    };
+  }
+  ShardAccount.storeShardAccount = storeShardAccount;
+  return ShardAccount;
+}
+var ShardAccounts = {};
+var hasRequiredShardAccounts;
+function requireShardAccounts() {
+  if (hasRequiredShardAccounts) return ShardAccounts;
+  hasRequiredShardAccounts = 1;
+  (function(exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.storeShardAccounts = exports.loadShardAccounts = exports.ShardAccountRefValue = void 0;
+    const Dictionary_1 = requireDictionary();
+    const DepthBalanceInfo_1 = requireDepthBalanceInfo();
+    const ShardAccount_1 = requireShardAccount();
+    exports.ShardAccountRefValue = {
+      parse: (cs) => {
+        let depthBalanceInfo = (0, DepthBalanceInfo_1.loadDepthBalanceInfo)(cs);
+        let shardAccount = (0, ShardAccount_1.loadShardAccount)(cs);
+        return {
+          depthBalanceInfo,
+          shardAccount
+        };
+      },
+      serialize(src2, builder2) {
+        builder2.store((0, DepthBalanceInfo_1.storeDepthBalanceInfo)(src2.depthBalanceInfo));
+        builder2.store((0, ShardAccount_1.storeShardAccount)(src2.shardAccount));
+      }
+    };
+    function loadShardAccounts(cs) {
+      return Dictionary_1.Dictionary.load(Dictionary_1.Dictionary.Keys.BigUint(256), exports.ShardAccountRefValue, cs);
+    }
+    exports.loadShardAccounts = loadShardAccounts;
+    function storeShardAccounts(src2) {
+      return (Builder2) => {
+        Builder2.storeDict(src2);
+      };
+    }
+    exports.storeShardAccounts = storeShardAccounts;
+  })(ShardAccounts);
+  return ShardAccounts;
+}
+var ShardIdent = {};
+var hasRequiredShardIdent;
+function requireShardIdent() {
+  if (hasRequiredShardIdent) return ShardIdent;
+  hasRequiredShardIdent = 1;
+  Object.defineProperty(ShardIdent, "__esModule", { value: true });
+  ShardIdent.storeShardIdent = ShardIdent.loadShardIdent = void 0;
+  function loadShardIdent(slice) {
+    if (slice.loadUint(2) !== 0) {
+      throw Error("Invalid data");
+    }
+    return {
+      shardPrefixBits: slice.loadUint(6),
+      workchainId: slice.loadInt(32),
+      shardPrefix: slice.loadUintBig(64)
+    };
+  }
+  ShardIdent.loadShardIdent = loadShardIdent;
+  function storeShardIdent(src2) {
+    return (builder2) => {
+      builder2.storeUint(0, 2);
+      builder2.storeUint(src2.shardPrefixBits, 6);
+      builder2.storeInt(src2.workchainId, 32);
+      builder2.storeUint(src2.shardPrefix, 64);
+    };
+  }
+  ShardIdent.storeShardIdent = storeShardIdent;
+  return ShardIdent;
+}
+var ShardStateUnsplit = {};
+var hasRequiredShardStateUnsplit;
+function requireShardStateUnsplit() {
+  if (hasRequiredShardStateUnsplit) return ShardStateUnsplit;
+  hasRequiredShardStateUnsplit = 1;
+  Object.defineProperty(ShardStateUnsplit, "__esModule", { value: true });
+  ShardStateUnsplit.loadShardStateUnsplit = void 0;
+  const MasterchainStateExtra_1 = requireMasterchainStateExtra();
+  const ShardAccounts_1 = requireShardAccounts();
+  const ShardIdent_1 = requireShardIdent();
+  function loadShardStateUnsplit(cs) {
+    if (cs.loadUint(32) !== 2418257890) {
+      throw Error("Invalid data");
+    }
+    let globalId = cs.loadInt(32);
+    let shardId = (0, ShardIdent_1.loadShardIdent)(cs);
+    let seqno = cs.loadUint(32);
+    let vertSeqNo = cs.loadUint(32);
+    let genUtime = cs.loadUint(32);
+    let genLt = cs.loadUintBig(64);
+    let minRefMcSeqno = cs.loadUint(32);
+    cs.loadRef();
+    let beforeSplit = cs.loadBit();
+    let shardAccountsRef = cs.loadRef();
+    let accounts = void 0;
+    if (!shardAccountsRef.isExotic) {
+      accounts = (0, ShardAccounts_1.loadShardAccounts)(shardAccountsRef.beginParse());
+    }
+    cs.loadRef();
+    let mcStateExtra = cs.loadBit();
+    let extras2 = null;
+    if (mcStateExtra) {
+      let cell = cs.loadRef();
+      if (!cell.isExotic) {
+        extras2 = (0, MasterchainStateExtra_1.loadMasterchainStateExtra)(cell.beginParse());
+      }
+    }
+    return {
+      globalId,
+      shardId,
+      seqno,
+      vertSeqNo,
+      genUtime,
+      genLt,
+      minRefMcSeqno,
+      beforeSplit,
+      accounts,
+      extras: extras2
+    };
+  }
+  ShardStateUnsplit.loadShardStateUnsplit = loadShardStateUnsplit;
+  return ShardStateUnsplit;
+}
+var SplitMergeInfo = {};
+var hasRequiredSplitMergeInfo;
+function requireSplitMergeInfo() {
+  if (hasRequiredSplitMergeInfo) return SplitMergeInfo;
+  hasRequiredSplitMergeInfo = 1;
+  Object.defineProperty(SplitMergeInfo, "__esModule", { value: true });
+  SplitMergeInfo.storeSplitMergeInfo = SplitMergeInfo.loadSplitMergeInfo = void 0;
+  function loadSplitMergeInfo(slice) {
+    let currentShardPrefixLength = slice.loadUint(6);
+    let accountSplitDepth = slice.loadUint(6);
+    let thisAddress = slice.loadUintBig(256);
+    let siblingAddress = slice.loadUintBig(256);
+    return {
+      currentShardPrefixLength,
+      accountSplitDepth,
+      thisAddress,
+      siblingAddress
+    };
+  }
+  SplitMergeInfo.loadSplitMergeInfo = loadSplitMergeInfo;
+  function storeSplitMergeInfo(src2) {
+    return (builder2) => {
+      builder2.storeUint(src2.currentShardPrefixLength, 6);
+      builder2.storeUint(src2.accountSplitDepth, 6);
+      builder2.storeUint(src2.thisAddress, 256);
+      builder2.storeUint(src2.siblingAddress, 256);
+    };
+  }
+  SplitMergeInfo.storeSplitMergeInfo = storeSplitMergeInfo;
+  return SplitMergeInfo;
+}
+var Transaction = {};
+var TransactionDescription = {};
+var TransactionActionPhase = {};
+var hasRequiredTransactionActionPhase;
+function requireTransactionActionPhase() {
+  if (hasRequiredTransactionActionPhase) return TransactionActionPhase;
+  hasRequiredTransactionActionPhase = 1;
+  Object.defineProperty(TransactionActionPhase, "__esModule", { value: true });
+  TransactionActionPhase.storeTransactionActionPhase = TransactionActionPhase.loadTransactionActionPhase = void 0;
+  const AccountStatusChange_1 = requireAccountStatusChange();
+  const StorageUsed_1 = requireStorageUsed();
+  function loadTransactionActionPhase(slice) {
+    let success = slice.loadBit();
+    let valid = slice.loadBit();
+    let noFunds = slice.loadBit();
+    let statusChange = (0, AccountStatusChange_1.loadAccountStatusChange)(slice);
+    let totalFwdFees = slice.loadBit() ? slice.loadCoins() : void 0;
+    let totalActionFees = slice.loadBit() ? slice.loadCoins() : void 0;
+    let resultCode = slice.loadInt(32);
+    let resultArg = slice.loadBit() ? slice.loadInt(32) : void 0;
+    let totalActions = slice.loadUint(16);
+    let specActions = slice.loadUint(16);
+    let skippedActions = slice.loadUint(16);
+    let messagesCreated = slice.loadUint(16);
+    let actionListHash = slice.loadUintBig(256);
+    let totalMessageSize = (0, StorageUsed_1.loadStorageUsed)(slice);
+    return {
+      success,
+      valid,
+      noFunds,
+      statusChange,
+      totalFwdFees,
+      totalActionFees,
+      resultCode,
+      resultArg,
+      totalActions,
+      specActions,
+      skippedActions,
+      messagesCreated,
+      actionListHash,
+      totalMessageSize
+    };
+  }
+  TransactionActionPhase.loadTransactionActionPhase = loadTransactionActionPhase;
+  function storeTransactionActionPhase(src2) {
+    return (builder2) => {
+      builder2.storeBit(src2.success);
+      builder2.storeBit(src2.valid);
+      builder2.storeBit(src2.noFunds);
+      builder2.store((0, AccountStatusChange_1.storeAccountStatusChange)(src2.statusChange));
+      builder2.storeMaybeCoins(src2.totalFwdFees);
+      builder2.storeMaybeCoins(src2.totalActionFees);
+      builder2.storeInt(src2.resultCode, 32);
+      builder2.storeMaybeInt(src2.resultArg, 32);
+      builder2.storeUint(src2.totalActions, 16);
+      builder2.storeUint(src2.specActions, 16);
+      builder2.storeUint(src2.skippedActions, 16);
+      builder2.storeUint(src2.messagesCreated, 16);
+      builder2.storeUint(src2.actionListHash, 256);
+      builder2.store((0, StorageUsed_1.storeStorageUsed)(src2.totalMessageSize));
+    };
+  }
+  TransactionActionPhase.storeTransactionActionPhase = storeTransactionActionPhase;
+  return TransactionActionPhase;
+}
+var TransactionBouncePhase = {};
+var hasRequiredTransactionBouncePhase;
+function requireTransactionBouncePhase() {
+  if (hasRequiredTransactionBouncePhase) return TransactionBouncePhase;
+  hasRequiredTransactionBouncePhase = 1;
+  Object.defineProperty(TransactionBouncePhase, "__esModule", { value: true });
+  TransactionBouncePhase.storeTransactionBouncePhase = TransactionBouncePhase.loadTransactionBouncePhase = void 0;
+  const StorageUsed_1 = requireStorageUsed();
+  function loadTransactionBouncePhase(slice) {
+    if (slice.loadBit()) {
+      let messageSize = (0, StorageUsed_1.loadStorageUsed)(slice);
+      let messageFees = slice.loadCoins();
+      let forwardFees = slice.loadCoins();
+      return {
+        type: "ok",
+        messageSize,
+        messageFees,
+        forwardFees
+      };
+    }
+    if (slice.loadBit()) {
+      let messageSize = (0, StorageUsed_1.loadStorageUsed)(slice);
+      let requiredForwardFees = slice.loadCoins();
+      return {
+        type: "no-funds",
+        messageSize,
+        requiredForwardFees
+      };
+    }
+    return {
+      type: "negative-funds"
+    };
+  }
+  TransactionBouncePhase.loadTransactionBouncePhase = loadTransactionBouncePhase;
+  function storeTransactionBouncePhase(src2) {
+    return (builder2) => {
+      if (src2.type === "ok") {
+        builder2.storeBit(true);
+        builder2.store((0, StorageUsed_1.storeStorageUsed)(src2.messageSize));
+        builder2.storeCoins(src2.messageFees);
+        builder2.storeCoins(src2.forwardFees);
+      } else if (src2.type === "negative-funds") {
+        builder2.storeBit(false);
+        builder2.storeBit(false);
+      } else if (src2.type === "no-funds") {
+        builder2.storeBit(false);
+        builder2.storeBit(true);
+        builder2.store((0, StorageUsed_1.storeStorageUsed)(src2.messageSize));
+        builder2.storeCoins(src2.requiredForwardFees);
+      } else {
+        throw new Error("Invalid TransactionBouncePhase type");
+      }
+    };
+  }
+  TransactionBouncePhase.storeTransactionBouncePhase = storeTransactionBouncePhase;
+  return TransactionBouncePhase;
+}
+var TransactionComputePhase = {};
+var hasRequiredTransactionComputePhase;
+function requireTransactionComputePhase() {
+  if (hasRequiredTransactionComputePhase) return TransactionComputePhase;
+  hasRequiredTransactionComputePhase = 1;
+  Object.defineProperty(TransactionComputePhase, "__esModule", { value: true });
+  TransactionComputePhase.storeTransactionComputePhase = TransactionComputePhase.loadTransactionComputePhase = void 0;
+  const Builder_12 = requireBuilder$1();
+  const ComputeSkipReason_1 = requireComputeSkipReason();
+  function loadTransactionComputePhase(slice) {
+    if (!slice.loadBit()) {
+      let reason = (0, ComputeSkipReason_1.loadComputeSkipReason)(slice);
+      return {
+        type: "skipped",
+        reason
+      };
+    }
+    let success = slice.loadBit();
+    let messageStateUsed = slice.loadBit();
+    let accountActivated = slice.loadBit();
+    let gasFees = slice.loadCoins();
+    const vmState = slice.loadRef().beginParse();
+    let gasUsed = vmState.loadVarUintBig(3);
+    let gasLimit = vmState.loadVarUintBig(3);
+    let gasCredit = vmState.loadBit() ? vmState.loadVarUintBig(2) : void 0;
+    let mode = vmState.loadUint(8);
+    let exitCode = vmState.loadInt(32);
+    let exitArg = vmState.loadBit() ? vmState.loadInt(32) : void 0;
+    let vmSteps = vmState.loadUint(32);
+    let vmInitStateHash = vmState.loadUintBig(256);
+    let vmFinalStateHash = vmState.loadUintBig(256);
+    return {
+      type: "vm",
+      success,
+      messageStateUsed,
+      accountActivated,
+      gasFees,
+      gasUsed,
+      gasLimit,
+      gasCredit,
+      mode,
+      exitCode,
+      exitArg,
+      vmSteps,
+      vmInitStateHash,
+      vmFinalStateHash
+    };
+  }
+  TransactionComputePhase.loadTransactionComputePhase = loadTransactionComputePhase;
+  function storeTransactionComputePhase(src2) {
+    return (builder2) => {
+      if (src2.type === "skipped") {
+        builder2.storeBit(0);
+        builder2.store((0, ComputeSkipReason_1.storeComputeSkipReason)(src2.reason));
+        return;
+      }
+      builder2.storeBit(1);
+      builder2.storeBit(src2.success);
+      builder2.storeBit(src2.messageStateUsed);
+      builder2.storeBit(src2.accountActivated);
+      builder2.storeCoins(src2.gasFees);
+      builder2.storeRef((0, Builder_12.beginCell)().storeVarUint(src2.gasUsed, 3).storeVarUint(src2.gasLimit, 3).store((b2) => src2.gasCredit !== void 0 && src2.gasCredit !== null ? b2.storeBit(1).storeVarUint(src2.gasCredit, 2) : b2.storeBit(0)).storeUint(src2.mode, 8).storeInt(src2.exitCode, 32).store((b2) => src2.exitArg !== void 0 && src2.exitArg !== null ? b2.storeBit(1).storeInt(src2.exitArg, 32) : b2.storeBit(0)).storeUint(src2.vmSteps, 32).storeUint(src2.vmInitStateHash, 256).storeUint(src2.vmFinalStateHash, 256).endCell());
+    };
+  }
+  TransactionComputePhase.storeTransactionComputePhase = storeTransactionComputePhase;
+  return TransactionComputePhase;
+}
+var TransactionCreditPhase = {};
+var hasRequiredTransactionCreditPhase;
+function requireTransactionCreditPhase() {
+  if (hasRequiredTransactionCreditPhase) return TransactionCreditPhase;
+  hasRequiredTransactionCreditPhase = 1;
+  Object.defineProperty(TransactionCreditPhase, "__esModule", { value: true });
+  TransactionCreditPhase.storeTransactionCreditPhase = TransactionCreditPhase.loadTransactionCreditPhase = void 0;
+  const CurrencyCollection_1 = requireCurrencyCollection();
+  function loadTransactionCreditPhase(slice) {
+    const dueFeesColelcted = slice.loadBit() ? slice.loadCoins() : void 0;
+    const credit = (0, CurrencyCollection_1.loadCurrencyCollection)(slice);
+    return {
+      dueFeesColelcted,
+      credit
+    };
+  }
+  TransactionCreditPhase.loadTransactionCreditPhase = loadTransactionCreditPhase;
+  function storeTransactionCreditPhase(src2) {
+    return (builder2) => {
+      if (src2.dueFeesColelcted === null || src2.dueFeesColelcted === void 0) {
+        builder2.storeBit(false);
+      } else {
+        builder2.storeBit(true);
+        builder2.storeCoins(src2.dueFeesColelcted);
+      }
+      builder2.store((0, CurrencyCollection_1.storeCurrencyCollection)(src2.credit));
+    };
+  }
+  TransactionCreditPhase.storeTransactionCreditPhase = storeTransactionCreditPhase;
+  return TransactionCreditPhase;
+}
+var TransactionStoragePhase = {};
+var hasRequiredTransactionStoragePhase;
+function requireTransactionStoragePhase() {
+  if (hasRequiredTransactionStoragePhase) return TransactionStoragePhase;
+  hasRequiredTransactionStoragePhase = 1;
+  Object.defineProperty(TransactionStoragePhase, "__esModule", { value: true });
+  TransactionStoragePhase.storeTransactionsStoragePhase = TransactionStoragePhase.loadTransactionStoragePhase = void 0;
+  const AccountStatusChange_1 = requireAccountStatusChange();
+  function loadTransactionStoragePhase(slice) {
+    const storageFeesCollected = slice.loadCoins();
+    let storageFeesDue = void 0;
+    if (slice.loadBit()) {
+      storageFeesDue = slice.loadCoins();
+    }
+    const statusChange = (0, AccountStatusChange_1.loadAccountStatusChange)(slice);
+    return {
+      storageFeesCollected,
+      storageFeesDue,
+      statusChange
+    };
+  }
+  TransactionStoragePhase.loadTransactionStoragePhase = loadTransactionStoragePhase;
+  function storeTransactionsStoragePhase(src2) {
+    return (builder2) => {
+      builder2.storeCoins(src2.storageFeesCollected);
+      if (src2.storageFeesDue === null || src2.storageFeesDue === void 0) {
+        builder2.storeBit(false);
+      } else {
+        builder2.storeBit(true);
+        builder2.storeCoins(src2.storageFeesDue);
+      }
+      builder2.store((0, AccountStatusChange_1.storeAccountStatusChange)(src2.statusChange));
+    };
+  }
+  TransactionStoragePhase.storeTransactionsStoragePhase = storeTransactionsStoragePhase;
+  return TransactionStoragePhase;
+}
+var hasRequiredTransactionDescription;
+function requireTransactionDescription() {
+  if (hasRequiredTransactionDescription) return TransactionDescription;
+  hasRequiredTransactionDescription = 1;
+  Object.defineProperty(TransactionDescription, "__esModule", { value: true });
+  TransactionDescription.storeTransactionDescription = TransactionDescription.loadTransactionDescription = void 0;
+  const Builder_12 = requireBuilder$1();
+  const SplitMergeInfo_1 = requireSplitMergeInfo();
+  const Transaction_1 = requireTransaction();
+  const TransactionActionPhase_1 = requireTransactionActionPhase();
+  const TransactionBouncePhase_1 = requireTransactionBouncePhase();
+  const TransactionComputePhase_1 = requireTransactionComputePhase();
+  const TransactionCreditPhase_1 = requireTransactionCreditPhase();
+  const TransactionStoragePhase_1 = requireTransactionStoragePhase();
+  function loadTransactionDescription(slice) {
+    let type = slice.loadUint(4);
+    if (type === 0) {
+      const creditFirst = slice.loadBit();
+      let storagePhase = void 0;
+      if (slice.loadBit()) {
+        storagePhase = (0, TransactionStoragePhase_1.loadTransactionStoragePhase)(slice);
+      }
+      let creditPhase = void 0;
+      if (slice.loadBit()) {
+        creditPhase = (0, TransactionCreditPhase_1.loadTransactionCreditPhase)(slice);
+      }
+      let computePhase = (0, TransactionComputePhase_1.loadTransactionComputePhase)(slice);
+      let actionPhase = void 0;
+      if (slice.loadBit()) {
+        actionPhase = (0, TransactionActionPhase_1.loadTransactionActionPhase)(slice.loadRef().beginParse());
+      }
+      let aborted = slice.loadBit();
+      let bouncePhase = void 0;
+      if (slice.loadBit()) {
+        bouncePhase = (0, TransactionBouncePhase_1.loadTransactionBouncePhase)(slice);
+      }
+      const destroyed = slice.loadBit();
+      return {
+        type: "generic",
+        creditFirst,
+        storagePhase,
+        creditPhase,
+        computePhase,
+        actionPhase,
+        bouncePhase,
+        aborted,
+        destroyed
+      };
+    }
+    if (type === 1) {
+      return {
+        type: "storage",
+        storagePhase: (0, TransactionStoragePhase_1.loadTransactionStoragePhase)(slice)
+      };
+    }
+    if (type === 2 || type === 3) {
+      const isTock = type === 3;
+      let storagePhase = (0, TransactionStoragePhase_1.loadTransactionStoragePhase)(slice);
+      let computePhase = (0, TransactionComputePhase_1.loadTransactionComputePhase)(slice);
+      let actionPhase = void 0;
+      if (slice.loadBit()) {
+        actionPhase = (0, TransactionActionPhase_1.loadTransactionActionPhase)(slice.loadRef().beginParse());
+      }
+      const aborted = slice.loadBit();
+      const destroyed = slice.loadBit();
+      return {
+        type: "tick-tock",
+        isTock,
+        storagePhase,
+        computePhase,
+        actionPhase,
+        aborted,
+        destroyed
+      };
+    }
+    if (type === 4) {
+      let splitInfo = (0, SplitMergeInfo_1.loadSplitMergeInfo)(slice);
+      let storagePhase = void 0;
+      if (slice.loadBit()) {
+        storagePhase = (0, TransactionStoragePhase_1.loadTransactionStoragePhase)(slice);
+      }
+      let computePhase = (0, TransactionComputePhase_1.loadTransactionComputePhase)(slice);
+      let actionPhase = void 0;
+      if (slice.loadBit()) {
+        actionPhase = (0, TransactionActionPhase_1.loadTransactionActionPhase)(slice.loadRef().beginParse());
+      }
+      const aborted = slice.loadBit();
+      const destroyed = slice.loadBit();
+      return {
+        type: "split-prepare",
+        splitInfo,
+        storagePhase,
+        computePhase,
+        actionPhase,
+        aborted,
+        destroyed
+      };
+    }
+    if (type === 5) {
+      let splitInfo = (0, SplitMergeInfo_1.loadSplitMergeInfo)(slice);
+      let prepareTransaction = (0, Transaction_1.loadTransaction)(slice.loadRef().beginParse());
+      const installed = slice.loadBit();
+      return {
+        type: "split-install",
+        splitInfo,
+        prepareTransaction,
+        installed
+      };
+    }
+    throw Error(`Unsupported transaction description type ${type}`);
+  }
+  TransactionDescription.loadTransactionDescription = loadTransactionDescription;
+  function storeTransactionDescription(src2) {
+    return (builder2) => {
+      if (src2.type === "generic") {
+        builder2.storeUint(0, 4);
+        builder2.storeBit(src2.creditFirst);
+        if (src2.storagePhase) {
+          builder2.storeBit(true);
+          builder2.store((0, TransactionStoragePhase_1.storeTransactionsStoragePhase)(src2.storagePhase));
+        } else {
+          builder2.storeBit(false);
+        }
+        if (src2.creditPhase) {
+          builder2.storeBit(true);
+          builder2.store((0, TransactionCreditPhase_1.storeTransactionCreditPhase)(src2.creditPhase));
+        } else {
+          builder2.storeBit(false);
+        }
+        builder2.store((0, TransactionComputePhase_1.storeTransactionComputePhase)(src2.computePhase));
+        if (src2.actionPhase) {
+          builder2.storeBit(true);
+          builder2.storeRef((0, Builder_12.beginCell)().store((0, TransactionActionPhase_1.storeTransactionActionPhase)(src2.actionPhase)));
+        } else {
+          builder2.storeBit(false);
+        }
+        builder2.storeBit(src2.aborted);
+        if (src2.bouncePhase) {
+          builder2.storeBit(true);
+          builder2.store((0, TransactionBouncePhase_1.storeTransactionBouncePhase)(src2.bouncePhase));
+        } else {
+          builder2.storeBit(false);
+        }
+        builder2.storeBit(src2.destroyed);
+      } else if (src2.type === "storage") {
+        builder2.storeUint(1, 4);
+        builder2.store((0, TransactionStoragePhase_1.storeTransactionsStoragePhase)(src2.storagePhase));
+      } else if (src2.type === "tick-tock") {
+        builder2.storeUint(src2.isTock ? 3 : 2, 4);
+        builder2.store((0, TransactionStoragePhase_1.storeTransactionsStoragePhase)(src2.storagePhase));
+        builder2.store((0, TransactionComputePhase_1.storeTransactionComputePhase)(src2.computePhase));
+        if (src2.actionPhase) {
+          builder2.storeBit(true);
+          builder2.storeRef((0, Builder_12.beginCell)().store((0, TransactionActionPhase_1.storeTransactionActionPhase)(src2.actionPhase)));
+        } else {
+          builder2.storeBit(false);
+        }
+        builder2.storeBit(src2.aborted);
+        builder2.storeBit(src2.destroyed);
+      } else if (src2.type === "split-prepare") {
+        builder2.storeUint(4, 4);
+        builder2.store((0, SplitMergeInfo_1.storeSplitMergeInfo)(src2.splitInfo));
+        if (src2.storagePhase) {
+          builder2.storeBit(true);
+          builder2.store((0, TransactionStoragePhase_1.storeTransactionsStoragePhase)(src2.storagePhase));
+        } else {
+          builder2.storeBit(false);
+        }
+        builder2.store((0, TransactionComputePhase_1.storeTransactionComputePhase)(src2.computePhase));
+        if (src2.actionPhase) {
+          builder2.storeBit(true);
+          builder2.store((0, TransactionActionPhase_1.storeTransactionActionPhase)(src2.actionPhase));
+        } else {
+          builder2.storeBit(false);
+        }
+        builder2.storeBit(src2.aborted);
+        builder2.storeBit(src2.destroyed);
+      } else if (src2.type === "split-install") {
+        builder2.storeUint(5, 4);
+        builder2.store((0, SplitMergeInfo_1.storeSplitMergeInfo)(src2.splitInfo));
+        builder2.storeRef((0, Builder_12.beginCell)().store((0, Transaction_1.storeTransaction)(src2.prepareTransaction)));
+        builder2.storeBit(src2.installed);
+      } else {
+        throw Error(`Unsupported transaction description type ${src2.type}`);
+      }
+    };
+  }
+  TransactionDescription.storeTransactionDescription = storeTransactionDescription;
+  return TransactionDescription;
+}
+var hasRequiredTransaction;
+function requireTransaction() {
+  if (hasRequiredTransaction) return Transaction;
+  hasRequiredTransaction = 1;
+  Object.defineProperty(Transaction, "__esModule", { value: true });
+  Transaction.storeTransaction = Transaction.loadTransaction = void 0;
+  const Builder_12 = requireBuilder$1();
+  const Dictionary_1 = requireDictionary();
+  const AccountStatus_1 = requireAccountStatus();
+  const CurrencyCollection_1 = requireCurrencyCollection();
+  const HashUpdate_1 = requireHashUpdate();
+  const Message_1 = requireMessage();
+  const TransactionDescription_1 = requireTransactionDescription();
+  function loadTransaction(slice) {
+    let raw = slice.asCell();
+    if (slice.loadUint(4) !== 7) {
+      throw Error("Invalid data");
+    }
+    let address = slice.loadUintBig(256);
+    let lt2 = slice.loadUintBig(64);
+    let prevTransactionHash = slice.loadUintBig(256);
+    let prevTransactionLt = slice.loadUintBig(64);
+    let now = slice.loadUint(32);
+    let outMessagesCount = slice.loadUint(15);
+    let oldStatus = (0, AccountStatus_1.loadAccountStatus)(slice);
+    let endStatus = (0, AccountStatus_1.loadAccountStatus)(slice);
+    let msgRef = slice.loadRef();
+    let msgSlice = msgRef.beginParse();
+    let inMessage = msgSlice.loadBit() ? (0, Message_1.loadMessage)(msgSlice.loadRef().beginParse()) : void 0;
+    let outMessages = msgSlice.loadDict(Dictionary_1.Dictionary.Keys.Uint(15), Message_1.MessageValue);
+    msgSlice.endParse();
+    let totalFees = (0, CurrencyCollection_1.loadCurrencyCollection)(slice);
+    let stateUpdate = (0, HashUpdate_1.loadHashUpdate)(slice.loadRef().beginParse());
+    let description = (0, TransactionDescription_1.loadTransactionDescription)(slice.loadRef().beginParse());
+    return {
+      address,
+      lt: lt2,
+      prevTransactionHash,
+      prevTransactionLt,
+      now,
+      outMessagesCount,
+      oldStatus,
+      endStatus,
+      inMessage,
+      outMessages,
+      totalFees,
+      stateUpdate,
+      description,
+      raw,
+      hash: () => raw.hash()
+    };
+  }
+  Transaction.loadTransaction = loadTransaction;
+  function storeTransaction(src2) {
+    return (builder2) => {
+      builder2.storeUint(7, 4);
+      builder2.storeUint(src2.address, 256);
+      builder2.storeUint(src2.lt, 64);
+      builder2.storeUint(src2.prevTransactionHash, 256);
+      builder2.storeUint(src2.prevTransactionLt, 64);
+      builder2.storeUint(src2.now, 32);
+      builder2.storeUint(src2.outMessagesCount, 15);
+      builder2.store((0, AccountStatus_1.storeAccountStatus)(src2.oldStatus));
+      builder2.store((0, AccountStatus_1.storeAccountStatus)(src2.endStatus));
+      let msgBuilder = (0, Builder_12.beginCell)();
+      if (src2.inMessage) {
+        msgBuilder.storeBit(true);
+        msgBuilder.storeRef((0, Builder_12.beginCell)().store((0, Message_1.storeMessage)(src2.inMessage)));
+      } else {
+        msgBuilder.storeBit(false);
+      }
+      msgBuilder.storeDict(src2.outMessages);
+      builder2.storeRef(msgBuilder);
+      builder2.store((0, CurrencyCollection_1.storeCurrencyCollection)(src2.totalFees));
+      builder2.storeRef((0, Builder_12.beginCell)().store((0, HashUpdate_1.storeHashUpdate)(src2.stateUpdate)));
+      builder2.storeRef((0, Builder_12.beginCell)().store((0, TransactionDescription_1.storeTransactionDescription)(src2.description)));
+    };
+  }
+  Transaction.storeTransaction = storeTransaction;
+  return Transaction;
+}
+var hasRequired_export;
+function require_export() {
+  if (hasRequired_export) return _export;
+  hasRequired_export = 1;
+  (function(exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.loadSimpleLibrary = exports.loadShardStateUnsplit = exports.storeShardIdent = exports.loadShardIdent = exports.storeShardAccounts = exports.loadShardAccounts = exports.ShardAccountRefValue = exports.storeShardAccount = exports.loadShardAccount = exports.ReserveMode = exports.SendMode = exports.storeMessageRelaxed = exports.loadMessageRelaxed = exports.storeMessage = exports.loadMessage = exports.loadMasterchainStateExtra = exports.storeHashUpdate = exports.loadHashUpdate = exports.storeExtraCurrency = exports.loadMaybeExtraCurrency = exports.loadExtraCurrency = exports.packExtraCurrencyDict = exports.packExtraCurrencyCell = exports.storeDepthBalanceInfo = exports.loadDepthBalanceInfo = exports.storeCurrencyCollection = exports.loadCurrencyCollection = exports.storeComputeSkipReason = exports.loadComputeSkipReason = exports.storeCommonMessageInfoRelaxed = exports.loadCommonMessageInfoRelaxed = exports.storeCommonMessageInfo = exports.loadCommonMessageInfo = exports.storeOutList = exports.loadOutList = exports.storeOutAction = exports.loadOutAction = exports.storeAccountStorage = exports.loadAccountStorage = exports.storeAccountStatusChange = exports.loadAccountStatusChange = exports.storeAccountStatus = exports.loadAccountStatus = exports.storeAccountState = exports.loadAccountState = exports.storeAccount = exports.loadAccount = exports.comment = exports.external = exports.internal = void 0;
+    exports.storeTransactionsStoragePhase = exports.loadTransactionStoragePhase = exports.storeTransactionDescription = exports.loadTransactionDescription = exports.storeTransactionCreditPhase = exports.loadTransactionCreditPhase = exports.storeTransactionComputePhase = exports.loadTransactionComputePhase = exports.storeTransactionBouncePhase = exports.loadTransactionBouncePhase = exports.storeTransactionActionPhase = exports.loadTransactionActionPhase = exports.storeTransaction = exports.loadTransaction = exports.storeTickTock = exports.loadTickTock = exports.storeStorageUsed = exports.loadStorageUsed = exports.storeStorageInfo = exports.loadStorageInfo = exports.storeStateInit = exports.loadStateInit = exports.storeSplitMergeInfo = exports.loadSplitMergeInfo = exports.storeLibRef = exports.loadLibRef = exports.storeSimpleLibrary = void 0;
+    var _helpers_1 = require_helpers();
+    Object.defineProperty(exports, "internal", { enumerable: true, get: function() {
+      return _helpers_1.internal;
+    } });
+    Object.defineProperty(exports, "external", { enumerable: true, get: function() {
+      return _helpers_1.external;
+    } });
+    Object.defineProperty(exports, "comment", { enumerable: true, get: function() {
+      return _helpers_1.comment;
+    } });
+    var Account_1 = requireAccount();
+    Object.defineProperty(exports, "loadAccount", { enumerable: true, get: function() {
+      return Account_1.loadAccount;
+    } });
+    Object.defineProperty(exports, "storeAccount", { enumerable: true, get: function() {
+      return Account_1.storeAccount;
+    } });
+    var AccountState_1 = requireAccountState();
+    Object.defineProperty(exports, "loadAccountState", { enumerable: true, get: function() {
+      return AccountState_1.loadAccountState;
+    } });
+    Object.defineProperty(exports, "storeAccountState", { enumerable: true, get: function() {
+      return AccountState_1.storeAccountState;
+    } });
+    var AccountStatus_1 = requireAccountStatus();
+    Object.defineProperty(exports, "loadAccountStatus", { enumerable: true, get: function() {
+      return AccountStatus_1.loadAccountStatus;
+    } });
+    Object.defineProperty(exports, "storeAccountStatus", { enumerable: true, get: function() {
+      return AccountStatus_1.storeAccountStatus;
+    } });
+    var AccountStatusChange_1 = requireAccountStatusChange();
+    Object.defineProperty(exports, "loadAccountStatusChange", { enumerable: true, get: function() {
+      return AccountStatusChange_1.loadAccountStatusChange;
+    } });
+    Object.defineProperty(exports, "storeAccountStatusChange", { enumerable: true, get: function() {
+      return AccountStatusChange_1.storeAccountStatusChange;
+    } });
+    var AccountStorage_1 = requireAccountStorage();
+    Object.defineProperty(exports, "loadAccountStorage", { enumerable: true, get: function() {
+      return AccountStorage_1.loadAccountStorage;
+    } });
+    Object.defineProperty(exports, "storeAccountStorage", { enumerable: true, get: function() {
+      return AccountStorage_1.storeAccountStorage;
+    } });
+    var OutList_1 = requireOutList();
+    Object.defineProperty(exports, "loadOutAction", { enumerable: true, get: function() {
+      return OutList_1.loadOutAction;
+    } });
+    Object.defineProperty(exports, "storeOutAction", { enumerable: true, get: function() {
+      return OutList_1.storeOutAction;
+    } });
+    Object.defineProperty(exports, "loadOutList", { enumerable: true, get: function() {
+      return OutList_1.loadOutList;
+    } });
+    Object.defineProperty(exports, "storeOutList", { enumerable: true, get: function() {
+      return OutList_1.storeOutList;
+    } });
+    var CommonMessageInfo_1 = requireCommonMessageInfo();
+    Object.defineProperty(exports, "loadCommonMessageInfo", { enumerable: true, get: function() {
+      return CommonMessageInfo_1.loadCommonMessageInfo;
+    } });
+    Object.defineProperty(exports, "storeCommonMessageInfo", { enumerable: true, get: function() {
+      return CommonMessageInfo_1.storeCommonMessageInfo;
+    } });
+    var CommonMessageInfoRelaxed_1 = requireCommonMessageInfoRelaxed();
+    Object.defineProperty(exports, "loadCommonMessageInfoRelaxed", { enumerable: true, get: function() {
+      return CommonMessageInfoRelaxed_1.loadCommonMessageInfoRelaxed;
+    } });
+    Object.defineProperty(exports, "storeCommonMessageInfoRelaxed", { enumerable: true, get: function() {
+      return CommonMessageInfoRelaxed_1.storeCommonMessageInfoRelaxed;
+    } });
+    var ComputeSkipReason_1 = requireComputeSkipReason();
+    Object.defineProperty(exports, "loadComputeSkipReason", { enumerable: true, get: function() {
+      return ComputeSkipReason_1.loadComputeSkipReason;
+    } });
+    Object.defineProperty(exports, "storeComputeSkipReason", { enumerable: true, get: function() {
+      return ComputeSkipReason_1.storeComputeSkipReason;
+    } });
+    var CurrencyCollection_1 = requireCurrencyCollection();
+    Object.defineProperty(exports, "loadCurrencyCollection", { enumerable: true, get: function() {
+      return CurrencyCollection_1.loadCurrencyCollection;
+    } });
+    Object.defineProperty(exports, "storeCurrencyCollection", { enumerable: true, get: function() {
+      return CurrencyCollection_1.storeCurrencyCollection;
+    } });
+    var DepthBalanceInfo_1 = requireDepthBalanceInfo();
+    Object.defineProperty(exports, "loadDepthBalanceInfo", { enumerable: true, get: function() {
+      return DepthBalanceInfo_1.loadDepthBalanceInfo;
+    } });
+    Object.defineProperty(exports, "storeDepthBalanceInfo", { enumerable: true, get: function() {
+      return DepthBalanceInfo_1.storeDepthBalanceInfo;
+    } });
+    var ExtraCurrency_1 = requireExtraCurrency();
+    Object.defineProperty(exports, "packExtraCurrencyCell", { enumerable: true, get: function() {
+      return ExtraCurrency_1.packExtraCurrencyCell;
+    } });
+    Object.defineProperty(exports, "packExtraCurrencyDict", { enumerable: true, get: function() {
+      return ExtraCurrency_1.packExtraCurrencyDict;
+    } });
+    Object.defineProperty(exports, "loadExtraCurrency", { enumerable: true, get: function() {
+      return ExtraCurrency_1.loadExtraCurrency;
+    } });
+    Object.defineProperty(exports, "loadMaybeExtraCurrency", { enumerable: true, get: function() {
+      return ExtraCurrency_1.loadMaybeExtraCurrency;
+    } });
+    Object.defineProperty(exports, "storeExtraCurrency", { enumerable: true, get: function() {
+      return ExtraCurrency_1.storeExtraCurrency;
+    } });
+    var HashUpdate_1 = requireHashUpdate();
+    Object.defineProperty(exports, "loadHashUpdate", { enumerable: true, get: function() {
+      return HashUpdate_1.loadHashUpdate;
+    } });
+    Object.defineProperty(exports, "storeHashUpdate", { enumerable: true, get: function() {
+      return HashUpdate_1.storeHashUpdate;
+    } });
+    var MasterchainStateExtra_1 = requireMasterchainStateExtra();
+    Object.defineProperty(exports, "loadMasterchainStateExtra", { enumerable: true, get: function() {
+      return MasterchainStateExtra_1.loadMasterchainStateExtra;
+    } });
+    var Message_1 = requireMessage();
+    Object.defineProperty(exports, "loadMessage", { enumerable: true, get: function() {
+      return Message_1.loadMessage;
+    } });
+    Object.defineProperty(exports, "storeMessage", { enumerable: true, get: function() {
+      return Message_1.storeMessage;
+    } });
+    var MessageRelaxed_1 = requireMessageRelaxed();
+    Object.defineProperty(exports, "loadMessageRelaxed", { enumerable: true, get: function() {
+      return MessageRelaxed_1.loadMessageRelaxed;
+    } });
+    Object.defineProperty(exports, "storeMessageRelaxed", { enumerable: true, get: function() {
+      return MessageRelaxed_1.storeMessageRelaxed;
+    } });
+    var SendMode_1 = requireSendMode();
+    Object.defineProperty(exports, "SendMode", { enumerable: true, get: function() {
+      return SendMode_1.SendMode;
+    } });
+    var ReserveMode_1 = requireReserveMode();
+    Object.defineProperty(exports, "ReserveMode", { enumerable: true, get: function() {
+      return ReserveMode_1.ReserveMode;
+    } });
+    var ShardAccount_1 = requireShardAccount();
+    Object.defineProperty(exports, "loadShardAccount", { enumerable: true, get: function() {
+      return ShardAccount_1.loadShardAccount;
+    } });
+    Object.defineProperty(exports, "storeShardAccount", { enumerable: true, get: function() {
+      return ShardAccount_1.storeShardAccount;
+    } });
+    var ShardAccounts_1 = requireShardAccounts();
+    Object.defineProperty(exports, "ShardAccountRefValue", { enumerable: true, get: function() {
+      return ShardAccounts_1.ShardAccountRefValue;
+    } });
+    Object.defineProperty(exports, "loadShardAccounts", { enumerable: true, get: function() {
+      return ShardAccounts_1.loadShardAccounts;
+    } });
+    Object.defineProperty(exports, "storeShardAccounts", { enumerable: true, get: function() {
+      return ShardAccounts_1.storeShardAccounts;
+    } });
+    var ShardIdent_1 = requireShardIdent();
+    Object.defineProperty(exports, "loadShardIdent", { enumerable: true, get: function() {
+      return ShardIdent_1.loadShardIdent;
+    } });
+    Object.defineProperty(exports, "storeShardIdent", { enumerable: true, get: function() {
+      return ShardIdent_1.storeShardIdent;
+    } });
+    var ShardStateUnsplit_1 = requireShardStateUnsplit();
+    Object.defineProperty(exports, "loadShardStateUnsplit", { enumerable: true, get: function() {
+      return ShardStateUnsplit_1.loadShardStateUnsplit;
+    } });
+    var SimpleLibrary_1 = requireSimpleLibrary();
+    Object.defineProperty(exports, "loadSimpleLibrary", { enumerable: true, get: function() {
+      return SimpleLibrary_1.loadSimpleLibrary;
+    } });
+    Object.defineProperty(exports, "storeSimpleLibrary", { enumerable: true, get: function() {
+      return SimpleLibrary_1.storeSimpleLibrary;
+    } });
+    var LibRef_1 = requireLibRef();
+    Object.defineProperty(exports, "loadLibRef", { enumerable: true, get: function() {
+      return LibRef_1.loadLibRef;
+    } });
+    Object.defineProperty(exports, "storeLibRef", { enumerable: true, get: function() {
+      return LibRef_1.storeLibRef;
+    } });
+    var SplitMergeInfo_1 = requireSplitMergeInfo();
+    Object.defineProperty(exports, "loadSplitMergeInfo", { enumerable: true, get: function() {
+      return SplitMergeInfo_1.loadSplitMergeInfo;
+    } });
+    Object.defineProperty(exports, "storeSplitMergeInfo", { enumerable: true, get: function() {
+      return SplitMergeInfo_1.storeSplitMergeInfo;
+    } });
+    var StateInit_1 = requireStateInit();
+    Object.defineProperty(exports, "loadStateInit", { enumerable: true, get: function() {
+      return StateInit_1.loadStateInit;
+    } });
+    Object.defineProperty(exports, "storeStateInit", { enumerable: true, get: function() {
+      return StateInit_1.storeStateInit;
+    } });
+    var StorageInfo_1 = requireStorageInfo();
+    Object.defineProperty(exports, "loadStorageInfo", { enumerable: true, get: function() {
+      return StorageInfo_1.loadStorageInfo;
+    } });
+    Object.defineProperty(exports, "storeStorageInfo", { enumerable: true, get: function() {
+      return StorageInfo_1.storeStorageInfo;
+    } });
+    var StorageUsed_1 = requireStorageUsed();
+    Object.defineProperty(exports, "loadStorageUsed", { enumerable: true, get: function() {
+      return StorageUsed_1.loadStorageUsed;
+    } });
+    Object.defineProperty(exports, "storeStorageUsed", { enumerable: true, get: function() {
+      return StorageUsed_1.storeStorageUsed;
+    } });
+    var TickTock_1 = requireTickTock();
+    Object.defineProperty(exports, "loadTickTock", { enumerable: true, get: function() {
+      return TickTock_1.loadTickTock;
+    } });
+    Object.defineProperty(exports, "storeTickTock", { enumerable: true, get: function() {
+      return TickTock_1.storeTickTock;
+    } });
+    var Transaction_1 = requireTransaction();
+    Object.defineProperty(exports, "loadTransaction", { enumerable: true, get: function() {
+      return Transaction_1.loadTransaction;
+    } });
+    Object.defineProperty(exports, "storeTransaction", { enumerable: true, get: function() {
+      return Transaction_1.storeTransaction;
+    } });
+    var TransactionActionPhase_1 = requireTransactionActionPhase();
+    Object.defineProperty(exports, "loadTransactionActionPhase", { enumerable: true, get: function() {
+      return TransactionActionPhase_1.loadTransactionActionPhase;
+    } });
+    Object.defineProperty(exports, "storeTransactionActionPhase", { enumerable: true, get: function() {
+      return TransactionActionPhase_1.storeTransactionActionPhase;
+    } });
+    var TransactionBouncePhase_1 = requireTransactionBouncePhase();
+    Object.defineProperty(exports, "loadTransactionBouncePhase", { enumerable: true, get: function() {
+      return TransactionBouncePhase_1.loadTransactionBouncePhase;
+    } });
+    Object.defineProperty(exports, "storeTransactionBouncePhase", { enumerable: true, get: function() {
+      return TransactionBouncePhase_1.storeTransactionBouncePhase;
+    } });
+    var TransactionComputePhase_1 = requireTransactionComputePhase();
+    Object.defineProperty(exports, "loadTransactionComputePhase", { enumerable: true, get: function() {
+      return TransactionComputePhase_1.loadTransactionComputePhase;
+    } });
+    Object.defineProperty(exports, "storeTransactionComputePhase", { enumerable: true, get: function() {
+      return TransactionComputePhase_1.storeTransactionComputePhase;
+    } });
+    var TransactionCreditPhase_1 = requireTransactionCreditPhase();
+    Object.defineProperty(exports, "loadTransactionCreditPhase", { enumerable: true, get: function() {
+      return TransactionCreditPhase_1.loadTransactionCreditPhase;
+    } });
+    Object.defineProperty(exports, "storeTransactionCreditPhase", { enumerable: true, get: function() {
+      return TransactionCreditPhase_1.storeTransactionCreditPhase;
+    } });
+    var TransactionDescription_1 = requireTransactionDescription();
+    Object.defineProperty(exports, "loadTransactionDescription", { enumerable: true, get: function() {
+      return TransactionDescription_1.loadTransactionDescription;
+    } });
+    Object.defineProperty(exports, "storeTransactionDescription", { enumerable: true, get: function() {
+      return TransactionDescription_1.storeTransactionDescription;
+    } });
+    var TransactionStoragePhase_1 = requireTransactionStoragePhase();
+    Object.defineProperty(exports, "loadTransactionStoragePhase", { enumerable: true, get: function() {
+      return TransactionStoragePhase_1.loadTransactionStoragePhase;
+    } });
+    Object.defineProperty(exports, "storeTransactionsStoragePhase", { enumerable: true, get: function() {
+      return TransactionStoragePhase_1.storeTransactionsStoragePhase;
+    } });
+  })(_export);
+  return _export;
+}
+var openContract = {};
+var hasRequiredOpenContract;
+function requireOpenContract() {
+  if (hasRequiredOpenContract) return openContract;
+  hasRequiredOpenContract = 1;
+  Object.defineProperty(openContract, "__esModule", { value: true });
+  openContract.openContract = void 0;
+  const Address_1 = requireAddress();
+  const Cell_1 = requireCell();
+  function openContract$12(src2, factory) {
+    let address;
+    let init = null;
+    if (!Address_1.Address.isAddress(src2.address)) {
+      throw Error("Invalid address");
+    }
+    address = src2.address;
+    if (src2.init) {
+      if (!(src2.init.code instanceof Cell_1.Cell)) {
+        throw Error("Invalid init.code");
+      }
+      if (!(src2.init.data instanceof Cell_1.Cell)) {
+        throw Error("Invalid init.data");
+      }
+      init = src2.init;
+    }
+    let executor = factory({ address, init });
+    return new Proxy(src2, {
+      get(target, prop) {
+        const value = target[prop];
+        if (typeof prop === "string" && (prop.startsWith("get") || prop.startsWith("send") || prop.startsWith("is"))) {
+          if (typeof value === "function") {
+            return (...args) => value.apply(target, [executor, ...args]);
+          }
+        }
+        return value;
+      }
+    });
+  }
+  openContract.openContract = openContract$12;
+  return openContract;
+}
+var ComputeError = {};
+var hasRequiredComputeError;
+function requireComputeError() {
+  if (hasRequiredComputeError) return ComputeError;
+  hasRequiredComputeError = 1;
+  Object.defineProperty(ComputeError, "__esModule", { value: true });
+  ComputeError.ComputeError = void 0;
+  let ComputeError$12 = class ComputeError2 extends Error {
+    constructor(message, exitCode, opts) {
+      super(message);
+      this.exitCode = exitCode;
+      this.debugLogs = opts && opts.debugLogs ? opts.debugLogs : null;
+      this.logs = opts && opts.logs ? opts.logs : null;
+      Object.setPrototypeOf(this, ComputeError2.prototype);
+    }
+  };
+  ComputeError.ComputeError = ComputeError$12;
+  return ComputeError;
+}
+var getMethodId = {};
+var hasRequiredGetMethodId;
+function requireGetMethodId() {
+  if (hasRequiredGetMethodId) return getMethodId;
+  hasRequiredGetMethodId = 1;
+  Object.defineProperty(getMethodId, "__esModule", { value: true });
+  getMethodId.getMethodId = void 0;
+  const TABLE = new Int16Array([
+    0,
+    4129,
+    8258,
+    12387,
+    16516,
+    20645,
+    24774,
+    28903,
+    33032,
+    37161,
+    41290,
+    45419,
+    49548,
+    53677,
+    57806,
+    61935,
+    4657,
+    528,
+    12915,
+    8786,
+    21173,
+    17044,
+    29431,
+    25302,
+    37689,
+    33560,
+    45947,
+    41818,
+    54205,
+    50076,
+    62463,
+    58334,
+    9314,
+    13379,
+    1056,
+    5121,
+    25830,
+    29895,
+    17572,
+    21637,
+    42346,
+    46411,
+    34088,
+    38153,
+    58862,
+    62927,
+    50604,
+    54669,
+    13907,
+    9842,
+    5649,
+    1584,
+    30423,
+    26358,
+    22165,
+    18100,
+    46939,
+    42874,
+    38681,
+    34616,
+    63455,
+    59390,
+    55197,
+    51132,
+    18628,
+    22757,
+    26758,
+    30887,
+    2112,
+    6241,
+    10242,
+    14371,
+    51660,
+    55789,
+    59790,
+    63919,
+    35144,
+    39273,
+    43274,
+    47403,
+    23285,
+    19156,
+    31415,
+    27286,
+    6769,
+    2640,
+    14899,
+    10770,
+    56317,
+    52188,
+    64447,
+    60318,
+    39801,
+    35672,
+    47931,
+    43802,
+    27814,
+    31879,
+    19684,
+    23749,
+    11298,
+    15363,
+    3168,
+    7233,
+    60846,
+    64911,
+    52716,
+    56781,
+    44330,
+    48395,
+    36200,
+    40265,
+    32407,
+    28342,
+    24277,
+    20212,
+    15891,
+    11826,
+    7761,
+    3696,
+    65439,
+    61374,
+    57309,
+    53244,
+    48923,
+    44858,
+    40793,
+    36728,
+    37256,
+    33193,
+    45514,
+    41451,
+    53516,
+    49453,
+    61774,
+    57711,
+    4224,
+    161,
+    12482,
+    8419,
+    20484,
+    16421,
+    28742,
+    24679,
+    33721,
+    37784,
+    41979,
+    46042,
+    49981,
+    54044,
+    58239,
+    62302,
+    689,
+    4752,
+    8947,
+    13010,
+    16949,
+    21012,
+    25207,
+    29270,
+    46570,
+    42443,
+    38312,
+    34185,
+    62830,
+    58703,
+    54572,
+    50445,
+    13538,
+    9411,
+    5280,
+    1153,
+    29798,
+    25671,
+    21540,
+    17413,
+    42971,
+    47098,
+    34713,
+    38840,
+    59231,
+    63358,
+    50973,
+    55100,
+    9939,
+    14066,
+    1681,
+    5808,
+    26199,
+    30326,
+    17941,
+    22068,
+    55628,
+    51565,
+    63758,
+    59695,
+    39368,
+    35305,
+    47498,
+    43435,
+    22596,
+    18533,
+    30726,
+    26663,
+    6336,
+    2273,
+    14466,
+    10403,
+    52093,
+    56156,
+    60223,
+    64286,
+    35833,
+    39896,
+    43963,
+    48026,
+    19061,
+    23124,
+    27191,
+    31254,
+    2801,
+    6864,
+    10931,
+    14994,
+    64814,
+    60687,
+    56684,
+    52557,
+    48554,
+    44427,
+    40424,
+    36297,
+    31782,
+    27655,
+    23652,
+    19525,
+    15522,
+    11395,
+    7392,
+    3265,
+    61215,
+    65342,
+    53085,
+    57212,
+    44955,
+    49082,
+    36825,
+    40952,
+    28183,
+    32310,
+    20053,
+    24180,
+    11923,
+    16050,
+    3793,
+    7920
+  ]);
+  function crc162(data) {
+    if (!(data instanceof Buffer)) {
+      data = Buffer.from(data);
+    }
+    let crc = 0;
+    for (let index = 0; index < data.length; index++) {
+      const byte = data[index];
+      crc = (TABLE[(crc >> 8 ^ byte) & 255] ^ crc << 8) & 65535;
+    }
+    return crc;
+  }
+  function getMethodId$12(name) {
+    return crc162(name) & 65535 | 65536;
+  }
+  getMethodId.getMethodId = getMethodId$12;
+  return getMethodId;
+}
+var safeSign = {};
+var hasRequiredSafeSign;
+function requireSafeSign() {
+  if (hasRequiredSafeSign) return safeSign;
+  hasRequiredSafeSign = 1;
+  Object.defineProperty(safeSign, "__esModule", { value: true });
+  safeSign.safeSignVerify = safeSign.safeSign = void 0;
+  const crypto_1 = requireDist$6();
+  const MIN_SEED_LENGTH = 8;
+  const MAX_SEED_LENGTH = 64;
+  function createSafeSignHash(cell, seed) {
+    let seedData = Buffer.from(seed);
+    if (seedData.length > MAX_SEED_LENGTH) {
+      throw Error("Seed can	 be longer than 64 bytes");
+    }
+    if (seedData.length < MIN_SEED_LENGTH) {
+      throw Error("Seed must be at least 8 bytes");
+    }
+    return (0, crypto_1.sha256_sync)(Buffer.concat([Buffer.from([255, 255]), seedData, cell.hash()]));
+  }
+  function safeSign$12(cell, secretKey, seed = "ton-safe-sign-magic") {
+    return (0, crypto_1.sign)(createSafeSignHash(cell, seed), secretKey);
+  }
+  safeSign.safeSign = safeSign$12;
+  function safeSignVerify(cell, signature, publicKey, seed = "ton-safe-sign-magic") {
+    return (0, crypto_1.signVerify)(createSafeSignHash(cell, seed), signature, publicKey);
+  }
+  safeSign.safeSignVerify = safeSignVerify;
+  return safeSign;
+}
+var hasRequiredDist$4;
+function requireDist$4() {
+  if (hasRequiredDist$4) return dist$3;
+  hasRequiredDist$4 = 1;
+  (function(exports) {
+    var __createBinding = dist$3 && dist$3.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
+      if (k22 === void 0) k22 = k2;
+      var desc = Object.getOwnPropertyDescriptor(m2, k2);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k2];
+        } };
+      }
+      Object.defineProperty(o4, k22, desc);
+    }) : (function(o4, m2, k2, k22) {
+      if (k22 === void 0) k22 = k2;
+      o4[k22] = m2[k2];
+    }));
+    var __exportStar = dist$3 && dist$3.__exportStar || function(m2, exports2) {
+      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.safeSignVerify = exports.safeSign = exports.getMethodId = exports.base32Encode = exports.base32Decode = exports.crc32c = exports.crc16 = exports.fromNano = exports.toNano = exports.ComputeError = exports.openContract = exports.TupleBuilder = exports.TupleReader = exports.serializeTuple = exports.parseTuple = exports.generateMerkleUpdate = exports.generateMerkleProofDirect = exports.generateMerkleProof = exports.exoticPruned = exports.exoticMerkleUpdate = exports.convertToMerkleProof = exports.exoticMerkleProof = exports.Dictionary = exports.Cell = exports.CellType = exports.Slice = exports.beginCell = exports.Builder = exports.BitBuilder = exports.BitReader = exports.BitString = exports.contractAddress = exports.ADNLAddress = exports.ExternalAddress = exports.address = exports.Address = void 0;
+    var Address_1 = requireAddress();
+    Object.defineProperty(exports, "Address", { enumerable: true, get: function() {
+      return Address_1.Address;
+    } });
+    Object.defineProperty(exports, "address", { enumerable: true, get: function() {
+      return Address_1.address;
+    } });
+    var ExternalAddress_1 = requireExternalAddress();
+    Object.defineProperty(exports, "ExternalAddress", { enumerable: true, get: function() {
+      return ExternalAddress_1.ExternalAddress;
+    } });
+    var ADNLAddress_1 = requireADNLAddress();
+    Object.defineProperty(exports, "ADNLAddress", { enumerable: true, get: function() {
+      return ADNLAddress_1.ADNLAddress;
+    } });
+    var contractAddress_1 = requireContractAddress();
+    Object.defineProperty(exports, "contractAddress", { enumerable: true, get: function() {
+      return contractAddress_1.contractAddress;
+    } });
+    var BitString_1 = requireBitString();
+    Object.defineProperty(exports, "BitString", { enumerable: true, get: function() {
+      return BitString_1.BitString;
+    } });
+    var BitReader_1 = requireBitReader();
+    Object.defineProperty(exports, "BitReader", { enumerable: true, get: function() {
+      return BitReader_1.BitReader;
+    } });
+    var BitBuilder_1 = requireBitBuilder();
+    Object.defineProperty(exports, "BitBuilder", { enumerable: true, get: function() {
+      return BitBuilder_1.BitBuilder;
+    } });
+    var Builder_12 = requireBuilder$1();
+    Object.defineProperty(exports, "Builder", { enumerable: true, get: function() {
+      return Builder_12.Builder;
+    } });
+    Object.defineProperty(exports, "beginCell", { enumerable: true, get: function() {
+      return Builder_12.beginCell;
+    } });
+    var Slice_1 = requireSlice();
+    Object.defineProperty(exports, "Slice", { enumerable: true, get: function() {
+      return Slice_1.Slice;
+    } });
+    var CellType_1 = requireCellType();
+    Object.defineProperty(exports, "CellType", { enumerable: true, get: function() {
+      return CellType_1.CellType;
+    } });
+    var Cell_1 = requireCell();
+    Object.defineProperty(exports, "Cell", { enumerable: true, get: function() {
+      return Cell_1.Cell;
+    } });
+    var Dictionary_1 = requireDictionary();
+    Object.defineProperty(exports, "Dictionary", { enumerable: true, get: function() {
+      return Dictionary_1.Dictionary;
+    } });
+    var exoticMerkleProof_1 = requireExoticMerkleProof();
+    Object.defineProperty(exports, "exoticMerkleProof", { enumerable: true, get: function() {
+      return exoticMerkleProof_1.exoticMerkleProof;
+    } });
+    Object.defineProperty(exports, "convertToMerkleProof", { enumerable: true, get: function() {
+      return exoticMerkleProof_1.convertToMerkleProof;
+    } });
+    var exoticMerkleUpdate_1 = requireExoticMerkleUpdate();
+    Object.defineProperty(exports, "exoticMerkleUpdate", { enumerable: true, get: function() {
+      return exoticMerkleUpdate_1.exoticMerkleUpdate;
+    } });
+    var exoticPruned_1 = requireExoticPruned();
+    Object.defineProperty(exports, "exoticPruned", { enumerable: true, get: function() {
+      return exoticPruned_1.exoticPruned;
+    } });
+    var generateMerkleProof_1 = requireGenerateMerkleProof();
+    Object.defineProperty(exports, "generateMerkleProof", { enumerable: true, get: function() {
+      return generateMerkleProof_1.generateMerkleProof;
+    } });
+    Object.defineProperty(exports, "generateMerkleProofDirect", { enumerable: true, get: function() {
+      return generateMerkleProof_1.generateMerkleProofDirect;
+    } });
+    var generateMerkleUpdate_1 = requireGenerateMerkleUpdate();
+    Object.defineProperty(exports, "generateMerkleUpdate", { enumerable: true, get: function() {
+      return generateMerkleUpdate_1.generateMerkleUpdate;
+    } });
+    var tuple_1 = requireTuple();
+    Object.defineProperty(exports, "parseTuple", { enumerable: true, get: function() {
+      return tuple_1.parseTuple;
+    } });
+    Object.defineProperty(exports, "serializeTuple", { enumerable: true, get: function() {
+      return tuple_1.serializeTuple;
+    } });
+    var reader_1 = requireReader();
+    Object.defineProperty(exports, "TupleReader", { enumerable: true, get: function() {
+      return reader_1.TupleReader;
+    } });
+    var builder_1 = requireBuilder();
+    Object.defineProperty(exports, "TupleBuilder", { enumerable: true, get: function() {
+      return builder_1.TupleBuilder;
+    } });
+    __exportStar(require_export(), exports);
+    var openContract_1 = requireOpenContract();
+    Object.defineProperty(exports, "openContract", { enumerable: true, get: function() {
+      return openContract_1.openContract;
+    } });
+    var ComputeError_1 = requireComputeError();
+    Object.defineProperty(exports, "ComputeError", { enumerable: true, get: function() {
+      return ComputeError_1.ComputeError;
+    } });
+    var convert_1 = requireConvert();
+    Object.defineProperty(exports, "toNano", { enumerable: true, get: function() {
+      return convert_1.toNano;
+    } });
+    Object.defineProperty(exports, "fromNano", { enumerable: true, get: function() {
+      return convert_1.fromNano;
+    } });
+    var crc16_1 = requireCrc16();
+    Object.defineProperty(exports, "crc16", { enumerable: true, get: function() {
+      return crc16_1.crc16;
+    } });
+    var crc32c_1 = requireCrc32c();
+    Object.defineProperty(exports, "crc32c", { enumerable: true, get: function() {
+      return crc32c_1.crc32c;
+    } });
+    var base32_1 = requireBase32();
+    Object.defineProperty(exports, "base32Decode", { enumerable: true, get: function() {
+      return base32_1.base32Decode;
+    } });
+    Object.defineProperty(exports, "base32Encode", { enumerable: true, get: function() {
+      return base32_1.base32Encode;
+    } });
+    var getMethodId_1 = requireGetMethodId();
+    Object.defineProperty(exports, "getMethodId", { enumerable: true, get: function() {
+      return getMethodId_1.getMethodId;
+    } });
+    var safeSign_1 = requireSafeSign();
+    Object.defineProperty(exports, "safeSign", { enumerable: true, get: function() {
+      return safeSign_1.safeSign;
+    } });
+    Object.defineProperty(exports, "safeSignVerify", { enumerable: true, get: function() {
+      return safeSign_1.safeSignVerify;
+    } });
+  })(dist$3);
+  return dist$3;
+}
 var TLBRuntime = {};
 var build = {};
 var ast = {};
@@ -44177,6 +51681,11 @@ function requireTLBRuntime() {
           return result;
         }
       } catch (error2) {
+        if (error2 instanceof Error) {
+          throw error2;
+        } else {
+          throw new TLBDataError("Failed to deserialize");
+        }
       }
       for (const typeName of types2.slice().reverse()) {
         if (typeName === this.lastTypeName)
@@ -44681,10 +52190,7 @@ function requireTLBRuntime() {
           return slice.loadAddress();
         }
         case "TLBCellType": {
-          if (slice.remainingRefs === 0) {
-            throw new TLBDataError("No more references available for TLBCellType");
-          }
-          return slice.loadRef();
+          return slice.asCell();
         }
         case "TLBCellInsideType": {
           if (slice.remainingRefs === 0) {
@@ -45904,7 +53410,7 @@ chan_data$_ config:^ChanConfig state:^ChanState = ChanData;
 }
 var hasRequiredDist$2;
 function requireDist$2() {
-  if (hasRequiredDist$2) return dist$3;
+  if (hasRequiredDist$2) return dist$4;
   hasRequiredDist$2 = 1;
   (function(exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -45943,8 +53449,8 @@ function requireDist$2() {
     Object.defineProperty(exports, "blockSchema", { enumerable: true, get: function() {
       return schema_1.blockSchema;
     } });
-  })(dist$3);
-  return dist$3;
+  })(dist$4);
+  return dist$4;
 }
 var distExports$2 = requireDist$2();
 const BASE64_REGEX = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
@@ -46356,7 +53862,7 @@ class EventRouter {
     return enabledTypes;
   }
 }
-var distExports$1 = requireDist$5();
+var distExports$1 = requireDist$6();
 const tonProofPrefix = "ton-proof-item-v2/";
 const tonConnectPrefix = "ton-connect";
 async function CreateTonProofMessageBytes(message) {
@@ -46394,7 +53900,6 @@ function createTonProofMessage({ address, domain, payload, stateInit, timestamp 
   };
   return res;
 }
-/*! crc32.js (C) 2014-present SheetJS -- http://sheetjs.com */
 function signed_crc_table() {
   var c = 0, table = new Array(256);
   for (var n = 0; n != 256; ++n) {
@@ -47014,7 +54519,7 @@ class RequestProcessor {
       throw new WalletKitError(ERROR_CODES.WALLET_NOT_FOUND, "Wallet not found for connect approval response", void 0, { walletAddress, eventId: event.id });
     }
     const walletStateInit = await wallet.getStateInit();
-    const publicKey = wallet.publicKey.replace("0x", "");
+    const publicKey = wallet.getPublicKey().replace("0x", "");
     const address = wallet.getAddress();
     const connectResponse = {
       event: "connect",
@@ -47774,7 +55279,7 @@ class WalletTonClass {
   async sendTransaction(request) {
     try {
       const signedBoc = await this.getSignedSendTransaction(request);
-      await CallForSuccess(() => this.client.sendBoc(Buffer.from(signedBoc, "base64")));
+      await CallForSuccess(() => this.getClient().sendBoc(Buffer.from(signedBoc, "base64")));
       return { signedBoc };
     } catch (error2) {
       log$8.error("Failed to send transaction", { error: error2 });
@@ -47788,7 +55293,7 @@ class WalletTonClass {
     }
   }
   async getBalance() {
-    return await CallForSuccess(async () => this.client.getBalance(distExports$3.Address.parse(this.getAddress())));
+    return await CallForSuccess(async () => this.getClient().getBalance(distExports$3.Address.parse(this.getAddress())));
   }
 }
 var dist$1 = {};
@@ -47801,8 +55306,8 @@ function requireUtils$1() {
   hasRequiredUtils$1 = 1;
   Object.defineProperty(utils$1, "__esModule", { value: true });
   utils$1.defer = utils$1.internalOnchainContentToCell = utils$1.sleep = void 0;
-  const core_1 = requireDist$4();
-  const crypto_1 = requireDist$5();
+  const core_1 = requireDist$5();
+  const crypto_1 = requireDist$6();
   function sleep(timeout) {
     return new Promise((res) => {
       setTimeout(() => res(), timeout);
@@ -52156,8 +59661,8 @@ function requireContent$2() {
   hasRequiredContent$2 = 1;
   Object.defineProperty(content$1, "__esModule", { value: true });
   content$1.bufferToStr = content$1.decodeImage = content$1.decodeSimpleFields = content$1.loadFullContent = content$1.DefaultContentResolver = void 0;
-  const core_1 = requireDist$4();
-  const crypto_1 = requireDist$5();
+  const core_1 = requireDist$5();
+  const crypto_1 = requireDist$6();
   class DefaultContentResolver {
     constructor(ipfsGateway) {
       this.ipfsGateway = ipfsGateway ?? ((id) => `https://ipfs.io/ipfs/${id}`);
@@ -52349,7 +59854,7 @@ function requireContent$1() {
   };
   Object.defineProperty(content$2, "__esModule", { value: true });
   content$2.parseJettonContent = content$2.jettonContentToInternal = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const zod_1 = __importDefault(/* @__PURE__ */ requireZod());
   const content_1 = requireContent$2();
   function jettonContentToInternal(content2) {
@@ -52428,7 +59933,7 @@ function requireContent() {
   };
   Object.defineProperty(content, "__esModule", { value: true });
   content.parseNftContent = content.nftContentToInternal = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const zod_1 = __importDefault(/* @__PURE__ */ requireZod());
   const content_1 = requireContent$2();
   function nftContentToInternal(content2) {
@@ -52485,7 +59990,7 @@ function requireTypes() {
   hasRequiredTypes = 1;
   Object.defineProperty(types, "__esModule", { value: true });
   types.parseExcessReturnOptions = types.parseNotifyOptions = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   function parseNotifyOptions(options) {
     if (options === false) {
       return null;
@@ -52984,7 +60489,7 @@ function requireJettonWallet$1() {
   hasRequiredJettonWallet$1 = 1;
   Object.defineProperty(JettonWallet$1, "__esModule", { value: true });
   JettonWallet$1.JettonWallet = JettonWallet$1.jettonWalletConfigToCell = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const jetton_wallet_1 = requireJettonWallet$2();
   const types_1 = requireTypes();
   const JettonTransferMessage_1 = requireJettonTransferMessage();
@@ -53097,7 +60602,7 @@ function requireJettonMintMessage() {
   hasRequiredJettonMintMessage = 1;
   Object.defineProperty(JettonMintMessage, "__esModule", { value: true });
   JettonMintMessage.loadJettonMintMessage = JettonMintMessage.storeJettonMintMessage = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const opcodes_1 = requireOpcodes$1();
   const JettonInternalTransferMessage_1 = requireJettonInternalTransferMessage();
   function storeJettonMintMessage(src2) {
@@ -53336,7 +60841,7 @@ function requireJettonMinter() {
   hasRequiredJettonMinter = 1;
   Object.defineProperty(JettonMinter, "__esModule", { value: true });
   JettonMinter.JettonMinter = JettonMinter.jettonMinterConfigToCell = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const JettonWallet_1 = requireJettonWallet$1();
   const content_1 = requireContent$2();
   const content_2 = requireContent$1();
@@ -53557,7 +61062,7 @@ function requireNftMintMessage() {
   hasRequiredNftMintMessage = 1;
   Object.defineProperty(NftMintMessage, "__esModule", { value: true });
   NftMintMessage.loadNftMintMessage = NftMintMessage.storeNftMintMessage = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const opcodes_1 = requireOpcodes();
   function storeNftMintMessage(src2, storeParams) {
     return (builder2) => {
@@ -53594,7 +61099,7 @@ function requireNftBatchMintMessage() {
   hasRequiredNftBatchMintMessage = 1;
   Object.defineProperty(NftBatchMintMessage, "__esModule", { value: true });
   NftBatchMintMessage.createNftMintItemValue = NftBatchMintMessage.loadNftBatchMintItem = NftBatchMintMessage.storeNftBatchMintItem = NftBatchMintMessage.loadNftBatchMintMessage = NftBatchMintMessage.storeNftBatchMintMessage = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const opcodes_1 = requireOpcodes();
   function storeNftBatchMintMessage(src2, storeParams) {
     return (builder2) => {
@@ -53696,7 +61201,7 @@ function requireNftCollectionBase() {
   hasRequiredNftCollectionBase = 1;
   Object.defineProperty(NftCollectionBase, "__esModule", { value: true });
   NftCollectionBase.NftCollectionBase = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const content_1 = requireContent$2();
   const content_2 = requireContent();
   const nft_collection_editable_1 = requireNftCollectionEditable();
@@ -53825,7 +61330,7 @@ function requireNftItemParams() {
   hasRequiredNftItemParams = 1;
   Object.defineProperty(NftItemParams, "__esModule", { value: true });
   NftItemParams.createNftItemParamsValue = NftItemParams.loadNftItemParams = NftItemParams.storeNftItemParams = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   function storeNftItemParams(src2) {
     return (builder2) => {
       builder2.storeAddress(src2.owner);
@@ -54133,7 +61638,7 @@ function requireNftItem() {
   hasRequiredNftItem = 1;
   Object.defineProperty(NftItem, "__esModule", { value: true });
   NftItem.NftItem = NftItem.nftItemConfigToCell = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const content_1 = requireContent$2();
   const NftCollection_1 = requireNftCollection();
   const content_2 = requireContent();
@@ -54252,7 +61757,7 @@ function requireNftCollectionData() {
   hasRequiredNftCollectionData = 1;
   Object.defineProperty(NftCollectionData, "__esModule", { value: true });
   NftCollectionData.loadNftCollectionData = NftCollectionData.storeNftCollectionData = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const NftRoyaltyParams_1 = requireNftRoyaltyParams();
   function storeNftCollectionData(src2) {
     return (builder2) => {
@@ -54392,7 +61897,7 @@ function requireNftCollection() {
   hasRequiredNftCollection = 1;
   Object.defineProperty(NftCollection, "__esModule", { value: true });
   NftCollection.NftCollection = NftCollection.nftCollectionConfigToCell = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const NftCollectionBase_1 = requireNftCollectionBase();
   const NftItem_1 = requireNftItem();
   const NftCollectionData_1 = requireNftCollectionData();
@@ -54470,7 +61975,7 @@ function requireSbtItemParams() {
   hasRequiredSbtItemParams = 1;
   Object.defineProperty(SbtItemParams, "__esModule", { value: true });
   SbtItemParams.createSbtItemParamsValue = SbtItemParams.loadSbtItemParams = SbtItemParams.storeSbtItemParams = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   function storeSbtItemParams(src2) {
     return (builder2) => {
       builder2.storeAddress(src2.owner);
@@ -54549,7 +62054,7 @@ function requireSbtItem() {
   hasRequiredSbtItem = 1;
   Object.defineProperty(SbtItem, "__esModule", { value: true });
   SbtItem.SbtItem = SbtItem.sbtItemConfigToCell = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const content_1 = requireContent$2();
   const NftCollection_1 = requireNftCollection();
   const content_2 = requireContent();
@@ -54700,7 +62205,7 @@ function requireSbtCollection() {
   hasRequiredSbtCollection = 1;
   Object.defineProperty(SbtCollection, "__esModule", { value: true });
   SbtCollection.SbtCollection = SbtCollection.sbtCollectionConfigToCell = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const NftCollectionBase_1 = requireNftCollectionBase();
   const SbtItem_1 = requireSbtItem();
   const SbtCollectionAction_1 = requireSbtCollectionAction();
@@ -54756,7 +62261,7 @@ function requireNftSale() {
   hasRequiredNftSale = 1;
   Object.defineProperty(NftSale, "__esModule", { value: true });
   NftSale.NftSale = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   let NftSale$1 = class NftSale2 {
     constructor(address, init) {
       this.address = address;
@@ -54875,7 +62380,7 @@ function requireCommon() {
   };
   Object.defineProperty(common, "__esModule", { value: true });
   common.retry = common.formatAddressLink = common.formatAddress = common.printAddress = common.printInfo = common.createEnv = common.createContentResolver = common.createStorageEnv = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const __1 = requireDist();
   const content_1 = requireContent$2();
   const chalk_1 = __importDefault(require$$4$2);
@@ -55045,7 +62550,7 @@ function requireSdk() {
   hasRequiredSdk = 1;
   Object.defineProperty(sdk, "__esModule", { value: true });
   sdk.AssetsSDK = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const pinata_1 = requirePinata();
   const s3_1 = requireS3();
   const content_1 = requireContent$1();
@@ -55478,7 +62983,8095 @@ function requireDataloader() {
   dataloader = DataLoader;
   return dataloader;
 }
-/*! Axios v1.11.0 Copyright (c) 2025 Matt Zabriskie and contributors */
+var axios_1$1;
+var hasRequiredAxios$1;
+function requireAxios$1() {
+  if (hasRequiredAxios$1) return axios_1$1;
+  hasRequiredAxios$1 = 1;
+  function bind(fn2, thisArg) {
+    return function wrap() {
+      return fn2.apply(thisArg, arguments);
+    };
+  }
+  const { toString } = Object.prototype;
+  const { getPrototypeOf } = Object;
+  const { iterator, toStringTag } = Symbol;
+  const kindOf = /* @__PURE__ */ ((cache) => (thing) => {
+    const str = toString.call(thing);
+    return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
+  })(/* @__PURE__ */ Object.create(null));
+  const kindOfTest = (type) => {
+    type = type.toLowerCase();
+    return (thing) => kindOf(thing) === type;
+  };
+  const typeOfTest = (type) => (thing) => typeof thing === type;
+  const { isArray } = Array;
+  const isUndefined = typeOfTest("undefined");
+  function isBuffer2(val) {
+    return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor) && isFunction$1(val.constructor.isBuffer) && val.constructor.isBuffer(val);
+  }
+  const isArrayBuffer = kindOfTest("ArrayBuffer");
+  function isArrayBufferView(val) {
+    let result;
+    if (typeof ArrayBuffer !== "undefined" && ArrayBuffer.isView) {
+      result = ArrayBuffer.isView(val);
+    } else {
+      result = val && val.buffer && isArrayBuffer(val.buffer);
+    }
+    return result;
+  }
+  const isString = typeOfTest("string");
+  const isFunction$1 = typeOfTest("function");
+  const isNumber = typeOfTest("number");
+  const isObject = (thing) => thing !== null && typeof thing === "object";
+  const isBoolean = (thing) => thing === true || thing === false;
+  const isPlainObject = (val) => {
+    if (kindOf(val) !== "object") {
+      return false;
+    }
+    const prototype2 = getPrototypeOf(val);
+    return (prototype2 === null || prototype2 === Object.prototype || Object.getPrototypeOf(prototype2) === null) && !(toStringTag in val) && !(iterator in val);
+  };
+  const isEmptyObject = (val) => {
+    if (!isObject(val) || isBuffer2(val)) {
+      return false;
+    }
+    try {
+      return Object.keys(val).length === 0 && Object.getPrototypeOf(val) === Object.prototype;
+    } catch (e) {
+      return false;
+    }
+  };
+  const isDate = kindOfTest("Date");
+  const isFile = kindOfTest("File");
+  const isBlob = kindOfTest("Blob");
+  const isFileList = kindOfTest("FileList");
+  const isStream = (val) => isObject(val) && isFunction$1(val.pipe);
+  const isFormData = (thing) => {
+    let kind;
+    return thing && (typeof FormData === "function" && thing instanceof FormData || isFunction$1(thing.append) && ((kind = kindOf(thing)) === "formdata" || // detect form-data instance
+    kind === "object" && isFunction$1(thing.toString) && thing.toString() === "[object FormData]"));
+  };
+  const isURLSearchParams = kindOfTest("URLSearchParams");
+  const [isReadableStream, isRequest, isResponse, isHeaders] = ["ReadableStream", "Request", "Response", "Headers"].map(kindOfTest);
+  const trim2 = (str) => str.trim ? str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
+  function forEach(obj, fn2, { allOwnKeys = false } = {}) {
+    if (obj === null || typeof obj === "undefined") {
+      return;
+    }
+    let i;
+    let l;
+    if (typeof obj !== "object") {
+      obj = [obj];
+    }
+    if (isArray(obj)) {
+      for (i = 0, l = obj.length; i < l; i++) {
+        fn2.call(null, obj[i], i, obj);
+      }
+    } else {
+      if (isBuffer2(obj)) {
+        return;
+      }
+      const keys = allOwnKeys ? Object.getOwnPropertyNames(obj) : Object.keys(obj);
+      const len = keys.length;
+      let key2;
+      for (i = 0; i < len; i++) {
+        key2 = keys[i];
+        fn2.call(null, obj[key2], key2, obj);
+      }
+    }
+  }
+  function findKey(obj, key2) {
+    if (isBuffer2(obj)) {
+      return null;
+    }
+    key2 = key2.toLowerCase();
+    const keys = Object.keys(obj);
+    let i = keys.length;
+    let _key;
+    while (i-- > 0) {
+      _key = keys[i];
+      if (key2 === _key.toLowerCase()) {
+        return _key;
+      }
+    }
+    return null;
+  }
+  const _global = (() => {
+    if (typeof globalThis !== "undefined") return globalThis;
+    return typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : commonjsGlobal;
+  })();
+  const isContextDefined = (context) => !isUndefined(context) && context !== _global;
+  function merge() {
+    const { caseless, skipUndefined } = isContextDefined(this) && this || {};
+    const result = {};
+    const assignValue = (val, key2) => {
+      const targetKey = caseless && findKey(result, key2) || key2;
+      if (isPlainObject(result[targetKey]) && isPlainObject(val)) {
+        result[targetKey] = merge(result[targetKey], val);
+      } else if (isPlainObject(val)) {
+        result[targetKey] = merge({}, val);
+      } else if (isArray(val)) {
+        result[targetKey] = val.slice();
+      } else if (!skipUndefined || !isUndefined(val)) {
+        result[targetKey] = val;
+      }
+    };
+    for (let i = 0, l = arguments.length; i < l; i++) {
+      arguments[i] && forEach(arguments[i], assignValue);
+    }
+    return result;
+  }
+  const extend = (a2, b2, thisArg, { allOwnKeys } = {}) => {
+    forEach(b2, (val, key2) => {
+      if (thisArg && isFunction$1(val)) {
+        a2[key2] = bind(val, thisArg);
+      } else {
+        a2[key2] = val;
+      }
+    }, { allOwnKeys });
+    return a2;
+  };
+  const stripBOM = (content2) => {
+    if (content2.charCodeAt(0) === 65279) {
+      content2 = content2.slice(1);
+    }
+    return content2;
+  };
+  const inherits = (constructor, superConstructor, props, descriptors2) => {
+    constructor.prototype = Object.create(superConstructor.prototype, descriptors2);
+    constructor.prototype.constructor = constructor;
+    Object.defineProperty(constructor, "super", {
+      value: superConstructor.prototype
+    });
+    props && Object.assign(constructor.prototype, props);
+  };
+  const toFlatObject = (sourceObj, destObj, filter, propFilter) => {
+    let props;
+    let i;
+    let prop;
+    const merged = {};
+    destObj = destObj || {};
+    if (sourceObj == null) return destObj;
+    do {
+      props = Object.getOwnPropertyNames(sourceObj);
+      i = props.length;
+      while (i-- > 0) {
+        prop = props[i];
+        if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
+          destObj[prop] = sourceObj[prop];
+          merged[prop] = true;
+        }
+      }
+      sourceObj = filter !== false && getPrototypeOf(sourceObj);
+    } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
+    return destObj;
+  };
+  const endsWith = (str, searchString, position) => {
+    str = String(str);
+    if (position === void 0 || position > str.length) {
+      position = str.length;
+    }
+    position -= searchString.length;
+    const lastIndex = str.indexOf(searchString, position);
+    return lastIndex !== -1 && lastIndex === position;
+  };
+  const toArray = (thing) => {
+    if (!thing) return null;
+    if (isArray(thing)) return thing;
+    let i = thing.length;
+    if (!isNumber(i)) return null;
+    const arr = new Array(i);
+    while (i-- > 0) {
+      arr[i] = thing[i];
+    }
+    return arr;
+  };
+  const isTypedArray = /* @__PURE__ */ ((TypedArray) => {
+    return (thing) => {
+      return TypedArray && thing instanceof TypedArray;
+    };
+  })(typeof Uint8Array !== "undefined" && getPrototypeOf(Uint8Array));
+  const forEachEntry = (obj, fn2) => {
+    const generator2 = obj && obj[iterator];
+    const _iterator = generator2.call(obj);
+    let result;
+    while ((result = _iterator.next()) && !result.done) {
+      const pair = result.value;
+      fn2.call(obj, pair[0], pair[1]);
+    }
+  };
+  const matchAll = (regExp, str) => {
+    let matches;
+    const arr = [];
+    while ((matches = regExp.exec(str)) !== null) {
+      arr.push(matches);
+    }
+    return arr;
+  };
+  const isHTMLForm = kindOfTest("HTMLFormElement");
+  const toCamelCase = (str) => {
+    return str.toLowerCase().replace(
+      /[-_\s]([a-z\d])(\w*)/g,
+      function replacer(m2, p1, p2) {
+        return p1.toUpperCase() + p2;
+      }
+    );
+  };
+  const hasOwnProperty2 = (({ hasOwnProperty: hasOwnProperty3 }) => (obj, prop) => hasOwnProperty3.call(obj, prop))(Object.prototype);
+  const isRegExp = kindOfTest("RegExp");
+  const reduceDescriptors = (obj, reducer) => {
+    const descriptors2 = Object.getOwnPropertyDescriptors(obj);
+    const reducedDescriptors = {};
+    forEach(descriptors2, (descriptor2, name) => {
+      let ret;
+      if ((ret = reducer(descriptor2, name, obj)) !== false) {
+        reducedDescriptors[name] = ret || descriptor2;
+      }
+    });
+    Object.defineProperties(obj, reducedDescriptors);
+  };
+  const freezeMethods = (obj) => {
+    reduceDescriptors(obj, (descriptor2, name) => {
+      if (isFunction$1(obj) && ["arguments", "caller", "callee"].indexOf(name) !== -1) {
+        return false;
+      }
+      const value = obj[name];
+      if (!isFunction$1(value)) return;
+      descriptor2.enumerable = false;
+      if ("writable" in descriptor2) {
+        descriptor2.writable = false;
+        return;
+      }
+      if (!descriptor2.set) {
+        descriptor2.set = () => {
+          throw Error("Can not rewrite read-only method '" + name + "'");
+        };
+      }
+    });
+  };
+  const toObjectSet = (arrayOrString, delimiter2) => {
+    const obj = {};
+    const define = (arr) => {
+      arr.forEach((value) => {
+        obj[value] = true;
+      });
+    };
+    isArray(arrayOrString) ? define(arrayOrString) : define(String(arrayOrString).split(delimiter2));
+    return obj;
+  };
+  const noop2 = () => {
+  };
+  const toFiniteNumber = (value, defaultValue) => {
+    return value != null && Number.isFinite(value = +value) ? value : defaultValue;
+  };
+  function isSpecCompliantForm(thing) {
+    return !!(thing && isFunction$1(thing.append) && thing[toStringTag] === "FormData" && thing[iterator]);
+  }
+  const toJSONObject = (obj) => {
+    const stack = new Array(10);
+    const visit2 = (source, i) => {
+      if (isObject(source)) {
+        if (stack.indexOf(source) >= 0) {
+          return;
+        }
+        if (isBuffer2(source)) {
+          return source;
+        }
+        if (!("toJSON" in source)) {
+          stack[i] = source;
+          const target = isArray(source) ? [] : {};
+          forEach(source, (value, key2) => {
+            const reducedValue = visit2(value, i + 1);
+            !isUndefined(reducedValue) && (target[key2] = reducedValue);
+          });
+          stack[i] = void 0;
+          return target;
+        }
+      }
+      return source;
+    };
+    return visit2(obj, 0);
+  };
+  const isAsyncFn = kindOfTest("AsyncFunction");
+  const isThenable = (thing) => thing && (isObject(thing) || isFunction$1(thing)) && isFunction$1(thing.then) && isFunction$1(thing.catch);
+  const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
+    if (setImmediateSupported) {
+      return setImmediate;
+    }
+    return postMessageSupported ? ((token, callbacks) => {
+      _global.addEventListener("message", ({ source, data }) => {
+        if (source === _global && data === token) {
+          callbacks.length && callbacks.shift()();
+        }
+      }, false);
+      return (cb) => {
+        callbacks.push(cb);
+        _global.postMessage(token, "*");
+      };
+    })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
+  })(
+    typeof setImmediate === "function",
+    isFunction$1(_global.postMessage)
+  );
+  const asap = typeof queueMicrotask !== "undefined" ? queueMicrotask.bind(_global) : typeof process !== "undefined" && process.nextTick || _setImmediate;
+  const isIterable = (thing) => thing != null && isFunction$1(thing[iterator]);
+  var utils$12 = {
+    isArray,
+    isArrayBuffer,
+    isBuffer: isBuffer2,
+    isFormData,
+    isArrayBufferView,
+    isString,
+    isNumber,
+    isBoolean,
+    isObject,
+    isPlainObject,
+    isEmptyObject,
+    isReadableStream,
+    isRequest,
+    isResponse,
+    isHeaders,
+    isUndefined,
+    isDate,
+    isFile,
+    isBlob,
+    isRegExp,
+    isFunction: isFunction$1,
+    isStream,
+    isURLSearchParams,
+    isTypedArray,
+    isFileList,
+    forEach,
+    merge,
+    extend,
+    trim: trim2,
+    stripBOM,
+    inherits,
+    toFlatObject,
+    kindOf,
+    kindOfTest,
+    endsWith,
+    toArray,
+    forEachEntry,
+    matchAll,
+    isHTMLForm,
+    hasOwnProperty: hasOwnProperty2,
+    hasOwnProp: hasOwnProperty2,
+    // an alias to avoid ESLint no-prototype-builtins detection
+    reduceDescriptors,
+    freezeMethods,
+    toObjectSet,
+    toCamelCase,
+    noop: noop2,
+    toFiniteNumber,
+    findKey,
+    global: _global,
+    isContextDefined,
+    isSpecCompliantForm,
+    toJSONObject,
+    isAsyncFn,
+    isThenable,
+    setImmediate: _setImmediate,
+    asap,
+    isIterable
+  };
+  function AxiosError(message, code, config, request, response) {
+    Error.call(this);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    } else {
+      this.stack = new Error().stack;
+    }
+    this.message = message;
+    this.name = "AxiosError";
+    code && (this.code = code);
+    config && (this.config = config);
+    request && (this.request = request);
+    if (response) {
+      this.response = response;
+      this.status = response.status ? response.status : null;
+    }
+  }
+  utils$12.inherits(AxiosError, Error, {
+    toJSON: function toJSON() {
+      return {
+        // Standard
+        message: this.message,
+        name: this.name,
+        // Microsoft
+        description: this.description,
+        number: this.number,
+        // Mozilla
+        fileName: this.fileName,
+        lineNumber: this.lineNumber,
+        columnNumber: this.columnNumber,
+        stack: this.stack,
+        // Axios
+        config: utils$12.toJSONObject(this.config),
+        code: this.code,
+        status: this.status
+      };
+    }
+  });
+  const prototype$1 = AxiosError.prototype;
+  const descriptors = {};
+  [
+    "ERR_BAD_OPTION_VALUE",
+    "ERR_BAD_OPTION",
+    "ECONNABORTED",
+    "ETIMEDOUT",
+    "ERR_NETWORK",
+    "ERR_FR_TOO_MANY_REDIRECTS",
+    "ERR_DEPRECATED",
+    "ERR_BAD_RESPONSE",
+    "ERR_BAD_REQUEST",
+    "ERR_CANCELED",
+    "ERR_NOT_SUPPORT",
+    "ERR_INVALID_URL"
+    // eslint-disable-next-line func-names
+  ].forEach((code) => {
+    descriptors[code] = { value: code };
+  });
+  Object.defineProperties(AxiosError, descriptors);
+  Object.defineProperty(prototype$1, "isAxiosError", { value: true });
+  AxiosError.from = (error2, code, config, request, response, customProps) => {
+    const axiosError = Object.create(prototype$1);
+    utils$12.toFlatObject(error2, axiosError, function filter(obj) {
+      return obj !== Error.prototype;
+    }, (prop) => {
+      return prop !== "isAxiosError";
+    });
+    const msg = error2 && error2.message ? error2.message : "Error";
+    const errCode = code == null && error2 ? error2.code : code;
+    AxiosError.call(axiosError, msg, errCode, config, request, response);
+    if (error2 && axiosError.cause == null) {
+      Object.defineProperty(axiosError, "cause", { value: error2, configurable: true });
+    }
+    axiosError.name = error2 && error2.name || "Error";
+    customProps && Object.assign(axiosError, customProps);
+    return axiosError;
+  };
+  var httpAdapter = null;
+  function isVisitable(thing) {
+    return utils$12.isPlainObject(thing) || utils$12.isArray(thing);
+  }
+  function removeBrackets(key2) {
+    return utils$12.endsWith(key2, "[]") ? key2.slice(0, -2) : key2;
+  }
+  function renderKey(path, key2, dots) {
+    if (!path) return key2;
+    return path.concat(key2).map(function each(token, i) {
+      token = removeBrackets(token);
+      return !dots && i ? "[" + token + "]" : token;
+    }).join(dots ? "." : "");
+  }
+  function isFlatArray(arr) {
+    return utils$12.isArray(arr) && !arr.some(isVisitable);
+  }
+  const predicates = utils$12.toFlatObject(utils$12, {}, null, function filter(prop) {
+    return /^is[A-Z]/.test(prop);
+  });
+  function toFormData(obj, formData, options) {
+    if (!utils$12.isObject(obj)) {
+      throw new TypeError("target must be an object");
+    }
+    formData = formData || new FormData();
+    options = utils$12.toFlatObject(options, {
+      metaTokens: true,
+      dots: false,
+      indexes: false
+    }, false, function defined(option, source) {
+      return !utils$12.isUndefined(source[option]);
+    });
+    const metaTokens = options.metaTokens;
+    const visitor = options.visitor || defaultVisitor;
+    const dots = options.dots;
+    const indexes = options.indexes;
+    const _Blob = options.Blob || typeof Blob !== "undefined" && Blob;
+    const useBlob = _Blob && utils$12.isSpecCompliantForm(formData);
+    if (!utils$12.isFunction(visitor)) {
+      throw new TypeError("visitor must be a function");
+    }
+    function convertValue(value) {
+      if (value === null) return "";
+      if (utils$12.isDate(value)) {
+        return value.toISOString();
+      }
+      if (utils$12.isBoolean(value)) {
+        return value.toString();
+      }
+      if (!useBlob && utils$12.isBlob(value)) {
+        throw new AxiosError("Blob is not supported. Use a Buffer instead.");
+      }
+      if (utils$12.isArrayBuffer(value) || utils$12.isTypedArray(value)) {
+        return useBlob && typeof Blob === "function" ? new Blob([value]) : Buffer.from(value);
+      }
+      return value;
+    }
+    function defaultVisitor(value, key2, path) {
+      let arr = value;
+      if (value && !path && typeof value === "object") {
+        if (utils$12.endsWith(key2, "{}")) {
+          key2 = metaTokens ? key2 : key2.slice(0, -2);
+          value = JSON.stringify(value);
+        } else if (utils$12.isArray(value) && isFlatArray(value) || (utils$12.isFileList(value) || utils$12.endsWith(key2, "[]")) && (arr = utils$12.toArray(value))) {
+          key2 = removeBrackets(key2);
+          arr.forEach(function each(el, index) {
+            !(utils$12.isUndefined(el) || el === null) && formData.append(
+              // eslint-disable-next-line no-nested-ternary
+              indexes === true ? renderKey([key2], index, dots) : indexes === null ? key2 : key2 + "[]",
+              convertValue(el)
+            );
+          });
+          return false;
+        }
+      }
+      if (isVisitable(value)) {
+        return true;
+      }
+      formData.append(renderKey(path, key2, dots), convertValue(value));
+      return false;
+    }
+    const stack = [];
+    const exposedHelpers = Object.assign(predicates, {
+      defaultVisitor,
+      convertValue,
+      isVisitable
+    });
+    function build2(value, path) {
+      if (utils$12.isUndefined(value)) return;
+      if (stack.indexOf(value) !== -1) {
+        throw Error("Circular reference detected in " + path.join("."));
+      }
+      stack.push(value);
+      utils$12.forEach(value, function each(el, key2) {
+        const result = !(utils$12.isUndefined(el) || el === null) && visitor.call(
+          formData,
+          el,
+          utils$12.isString(key2) ? key2.trim() : key2,
+          path,
+          exposedHelpers
+        );
+        if (result === true) {
+          build2(el, path ? path.concat(key2) : [key2]);
+        }
+      });
+      stack.pop();
+    }
+    if (!utils$12.isObject(obj)) {
+      throw new TypeError("data must be an object");
+    }
+    build2(obj);
+    return formData;
+  }
+  function encode$12(str) {
+    const charMap = {
+      "!": "%21",
+      "'": "%27",
+      "(": "%28",
+      ")": "%29",
+      "~": "%7E",
+      "%20": "+",
+      "%00": "\0"
+    };
+    return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer(match) {
+      return charMap[match];
+    });
+  }
+  function AxiosURLSearchParams(params, options) {
+    this._pairs = [];
+    params && toFormData(params, this, options);
+  }
+  const prototype = AxiosURLSearchParams.prototype;
+  prototype.append = function append(name, value) {
+    this._pairs.push([name, value]);
+  };
+  prototype.toString = function toString2(encoder) {
+    const _encode = encoder ? function(value) {
+      return encoder.call(this, value, encode$12);
+    } : encode$12;
+    return this._pairs.map(function each(pair) {
+      return _encode(pair[0]) + "=" + _encode(pair[1]);
+    }, "").join("&");
+  };
+  function encode2(val) {
+    return encodeURIComponent(val).replace(/%3A/gi, ":").replace(/%24/g, "$").replace(/%2C/gi, ",").replace(/%20/g, "+");
+  }
+  function buildURL(url, params, options) {
+    if (!params) {
+      return url;
+    }
+    const _encode = options && options.encode || encode2;
+    if (utils$12.isFunction(options)) {
+      options = {
+        serialize: options
+      };
+    }
+    const serializeFn = options && options.serialize;
+    let serializedParams;
+    if (serializeFn) {
+      serializedParams = serializeFn(params, options);
+    } else {
+      serializedParams = utils$12.isURLSearchParams(params) ? params.toString() : new AxiosURLSearchParams(params, options).toString(_encode);
+    }
+    if (serializedParams) {
+      const hashmarkIndex = url.indexOf("#");
+      if (hashmarkIndex !== -1) {
+        url = url.slice(0, hashmarkIndex);
+      }
+      url += (url.indexOf("?") === -1 ? "?" : "&") + serializedParams;
+    }
+    return url;
+  }
+  class InterceptorManager {
+    constructor() {
+      this.handlers = [];
+    }
+    /**
+     * Add a new interceptor to the stack
+     *
+     * @param {Function} fulfilled The function to handle `then` for a `Promise`
+     * @param {Function} rejected The function to handle `reject` for a `Promise`
+     *
+     * @return {Number} An ID used to remove interceptor later
+     */
+    use(fulfilled, rejected, options) {
+      this.handlers.push({
+        fulfilled,
+        rejected,
+        synchronous: options ? options.synchronous : false,
+        runWhen: options ? options.runWhen : null
+      });
+      return this.handlers.length - 1;
+    }
+    /**
+     * Remove an interceptor from the stack
+     *
+     * @param {Number} id The ID that was returned by `use`
+     *
+     * @returns {void}
+     */
+    eject(id) {
+      if (this.handlers[id]) {
+        this.handlers[id] = null;
+      }
+    }
+    /**
+     * Clear all interceptors from the stack
+     *
+     * @returns {void}
+     */
+    clear() {
+      if (this.handlers) {
+        this.handlers = [];
+      }
+    }
+    /**
+     * Iterate over all the registered interceptors
+     *
+     * This method is particularly useful for skipping over any
+     * interceptors that may have become `null` calling `eject`.
+     *
+     * @param {Function} fn The function to call for each interceptor
+     *
+     * @returns {void}
+     */
+    forEach(fn2) {
+      utils$12.forEach(this.handlers, function forEachHandler(h2) {
+        if (h2 !== null) {
+          fn2(h2);
+        }
+      });
+    }
+  }
+  var InterceptorManager$1 = InterceptorManager;
+  var transitionalDefaults = {
+    silentJSONParsing: true,
+    forcedJSONParsing: true,
+    clarifyTimeoutError: false
+  };
+  var URLSearchParams$12 = typeof URLSearchParams !== "undefined" ? URLSearchParams : AxiosURLSearchParams;
+  var FormData$1 = typeof FormData !== "undefined" ? FormData : null;
+  var Blob$1 = typeof Blob !== "undefined" ? Blob : null;
+  var platform$1 = {
+    isBrowser: true,
+    classes: {
+      URLSearchParams: URLSearchParams$12,
+      FormData: FormData$1,
+      Blob: Blob$1
+    },
+    protocols: ["http", "https", "file", "blob", "url", "data"]
+  };
+  const hasBrowserEnv = typeof window !== "undefined" && typeof document !== "undefined";
+  const _navigator = typeof navigator === "object" && navigator || void 0;
+  const hasStandardBrowserEnv = hasBrowserEnv && (!_navigator || ["ReactNative", "NativeScript", "NS"].indexOf(_navigator.product) < 0);
+  const hasStandardBrowserWebWorkerEnv = (() => {
+    return typeof WorkerGlobalScope !== "undefined" && // eslint-disable-next-line no-undef
+    self instanceof WorkerGlobalScope && typeof self.importScripts === "function";
+  })();
+  const origin = hasBrowserEnv && window.location.href || "http://localhost";
+  var utils2 = /* @__PURE__ */ Object.freeze({
+    __proto__: null,
+    hasBrowserEnv,
+    hasStandardBrowserWebWorkerEnv,
+    hasStandardBrowserEnv,
+    navigator: _navigator,
+    origin
+  });
+  var platform = {
+    ...utils2,
+    ...platform$1
+  };
+  function toURLEncodedForm(data, options) {
+    return toFormData(data, new platform.classes.URLSearchParams(), {
+      visitor: function(value, key2, path, helpers) {
+        if (platform.isNode && utils$12.isBuffer(value)) {
+          this.append(key2, value.toString("base64"));
+          return false;
+        }
+        return helpers.defaultVisitor.apply(this, arguments);
+      },
+      ...options
+    });
+  }
+  function parsePropPath(name) {
+    return utils$12.matchAll(/\w+|\[(\w*)]/g, name).map((match) => {
+      return match[0] === "[]" ? "" : match[1] || match[0];
+    });
+  }
+  function arrayToObject(arr) {
+    const obj = {};
+    const keys = Object.keys(arr);
+    let i;
+    const len = keys.length;
+    let key2;
+    for (i = 0; i < len; i++) {
+      key2 = keys[i];
+      obj[key2] = arr[key2];
+    }
+    return obj;
+  }
+  function formDataToJSON(formData) {
+    function buildPath(path, value, target, index) {
+      let name = path[index++];
+      if (name === "__proto__") return true;
+      const isNumericKey = Number.isFinite(+name);
+      const isLast = index >= path.length;
+      name = !name && utils$12.isArray(target) ? target.length : name;
+      if (isLast) {
+        if (utils$12.hasOwnProp(target, name)) {
+          target[name] = [target[name], value];
+        } else {
+          target[name] = value;
+        }
+        return !isNumericKey;
+      }
+      if (!target[name] || !utils$12.isObject(target[name])) {
+        target[name] = [];
+      }
+      const result = buildPath(path, value, target[name], index);
+      if (result && utils$12.isArray(target[name])) {
+        target[name] = arrayToObject(target[name]);
+      }
+      return !isNumericKey;
+    }
+    if (utils$12.isFormData(formData) && utils$12.isFunction(formData.entries)) {
+      const obj = {};
+      utils$12.forEachEntry(formData, (name, value) => {
+        buildPath(parsePropPath(name), value, obj, 0);
+      });
+      return obj;
+    }
+    return null;
+  }
+  function stringifySafely(rawValue, parser2, encoder) {
+    if (utils$12.isString(rawValue)) {
+      try {
+        (parser2 || JSON.parse)(rawValue);
+        return utils$12.trim(rawValue);
+      } catch (e) {
+        if (e.name !== "SyntaxError") {
+          throw e;
+        }
+      }
+    }
+    return (encoder || JSON.stringify)(rawValue);
+  }
+  const defaults = {
+    transitional: transitionalDefaults,
+    adapter: ["xhr", "http", "fetch"],
+    transformRequest: [function transformRequest(data, headers) {
+      const contentType = headers.getContentType() || "";
+      const hasJSONContentType = contentType.indexOf("application/json") > -1;
+      const isObjectPayload = utils$12.isObject(data);
+      if (isObjectPayload && utils$12.isHTMLForm(data)) {
+        data = new FormData(data);
+      }
+      const isFormData2 = utils$12.isFormData(data);
+      if (isFormData2) {
+        return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
+      }
+      if (utils$12.isArrayBuffer(data) || utils$12.isBuffer(data) || utils$12.isStream(data) || utils$12.isFile(data) || utils$12.isBlob(data) || utils$12.isReadableStream(data)) {
+        return data;
+      }
+      if (utils$12.isArrayBufferView(data)) {
+        return data.buffer;
+      }
+      if (utils$12.isURLSearchParams(data)) {
+        headers.setContentType("application/x-www-form-urlencoded;charset=utf-8", false);
+        return data.toString();
+      }
+      let isFileList2;
+      if (isObjectPayload) {
+        if (contentType.indexOf("application/x-www-form-urlencoded") > -1) {
+          return toURLEncodedForm(data, this.formSerializer).toString();
+        }
+        if ((isFileList2 = utils$12.isFileList(data)) || contentType.indexOf("multipart/form-data") > -1) {
+          const _FormData = this.env && this.env.FormData;
+          return toFormData(
+            isFileList2 ? { "files[]": data } : data,
+            _FormData && new _FormData(),
+            this.formSerializer
+          );
+        }
+      }
+      if (isObjectPayload || hasJSONContentType) {
+        headers.setContentType("application/json", false);
+        return stringifySafely(data);
+      }
+      return data;
+    }],
+    transformResponse: [function transformResponse(data) {
+      const transitional = this.transitional || defaults.transitional;
+      const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+      const JSONRequested = this.responseType === "json";
+      if (utils$12.isResponse(data) || utils$12.isReadableStream(data)) {
+        return data;
+      }
+      if (data && utils$12.isString(data) && (forcedJSONParsing && !this.responseType || JSONRequested)) {
+        const silentJSONParsing = transitional && transitional.silentJSONParsing;
+        const strictJSONParsing = !silentJSONParsing && JSONRequested;
+        try {
+          return JSON.parse(data, this.parseReviver);
+        } catch (e) {
+          if (strictJSONParsing) {
+            if (e.name === "SyntaxError") {
+              throw AxiosError.from(e, AxiosError.ERR_BAD_RESPONSE, this, null, this.response);
+            }
+            throw e;
+          }
+        }
+      }
+      return data;
+    }],
+    /**
+     * A timeout in milliseconds to abort a request. If set to 0 (default) a
+     * timeout is not created.
+     */
+    timeout: 0,
+    xsrfCookieName: "XSRF-TOKEN",
+    xsrfHeaderName: "X-XSRF-TOKEN",
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: {
+      FormData: platform.classes.FormData,
+      Blob: platform.classes.Blob
+    },
+    validateStatus: function validateStatus(status) {
+      return status >= 200 && status < 300;
+    },
+    headers: {
+      common: {
+        "Accept": "application/json, text/plain, */*",
+        "Content-Type": void 0
+      }
+    }
+  };
+  utils$12.forEach(["delete", "get", "head", "post", "put", "patch"], (method) => {
+    defaults.headers[method] = {};
+  });
+  var defaults$1 = defaults;
+  const ignoreDuplicateOf = utils$12.toObjectSet([
+    "age",
+    "authorization",
+    "content-length",
+    "content-type",
+    "etag",
+    "expires",
+    "from",
+    "host",
+    "if-modified-since",
+    "if-unmodified-since",
+    "last-modified",
+    "location",
+    "max-forwards",
+    "proxy-authorization",
+    "referer",
+    "retry-after",
+    "user-agent"
+  ]);
+  var parseHeaders2 = (rawHeaders) => {
+    const parsed = {};
+    let key2;
+    let val;
+    let i;
+    rawHeaders && rawHeaders.split("\n").forEach(function parser2(line) {
+      i = line.indexOf(":");
+      key2 = line.substring(0, i).trim().toLowerCase();
+      val = line.substring(i + 1).trim();
+      if (!key2 || parsed[key2] && ignoreDuplicateOf[key2]) {
+        return;
+      }
+      if (key2 === "set-cookie") {
+        if (parsed[key2]) {
+          parsed[key2].push(val);
+        } else {
+          parsed[key2] = [val];
+        }
+      } else {
+        parsed[key2] = parsed[key2] ? parsed[key2] + ", " + val : val;
+      }
+    });
+    return parsed;
+  };
+  const $internals = Symbol("internals");
+  function normalizeHeader(header) {
+    return header && String(header).trim().toLowerCase();
+  }
+  function normalizeValue2(value) {
+    if (value === false || value == null) {
+      return value;
+    }
+    return utils$12.isArray(value) ? value.map(normalizeValue2) : String(value);
+  }
+  function parseTokens(str) {
+    const tokens = /* @__PURE__ */ Object.create(null);
+    const tokensRE = /([^\s,;=]+)\s*(?:=\s*([^,;]+))?/g;
+    let match;
+    while (match = tokensRE.exec(str)) {
+      tokens[match[1]] = match[2];
+    }
+    return tokens;
+  }
+  const isValidHeaderName = (str) => /^[-_a-zA-Z0-9^`|~,!#$%&'*+.]+$/.test(str.trim());
+  function matchHeaderValue(context, value, header, filter, isHeaderNameFilter) {
+    if (utils$12.isFunction(filter)) {
+      return filter.call(this, value, header);
+    }
+    if (isHeaderNameFilter) {
+      value = header;
+    }
+    if (!utils$12.isString(value)) return;
+    if (utils$12.isString(filter)) {
+      return value.indexOf(filter) !== -1;
+    }
+    if (utils$12.isRegExp(filter)) {
+      return filter.test(value);
+    }
+  }
+  function formatHeader(header) {
+    return header.trim().toLowerCase().replace(/([a-z\d])(\w*)/g, (w2, char, str) => {
+      return char.toUpperCase() + str;
+    });
+  }
+  function buildAccessors(obj, header) {
+    const accessorName = utils$12.toCamelCase(" " + header);
+    ["get", "set", "has"].forEach((methodName) => {
+      Object.defineProperty(obj, methodName + accessorName, {
+        value: function(arg1, arg2, arg3) {
+          return this[methodName].call(this, header, arg1, arg2, arg3);
+        },
+        configurable: true
+      });
+    });
+  }
+  class AxiosHeaders {
+    constructor(headers) {
+      headers && this.set(headers);
+    }
+    set(header, valueOrRewrite, rewrite) {
+      const self2 = this;
+      function setHeader(_value, _header, _rewrite) {
+        const lHeader = normalizeHeader(_header);
+        if (!lHeader) {
+          throw new Error("header name must be a non-empty string");
+        }
+        const key2 = utils$12.findKey(self2, lHeader);
+        if (!key2 || self2[key2] === void 0 || _rewrite === true || _rewrite === void 0 && self2[key2] !== false) {
+          self2[key2 || _header] = normalizeValue2(_value);
+        }
+      }
+      const setHeaders = (headers, _rewrite) => utils$12.forEach(headers, (_value, _header) => setHeader(_value, _header, _rewrite));
+      if (utils$12.isPlainObject(header) || header instanceof this.constructor) {
+        setHeaders(header, valueOrRewrite);
+      } else if (utils$12.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
+        setHeaders(parseHeaders2(header), valueOrRewrite);
+      } else if (utils$12.isObject(header) && utils$12.isIterable(header)) {
+        let obj = {}, dest, key2;
+        for (const entry of header) {
+          if (!utils$12.isArray(entry)) {
+            throw TypeError("Object iterator must return a key-value pair");
+          }
+          obj[key2 = entry[0]] = (dest = obj[key2]) ? utils$12.isArray(dest) ? [...dest, entry[1]] : [dest, entry[1]] : entry[1];
+        }
+        setHeaders(obj, valueOrRewrite);
+      } else {
+        header != null && setHeader(valueOrRewrite, header, rewrite);
+      }
+      return this;
+    }
+    get(header, parser2) {
+      header = normalizeHeader(header);
+      if (header) {
+        const key2 = utils$12.findKey(this, header);
+        if (key2) {
+          const value = this[key2];
+          if (!parser2) {
+            return value;
+          }
+          if (parser2 === true) {
+            return parseTokens(value);
+          }
+          if (utils$12.isFunction(parser2)) {
+            return parser2.call(this, value, key2);
+          }
+          if (utils$12.isRegExp(parser2)) {
+            return parser2.exec(value);
+          }
+          throw new TypeError("parser must be boolean|regexp|function");
+        }
+      }
+    }
+    has(header, matcher) {
+      header = normalizeHeader(header);
+      if (header) {
+        const key2 = utils$12.findKey(this, header);
+        return !!(key2 && this[key2] !== void 0 && (!matcher || matchHeaderValue(this, this[key2], key2, matcher)));
+      }
+      return false;
+    }
+    delete(header, matcher) {
+      const self2 = this;
+      let deleted = false;
+      function deleteHeader(_header) {
+        _header = normalizeHeader(_header);
+        if (_header) {
+          const key2 = utils$12.findKey(self2, _header);
+          if (key2 && (!matcher || matchHeaderValue(self2, self2[key2], key2, matcher))) {
+            delete self2[key2];
+            deleted = true;
+          }
+        }
+      }
+      if (utils$12.isArray(header)) {
+        header.forEach(deleteHeader);
+      } else {
+        deleteHeader(header);
+      }
+      return deleted;
+    }
+    clear(matcher) {
+      const keys = Object.keys(this);
+      let i = keys.length;
+      let deleted = false;
+      while (i--) {
+        const key2 = keys[i];
+        if (!matcher || matchHeaderValue(this, this[key2], key2, matcher, true)) {
+          delete this[key2];
+          deleted = true;
+        }
+      }
+      return deleted;
+    }
+    normalize(format) {
+      const self2 = this;
+      const headers = {};
+      utils$12.forEach(this, (value, header) => {
+        const key2 = utils$12.findKey(headers, header);
+        if (key2) {
+          self2[key2] = normalizeValue2(value);
+          delete self2[header];
+          return;
+        }
+        const normalized = format ? formatHeader(header) : String(header).trim();
+        if (normalized !== header) {
+          delete self2[header];
+        }
+        self2[normalized] = normalizeValue2(value);
+        headers[normalized] = true;
+      });
+      return this;
+    }
+    concat(...targets) {
+      return this.constructor.concat(this, ...targets);
+    }
+    toJSON(asStrings) {
+      const obj = /* @__PURE__ */ Object.create(null);
+      utils$12.forEach(this, (value, header) => {
+        value != null && value !== false && (obj[header] = asStrings && utils$12.isArray(value) ? value.join(", ") : value);
+      });
+      return obj;
+    }
+    [Symbol.iterator]() {
+      return Object.entries(this.toJSON())[Symbol.iterator]();
+    }
+    toString() {
+      return Object.entries(this.toJSON()).map(([header, value]) => header + ": " + value).join("\n");
+    }
+    getSetCookie() {
+      return this.get("set-cookie") || [];
+    }
+    get [Symbol.toStringTag]() {
+      return "AxiosHeaders";
+    }
+    static from(thing) {
+      return thing instanceof this ? thing : new this(thing);
+    }
+    static concat(first, ...targets) {
+      const computed = new this(first);
+      targets.forEach((target) => computed.set(target));
+      return computed;
+    }
+    static accessor(header) {
+      const internals = this[$internals] = this[$internals] = {
+        accessors: {}
+      };
+      const accessors = internals.accessors;
+      const prototype2 = this.prototype;
+      function defineAccessor(_header) {
+        const lHeader = normalizeHeader(_header);
+        if (!accessors[lHeader]) {
+          buildAccessors(prototype2, _header);
+          accessors[lHeader] = true;
+        }
+      }
+      utils$12.isArray(header) ? header.forEach(defineAccessor) : defineAccessor(header);
+      return this;
+    }
+  }
+  AxiosHeaders.accessor(["Content-Type", "Content-Length", "Accept", "Accept-Encoding", "User-Agent", "Authorization"]);
+  utils$12.reduceDescriptors(AxiosHeaders.prototype, ({ value }, key2) => {
+    let mapped = key2[0].toUpperCase() + key2.slice(1);
+    return {
+      get: () => value,
+      set(headerValue) {
+        this[mapped] = headerValue;
+      }
+    };
+  });
+  utils$12.freezeMethods(AxiosHeaders);
+  var AxiosHeaders$1 = AxiosHeaders;
+  function transformData(fns, response) {
+    const config = this || defaults$1;
+    const context = response || config;
+    const headers = AxiosHeaders$1.from(context.headers);
+    let data = context.data;
+    utils$12.forEach(fns, function transform(fn2) {
+      data = fn2.call(config, data, headers.normalize(), response ? response.status : void 0);
+    });
+    headers.normalize();
+    return data;
+  }
+  function isCancel(value) {
+    return !!(value && value.__CANCEL__);
+  }
+  function CanceledError(message, config, request) {
+    AxiosError.call(this, message == null ? "canceled" : message, AxiosError.ERR_CANCELED, config, request);
+    this.name = "CanceledError";
+  }
+  utils$12.inherits(CanceledError, AxiosError, {
+    __CANCEL__: true
+  });
+  function settle(resolve, reject, response) {
+    const validateStatus = response.config.validateStatus;
+    if (!response.status || !validateStatus || validateStatus(response.status)) {
+      resolve(response);
+    } else {
+      reject(new AxiosError(
+        "Request failed with status code " + response.status,
+        [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
+        response.config,
+        response.request,
+        response
+      ));
+    }
+  }
+  function parseProtocol(url) {
+    const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
+    return match && match[1] || "";
+  }
+  function speedometer(samplesCount, min) {
+    samplesCount = samplesCount || 10;
+    const bytes = new Array(samplesCount);
+    const timestamps = new Array(samplesCount);
+    let head = 0;
+    let tail = 0;
+    let firstSampleTS;
+    min = min !== void 0 ? min : 1e3;
+    return function push(chunkLength) {
+      const now = Date.now();
+      const startedAt = timestamps[tail];
+      if (!firstSampleTS) {
+        firstSampleTS = now;
+      }
+      bytes[head] = chunkLength;
+      timestamps[head] = now;
+      let i = tail;
+      let bytesCount = 0;
+      while (i !== head) {
+        bytesCount += bytes[i++];
+        i = i % samplesCount;
+      }
+      head = (head + 1) % samplesCount;
+      if (head === tail) {
+        tail = (tail + 1) % samplesCount;
+      }
+      if (now - firstSampleTS < min) {
+        return;
+      }
+      const passed = startedAt && now - startedAt;
+      return passed ? Math.round(bytesCount * 1e3 / passed) : void 0;
+    };
+  }
+  function throttle(fn2, freq) {
+    let timestamp = 0;
+    let threshold = 1e3 / freq;
+    let lastArgs;
+    let timer;
+    const invoke = (args, now = Date.now()) => {
+      timestamp = now;
+      lastArgs = null;
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      fn2(...args);
+    };
+    const throttled = (...args) => {
+      const now = Date.now();
+      const passed = now - timestamp;
+      if (passed >= threshold) {
+        invoke(args, now);
+      } else {
+        lastArgs = args;
+        if (!timer) {
+          timer = setTimeout(() => {
+            timer = null;
+            invoke(lastArgs);
+          }, threshold - passed);
+        }
+      }
+    };
+    const flush = () => lastArgs && invoke(lastArgs);
+    return [throttled, flush];
+  }
+  const progressEventReducer = (listener, isDownloadStream, freq = 3) => {
+    let bytesNotified = 0;
+    const _speedometer = speedometer(50, 250);
+    return throttle((e) => {
+      const loaded = e.loaded;
+      const total = e.lengthComputable ? e.total : void 0;
+      const progressBytes = loaded - bytesNotified;
+      const rate = _speedometer(progressBytes);
+      const inRange = loaded <= total;
+      bytesNotified = loaded;
+      const data = {
+        loaded,
+        total,
+        progress: total ? loaded / total : void 0,
+        bytes: progressBytes,
+        rate: rate ? rate : void 0,
+        estimated: rate && total && inRange ? (total - loaded) / rate : void 0,
+        event: e,
+        lengthComputable: total != null,
+        [isDownloadStream ? "download" : "upload"]: true
+      };
+      listener(data);
+    }, freq);
+  };
+  const progressEventDecorator = (total, throttled) => {
+    const lengthComputable = total != null;
+    return [(loaded) => throttled[0]({
+      lengthComputable,
+      total,
+      loaded
+    }), throttled[1]];
+  };
+  const asyncDecorator = (fn2) => (...args) => utils$12.asap(() => fn2(...args));
+  var isURLSameOrigin = platform.hasStandardBrowserEnv ? /* @__PURE__ */ ((origin2, isMSIE) => (url) => {
+    url = new URL(url, platform.origin);
+    return origin2.protocol === url.protocol && origin2.host === url.host && (isMSIE || origin2.port === url.port);
+  })(
+    new URL(platform.origin),
+    platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent)
+  ) : () => true;
+  var cookies = platform.hasStandardBrowserEnv ? (
+    // Standard browser envs support document.cookie
+    {
+      write(name, value, expires, path, domain, secure, sameSite) {
+        if (typeof document === "undefined") return;
+        const cookie = [`${name}=${encodeURIComponent(value)}`];
+        if (utils$12.isNumber(expires)) {
+          cookie.push(`expires=${new Date(expires).toUTCString()}`);
+        }
+        if (utils$12.isString(path)) {
+          cookie.push(`path=${path}`);
+        }
+        if (utils$12.isString(domain)) {
+          cookie.push(`domain=${domain}`);
+        }
+        if (secure === true) {
+          cookie.push("secure");
+        }
+        if (utils$12.isString(sameSite)) {
+          cookie.push(`SameSite=${sameSite}`);
+        }
+        document.cookie = cookie.join("; ");
+      },
+      read(name) {
+        if (typeof document === "undefined") return null;
+        const match = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+        return match ? decodeURIComponent(match[1]) : null;
+      },
+      remove(name) {
+        this.write(name, "", Date.now() - 864e5, "/");
+      }
+    }
+  ) : (
+    // Non-standard browser env (web workers, react-native) lack needed support.
+    {
+      write() {
+      },
+      read() {
+        return null;
+      },
+      remove() {
+      }
+    }
+  );
+  function isAbsoluteURL(url) {
+    return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
+  }
+  function combineURLs(baseURL, relativeURL) {
+    return relativeURL ? baseURL.replace(/\/?\/$/, "") + "/" + relativeURL.replace(/^\/+/, "") : baseURL;
+  }
+  function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
+    let isRelativeUrl = !isAbsoluteURL(requestedURL);
+    if (baseURL && (isRelativeUrl || allowAbsoluteUrls == false)) {
+      return combineURLs(baseURL, requestedURL);
+    }
+    return requestedURL;
+  }
+  const headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? { ...thing } : thing;
+  function mergeConfig(config1, config2) {
+    config2 = config2 || {};
+    const config = {};
+    function getMergedValue(target, source, prop, caseless) {
+      if (utils$12.isPlainObject(target) && utils$12.isPlainObject(source)) {
+        return utils$12.merge.call({ caseless }, target, source);
+      } else if (utils$12.isPlainObject(source)) {
+        return utils$12.merge({}, source);
+      } else if (utils$12.isArray(source)) {
+        return source.slice();
+      }
+      return source;
+    }
+    function mergeDeepProperties(a2, b2, prop, caseless) {
+      if (!utils$12.isUndefined(b2)) {
+        return getMergedValue(a2, b2, prop, caseless);
+      } else if (!utils$12.isUndefined(a2)) {
+        return getMergedValue(void 0, a2, prop, caseless);
+      }
+    }
+    function valueFromConfig2(a2, b2) {
+      if (!utils$12.isUndefined(b2)) {
+        return getMergedValue(void 0, b2);
+      }
+    }
+    function defaultToConfig2(a2, b2) {
+      if (!utils$12.isUndefined(b2)) {
+        return getMergedValue(void 0, b2);
+      } else if (!utils$12.isUndefined(a2)) {
+        return getMergedValue(void 0, a2);
+      }
+    }
+    function mergeDirectKeys(a2, b2, prop) {
+      if (prop in config2) {
+        return getMergedValue(a2, b2);
+      } else if (prop in config1) {
+        return getMergedValue(void 0, a2);
+      }
+    }
+    const mergeMap = {
+      url: valueFromConfig2,
+      method: valueFromConfig2,
+      data: valueFromConfig2,
+      baseURL: defaultToConfig2,
+      transformRequest: defaultToConfig2,
+      transformResponse: defaultToConfig2,
+      paramsSerializer: defaultToConfig2,
+      timeout: defaultToConfig2,
+      timeoutMessage: defaultToConfig2,
+      withCredentials: defaultToConfig2,
+      withXSRFToken: defaultToConfig2,
+      adapter: defaultToConfig2,
+      responseType: defaultToConfig2,
+      xsrfCookieName: defaultToConfig2,
+      xsrfHeaderName: defaultToConfig2,
+      onUploadProgress: defaultToConfig2,
+      onDownloadProgress: defaultToConfig2,
+      decompress: defaultToConfig2,
+      maxContentLength: defaultToConfig2,
+      maxBodyLength: defaultToConfig2,
+      beforeRedirect: defaultToConfig2,
+      transport: defaultToConfig2,
+      httpAgent: defaultToConfig2,
+      httpsAgent: defaultToConfig2,
+      cancelToken: defaultToConfig2,
+      socketPath: defaultToConfig2,
+      responseEncoding: defaultToConfig2,
+      validateStatus: mergeDirectKeys,
+      headers: (a2, b2, prop) => mergeDeepProperties(headersToObject(a2), headersToObject(b2), prop, true)
+    };
+    utils$12.forEach(Object.keys({ ...config1, ...config2 }), function computeConfigValue(prop) {
+      const merge2 = mergeMap[prop] || mergeDeepProperties;
+      const configValue = merge2(config1[prop], config2[prop], prop);
+      utils$12.isUndefined(configValue) && merge2 !== mergeDirectKeys || (config[prop] = configValue);
+    });
+    return config;
+  }
+  var resolveConfig = (config) => {
+    const newConfig = mergeConfig({}, config);
+    let { data, withXSRFToken, xsrfHeaderName, xsrfCookieName, headers, auth } = newConfig;
+    newConfig.headers = headers = AxiosHeaders$1.from(headers);
+    newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
+    if (auth) {
+      headers.set(
+        "Authorization",
+        "Basic " + btoa((auth.username || "") + ":" + (auth.password ? unescape(encodeURIComponent(auth.password)) : ""))
+      );
+    }
+    if (utils$12.isFormData(data)) {
+      if (platform.hasStandardBrowserEnv || platform.hasStandardBrowserWebWorkerEnv) {
+        headers.setContentType(void 0);
+      } else if (utils$12.isFunction(data.getHeaders)) {
+        const formHeaders = data.getHeaders();
+        const allowedHeaders = ["content-type", "content-length"];
+        Object.entries(formHeaders).forEach(([key2, val]) => {
+          if (allowedHeaders.includes(key2.toLowerCase())) {
+            headers.set(key2, val);
+          }
+        });
+      }
+    }
+    if (platform.hasStandardBrowserEnv) {
+      withXSRFToken && utils$12.isFunction(withXSRFToken) && (withXSRFToken = withXSRFToken(newConfig));
+      if (withXSRFToken || withXSRFToken !== false && isURLSameOrigin(newConfig.url)) {
+        const xsrfValue = xsrfHeaderName && xsrfCookieName && cookies.read(xsrfCookieName);
+        if (xsrfValue) {
+          headers.set(xsrfHeaderName, xsrfValue);
+        }
+      }
+    }
+    return newConfig;
+  };
+  const isXHRAdapterSupported = typeof XMLHttpRequest !== "undefined";
+  var xhrAdapter = isXHRAdapterSupported && function(config) {
+    return new Promise(function dispatchXhrRequest(resolve, reject) {
+      const _config = resolveConfig(config);
+      let requestData = _config.data;
+      const requestHeaders = AxiosHeaders$1.from(_config.headers).normalize();
+      let { responseType, onUploadProgress, onDownloadProgress } = _config;
+      let onCanceled;
+      let uploadThrottled, downloadThrottled;
+      let flushUpload, flushDownload;
+      function done() {
+        flushUpload && flushUpload();
+        flushDownload && flushDownload();
+        _config.cancelToken && _config.cancelToken.unsubscribe(onCanceled);
+        _config.signal && _config.signal.removeEventListener("abort", onCanceled);
+      }
+      let request = new XMLHttpRequest();
+      request.open(_config.method.toUpperCase(), _config.url, true);
+      request.timeout = _config.timeout;
+      function onloadend() {
+        if (!request) {
+          return;
+        }
+        const responseHeaders = AxiosHeaders$1.from(
+          "getAllResponseHeaders" in request && request.getAllResponseHeaders()
+        );
+        const responseData = !responseType || responseType === "text" || responseType === "json" ? request.responseText : request.response;
+        const response = {
+          data: responseData,
+          status: request.status,
+          statusText: request.statusText,
+          headers: responseHeaders,
+          config,
+          request
+        };
+        settle(function _resolve(value) {
+          resolve(value);
+          done();
+        }, function _reject(err) {
+          reject(err);
+          done();
+        }, response);
+        request = null;
+      }
+      if ("onloadend" in request) {
+        request.onloadend = onloadend;
+      } else {
+        request.onreadystatechange = function handleLoad() {
+          if (!request || request.readyState !== 4) {
+            return;
+          }
+          if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf("file:") === 0)) {
+            return;
+          }
+          setTimeout(onloadend);
+        };
+      }
+      request.onabort = function handleAbort() {
+        if (!request) {
+          return;
+        }
+        reject(new AxiosError("Request aborted", AxiosError.ECONNABORTED, config, request));
+        request = null;
+      };
+      request.onerror = function handleError(event) {
+        const msg = event && event.message ? event.message : "Network Error";
+        const err = new AxiosError(msg, AxiosError.ERR_NETWORK, config, request);
+        err.event = event || null;
+        reject(err);
+        request = null;
+      };
+      request.ontimeout = function handleTimeout() {
+        let timeoutErrorMessage = _config.timeout ? "timeout of " + _config.timeout + "ms exceeded" : "timeout exceeded";
+        const transitional = _config.transitional || transitionalDefaults;
+        if (_config.timeoutErrorMessage) {
+          timeoutErrorMessage = _config.timeoutErrorMessage;
+        }
+        reject(new AxiosError(
+          timeoutErrorMessage,
+          transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
+          config,
+          request
+        ));
+        request = null;
+      };
+      requestData === void 0 && requestHeaders.setContentType(null);
+      if ("setRequestHeader" in request) {
+        utils$12.forEach(requestHeaders.toJSON(), function setRequestHeader(val, key2) {
+          request.setRequestHeader(key2, val);
+        });
+      }
+      if (!utils$12.isUndefined(_config.withCredentials)) {
+        request.withCredentials = !!_config.withCredentials;
+      }
+      if (responseType && responseType !== "json") {
+        request.responseType = _config.responseType;
+      }
+      if (onDownloadProgress) {
+        [downloadThrottled, flushDownload] = progressEventReducer(onDownloadProgress, true);
+        request.addEventListener("progress", downloadThrottled);
+      }
+      if (onUploadProgress && request.upload) {
+        [uploadThrottled, flushUpload] = progressEventReducer(onUploadProgress);
+        request.upload.addEventListener("progress", uploadThrottled);
+        request.upload.addEventListener("loadend", flushUpload);
+      }
+      if (_config.cancelToken || _config.signal) {
+        onCanceled = (cancel) => {
+          if (!request) {
+            return;
+          }
+          reject(!cancel || cancel.type ? new CanceledError(null, config, request) : cancel);
+          request.abort();
+          request = null;
+        };
+        _config.cancelToken && _config.cancelToken.subscribe(onCanceled);
+        if (_config.signal) {
+          _config.signal.aborted ? onCanceled() : _config.signal.addEventListener("abort", onCanceled);
+        }
+      }
+      const protocol = parseProtocol(_config.url);
+      if (protocol && platform.protocols.indexOf(protocol) === -1) {
+        reject(new AxiosError("Unsupported protocol " + protocol + ":", AxiosError.ERR_BAD_REQUEST, config));
+        return;
+      }
+      request.send(requestData || null);
+    });
+  };
+  const composeSignals = (signals, timeout) => {
+    const { length } = signals = signals ? signals.filter(Boolean) : [];
+    if (timeout || length) {
+      let controller = new AbortController();
+      let aborted;
+      const onabort = function(reason) {
+        if (!aborted) {
+          aborted = true;
+          unsubscribe();
+          const err = reason instanceof Error ? reason : this.reason;
+          controller.abort(err instanceof AxiosError ? err : new CanceledError(err instanceof Error ? err.message : err));
+        }
+      };
+      let timer = timeout && setTimeout(() => {
+        timer = null;
+        onabort(new AxiosError(`timeout ${timeout} of ms exceeded`, AxiosError.ETIMEDOUT));
+      }, timeout);
+      const unsubscribe = () => {
+        if (signals) {
+          timer && clearTimeout(timer);
+          timer = null;
+          signals.forEach((signal2) => {
+            signal2.unsubscribe ? signal2.unsubscribe(onabort) : signal2.removeEventListener("abort", onabort);
+          });
+          signals = null;
+        }
+      };
+      signals.forEach((signal2) => signal2.addEventListener("abort", onabort));
+      const { signal } = controller;
+      signal.unsubscribe = () => utils$12.asap(unsubscribe);
+      return signal;
+    }
+  };
+  var composeSignals$1 = composeSignals;
+  const streamChunk = function* (chunk, chunkSize) {
+    let len = chunk.byteLength;
+    if (len < chunkSize) {
+      yield chunk;
+      return;
+    }
+    let pos = 0;
+    let end2;
+    while (pos < len) {
+      end2 = pos + chunkSize;
+      yield chunk.slice(pos, end2);
+      pos = end2;
+    }
+  };
+  const readBytes = async function* (iterable, chunkSize) {
+    for await (const chunk of readStream(iterable)) {
+      yield* streamChunk(chunk, chunkSize);
+    }
+  };
+  const readStream = async function* (stream) {
+    if (stream[Symbol.asyncIterator]) {
+      yield* stream;
+      return;
+    }
+    const reader2 = stream.getReader();
+    try {
+      for (; ; ) {
+        const { done, value } = await reader2.read();
+        if (done) {
+          break;
+        }
+        yield value;
+      }
+    } finally {
+      await reader2.cancel();
+    }
+  };
+  const trackStream = (stream, chunkSize, onProgress, onFinish) => {
+    const iterator2 = readBytes(stream, chunkSize);
+    let bytes = 0;
+    let done;
+    let _onFinish = (e) => {
+      if (!done) {
+        done = true;
+        onFinish && onFinish(e);
+      }
+    };
+    return new ReadableStream({
+      async pull(controller) {
+        try {
+          const { done: done2, value } = await iterator2.next();
+          if (done2) {
+            _onFinish();
+            controller.close();
+            return;
+          }
+          let len = value.byteLength;
+          if (onProgress) {
+            let loadedBytes = bytes += len;
+            onProgress(loadedBytes);
+          }
+          controller.enqueue(new Uint8Array(value));
+        } catch (err) {
+          _onFinish(err);
+          throw err;
+        }
+      },
+      cancel(reason) {
+        _onFinish(reason);
+        return iterator2.return();
+      }
+    }, {
+      highWaterMark: 2
+    });
+  };
+  const DEFAULT_CHUNK_SIZE = 64 * 1024;
+  const { isFunction } = utils$12;
+  const globalFetchAPI = (({ Request: Request2, Response: Response2 }) => ({
+    Request: Request2,
+    Response: Response2
+  }))(utils$12.global);
+  const {
+    ReadableStream: ReadableStream$1,
+    TextEncoder: TextEncoder2
+  } = utils$12.global;
+  const test = (fn2, ...args) => {
+    try {
+      return !!fn2(...args);
+    } catch (e) {
+      return false;
+    }
+  };
+  const factory = (env) => {
+    env = utils$12.merge.call({
+      skipUndefined: true
+    }, globalFetchAPI, env);
+    const { fetch: envFetch, Request: Request2, Response: Response2 } = env;
+    const isFetchSupported = envFetch ? isFunction(envFetch) : typeof fetch === "function";
+    const isRequestSupported = isFunction(Request2);
+    const isResponseSupported = isFunction(Response2);
+    if (!isFetchSupported) {
+      return false;
+    }
+    const isReadableStreamSupported = isFetchSupported && isFunction(ReadableStream$1);
+    const encodeText = isFetchSupported && (typeof TextEncoder2 === "function" ? /* @__PURE__ */ ((encoder) => (str) => encoder.encode(str))(new TextEncoder2()) : async (str) => new Uint8Array(await new Request2(str).arrayBuffer()));
+    const supportsRequestStream = isRequestSupported && isReadableStreamSupported && test(() => {
+      let duplexAccessed = false;
+      const hasContentType = new Request2(platform.origin, {
+        body: new ReadableStream$1(),
+        method: "POST",
+        get duplex() {
+          duplexAccessed = true;
+          return "half";
+        }
+      }).headers.has("Content-Type");
+      return duplexAccessed && !hasContentType;
+    });
+    const supportsResponseStream = isResponseSupported && isReadableStreamSupported && test(() => utils$12.isReadableStream(new Response2("").body));
+    const resolvers = {
+      stream: supportsResponseStream && ((res) => res.body)
+    };
+    isFetchSupported && (() => {
+      ["text", "arrayBuffer", "blob", "formData", "stream"].forEach((type) => {
+        !resolvers[type] && (resolvers[type] = (res, config) => {
+          let method = res && res[type];
+          if (method) {
+            return method.call(res);
+          }
+          throw new AxiosError(`Response type '${type}' is not supported`, AxiosError.ERR_NOT_SUPPORT, config);
+        });
+      });
+    })();
+    const getBodyLength = async (body) => {
+      if (body == null) {
+        return 0;
+      }
+      if (utils$12.isBlob(body)) {
+        return body.size;
+      }
+      if (utils$12.isSpecCompliantForm(body)) {
+        const _request = new Request2(platform.origin, {
+          method: "POST",
+          body
+        });
+        return (await _request.arrayBuffer()).byteLength;
+      }
+      if (utils$12.isArrayBufferView(body) || utils$12.isArrayBuffer(body)) {
+        return body.byteLength;
+      }
+      if (utils$12.isURLSearchParams(body)) {
+        body = body + "";
+      }
+      if (utils$12.isString(body)) {
+        return (await encodeText(body)).byteLength;
+      }
+    };
+    const resolveBodyLength = async (headers, body) => {
+      const length = utils$12.toFiniteNumber(headers.getContentLength());
+      return length == null ? getBodyLength(body) : length;
+    };
+    return async (config) => {
+      let {
+        url,
+        method,
+        data,
+        signal,
+        cancelToken,
+        timeout,
+        onDownloadProgress,
+        onUploadProgress,
+        responseType,
+        headers,
+        withCredentials = "same-origin",
+        fetchOptions
+      } = resolveConfig(config);
+      let _fetch = envFetch || fetch;
+      responseType = responseType ? (responseType + "").toLowerCase() : "text";
+      let composedSignal = composeSignals$1([signal, cancelToken && cancelToken.toAbortSignal()], timeout);
+      let request = null;
+      const unsubscribe = composedSignal && composedSignal.unsubscribe && (() => {
+        composedSignal.unsubscribe();
+      });
+      let requestContentLength;
+      try {
+        if (onUploadProgress && supportsRequestStream && method !== "get" && method !== "head" && (requestContentLength = await resolveBodyLength(headers, data)) !== 0) {
+          let _request = new Request2(url, {
+            method: "POST",
+            body: data,
+            duplex: "half"
+          });
+          let contentTypeHeader;
+          if (utils$12.isFormData(data) && (contentTypeHeader = _request.headers.get("content-type"))) {
+            headers.setContentType(contentTypeHeader);
+          }
+          if (_request.body) {
+            const [onProgress, flush] = progressEventDecorator(
+              requestContentLength,
+              progressEventReducer(asyncDecorator(onUploadProgress))
+            );
+            data = trackStream(_request.body, DEFAULT_CHUNK_SIZE, onProgress, flush);
+          }
+        }
+        if (!utils$12.isString(withCredentials)) {
+          withCredentials = withCredentials ? "include" : "omit";
+        }
+        const isCredentialsSupported = isRequestSupported && "credentials" in Request2.prototype;
+        const resolvedOptions = {
+          ...fetchOptions,
+          signal: composedSignal,
+          method: method.toUpperCase(),
+          headers: headers.normalize().toJSON(),
+          body: data,
+          duplex: "half",
+          credentials: isCredentialsSupported ? withCredentials : void 0
+        };
+        request = isRequestSupported && new Request2(url, resolvedOptions);
+        let response = await (isRequestSupported ? _fetch(request, fetchOptions) : _fetch(url, resolvedOptions));
+        const isStreamResponse = supportsResponseStream && (responseType === "stream" || responseType === "response");
+        if (supportsResponseStream && (onDownloadProgress || isStreamResponse && unsubscribe)) {
+          const options = {};
+          ["status", "statusText", "headers"].forEach((prop) => {
+            options[prop] = response[prop];
+          });
+          const responseContentLength = utils$12.toFiniteNumber(response.headers.get("content-length"));
+          const [onProgress, flush] = onDownloadProgress && progressEventDecorator(
+            responseContentLength,
+            progressEventReducer(asyncDecorator(onDownloadProgress), true)
+          ) || [];
+          response = new Response2(
+            trackStream(response.body, DEFAULT_CHUNK_SIZE, onProgress, () => {
+              flush && flush();
+              unsubscribe && unsubscribe();
+            }),
+            options
+          );
+        }
+        responseType = responseType || "text";
+        let responseData = await resolvers[utils$12.findKey(resolvers, responseType) || "text"](response, config);
+        !isStreamResponse && unsubscribe && unsubscribe();
+        return await new Promise((resolve, reject) => {
+          settle(resolve, reject, {
+            data: responseData,
+            headers: AxiosHeaders$1.from(response.headers),
+            status: response.status,
+            statusText: response.statusText,
+            config,
+            request
+          });
+        });
+      } catch (err) {
+        unsubscribe && unsubscribe();
+        if (err && err.name === "TypeError" && /Load failed|fetch/i.test(err.message)) {
+          throw Object.assign(
+            new AxiosError("Network Error", AxiosError.ERR_NETWORK, config, request),
+            {
+              cause: err.cause || err
+            }
+          );
+        }
+        throw AxiosError.from(err, err && err.code, config, request);
+      }
+    };
+  };
+  const seedCache = /* @__PURE__ */ new Map();
+  const getFetch = (config) => {
+    let env = config && config.env || {};
+    const { fetch: fetch2, Request: Request2, Response: Response2 } = env;
+    const seeds = [
+      Request2,
+      Response2,
+      fetch2
+    ];
+    let len = seeds.length, i = len, seed, target, map2 = seedCache;
+    while (i--) {
+      seed = seeds[i];
+      target = map2.get(seed);
+      target === void 0 && map2.set(seed, target = i ? /* @__PURE__ */ new Map() : factory(env));
+      map2 = target;
+    }
+    return target;
+  };
+  getFetch();
+  const knownAdapters = {
+    http: httpAdapter,
+    xhr: xhrAdapter,
+    fetch: {
+      get: getFetch
+    }
+  };
+  utils$12.forEach(knownAdapters, (fn2, value) => {
+    if (fn2) {
+      try {
+        Object.defineProperty(fn2, "name", { value });
+      } catch (e) {
+      }
+      Object.defineProperty(fn2, "adapterName", { value });
+    }
+  });
+  const renderReason = (reason) => `- ${reason}`;
+  const isResolvedHandle = (adapter) => utils$12.isFunction(adapter) || adapter === null || adapter === false;
+  function getAdapter(adapters2, config) {
+    adapters2 = utils$12.isArray(adapters2) ? adapters2 : [adapters2];
+    const { length } = adapters2;
+    let nameOrAdapter;
+    let adapter;
+    const rejectedReasons = {};
+    for (let i = 0; i < length; i++) {
+      nameOrAdapter = adapters2[i];
+      let id;
+      adapter = nameOrAdapter;
+      if (!isResolvedHandle(nameOrAdapter)) {
+        adapter = knownAdapters[(id = String(nameOrAdapter)).toLowerCase()];
+        if (adapter === void 0) {
+          throw new AxiosError(`Unknown adapter '${id}'`);
+        }
+      }
+      if (adapter && (utils$12.isFunction(adapter) || (adapter = adapter.get(config)))) {
+        break;
+      }
+      rejectedReasons[id || "#" + i] = adapter;
+    }
+    if (!adapter) {
+      const reasons = Object.entries(rejectedReasons).map(
+        ([id, state]) => `adapter ${id} ` + (state === false ? "is not supported by the environment" : "is not available in the build")
+      );
+      let s2 = length ? reasons.length > 1 ? "since :\n" + reasons.map(renderReason).join("\n") : " " + renderReason(reasons[0]) : "as no adapter specified";
+      throw new AxiosError(
+        `There is no suitable adapter to dispatch the request ` + s2,
+        "ERR_NOT_SUPPORT"
+      );
+    }
+    return adapter;
+  }
+  var adapters = {
+    /**
+     * Resolve an adapter from a list of adapter names or functions.
+     * @type {Function}
+     */
+    getAdapter,
+    /**
+     * Exposes all known adapters
+     * @type {Object<string, Function|Object>}
+     */
+    adapters: knownAdapters
+  };
+  function throwIfCancellationRequested(config) {
+    if (config.cancelToken) {
+      config.cancelToken.throwIfRequested();
+    }
+    if (config.signal && config.signal.aborted) {
+      throw new CanceledError(null, config);
+    }
+  }
+  function dispatchRequest(config) {
+    throwIfCancellationRequested(config);
+    config.headers = AxiosHeaders$1.from(config.headers);
+    config.data = transformData.call(
+      config,
+      config.transformRequest
+    );
+    if (["post", "put", "patch"].indexOf(config.method) !== -1) {
+      config.headers.setContentType("application/x-www-form-urlencoded", false);
+    }
+    const adapter = adapters.getAdapter(config.adapter || defaults$1.adapter, config);
+    return adapter(config).then(function onAdapterResolution(response) {
+      throwIfCancellationRequested(config);
+      response.data = transformData.call(
+        config,
+        config.transformResponse,
+        response
+      );
+      response.headers = AxiosHeaders$1.from(response.headers);
+      return response;
+    }, function onAdapterRejection(reason) {
+      if (!isCancel(reason)) {
+        throwIfCancellationRequested(config);
+        if (reason && reason.response) {
+          reason.response.data = transformData.call(
+            config,
+            config.transformResponse,
+            reason.response
+          );
+          reason.response.headers = AxiosHeaders$1.from(reason.response.headers);
+        }
+      }
+      return Promise.reject(reason);
+    });
+  }
+  const VERSION2 = "1.13.2";
+  const validators$1 = {};
+  ["object", "boolean", "number", "function", "string", "symbol"].forEach((type, i) => {
+    validators$1[type] = function validator2(thing) {
+      return typeof thing === type || "a" + (i < 1 ? "n " : " ") + type;
+    };
+  });
+  const deprecatedWarnings = {};
+  validators$1.transitional = function transitional(validator2, version2, message) {
+    function formatMessage(opt, desc) {
+      return "[Axios v" + VERSION2 + "] Transitional option '" + opt + "'" + desc + (message ? ". " + message : "");
+    }
+    return (value, opt, opts) => {
+      if (validator2 === false) {
+        throw new AxiosError(
+          formatMessage(opt, " has been removed" + (version2 ? " in " + version2 : "")),
+          AxiosError.ERR_DEPRECATED
+        );
+      }
+      if (version2 && !deprecatedWarnings[opt]) {
+        deprecatedWarnings[opt] = true;
+        console.warn(
+          formatMessage(
+            opt,
+            " has been deprecated since v" + version2 + " and will be removed in the near future"
+          )
+        );
+      }
+      return validator2 ? validator2(value, opt, opts) : true;
+    };
+  };
+  validators$1.spelling = function spelling(correctSpelling) {
+    return (value, opt) => {
+      console.warn(`${opt} is likely a misspelling of ${correctSpelling}`);
+      return true;
+    };
+  };
+  function assertOptions(options, schema2, allowUnknown) {
+    if (typeof options !== "object") {
+      throw new AxiosError("options must be an object", AxiosError.ERR_BAD_OPTION_VALUE);
+    }
+    const keys = Object.keys(options);
+    let i = keys.length;
+    while (i-- > 0) {
+      const opt = keys[i];
+      const validator2 = schema2[opt];
+      if (validator2) {
+        const value = options[opt];
+        const result = value === void 0 || validator2(value, opt, options);
+        if (result !== true) {
+          throw new AxiosError("option " + opt + " must be " + result, AxiosError.ERR_BAD_OPTION_VALUE);
+        }
+        continue;
+      }
+      if (allowUnknown !== true) {
+        throw new AxiosError("Unknown option " + opt, AxiosError.ERR_BAD_OPTION);
+      }
+    }
+  }
+  var validator = {
+    assertOptions,
+    validators: validators$1
+  };
+  const validators = validator.validators;
+  class Axios {
+    constructor(instanceConfig) {
+      this.defaults = instanceConfig || {};
+      this.interceptors = {
+        request: new InterceptorManager$1(),
+        response: new InterceptorManager$1()
+      };
+    }
+    /**
+     * Dispatch a request
+     *
+     * @param {String|Object} configOrUrl The config specific for this request (merged with this.defaults)
+     * @param {?Object} config
+     *
+     * @returns {Promise} The Promise to be fulfilled
+     */
+    async request(configOrUrl, config) {
+      try {
+        return await this._request(configOrUrl, config);
+      } catch (err) {
+        if (err instanceof Error) {
+          let dummy = {};
+          Error.captureStackTrace ? Error.captureStackTrace(dummy) : dummy = new Error();
+          const stack = dummy.stack ? dummy.stack.replace(/^.+\n/, "") : "";
+          try {
+            if (!err.stack) {
+              err.stack = stack;
+            } else if (stack && !String(err.stack).endsWith(stack.replace(/^.+\n.+\n/, ""))) {
+              err.stack += "\n" + stack;
+            }
+          } catch (e) {
+          }
+        }
+        throw err;
+      }
+    }
+    _request(configOrUrl, config) {
+      if (typeof configOrUrl === "string") {
+        config = config || {};
+        config.url = configOrUrl;
+      } else {
+        config = configOrUrl || {};
+      }
+      config = mergeConfig(this.defaults, config);
+      const { transitional, paramsSerializer, headers } = config;
+      if (transitional !== void 0) {
+        validator.assertOptions(transitional, {
+          silentJSONParsing: validators.transitional(validators.boolean),
+          forcedJSONParsing: validators.transitional(validators.boolean),
+          clarifyTimeoutError: validators.transitional(validators.boolean)
+        }, false);
+      }
+      if (paramsSerializer != null) {
+        if (utils$12.isFunction(paramsSerializer)) {
+          config.paramsSerializer = {
+            serialize: paramsSerializer
+          };
+        } else {
+          validator.assertOptions(paramsSerializer, {
+            encode: validators.function,
+            serialize: validators.function
+          }, true);
+        }
+      }
+      if (config.allowAbsoluteUrls !== void 0) ;
+      else if (this.defaults.allowAbsoluteUrls !== void 0) {
+        config.allowAbsoluteUrls = this.defaults.allowAbsoluteUrls;
+      } else {
+        config.allowAbsoluteUrls = true;
+      }
+      validator.assertOptions(config, {
+        baseUrl: validators.spelling("baseURL"),
+        withXsrfToken: validators.spelling("withXSRFToken")
+      }, true);
+      config.method = (config.method || this.defaults.method || "get").toLowerCase();
+      let contextHeaders = headers && utils$12.merge(
+        headers.common,
+        headers[config.method]
+      );
+      headers && utils$12.forEach(
+        ["delete", "get", "head", "post", "put", "patch", "common"],
+        (method) => {
+          delete headers[method];
+        }
+      );
+      config.headers = AxiosHeaders$1.concat(contextHeaders, headers);
+      const requestInterceptorChain = [];
+      let synchronousRequestInterceptors = true;
+      this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+        if (typeof interceptor.runWhen === "function" && interceptor.runWhen(config) === false) {
+          return;
+        }
+        synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
+        requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+      });
+      const responseInterceptorChain = [];
+      this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+        responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+      });
+      let promise;
+      let i = 0;
+      let len;
+      if (!synchronousRequestInterceptors) {
+        const chain = [dispatchRequest.bind(this), void 0];
+        chain.unshift(...requestInterceptorChain);
+        chain.push(...responseInterceptorChain);
+        len = chain.length;
+        promise = Promise.resolve(config);
+        while (i < len) {
+          promise = promise.then(chain[i++], chain[i++]);
+        }
+        return promise;
+      }
+      len = requestInterceptorChain.length;
+      let newConfig = config;
+      while (i < len) {
+        const onFulfilled = requestInterceptorChain[i++];
+        const onRejected = requestInterceptorChain[i++];
+        try {
+          newConfig = onFulfilled(newConfig);
+        } catch (error2) {
+          onRejected.call(this, error2);
+          break;
+        }
+      }
+      try {
+        promise = dispatchRequest.call(this, newConfig);
+      } catch (error2) {
+        return Promise.reject(error2);
+      }
+      i = 0;
+      len = responseInterceptorChain.length;
+      while (i < len) {
+        promise = promise.then(responseInterceptorChain[i++], responseInterceptorChain[i++]);
+      }
+      return promise;
+    }
+    getUri(config) {
+      config = mergeConfig(this.defaults, config);
+      const fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
+      return buildURL(fullPath, config.params, config.paramsSerializer);
+    }
+  }
+  utils$12.forEach(["delete", "get", "head", "options"], function forEachMethodNoData(method) {
+    Axios.prototype[method] = function(url, config) {
+      return this.request(mergeConfig(config || {}, {
+        method,
+        url,
+        data: (config || {}).data
+      }));
+    };
+  });
+  utils$12.forEach(["post", "put", "patch"], function forEachMethodWithData(method) {
+    function generateHTTPMethod(isForm) {
+      return function httpMethod(url, data, config) {
+        return this.request(mergeConfig(config || {}, {
+          method,
+          headers: isForm ? {
+            "Content-Type": "multipart/form-data"
+          } : {},
+          url,
+          data
+        }));
+      };
+    }
+    Axios.prototype[method] = generateHTTPMethod();
+    Axios.prototype[method + "Form"] = generateHTTPMethod(true);
+  });
+  var Axios$1 = Axios;
+  class CancelToken {
+    constructor(executor) {
+      if (typeof executor !== "function") {
+        throw new TypeError("executor must be a function.");
+      }
+      let resolvePromise;
+      this.promise = new Promise(function promiseExecutor(resolve) {
+        resolvePromise = resolve;
+      });
+      const token = this;
+      this.promise.then((cancel) => {
+        if (!token._listeners) return;
+        let i = token._listeners.length;
+        while (i-- > 0) {
+          token._listeners[i](cancel);
+        }
+        token._listeners = null;
+      });
+      this.promise.then = (onfulfilled) => {
+        let _resolve;
+        const promise = new Promise((resolve) => {
+          token.subscribe(resolve);
+          _resolve = resolve;
+        }).then(onfulfilled);
+        promise.cancel = function reject() {
+          token.unsubscribe(_resolve);
+        };
+        return promise;
+      };
+      executor(function cancel(message, config, request) {
+        if (token.reason) {
+          return;
+        }
+        token.reason = new CanceledError(message, config, request);
+        resolvePromise(token.reason);
+      });
+    }
+    /**
+     * Throws a `CanceledError` if cancellation has been requested.
+     */
+    throwIfRequested() {
+      if (this.reason) {
+        throw this.reason;
+      }
+    }
+    /**
+     * Subscribe to the cancel signal
+     */
+    subscribe(listener) {
+      if (this.reason) {
+        listener(this.reason);
+        return;
+      }
+      if (this._listeners) {
+        this._listeners.push(listener);
+      } else {
+        this._listeners = [listener];
+      }
+    }
+    /**
+     * Unsubscribe from the cancel signal
+     */
+    unsubscribe(listener) {
+      if (!this._listeners) {
+        return;
+      }
+      const index = this._listeners.indexOf(listener);
+      if (index !== -1) {
+        this._listeners.splice(index, 1);
+      }
+    }
+    toAbortSignal() {
+      const controller = new AbortController();
+      const abort = (err) => {
+        controller.abort(err);
+      };
+      this.subscribe(abort);
+      controller.signal.unsubscribe = () => this.unsubscribe(abort);
+      return controller.signal;
+    }
+    /**
+     * Returns an object that contains a new `CancelToken` and a function that, when called,
+     * cancels the `CancelToken`.
+     */
+    static source() {
+      let cancel;
+      const token = new CancelToken(function executor(c) {
+        cancel = c;
+      });
+      return {
+        token,
+        cancel
+      };
+    }
+  }
+  var CancelToken$1 = CancelToken;
+  function spread(callback) {
+    return function wrap(arr) {
+      return callback.apply(null, arr);
+    };
+  }
+  function isAxiosError(payload) {
+    return utils$12.isObject(payload) && payload.isAxiosError === true;
+  }
+  const HttpStatusCode = {
+    Continue: 100,
+    SwitchingProtocols: 101,
+    Processing: 102,
+    EarlyHints: 103,
+    Ok: 200,
+    Created: 201,
+    Accepted: 202,
+    NonAuthoritativeInformation: 203,
+    NoContent: 204,
+    ResetContent: 205,
+    PartialContent: 206,
+    MultiStatus: 207,
+    AlreadyReported: 208,
+    ImUsed: 226,
+    MultipleChoices: 300,
+    MovedPermanently: 301,
+    Found: 302,
+    SeeOther: 303,
+    NotModified: 304,
+    UseProxy: 305,
+    Unused: 306,
+    TemporaryRedirect: 307,
+    PermanentRedirect: 308,
+    BadRequest: 400,
+    Unauthorized: 401,
+    PaymentRequired: 402,
+    Forbidden: 403,
+    NotFound: 404,
+    MethodNotAllowed: 405,
+    NotAcceptable: 406,
+    ProxyAuthenticationRequired: 407,
+    RequestTimeout: 408,
+    Conflict: 409,
+    Gone: 410,
+    LengthRequired: 411,
+    PreconditionFailed: 412,
+    PayloadTooLarge: 413,
+    UriTooLong: 414,
+    UnsupportedMediaType: 415,
+    RangeNotSatisfiable: 416,
+    ExpectationFailed: 417,
+    ImATeapot: 418,
+    MisdirectedRequest: 421,
+    UnprocessableEntity: 422,
+    Locked: 423,
+    FailedDependency: 424,
+    TooEarly: 425,
+    UpgradeRequired: 426,
+    PreconditionRequired: 428,
+    TooManyRequests: 429,
+    RequestHeaderFieldsTooLarge: 431,
+    UnavailableForLegalReasons: 451,
+    InternalServerError: 500,
+    NotImplemented: 501,
+    BadGateway: 502,
+    ServiceUnavailable: 503,
+    GatewayTimeout: 504,
+    HttpVersionNotSupported: 505,
+    VariantAlsoNegotiates: 506,
+    InsufficientStorage: 507,
+    LoopDetected: 508,
+    NotExtended: 510,
+    NetworkAuthenticationRequired: 511,
+    WebServerIsDown: 521,
+    ConnectionTimedOut: 522,
+    OriginIsUnreachable: 523,
+    TimeoutOccurred: 524,
+    SslHandshakeFailed: 525,
+    InvalidSslCertificate: 526
+  };
+  Object.entries(HttpStatusCode).forEach(([key2, value]) => {
+    HttpStatusCode[value] = key2;
+  });
+  var HttpStatusCode$1 = HttpStatusCode;
+  function createInstance(defaultConfig) {
+    const context = new Axios$1(defaultConfig);
+    const instance = bind(Axios$1.prototype.request, context);
+    utils$12.extend(instance, Axios$1.prototype, context, { allOwnKeys: true });
+    utils$12.extend(instance, context, null, { allOwnKeys: true });
+    instance.create = function create(instanceConfig) {
+      return createInstance(mergeConfig(defaultConfig, instanceConfig));
+    };
+    return instance;
+  }
+  const axios = createInstance(defaults$1);
+  axios.Axios = Axios$1;
+  axios.CanceledError = CanceledError;
+  axios.CancelToken = CancelToken$1;
+  axios.isCancel = isCancel;
+  axios.VERSION = VERSION2;
+  axios.toFormData = toFormData;
+  axios.AxiosError = AxiosError;
+  axios.Cancel = axios.CanceledError;
+  axios.all = function all(promises) {
+    return Promise.all(promises);
+  };
+  axios.spread = spread;
+  axios.isAxiosError = isAxiosError;
+  axios.mergeConfig = mergeConfig;
+  axios.AxiosHeaders = AxiosHeaders$1;
+  axios.formToJSON = (thing) => formDataToJSON(utils$12.isHTMLForm(thing) ? new FormData(thing) : thing);
+  axios.getAdapter = adapters.getAdapter;
+  axios.HttpStatusCode = HttpStatusCode$1;
+  axios.default = axios;
+  axios_1$1 = axios;
+  return axios_1$1;
+}
+const version$1 = "15.3.1";
+const require$$4$1 = {
+  version: version$1
+};
+var hasRequiredHttpApi;
+function requireHttpApi() {
+  if (hasRequiredHttpApi) return HttpApi;
+  hasRequiredHttpApi = 1;
+  var __importDefault = HttpApi && HttpApi.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+  };
+  Object.defineProperty(HttpApi, "__esModule", { value: true });
+  HttpApi.HttpApi = void 0;
+  const TonCache_1 = requireTonCache();
+  const dataloader_1 = __importDefault(requireDataloader());
+  const axios_12 = __importDefault(/* @__PURE__ */ requireAxios$1());
+  const zod_1 = /* @__PURE__ */ requireZod();
+  const version2 = require$$4$1.version;
+  const blockIdExt = zod_1.z.object({
+    "@type": zod_1.z.literal("ton.blockIdExt"),
+    workchain: zod_1.z.number(),
+    shard: zod_1.z.string(),
+    seqno: zod_1.z.number(),
+    root_hash: zod_1.z.string(),
+    file_hash: zod_1.z.string()
+  });
+  const addressInformation = zod_1.z.object({
+    balance: zod_1.z.union([zod_1.z.number(), zod_1.z.string()]),
+    extra_currencies: zod_1.z.optional(zod_1.z.array(zod_1.z.object({
+      "@type": zod_1.z.literal("extraCurrency"),
+      id: zod_1.z.number(),
+      amount: zod_1.z.string()
+    }))),
+    state: zod_1.z.union([zod_1.z.literal("active"), zod_1.z.literal("uninitialized"), zod_1.z.literal("frozen")]),
+    data: zod_1.z.string(),
+    code: zod_1.z.string(),
+    last_transaction_id: zod_1.z.object({
+      "@type": zod_1.z.literal("internal.transactionId"),
+      lt: zod_1.z.string(),
+      hash: zod_1.z.string()
+    }),
+    block_id: blockIdExt,
+    sync_utime: zod_1.z.number()
+  });
+  const bocResponse = zod_1.z.object({
+    "@type": zod_1.z.literal("ok")
+  });
+  const feeResponse = zod_1.z.object({
+    "@type": zod_1.z.literal("query.fees"),
+    source_fees: zod_1.z.object({
+      "@type": zod_1.z.literal("fees"),
+      in_fwd_fee: zod_1.z.number(),
+      storage_fee: zod_1.z.number(),
+      gas_fee: zod_1.z.number(),
+      fwd_fee: zod_1.z.number()
+    })
+  });
+  const callGetMethod = zod_1.z.object({
+    gas_used: zod_1.z.number(),
+    exit_code: zod_1.z.number(),
+    stack: zod_1.z.array(zod_1.z.unknown())
+  });
+  const messageData = zod_1.z.union([
+    zod_1.z.object({
+      "@type": zod_1.z.literal("msg.dataRaw"),
+      "body": zod_1.z.string()
+    }),
+    zod_1.z.object({
+      "@type": zod_1.z.literal("msg.dataText"),
+      "text": zod_1.z.string()
+    }),
+    zod_1.z.object({
+      "@type": zod_1.z.literal("msg.dataDecryptedText"),
+      "text": zod_1.z.string()
+    }),
+    zod_1.z.object({
+      "@type": zod_1.z.literal("msg.dataEncryptedText"),
+      "text": zod_1.z.string()
+    })
+  ]);
+  const message = zod_1.z.object({
+    source: zod_1.z.string(),
+    destination: zod_1.z.string(),
+    value: zod_1.z.string(),
+    fwd_fee: zod_1.z.string(),
+    ihr_fee: zod_1.z.string(),
+    created_lt: zod_1.z.string(),
+    body_hash: zod_1.z.string(),
+    msg_data: messageData,
+    message: zod_1.z.string().optional()
+  });
+  const transaction = zod_1.z.object({
+    data: zod_1.z.string(),
+    utime: zod_1.z.number(),
+    transaction_id: zod_1.z.object({
+      lt: zod_1.z.string(),
+      hash: zod_1.z.string()
+    }),
+    fee: zod_1.z.string(),
+    storage_fee: zod_1.z.string(),
+    other_fee: zod_1.z.string(),
+    in_msg: zod_1.z.union([zod_1.z.undefined(), message]),
+    out_msgs: zod_1.z.array(message)
+  });
+  const getTransactions = zod_1.z.array(transaction);
+  const getMasterchain = zod_1.z.object({
+    state_root_hash: zod_1.z.string(),
+    last: blockIdExt,
+    init: blockIdExt
+  });
+  const getShards = zod_1.z.object({
+    shards: zod_1.z.array(blockIdExt)
+  });
+  const blockShortTxt = zod_1.z.object({
+    "@type": zod_1.z.literal("blocks.shortTxId"),
+    mode: zod_1.z.number(),
+    account: zod_1.z.string(),
+    lt: zod_1.z.string(),
+    hash: zod_1.z.string()
+  });
+  const getBlockTransactions = zod_1.z.object({
+    id: blockIdExt,
+    req_count: zod_1.z.number(),
+    incomplete: zod_1.z.boolean(),
+    transactions: zod_1.z.array(blockShortTxt)
+  });
+  class TypedCache {
+    constructor(namespace, cache, codec, keyEncoder) {
+      this.namespace = namespace;
+      this.cache = cache;
+      this.codec = codec;
+      this.keyEncoder = keyEncoder;
+    }
+    async get(key2) {
+      let ex = await this.cache.get(this.namespace, this.keyEncoder(key2));
+      if (ex) {
+        let decoded = this.codec.safeParse(JSON.parse(ex));
+        if (decoded.success) {
+          return decoded.data;
+        }
+      }
+      return null;
+    }
+    async set(key2, value) {
+      if (value !== null) {
+        await this.cache.set(this.namespace, this.keyEncoder(key2), JSON.stringify(value));
+      } else {
+        await this.cache.set(this.namespace, this.keyEncoder(key2), null);
+      }
+    }
+  }
+  let HttpApi$1 = class HttpApi {
+    constructor(endpoint, parameters) {
+      this.endpoint = endpoint;
+      this.cache = new TonCache_1.InMemoryCache();
+      this.parameters = {
+        timeout: parameters?.timeout || 3e4,
+        // 30 seconds by default
+        apiKey: parameters?.apiKey,
+        adapter: parameters?.adapter
+      };
+      this.shardCache = new TypedCache("ton-shard", this.cache, zod_1.z.array(blockIdExt), (src2) => src2 + "");
+      this.shardLoader = new dataloader_1.default(async (src2) => {
+        return await Promise.all(src2.map(async (v2) => {
+          const cached = await this.shardCache.get(v2);
+          if (cached) {
+            return cached;
+          }
+          let loaded = (await this.doCall("shards", { seqno: v2 }, getShards)).shards;
+          await this.shardCache.set(v2, loaded);
+          return loaded;
+        }));
+      });
+      this.shardTransactionsCache = new TypedCache("ton-shard-tx", this.cache, getBlockTransactions, (src2) => src2.workchain + ":" + src2.shard + ":" + src2.seqno);
+      this.shardTransactionsLoader = new dataloader_1.default(async (src2) => {
+        return await Promise.all(src2.map(async (v2) => {
+          const cached = await this.shardTransactionsCache.get(v2);
+          if (cached) {
+            return cached;
+          }
+          let loaded = await this.doCall("getBlockTransactions", { workchain: v2.workchain, seqno: v2.seqno, shard: v2.shard }, getBlockTransactions);
+          await this.shardTransactionsCache.set(v2, loaded);
+          return loaded;
+        }));
+      }, { cacheKeyFn: (src2) => src2.workchain + ":" + src2.shard + ":" + src2.seqno });
+    }
+    getAddressInformation(address) {
+      return this.doCall("getAddressInformation", { address: address.toString() }, addressInformation);
+    }
+    async getTransactions(address, opts) {
+      const inclusive = opts.inclusive;
+      delete opts.inclusive;
+      let hash = void 0;
+      if (opts.hash) {
+        hash = Buffer.from(opts.hash, "base64").toString("hex");
+      }
+      let limit = opts.limit;
+      if (opts.hash && opts.lt && inclusive !== true) {
+        limit++;
+      }
+      let res = await this.doCall("getTransactions", { address: address.toString(), ...opts, limit, hash }, getTransactions);
+      if (res.length > limit) {
+        res = res.slice(0, limit);
+      }
+      if (opts.hash && opts.lt && inclusive !== true) {
+        res.shift();
+        return res;
+      } else {
+        return res;
+      }
+    }
+    async getMasterchainInfo() {
+      return await this.doCall("getMasterchainInfo", {}, getMasterchain);
+    }
+    async getShards(seqno) {
+      return await this.shardLoader.load(seqno);
+    }
+    async getBlockTransactions(workchain, seqno, shard) {
+      return await this.shardTransactionsLoader.load({ workchain, seqno, shard });
+    }
+    async getTransaction(address, lt2, hash) {
+      let convHash = Buffer.from(hash, "base64").toString("hex");
+      let res = await this.doCall("getTransactions", { address: address.toString(), lt: lt2, hash: convHash, limit: 1 }, getTransactions);
+      let ex = res.find((v2) => v2.transaction_id.lt === lt2 && v2.transaction_id.hash === hash);
+      if (ex) {
+        return ex;
+      } else {
+        return null;
+      }
+    }
+    async callGetMethod(address, method, stack) {
+      return await this.doCall("runGetMethod", { address: address.toString(), method, stack: serializeStack(stack) }, callGetMethod);
+    }
+    async sendBoc(body) {
+      await this.doCall("sendBoc", { boc: body.toString("base64") }, bocResponse);
+    }
+    async estimateFee(address, args) {
+      return await this.doCall("estimateFee", {
+        address: address.toString(),
+        body: args.body.toBoc().toString("base64"),
+        "init_data": args.initData ? args.initData.toBoc().toString("base64") : "",
+        "init_code": args.initCode ? args.initCode.toBoc().toString("base64") : "",
+        ignore_chksig: args.ignoreSignature
+      }, feeResponse);
+    }
+    async tryLocateResultTx(source, destination, created_lt) {
+      return await this.doCall("tryLocateResultTx", { source: source.toString(), destination: destination.toString(), created_lt }, transaction);
+    }
+    async tryLocateSourceTx(source, destination, created_lt) {
+      return await this.doCall("tryLocateSourceTx", { source: source.toString(), destination: destination.toString(), created_lt }, transaction);
+    }
+    async doCall(method, body, codec) {
+      let headers = {
+        "Content-Type": "application/json",
+        "X-Ton-Client-Version": version2
+      };
+      if (this.parameters.apiKey) {
+        headers["X-API-Key"] = this.parameters.apiKey;
+      }
+      let res = await axios_12.default.post(this.endpoint, JSON.stringify({
+        id: "1",
+        jsonrpc: "2.0",
+        method,
+        params: body
+      }), {
+        headers,
+        timeout: this.parameters.timeout,
+        adapter: this.parameters.adapter
+      });
+      if (res.status !== 200 || !res.data.ok) {
+        throw Error("Received error: " + JSON.stringify(res.data));
+      }
+      let decoded = codec.safeParse(res.data.result);
+      if (decoded.success) {
+        return decoded.data;
+      } else {
+        throw Error("Malformed response: " + decoded.error.format()._errors.join(", "));
+      }
+    }
+  };
+  HttpApi.HttpApi = HttpApi$1;
+  function serializeStack(src2) {
+    let stack = [];
+    for (let s2 of src2) {
+      if (s2.type === "int") {
+        stack.push(["num", s2.value.toString()]);
+      } else if (s2.type === "cell") {
+        stack.push(["tvm.Cell", s2.cell.toBoc().toString("base64")]);
+      } else if (s2.type === "slice") {
+        stack.push(["tvm.Slice", s2.cell.toBoc().toString("base64")]);
+      } else if (s2.type === "builder") {
+        stack.push(["tvm.Builder", s2.cell.toBoc().toString("base64")]);
+      } else {
+        throw Error("Unsupported stack item type: " + s2.type);
+      }
+    }
+    return stack;
+  }
+  return HttpApi;
+}
+var TonClient = {};
+var hasRequiredTonClient;
+function requireTonClient() {
+  if (hasRequiredTonClient) return TonClient;
+  hasRequiredTonClient = 1;
+  Object.defineProperty(TonClient, "__esModule", { value: true });
+  TonClient.TonClient = void 0;
+  const HttpApi_1 = requireHttpApi();
+  const core_1 = requireDist$5();
+  let TonClient$1 = class TonClient {
+    constructor(parameters) {
+      this.parameters = {
+        endpoint: parameters.endpoint
+      };
+      this.api = new HttpApi_1.HttpApi(this.parameters.endpoint, {
+        timeout: parameters.timeout,
+        apiKey: parameters.apiKey,
+        adapter: parameters.httpAdapter
+      });
+    }
+    /**
+     * Get Address Balance
+     * @param address address for balance check
+     * @returns balance
+     */
+    async getBalance(address) {
+      return (await this.getContractState(address)).balance;
+    }
+    /**
+     * Invoke get method
+     * @param address contract address
+     * @param name name of method
+     * @param params optional parameters
+     * @returns stack and gas_used field
+     */
+    async runMethod(address, name, stack = []) {
+      let res = await this.api.callGetMethod(address, name, stack);
+      if (res.exit_code !== 0) {
+        throw Error("Unable to execute get method. Got exit_code: " + res.exit_code);
+      }
+      return { gas_used: res.gas_used, stack: parseStack(res.stack) };
+    }
+    /**
+     * Invoke get method
+     * @param address contract address
+     * @param name name of method
+     * @param params optional parameters
+     * @returns stack and gas_used field
+     * @deprecated use runMethod instead
+     */
+    async callGetMethod(address, name, stack = []) {
+      return this.runMethod(address, name, stack);
+    }
+    /**
+     * Invoke get method that returns error code instead of throwing error
+     * @param address contract address
+     * @param name name of method
+     * @param params optional parameters
+     * @returns stack and gas_used field
+    */
+    async runMethodWithError(address, name, params = []) {
+      let res = await this.api.callGetMethod(address, name, params);
+      return { gas_used: res.gas_used, stack: parseStack(res.stack), exit_code: res.exit_code };
+    }
+    /**
+     * Invoke get method that returns error code instead of throwing error
+     * @param address contract address
+     * @param name name of method
+     * @param params optional parameters
+     * @returns stack and gas_used field
+     * @deprecated use runMethodWithError instead
+     */
+    async callGetMethodWithError(address, name, stack = []) {
+      return this.runMethodWithError(address, name, stack);
+    }
+    /**
+     * Get transactions
+     * @param address address
+     */
+    async getTransactions(address, opts) {
+      let tx = await this.api.getTransactions(address, opts);
+      let res = [];
+      for (let r of tx) {
+        res.push((0, core_1.loadTransaction)(core_1.Cell.fromBoc(Buffer.from(r.data, "base64"))[0].beginParse()));
+      }
+      return res;
+    }
+    /**
+     * Get transaction by it's id
+     * @param address address
+     * @param lt logical time
+     * @param hash transaction hash
+     * @returns transaction or null if not exist
+     */
+    async getTransaction(address, lt2, hash) {
+      let res = await this.api.getTransaction(address, lt2, hash);
+      if (res) {
+        return (0, core_1.loadTransaction)(core_1.Cell.fromBoc(Buffer.from(res.data, "base64"))[0].beginParse());
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Locate outcoming transaction of destination address by incoming message
+     * @param source message source address
+     * @param destination message destination address
+     * @param created_lt message's created lt
+     * @returns transaction
+     */
+    async tryLocateResultTx(source, destination, created_lt) {
+      let res = await this.api.tryLocateResultTx(source, destination, created_lt);
+      return (0, core_1.loadTransaction)(core_1.Cell.fromBase64(res.data).beginParse());
+    }
+    /**
+     * Locate incoming transaction of source address by outcoming message
+     * @param source message source address
+     * @param destination message destination address
+     * @param created_lt message's created lt
+     * @returns transaction
+     */
+    async tryLocateSourceTx(source, destination, created_lt) {
+      let res = await this.api.tryLocateSourceTx(source, destination, created_lt);
+      return (0, core_1.loadTransaction)(core_1.Cell.fromBase64(res.data).beginParse());
+    }
+    /**
+     * Fetch latest masterchain info
+     * @returns masterchain info
+     */
+    async getMasterchainInfo() {
+      let r = await this.api.getMasterchainInfo();
+      return {
+        workchain: r.init.workchain,
+        shard: r.last.shard,
+        initSeqno: r.init.seqno,
+        latestSeqno: r.last.seqno
+      };
+    }
+    /**
+     * Fetch latest workchain shards
+     * @param seqno masterchain seqno
+     */
+    async getWorkchainShards(seqno) {
+      let r = await this.api.getShards(seqno);
+      return r.map((m2) => ({
+        workchain: m2.workchain,
+        shard: m2.shard,
+        seqno: m2.seqno
+      }));
+    }
+    /**
+     * Fetch transactions inf shards
+     * @param workchain
+     * @param seqno
+     * @param shard
+     */
+    async getShardTransactions(workchain, seqno, shard) {
+      let tx = await this.api.getBlockTransactions(workchain, seqno, shard);
+      if (tx.incomplete) {
+        throw Error("Unsupported");
+      }
+      return tx.transactions.map((v2) => ({
+        account: core_1.Address.parseRaw(v2.account),
+        lt: v2.lt,
+        hash: v2.hash
+      }));
+    }
+    /**
+     * Send message to a network
+     * @param src source message
+     */
+    async sendMessage(src2) {
+      const boc = (0, core_1.beginCell)().store((0, core_1.storeMessage)(src2)).endCell().toBoc();
+      await this.api.sendBoc(boc);
+    }
+    /**
+     * Send file to a network
+     * @param src source file
+     */
+    async sendFile(src2) {
+      await this.api.sendBoc(src2);
+    }
+    /**
+     * Estimate fees for external message
+     * @param address target address
+     * @returns
+     */
+    async estimateExternalMessageFee(address, args) {
+      return await this.api.estimateFee(address, { body: args.body, initCode: args.initCode, initData: args.initData, ignoreSignature: args.ignoreSignature });
+    }
+    /**
+     * Send external message to contract
+     * @param contract contract to send message
+     * @param src message body
+     */
+    async sendExternalMessage(contract, src2) {
+      if (await this.isContractDeployed(contract.address) || !contract.init) {
+        const message = (0, core_1.external)({
+          to: contract.address,
+          body: src2
+        });
+        await this.sendMessage(message);
+      } else {
+        const message = (0, core_1.external)({
+          to: contract.address,
+          init: contract.init,
+          body: src2
+        });
+        await this.sendMessage(message);
+      }
+    }
+    /**
+     * Check if contract is deployed
+     * @param address addres to check
+     * @returns true if contract is in active state
+     */
+    async isContractDeployed(address) {
+      return (await this.getContractState(address)).state === "active";
+    }
+    /**
+     * Resolves contract state
+     * @param address contract address
+     */
+    async getContractState(address) {
+      let info = await this.api.getAddressInformation(address);
+      let balance = BigInt(info.balance);
+      let state = info.state;
+      return {
+        balance,
+        extra_currencies: info.extra_currencies,
+        state,
+        code: info.code !== "" ? Buffer.from(info.code, "base64") : null,
+        data: info.data !== "" ? Buffer.from(info.data, "base64") : null,
+        lastTransaction: info.last_transaction_id.lt !== "0" ? {
+          lt: info.last_transaction_id.lt,
+          hash: info.last_transaction_id.hash
+        } : null,
+        blockId: {
+          workchain: info.block_id.workchain,
+          shard: info.block_id.shard,
+          seqno: info.block_id.seqno
+        },
+        timestampt: info.sync_utime
+      };
+    }
+    /**
+     * Open contract
+     * @param src source contract
+     * @returns contract
+     */
+    open(src2) {
+      return (0, core_1.openContract)(src2, (args) => createProvider(this, args.address, args.init));
+    }
+    /**
+     * Create a provider
+     * @param address address
+     * @param init optional init
+     * @returns provider
+     */
+    provider(address, init) {
+      return createProvider(this, address, init ?? null);
+    }
+  };
+  TonClient.TonClient = TonClient$1;
+  function parseStackEntry(x2) {
+    const typeName = x2["@type"];
+    switch (typeName) {
+      case "tvm.list":
+      case "tvm.tuple":
+        return x2.elements.map(parseStackEntry);
+      case "tvm.cell":
+        return core_1.Cell.fromBoc(Buffer.from(x2.bytes, "base64"))[0];
+      case "tvm.slice":
+        return core_1.Cell.fromBoc(Buffer.from(x2.bytes, "base64"))[0];
+      case "tvm.stackEntryCell":
+        return parseStackEntry(x2.cell);
+      case "tvm.stackEntrySlice":
+        return parseStackEntry(x2.slice);
+      case "tvm.stackEntryTuple":
+        return parseStackEntry(x2.tuple);
+      case "tvm.stackEntryList":
+        return parseStackEntry(x2.list);
+      case "tvm.stackEntryNumber":
+        return parseStackEntry(x2.number);
+      case "tvm.numberDecimal":
+        return BigInt(x2.number);
+      default:
+        throw Error("Unsupported item type: " + typeName);
+    }
+  }
+  function parseStackItem(s2) {
+    if (s2[0] === "num") {
+      let val = s2[1];
+      if (val.startsWith("-")) {
+        return { type: "int", value: -BigInt(val.slice(1)) };
+      } else {
+        return { type: "int", value: BigInt(val) };
+      }
+    } else if (s2[0] === "null") {
+      return { type: "null" };
+    } else if (s2[0] === "cell") {
+      return { type: "cell", cell: core_1.Cell.fromBoc(Buffer.from(s2[1].bytes, "base64"))[0] };
+    } else if (s2[0] === "slice") {
+      return { type: "slice", cell: core_1.Cell.fromBoc(Buffer.from(s2[1].bytes, "base64"))[0] };
+    } else if (s2[0] === "builder") {
+      return { type: "builder", cell: core_1.Cell.fromBoc(Buffer.from(s2[1].bytes, "base64"))[0] };
+    } else if (s2[0] === "tuple" || s2[0] === "list") {
+      if (s2[1].elements.length === 0) {
+        return { type: "null" };
+      }
+      return { type: "tuple", items: s2[1].elements.map(parseStackEntry) };
+    } else {
+      throw Error("Unsupported stack item type: " + s2[0]);
+    }
+  }
+  function parseStack(src2) {
+    let stack = [];
+    for (let s2 of src2) {
+      stack.push(parseStackItem(s2));
+    }
+    return new core_1.TupleReader(stack);
+  }
+  function createProvider(client, address, init) {
+    return {
+      async getState() {
+        let state = await client.getContractState(address);
+        let balance = state.balance;
+        let last = state.lastTransaction ? { lt: BigInt(state.lastTransaction.lt), hash: Buffer.from(state.lastTransaction.hash, "base64") } : null;
+        let ecMap = null;
+        let storage;
+        if (state.state === "active") {
+          storage = {
+            type: "active",
+            code: state.code ? state.code : null,
+            data: state.data ? state.data : null
+          };
+        } else if (state.state === "uninitialized") {
+          storage = {
+            type: "uninit"
+          };
+        } else if (state.state === "frozen") {
+          storage = {
+            type: "frozen",
+            stateHash: Buffer.alloc(0)
+          };
+        } else {
+          throw Error("Unsupported state");
+        }
+        if (state.extra_currencies && state.extra_currencies.length > 0) {
+          ecMap = {};
+          for (let ec of state.extra_currencies) {
+            ecMap[ec.id] = BigInt(ec.amount);
+          }
+        }
+        return {
+          balance,
+          extracurrency: ecMap,
+          last,
+          state: storage
+        };
+      },
+      async get(name, args) {
+        if (typeof name !== "string") {
+          throw new Error("Method name must be a string for TonClient provider");
+        }
+        let method = await client.runMethod(address, name, args);
+        return { stack: method.stack };
+      },
+      async external(message) {
+        let neededInit = null;
+        if (init && !await client.isContractDeployed(address)) {
+          neededInit = init;
+        }
+        const ext = (0, core_1.external)({
+          to: address,
+          init: neededInit,
+          body: message
+        });
+        let boc = (0, core_1.beginCell)().store((0, core_1.storeMessage)(ext)).endCell().toBoc();
+        await client.sendFile(boc);
+      },
+      async internal(via, message) {
+        let neededInit = null;
+        if (init && !await client.isContractDeployed(address)) {
+          neededInit = init;
+        }
+        let bounce = true;
+        if (message.bounce !== null && message.bounce !== void 0) {
+          bounce = message.bounce;
+        }
+        let value;
+        if (typeof message.value === "string") {
+          value = (0, core_1.toNano)(message.value);
+        } else {
+          value = message.value;
+        }
+        let body = null;
+        if (typeof message.body === "string") {
+          body = (0, core_1.comment)(message.body);
+        } else if (message.body) {
+          body = message.body;
+        }
+        await via.send({
+          to: address,
+          value,
+          bounce,
+          sendMode: message.sendMode,
+          extracurrency: message.extracurrency,
+          init: neededInit,
+          body
+        });
+      },
+      open(contract) {
+        return (0, core_1.openContract)(contract, (args) => createProvider(client, args.address, args.init ?? null));
+      },
+      getTransactions(address2, lt2, hash, limit) {
+        return client.getTransactions(address2, { limit: limit ?? 100, lt: lt2.toString(), hash: hash.toString("base64"), inclusive: true });
+      }
+    };
+  }
+  return TonClient;
+}
+var TonClient4 = {};
+var toUrlSafe = {};
+var hasRequiredToUrlSafe;
+function requireToUrlSafe() {
+  if (hasRequiredToUrlSafe) return toUrlSafe;
+  hasRequiredToUrlSafe = 1;
+  Object.defineProperty(toUrlSafe, "__esModule", { value: true });
+  toUrlSafe.toUrlSafe = toUrlSafe$1;
+  function toUrlSafe$1(src2) {
+    while (src2.indexOf("/") >= 0) {
+      src2 = src2.replace("/", "_");
+    }
+    while (src2.indexOf("+") >= 0) {
+      src2 = src2.replace("+", "-");
+    }
+    while (src2.indexOf("=") >= 0) {
+      src2 = src2.replace("=", "");
+    }
+    return src2;
+  }
+  return toUrlSafe;
+}
+var hasRequiredTonClient4;
+function requireTonClient4() {
+  if (hasRequiredTonClient4) return TonClient4;
+  hasRequiredTonClient4 = 1;
+  var __classPrivateFieldSet = TonClient4 && TonClient4.__classPrivateFieldSet || function(receiver, state, value, kind, f2) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f2) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f2 : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return kind === "a" ? f2.call(receiver, value) : f2 ? f2.value = value : state.set(receiver, value), value;
+  };
+  var __classPrivateFieldGet = TonClient4 && TonClient4.__classPrivateFieldGet || function(receiver, state, kind, f2) {
+    if (kind === "a" && !f2) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f2 : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f2 : kind === "a" ? f2.call(receiver) : f2 ? f2.value : state.get(receiver);
+  };
+  var __importDefault = TonClient4 && TonClient4.__importDefault || function(mod) {
+    return mod && mod.__esModule ? mod : { "default": mod };
+  };
+  var _TonClient4_endpoint, _TonClient4_timeout, _TonClient4_adapter, _TonClient4_axios;
+  Object.defineProperty(TonClient4, "__esModule", { value: true });
+  TonClient4.TonClient4 = void 0;
+  const axios_12 = __importDefault(/* @__PURE__ */ requireAxios$1());
+  const core_1 = requireDist$5();
+  const toUrlSafe_1 = requireToUrlSafe();
+  const zod_1 = /* @__PURE__ */ requireZod();
+  let TonClient4$1 = class TonClient4 {
+    constructor(args) {
+      _TonClient4_endpoint.set(this, void 0);
+      _TonClient4_timeout.set(this, void 0);
+      _TonClient4_adapter.set(this, void 0);
+      _TonClient4_axios.set(this, void 0);
+      __classPrivateFieldSet(this, _TonClient4_axios, axios_12.default.create(), "f");
+      __classPrivateFieldSet(this, _TonClient4_endpoint, args.endpoint, "f");
+      __classPrivateFieldSet(this, _TonClient4_timeout, args.timeout || 5e3, "f");
+      __classPrivateFieldSet(this, _TonClient4_adapter, args.httpAdapter, "f");
+      if (args.requestInterceptor) {
+        __classPrivateFieldGet(this, _TonClient4_axios, "f").interceptors.request.use(args.requestInterceptor);
+      }
+    }
+    /**
+     * Get Last Block
+     * @returns last block info
+     */
+    async getLastBlock() {
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/latest", { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let lastBlock = lastBlockCodec.safeParse(res.data);
+      if (!lastBlock.success) {
+        throw Error("Mailformed response: " + lastBlock.error.format()._errors.join(", "));
+      }
+      return lastBlock.data;
+    }
+    /**
+     * Get block info
+     * @param seqno block sequence number
+     * @returns block info
+     */
+    async getBlock(seqno) {
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let block = blockCodec.safeParse(res.data);
+      if (!block.success) {
+        throw Error("Mailformed response");
+      }
+      if (!block.data.exist) {
+        throw Error("Block is out of scope");
+      }
+      return block.data.block;
+    }
+    /**
+     * Get block info by unix timestamp
+     * @param ts unix timestamp
+     * @returns block info
+     */
+    async getBlockByUtime(ts) {
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/utime/" + ts, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let block = blockCodec.safeParse(res.data);
+      if (!block.success) {
+        throw Error("Mailformed response");
+      }
+      if (!block.data.exist) {
+        throw Error("Block is out of scope");
+      }
+      return block.data.block;
+    }
+    /**
+     * Get block info by unix timestamp
+     * @param seqno block sequence number
+     * @param address account address
+     * @returns account info
+     */
+    async getAccount(seqno, address) {
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/" + address.toString({ urlSafe: true }), { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let account = accountCodec.safeParse(res.data);
+      if (!account.success) {
+        throw Error("Mailformed response");
+      }
+      return account.data;
+    }
+    /**
+     * Get account lite info (without code and data)
+     * @param seqno block sequence number
+     * @param address account address
+     * @returns account lite info
+     */
+    async getAccountLite(seqno, address) {
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/" + address.toString({ urlSafe: true }) + "/lite", { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let account = accountLiteCodec.safeParse(res.data);
+      if (!account.success) {
+        throw Error("Mailformed response");
+      }
+      return account.data;
+    }
+    /**
+     * Check if contract is deployed
+     * @param address addres to check
+     * @returns true if contract is in active state
+     */
+    async isContractDeployed(seqno, address) {
+      let account = await this.getAccountLite(seqno, address);
+      return account.account.state.type === "active";
+    }
+    /**
+     * Check if account was updated since
+     * @param seqno block sequence number
+     * @param address account address
+     * @param lt account last transaction lt
+     * @returns account change info
+     */
+    async isAccountChanged(seqno, address, lt2) {
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/" + address.toString({ urlSafe: true }) + "/changed/" + lt2.toString(10), { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let changed = changedCodec.safeParse(res.data);
+      if (!changed.success) {
+        throw Error("Mailformed response");
+      }
+      return changed.data;
+    }
+    /**
+     * Load unparsed account transactions
+     * @param address address
+     * @param lt last transaction lt
+     * @param hash last transaction hash
+     * @returns unparsed transactions
+     */
+    async getAccountTransactions(address, lt2, hash) {
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/account/" + address.toString({ urlSafe: true }) + "/tx/" + lt2.toString(10) + "/" + (0, toUrlSafe_1.toUrlSafe)(hash.toString("base64")), { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let transactions = transactionsCodec.safeParse(res.data);
+      if (!transactions.success) {
+        throw Error("Mailformed response");
+      }
+      let data = transactions.data;
+      let tx = [];
+      let cells = core_1.Cell.fromBoc(Buffer.from(data.boc, "base64"));
+      for (let i = 0; i < data.blocks.length; i++) {
+        tx.push({
+          block: data.blocks[i],
+          tx: (0, core_1.loadTransaction)(cells[i].beginParse())
+        });
+      }
+      return tx;
+    }
+    /**
+     * Load parsed account transactions
+     * @param address address
+     * @param lt last transaction lt
+     * @param hash last transaction hash
+     * @param count number of transactions to load
+     * @returns parsed transactions
+     */
+    async getAccountTransactionsParsed(address, lt2, hash, count = 20) {
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/account/" + address.toString({ urlSafe: true }) + "/tx/parsed/" + lt2.toString(10) + "/" + (0, toUrlSafe_1.toUrlSafe)(hash.toString("base64")), {
+        adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"),
+        timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f"),
+        params: {
+          count
+        }
+      });
+      let parsedTransactionsRes = parsedTransactionsCodec.safeParse(res.data);
+      if (!parsedTransactionsRes.success) {
+        throw Error("Mailformed response");
+      }
+      return parsedTransactionsRes.data;
+    }
+    /**
+     * Get network config
+     * @param seqno block sequence number
+     * @param ids optional config ids
+     * @returns network config
+     */
+    async getConfig(seqno, ids) {
+      let tail = "";
+      if (ids && ids.length > 0) {
+        tail = "/" + [...ids].sort().join(",");
+      }
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/config" + tail, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let config = configCodec.safeParse(res.data);
+      if (!config.success) {
+        throw Error("Mailformed response");
+      }
+      return config.data;
+    }
+    /**
+     * Execute run method
+     * @param seqno block sequence number
+     * @param address account address
+     * @param name method name
+     * @param args method arguments
+     * @returns method result
+     */
+    async runMethod(seqno, address, name, args) {
+      let tail = args && args.length > 0 ? "/" + (0, toUrlSafe_1.toUrlSafe)((0, core_1.serializeTuple)(args).toBoc({ idx: false, crc32: false }).toString("base64")) : "";
+      let url = __classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/" + address.toString({ urlSafe: true }) + "/run/" + encodeURIComponent(name) + tail;
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(url, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let runMethod = runMethodCodec.safeParse(res.data);
+      if (!runMethod.success) {
+        throw Error("Mailformed response");
+      }
+      let resultTuple = runMethod.data.resultRaw ? (0, core_1.parseTuple)(core_1.Cell.fromBoc(Buffer.from(runMethod.data.resultRaw, "base64"))[0]) : [];
+      return {
+        exitCode: runMethod.data.exitCode,
+        result: resultTuple,
+        resultRaw: runMethod.data.resultRaw,
+        block: runMethod.data.block,
+        shardBlock: runMethod.data.shardBlock,
+        reader: new core_1.TupleReader(resultTuple)
+      };
+    }
+    /**
+     * Send external message
+     * @param message message boc
+     * @returns message status
+     */
+    async sendMessage(message) {
+      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").post(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/send", { boc: message.toString("base64") }, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
+      let send = sendCodec.safeParse(res.data);
+      if (!send.success) {
+        throw Error("Mailformed response");
+      }
+      return { status: res.data.status };
+    }
+    /**
+     * Open smart contract
+     * @param contract contract
+     * @returns opened contract
+     */
+    open(contract) {
+      return (0, core_1.openContract)(contract, (args) => createProvider(this, null, args.address, args.init));
+    }
+    /**
+     * Open smart contract
+     * @param block block number
+     * @param contract contract
+     * @returns opened contract
+     */
+    openAt(block, contract) {
+      return (0, core_1.openContract)(contract, (args) => createProvider(this, block, args.address, args.init));
+    }
+    /**
+     * Create provider
+     * @param address address
+     * @param init optional init data
+     * @returns provider
+     */
+    provider(address, init) {
+      return createProvider(this, null, address, init ?? null);
+    }
+    /**
+     * Create provider at specified block number
+     * @param block block number
+     * @param address address
+     * @param init optional init data
+     * @returns provider
+     */
+    providerAt(block, address, init) {
+      return createProvider(this, block, address, init ?? null);
+    }
+  };
+  TonClient4.TonClient4 = TonClient4$1;
+  _TonClient4_endpoint = /* @__PURE__ */ new WeakMap(), _TonClient4_timeout = /* @__PURE__ */ new WeakMap(), _TonClient4_adapter = /* @__PURE__ */ new WeakMap(), _TonClient4_axios = /* @__PURE__ */ new WeakMap();
+  function createProvider(client, block, address, init) {
+    return {
+      async getState() {
+        let sq = block;
+        if (sq === null) {
+          let res = await client.getLastBlock();
+          sq = res.last.seqno;
+        }
+        let state = await client.getAccount(sq, address);
+        let last = state.account.last ? { lt: BigInt(state.account.last.lt), hash: Buffer.from(state.account.last.hash, "base64") } : null;
+        let storage;
+        if (state.account.state.type === "active") {
+          storage = {
+            type: "active",
+            code: state.account.state.code ? Buffer.from(state.account.state.code, "base64") : null,
+            data: state.account.state.data ? Buffer.from(state.account.state.data, "base64") : null
+          };
+        } else if (state.account.state.type === "uninit") {
+          storage = {
+            type: "uninit"
+          };
+        } else if (state.account.state.type === "frozen") {
+          storage = {
+            type: "frozen",
+            stateHash: Buffer.from(state.account.state.stateHash, "base64")
+          };
+        } else {
+          throw Error("Unsupported state");
+        }
+        let ecMap = null;
+        if (state.account.balance.currencies) {
+          ecMap = {};
+          let currencies = state.account.balance.currencies;
+          for (let [k2, v2] of Object.entries(currencies)) {
+            ecMap[Number(k2)] = BigInt(v2);
+          }
+        }
+        return {
+          balance: BigInt(state.account.balance.coins),
+          extracurrency: ecMap,
+          last,
+          state: storage
+        };
+      },
+      async get(name, args) {
+        if (typeof name !== "string") {
+          throw new Error("Method name must be a string for TonClient4 provider");
+        }
+        let sq = block;
+        if (sq === null) {
+          let res = await client.getLastBlock();
+          sq = res.last.seqno;
+        }
+        let method = await client.runMethod(sq, address, name, args);
+        if (method.exitCode !== 0 && method.exitCode !== 1) {
+          throw Error("Exit code: " + method.exitCode);
+        }
+        return {
+          stack: new core_1.TupleReader(method.result)
+        };
+      },
+      async external(message) {
+        let last = await client.getLastBlock();
+        let neededInit = null;
+        if (init && (await client.getAccountLite(last.last.seqno, address)).account.state.type !== "active") {
+          neededInit = init;
+        }
+        const ext = (0, core_1.external)({
+          to: address,
+          init: neededInit,
+          body: message
+        });
+        let pkg = (0, core_1.beginCell)().store((0, core_1.storeMessage)(ext)).endCell().toBoc();
+        await client.sendMessage(pkg);
+      },
+      async internal(via, message) {
+        let last = await client.getLastBlock();
+        let neededInit = null;
+        if (init && (await client.getAccountLite(last.last.seqno, address)).account.state.type !== "active") {
+          neededInit = init;
+        }
+        let bounce = true;
+        if (message.bounce !== null && message.bounce !== void 0) {
+          bounce = message.bounce;
+        }
+        let value;
+        if (typeof message.value === "string") {
+          value = (0, core_1.toNano)(message.value);
+        } else {
+          value = message.value;
+        }
+        let body = null;
+        if (typeof message.body === "string") {
+          body = (0, core_1.comment)(message.body);
+        } else if (message.body) {
+          body = message.body;
+        }
+        await via.send({
+          to: address,
+          value,
+          extracurrency: message.extracurrency,
+          bounce,
+          sendMode: message.sendMode,
+          init: neededInit,
+          body
+        });
+      },
+      open(contract) {
+        return (0, core_1.openContract)(contract, (args) => createProvider(client, block, args.address, args.init ?? null));
+      },
+      async getTransactions(address2, lt2, hash, limit) {
+        const useLimit = typeof limit === "number";
+        if (useLimit && limit <= 0) {
+          return [];
+        }
+        let transactions = [];
+        do {
+          const txs = await client.getAccountTransactions(address2, lt2, hash);
+          const firstTx = txs[0].tx;
+          const [firstLt, firstHash] = [firstTx.lt, firstTx.hash()];
+          const needSkipFirst = transactions.length > 0 && firstLt === lt2 && firstHash.equals(hash);
+          if (needSkipFirst) {
+            txs.shift();
+          }
+          if (txs.length === 0) {
+            break;
+          }
+          const lastTx = txs[txs.length - 1].tx;
+          const [lastLt, lastHash] = [lastTx.lt, lastTx.hash()];
+          if (lastLt === lt2 && lastHash.equals(hash)) {
+            break;
+          }
+          transactions.push(...txs.map((tx) => tx.tx));
+          lt2 = lastLt;
+          hash = lastHash;
+        } while (useLimit && transactions.length < limit);
+        if (useLimit) {
+          transactions = transactions.slice(0, limit);
+        }
+        return transactions;
+      }
+    };
+  }
+  const lastBlockCodec = zod_1.z.object({
+    last: zod_1.z.object({
+      seqno: zod_1.z.number(),
+      shard: zod_1.z.string(),
+      workchain: zod_1.z.number(),
+      fileHash: zod_1.z.string(),
+      rootHash: zod_1.z.string()
+    }),
+    init: zod_1.z.object({
+      fileHash: zod_1.z.string(),
+      rootHash: zod_1.z.string()
+    }),
+    stateRootHash: zod_1.z.string(),
+    now: zod_1.z.number()
+  });
+  const blockCodec = zod_1.z.union([zod_1.z.object({
+    exist: zod_1.z.literal(false)
+  }), zod_1.z.object({
+    exist: zod_1.z.literal(true),
+    block: zod_1.z.object({
+      shards: zod_1.z.array(zod_1.z.object({
+        workchain: zod_1.z.number(),
+        seqno: zod_1.z.number(),
+        shard: zod_1.z.string(),
+        rootHash: zod_1.z.string(),
+        fileHash: zod_1.z.string(),
+        transactions: zod_1.z.array(zod_1.z.object({
+          account: zod_1.z.string(),
+          hash: zod_1.z.string(),
+          lt: zod_1.z.string()
+        }))
+      }))
+    })
+  })]);
+  const storageStatCodec = zod_1.z.object({
+    lastPaid: zod_1.z.number(),
+    duePayment: zod_1.z.union([zod_1.z.null(), zod_1.z.string()]),
+    used: zod_1.z.object({
+      bits: zod_1.z.number(),
+      cells: zod_1.z.number(),
+      publicCells: zod_1.z.number().optional()
+    })
+  });
+  const accountCodec = zod_1.z.object({
+    account: zod_1.z.object({
+      state: zod_1.z.union([
+        zod_1.z.object({ type: zod_1.z.literal("uninit") }),
+        zod_1.z.object({ type: zod_1.z.literal("active"), code: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]), data: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]) }),
+        zod_1.z.object({ type: zod_1.z.literal("frozen"), stateHash: zod_1.z.string() })
+      ]),
+      balance: zod_1.z.object({
+        coins: zod_1.z.string(),
+        currencies: zod_1.z.record(zod_1.z.string(), zod_1.z.string())
+      }),
+      last: zod_1.z.union([
+        zod_1.z.null(),
+        zod_1.z.object({
+          lt: zod_1.z.string(),
+          hash: zod_1.z.string()
+        })
+      ]),
+      storageStat: zod_1.z.union([zod_1.z.null(), storageStatCodec])
+    }),
+    block: zod_1.z.object({
+      workchain: zod_1.z.number(),
+      seqno: zod_1.z.number(),
+      shard: zod_1.z.string(),
+      rootHash: zod_1.z.string(),
+      fileHash: zod_1.z.string()
+    })
+  });
+  const accountLiteCodec = zod_1.z.object({
+    account: zod_1.z.object({
+      state: zod_1.z.union([
+        zod_1.z.object({ type: zod_1.z.literal("uninit") }),
+        zod_1.z.object({ type: zod_1.z.literal("active"), codeHash: zod_1.z.string(), dataHash: zod_1.z.string() }),
+        zod_1.z.object({ type: zod_1.z.literal("frozen"), stateHash: zod_1.z.string() })
+      ]),
+      balance: zod_1.z.object({
+        coins: zod_1.z.string(),
+        currencies: zod_1.z.record(zod_1.z.string(), zod_1.z.string())
+      }),
+      last: zod_1.z.union([
+        zod_1.z.null(),
+        zod_1.z.object({
+          lt: zod_1.z.string(),
+          hash: zod_1.z.string()
+        })
+      ]),
+      storageStat: zod_1.z.union([zod_1.z.null(), storageStatCodec])
+    })
+  });
+  const changedCodec = zod_1.z.object({
+    changed: zod_1.z.boolean(),
+    block: zod_1.z.object({
+      workchain: zod_1.z.number(),
+      seqno: zod_1.z.number(),
+      shard: zod_1.z.string(),
+      rootHash: zod_1.z.string(),
+      fileHash: zod_1.z.string()
+    })
+  });
+  const runMethodCodec = zod_1.z.object({
+    exitCode: zod_1.z.number(),
+    resultRaw: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]),
+    block: zod_1.z.object({
+      workchain: zod_1.z.number(),
+      seqno: zod_1.z.number(),
+      shard: zod_1.z.string(),
+      rootHash: zod_1.z.string(),
+      fileHash: zod_1.z.string()
+    }),
+    shardBlock: zod_1.z.object({
+      workchain: zod_1.z.number(),
+      seqno: zod_1.z.number(),
+      shard: zod_1.z.string(),
+      rootHash: zod_1.z.string(),
+      fileHash: zod_1.z.string()
+    })
+  });
+  const configCodec = zod_1.z.object({
+    config: zod_1.z.object({
+      cell: zod_1.z.string(),
+      address: zod_1.z.string(),
+      globalBalance: zod_1.z.object({
+        coins: zod_1.z.string()
+      })
+    })
+  });
+  const sendCodec = zod_1.z.object({
+    status: zod_1.z.number()
+  });
+  const blocksCodec = zod_1.z.array(zod_1.z.object({
+    workchain: zod_1.z.number(),
+    seqno: zod_1.z.number(),
+    shard: zod_1.z.string(),
+    rootHash: zod_1.z.string(),
+    fileHash: zod_1.z.string()
+  }));
+  const transactionsCodec = zod_1.z.object({
+    blocks: blocksCodec,
+    boc: zod_1.z.string()
+  });
+  const parsedAddressExternalCodec = zod_1.z.object({
+    bits: zod_1.z.number(),
+    data: zod_1.z.string()
+  });
+  const parsedMessageInfoCodec = zod_1.z.union([
+    zod_1.z.object({
+      type: zod_1.z.literal("internal"),
+      value: zod_1.z.string(),
+      dest: zod_1.z.string(),
+      src: zod_1.z.string(),
+      bounced: zod_1.z.boolean(),
+      bounce: zod_1.z.boolean(),
+      ihrDisabled: zod_1.z.boolean(),
+      createdAt: zod_1.z.number(),
+      createdLt: zod_1.z.string(),
+      fwdFee: zod_1.z.string(),
+      ihrFee: zod_1.z.string()
+    }),
+    zod_1.z.object({
+      type: zod_1.z.literal("external-in"),
+      dest: zod_1.z.string(),
+      src: zod_1.z.union([parsedAddressExternalCodec, zod_1.z.null()]),
+      importFee: zod_1.z.string()
+    }),
+    zod_1.z.object({
+      type: zod_1.z.literal("external-out"),
+      dest: zod_1.z.union([parsedAddressExternalCodec, zod_1.z.null()])
+    })
+  ]);
+  const parsedStateInitCodec = zod_1.z.object({
+    splitDepth: zod_1.z.union([zod_1.z.number(), zod_1.z.null()]),
+    code: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]),
+    data: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]),
+    special: zod_1.z.union([zod_1.z.object({ tick: zod_1.z.boolean(), tock: zod_1.z.boolean() }), zod_1.z.null()])
+  });
+  const parsedMessageCodec = zod_1.z.object({
+    body: zod_1.z.string(),
+    info: parsedMessageInfoCodec,
+    init: zod_1.z.union([parsedStateInitCodec, zod_1.z.null()])
+  });
+  const accountStatusCodec = zod_1.z.union([zod_1.z.literal("uninitialized"), zod_1.z.literal("frozen"), zod_1.z.literal("active"), zod_1.z.literal("non-existing")]);
+  const txBodyCodec = zod_1.z.union([
+    zod_1.z.object({ type: zod_1.z.literal("comment"), comment: zod_1.z.string() }),
+    zod_1.z.object({ type: zod_1.z.literal("payload"), cell: zod_1.z.string() })
+  ]);
+  const parsedOperationItemCodec = zod_1.z.union([
+    zod_1.z.object({ kind: zod_1.z.literal("ton"), amount: zod_1.z.string() }),
+    zod_1.z.object({ kind: zod_1.z.literal("token"), amount: zod_1.z.string() })
+  ]);
+  const supportedMessageTypeCodec = zod_1.z.union([
+    zod_1.z.literal("jetton::excesses"),
+    zod_1.z.literal("jetton::transfer"),
+    zod_1.z.literal("jetton::transfer_notification"),
+    zod_1.z.literal("deposit"),
+    zod_1.z.literal("deposit::ok"),
+    zod_1.z.literal("withdraw"),
+    zod_1.z.literal("withdraw::all"),
+    zod_1.z.literal("withdraw::delayed"),
+    zod_1.z.literal("withdraw::ok"),
+    zod_1.z.literal("airdrop")
+  ]);
+  const opCodec = zod_1.z.object({
+    type: supportedMessageTypeCodec,
+    options: zod_1.z.optional(zod_1.z.record(zod_1.z.string()))
+  });
+  const parsedOperationCodec = zod_1.z.object({
+    address: zod_1.z.string(),
+    comment: zod_1.z.optional(zod_1.z.string()),
+    items: zod_1.z.array(parsedOperationItemCodec),
+    op: zod_1.z.optional(opCodec)
+  });
+  const parsedTransactionCodec = zod_1.z.object({
+    address: zod_1.z.string(),
+    lt: zod_1.z.string(),
+    hash: zod_1.z.string(),
+    prevTransaction: zod_1.z.object({
+      lt: zod_1.z.string(),
+      hash: zod_1.z.string()
+    }),
+    time: zod_1.z.number(),
+    outMessagesCount: zod_1.z.number(),
+    oldStatus: accountStatusCodec,
+    newStatus: accountStatusCodec,
+    fees: zod_1.z.string(),
+    update: zod_1.z.object({
+      oldHash: zod_1.z.string(),
+      newHash: zod_1.z.string()
+    }),
+    inMessage: zod_1.z.union([parsedMessageCodec, zod_1.z.null()]),
+    outMessages: zod_1.z.array(parsedMessageCodec),
+    parsed: zod_1.z.object({
+      seqno: zod_1.z.union([zod_1.z.number(), zod_1.z.null()]),
+      body: zod_1.z.union([txBodyCodec, zod_1.z.null()]),
+      status: zod_1.z.union([zod_1.z.literal("success"), zod_1.z.literal("failed"), zod_1.z.literal("pending")]),
+      dest: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]),
+      kind: zod_1.z.union([zod_1.z.literal("out"), zod_1.z.literal("in")]),
+      amount: zod_1.z.string(),
+      resolvedAddress: zod_1.z.string(),
+      bounced: zod_1.z.boolean(),
+      mentioned: zod_1.z.array(zod_1.z.string())
+    }),
+    operation: parsedOperationCodec
+  });
+  const parsedTransactionsCodec = zod_1.z.object({
+    blocks: blocksCodec,
+    transactions: zod_1.z.array(parsedTransactionCodec)
+  });
+  return TonClient4;
+}
+var WalletContractV1R1 = {};
+var createWalletTransfer = {};
+var WalletContractV5Beta$1 = {};
+var WalletV5BetaWalletId = {};
+var hasRequiredWalletV5BetaWalletId;
+function requireWalletV5BetaWalletId() {
+  if (hasRequiredWalletV5BetaWalletId) return WalletV5BetaWalletId;
+  hasRequiredWalletV5BetaWalletId = 1;
+  Object.defineProperty(WalletV5BetaWalletId, "__esModule", { value: true });
+  WalletV5BetaWalletId.loadWalletIdV5Beta = loadWalletIdV5Beta;
+  WalletV5BetaWalletId.storeWalletIdV5Beta = storeWalletIdV5Beta;
+  const core_1 = requireDist$5();
+  const walletV5BetaVersionsSerialisation = {
+    v5: 0
+  };
+  function loadWalletIdV5Beta(value) {
+    const bitReader = new core_1.BitReader(new core_1.BitString(typeof value === "bigint" ? Buffer.from(value.toString(16), "hex") : value instanceof core_1.Slice ? value.loadBuffer(10) : value, 0, 80));
+    const networkGlobalId = bitReader.loadInt(32);
+    const workchain = bitReader.loadInt(8);
+    const walletVersionRaw = bitReader.loadUint(8);
+    const subwalletNumber = bitReader.loadUint(32);
+    const walletVersion = Object.entries(walletV5BetaVersionsSerialisation).find(([_, value2]) => value2 === walletVersionRaw)?.[0];
+    if (walletVersion === void 0) {
+      throw new Error(`Can't deserialize walletId: unknown wallet version ${walletVersionRaw}`);
+    }
+    return { networkGlobalId, workchain, walletVersion, subwalletNumber };
+  }
+  function storeWalletIdV5Beta(walletId) {
+    return (builder2) => {
+      builder2.storeInt(walletId.networkGlobalId, 32);
+      builder2.storeInt(walletId.workchain, 8);
+      builder2.storeUint(walletV5BetaVersionsSerialisation[walletId.walletVersion], 8);
+      builder2.storeUint(walletId.subwalletNumber, 32);
+    };
+  }
+  return WalletV5BetaWalletId;
+}
+var hasRequiredWalletContractV5Beta$1;
+function requireWalletContractV5Beta$1() {
+  if (hasRequiredWalletContractV5Beta$1) return WalletContractV5Beta$1;
+  hasRequiredWalletContractV5Beta$1 = 1;
+  Object.defineProperty(WalletContractV5Beta$1, "__esModule", { value: true });
+  WalletContractV5Beta$1.WalletContractV5Beta = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  const WalletV5BetaWalletId_1 = requireWalletV5BetaWalletId();
+  class WalletContractV5Beta2 {
+    static create(args) {
+      const walletId = {
+        networkGlobalId: args.walletId?.networkGlobalId ?? -239,
+        workchain: args?.walletId?.workchain ?? 0,
+        subwalletNumber: args?.walletId?.subwalletNumber ?? 0,
+        walletVersion: args?.walletId?.walletVersion ?? "v5"
+      };
+      return new WalletContractV5Beta2(walletId, args.publicKey);
+    }
+    constructor(walletId, publicKey) {
+      this.walletId = walletId;
+      this.publicKey = publicKey;
+      this.walletId = walletId;
+      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAIwAIQgLkzzsvTG1qYeoPK1RH0mZ4WyavNjfbLe7mvNGqgm80Eg3NjhE=", "base64"))[0];
+      let data = (0, core_1.beginCell)().storeInt(0, 33).store((0, WalletV5BetaWalletId_1.storeWalletIdV5Beta)(this.walletId)).storeBuffer(this.publicKey, 32).storeBit(0).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(this.walletId.workchain, { code, data });
+    }
+    /**
+     * Get Wallet Balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        let res = await provider.get("seqno", []);
+        return res.stack.readNumber();
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Get Wallet Extensions
+     */
+    async getExtensions(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        const result = await provider.get("get_extensions", []);
+        return result.stack.readCellOpt();
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Get Wallet Extensions
+     */
+    async getExtensionsArray(provider) {
+      const extensions = await this.getExtensions(provider);
+      if (!extensions) {
+        return [];
+      }
+      const dict = core_1.Dictionary.loadDirect(core_1.Dictionary.Keys.BigUint(256), core_1.Dictionary.Values.BigInt(8), extensions);
+      return dict.keys().map((key2) => {
+        const wc = dict.get(key2);
+        const addressHex = key2 ^ wc + 1n;
+        return core_1.Address.parseRaw(`${wc}:${addressHex.toString(16).padStart(64, "0")}`);
+      });
+    }
+    /**
+     * Get is secret-key authentication enabled
+     */
+    async getIsSecretKeyAuthEnabled(provider) {
+      let res = await provider.get("get_is_signature_auth_allowed", []);
+      const result = res.stack.readNumber();
+      return result !== 0;
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      const transfer = await this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Sign and send add extension request
+     */
+    async sendAddExtension(provider, args) {
+      const request = await this.createAddExtension(args);
+      await this.send(provider, request);
+    }
+    /**
+     * Sign and send remove extension request
+     */
+    async sendRemoveExtension(provider, args) {
+      const request = await this.createRemoveExtension(args);
+      await this.send(provider, request);
+    }
+    /**
+     * Sign and send actions batch
+     */
+    async sendActionsBatch(provider, args) {
+      const request = await this.createRequest(args);
+      await this.send(provider, request);
+    }
+    createActions(args) {
+      const actions = args.messages.map((message) => ({ type: "sendMsg", mode: args.sendMode, outMsg: message }));
+      return actions;
+    }
+    /**
+     * Create signed transfer
+     */
+    createTransfer(args) {
+      return this.createRequest({
+        ...args,
+        actions: this.createActions({ messages: args.messages, sendMode: args.sendMode })
+      });
+    }
+    /**
+     * Create signed add extension request
+     */
+    createAddExtension(args) {
+      return this.createRequest({
+        ...args,
+        actions: [{
+          type: "addExtension",
+          address: args.extensionAddress
+        }]
+      });
+    }
+    /**
+     * Create signed remove extension request
+     */
+    createRemoveExtension(args) {
+      return this.createRequest({
+        ...args,
+        actions: [{
+          type: "removeExtension",
+          address: args.extensionAddress
+        }]
+      });
+    }
+    /**
+     * Create signed request or extension auth request
+     */
+    createRequest(args) {
+      if (args.authType === "extension") {
+        return (0, createWalletTransfer_1.createWalletTransferV5Beta)(args);
+      }
+      return (0, createWalletTransfer_1.createWalletTransferV5Beta)({
+        ...args,
+        walletId: (0, WalletV5BetaWalletId_1.storeWalletIdV5Beta)(this.walletId)
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY + core_1.SendMode.IGNORE_ERRORS,
+            messages: [(0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              extracurrency: args.extracurrency,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })]
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  }
+  WalletContractV5Beta$1.WalletContractV5Beta = WalletContractV5Beta2;
+  WalletContractV5Beta2.OpCodes = {
+    auth_extension: 1702392942,
+    auth_signed_external: 1936287598,
+    auth_signed_internal: 1936289396
+  };
+  return WalletContractV5Beta$1;
+}
+var WalletV5BetaActions = {};
+var WalletV5OutActions = {};
+var hasRequiredWalletV5OutActions;
+function requireWalletV5OutActions() {
+  if (hasRequiredWalletV5OutActions) return WalletV5OutActions;
+  hasRequiredWalletV5OutActions = 1;
+  Object.defineProperty(WalletV5OutActions, "__esModule", { value: true });
+  WalletV5OutActions.isOutActionExtended = isOutActionExtended;
+  WalletV5OutActions.isOutActionBasic = isOutActionBasic;
+  function isOutActionExtended(action) {
+    return action.type === "setIsPublicKeyEnabled" || action.type === "addExtension" || action.type === "removeExtension";
+  }
+  function isOutActionBasic(action) {
+    return !isOutActionExtended(action);
+  }
+  return WalletV5OutActions;
+}
+var hasRequiredWalletV5BetaActions;
+function requireWalletV5BetaActions() {
+  if (hasRequiredWalletV5BetaActions) return WalletV5BetaActions;
+  hasRequiredWalletV5BetaActions = 1;
+  Object.defineProperty(WalletV5BetaActions, "__esModule", { value: true });
+  WalletV5BetaActions.storeOutActionExtendedV5Beta = storeOutActionExtendedV5Beta;
+  WalletV5BetaActions.loadOutActionV5BetaExtended = loadOutActionV5BetaExtended;
+  WalletV5BetaActions.storeOutListExtendedV5Beta = storeOutListExtendedV5Beta;
+  WalletV5BetaActions.loadOutListExtendedV5Beta = loadOutListExtendedV5Beta;
+  const core_1 = requireDist$5();
+  const WalletV5OutActions_1 = requireWalletV5OutActions();
+  const outActionSetIsPublicKeyEnabledTag = 550222170;
+  function storeOutActionSetIsPublicKeyEnabled(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionSetIsPublicKeyEnabledTag, 32).storeUint(action.isEnabled ? 1 : 0, 1);
+    };
+  }
+  const outActionAddExtensionTag = 474012575;
+  function storeOutActionAddExtension(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionAddExtensionTag, 32).storeAddress(action.address);
+    };
+  }
+  const outActionRemoveExtensionTag = 1588524196;
+  function storeOutActionRemoveExtension(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionRemoveExtensionTag, 32).storeAddress(action.address);
+    };
+  }
+  function storeOutActionExtendedV5Beta(action) {
+    switch (action.type) {
+      case "setIsPublicKeyEnabled":
+        return storeOutActionSetIsPublicKeyEnabled(action);
+      case "addExtension":
+        return storeOutActionAddExtension(action);
+      case "removeExtension":
+        return storeOutActionRemoveExtension(action);
+      default:
+        throw new Error("Unknown action type" + action?.type);
+    }
+  }
+  function loadOutActionV5BetaExtended(slice) {
+    const tag = slice.loadUint(32);
+    switch (tag) {
+      case outActionSetIsPublicKeyEnabledTag:
+        return {
+          type: "setIsPublicKeyEnabled",
+          isEnabled: !!slice.loadUint(1)
+        };
+      case outActionAddExtensionTag:
+        return {
+          type: "addExtension",
+          address: slice.loadAddress()
+        };
+      case outActionRemoveExtensionTag:
+        return {
+          type: "removeExtension",
+          address: slice.loadAddress()
+        };
+      default:
+        throw new Error(`Unknown extended out action tag 0x${tag.toString(16)}`);
+    }
+  }
+  function storeOutListExtendedV5Beta(actions) {
+    const [action, ...rest] = actions;
+    if (!action || !(0, WalletV5OutActions_1.isOutActionExtended)(action)) {
+      if (actions.some(WalletV5OutActions_1.isOutActionExtended)) {
+        throw new Error("Can't serialize actions list: all extended actions must be placed before out actions");
+      }
+      return (builder2) => {
+        builder2.storeUint(0, 1).storeRef((0, core_1.beginCell)().store((0, core_1.storeOutList)(actions)).endCell());
+      };
+    }
+    return (builder2) => {
+      builder2.storeUint(1, 1).store(storeOutActionExtendedV5Beta(action)).storeRef((0, core_1.beginCell)().store(storeOutListExtendedV5Beta(rest)).endCell());
+    };
+  }
+  function loadOutListExtendedV5Beta(slice) {
+    const actions = [];
+    while (slice.loadUint(1)) {
+      const action = loadOutActionV5BetaExtended(slice);
+      actions.push(action);
+      slice = slice.loadRef().beginParse();
+    }
+    const commonAction = (0, core_1.loadOutList)(slice.loadRef().beginParse());
+    if (commonAction.some((i) => i.type === "setCode")) {
+      throw new Error("Can't deserialize actions list: only sendMsg actions are allowed for wallet v5");
+    }
+    return actions.concat(commonAction);
+  }
+  return WalletV5BetaActions;
+}
+var singer = {};
+var hasRequiredSinger;
+function requireSinger() {
+  if (hasRequiredSinger) return singer;
+  hasRequiredSinger = 1;
+  Object.defineProperty(singer, "__esModule", { value: true });
+  singer.signPayload = signPayload;
+  const crypto_1 = requireDist$6();
+  function signPayload(args, signingMessage, packMessage) {
+    if ("secretKey" in args) {
+      return packMessage((0, crypto_1.sign)(signingMessage.endCell().hash(), args.secretKey), signingMessage);
+    } else {
+      return args.signer(signingMessage.endCell()).then((signature) => packMessage(signature, signingMessage));
+    }
+  }
+  return singer;
+}
+var WalletContractV5R1$1 = {};
+var WalletV5R1WalletId = {};
+var hasRequiredWalletV5R1WalletId;
+function requireWalletV5R1WalletId() {
+  if (hasRequiredWalletV5R1WalletId) return WalletV5R1WalletId;
+  hasRequiredWalletV5R1WalletId = 1;
+  Object.defineProperty(WalletV5R1WalletId, "__esModule", { value: true });
+  WalletV5R1WalletId.isWalletIdV5R1ClientContext = isWalletIdV5R1ClientContext;
+  WalletV5R1WalletId.loadWalletIdV5R1 = loadWalletIdV5R1;
+  WalletV5R1WalletId.storeWalletIdV5R1 = storeWalletIdV5R1;
+  const core_1 = requireDist$5();
+  function isWalletIdV5R1ClientContext(context) {
+    return typeof context !== "number";
+  }
+  const walletV5R1VersionsSerialisation = {
+    v5r1: 0
+  };
+  function loadWalletIdV5R1(value, networkGlobalId) {
+    const val = new core_1.BitReader(new core_1.BitString(typeof value === "bigint" ? Buffer.from(value.toString(16), "hex") : value instanceof core_1.Slice ? value.loadBuffer(4) : value, 0, 32)).loadInt(32);
+    const context = BigInt(val) ^ BigInt(networkGlobalId);
+    const bitReader = (0, core_1.beginCell)().storeInt(context, 32).endCell().beginParse();
+    const isClientContext = bitReader.loadUint(1);
+    if (isClientContext) {
+      const workchain = bitReader.loadInt(8);
+      const walletVersionRaw = bitReader.loadUint(8);
+      const subwalletNumber = bitReader.loadUint(15);
+      const walletVersion = Object.entries(walletV5R1VersionsSerialisation).find(([_, value2]) => value2 === walletVersionRaw)?.[0];
+      if (walletVersion === void 0) {
+        throw new Error(`Can't deserialize walletId: unknown wallet version ${walletVersionRaw}`);
+      }
+      return {
+        networkGlobalId,
+        context: {
+          walletVersion,
+          workchain,
+          subwalletNumber
+        }
+      };
+    } else {
+      const context2 = bitReader.loadUint(31);
+      return {
+        networkGlobalId,
+        context: context2
+      };
+    }
+  }
+  function storeWalletIdV5R1(walletId) {
+    return (builder2) => {
+      let context;
+      if (isWalletIdV5R1ClientContext(walletId.context)) {
+        context = (0, core_1.beginCell)().storeUint(1, 1).storeInt(walletId.context.workchain, 8).storeUint(walletV5R1VersionsSerialisation[walletId.context.walletVersion], 8).storeUint(walletId.context.subwalletNumber, 15).endCell().beginParse().loadInt(32);
+      } else {
+        context = (0, core_1.beginCell)().storeUint(0, 1).storeUint(walletId.context, 31).endCell().beginParse().loadInt(32);
+      }
+      return builder2.storeInt(BigInt(walletId.networkGlobalId) ^ BigInt(context), 32);
+    };
+  }
+  return WalletV5R1WalletId;
+}
+var hasRequiredWalletContractV5R1$1;
+function requireWalletContractV5R1$1() {
+  if (hasRequiredWalletContractV5R1$1) return WalletContractV5R1$1;
+  hasRequiredWalletContractV5R1$1 = 1;
+  Object.defineProperty(WalletContractV5R1$1, "__esModule", { value: true });
+  WalletContractV5R1$1.WalletContractV5R1 = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  const WalletV5R1WalletId_1 = requireWalletV5R1WalletId();
+  class WalletContractV5R12 {
+    static create(args) {
+      let workchain = 0;
+      if ("workchain" in args && args.workchain != void 0) {
+        workchain = args.workchain;
+      }
+      if (args.walletId?.context && (0, WalletV5R1WalletId_1.isWalletIdV5R1ClientContext)(args.walletId.context) && args.walletId.context.workchain != void 0) {
+        workchain = args.walletId.context.workchain;
+      }
+      return new WalletContractV5R12(workchain, args.publicKey, {
+        networkGlobalId: args.walletId?.networkGlobalId ?? -239,
+        context: args.walletId?.context ?? {
+          workchain: 0,
+          walletVersion: "v5r1",
+          subwalletNumber: 0
+        }
+      });
+    }
+    constructor(workchain, publicKey, walletId) {
+      this.publicKey = publicKey;
+      this.walletId = walletId;
+      this.walletId = walletId;
+      let code = core_1.Cell.fromBoc(Buffer.from("b5ee9c7241021401000281000114ff00f4a413f4bcf2c80b01020120020d020148030402dcd020d749c120915b8f6320d70b1f2082106578746ebd21821073696e74bdb0925f03e082106578746eba8eb48020d72101d074d721fa4030fa44f828fa443058bd915be0ed44d0810141d721f4058307f40e6fa1319130e18040d721707fdb3ce03120d749810280b99130e070e2100f020120050c020120060902016e07080019adce76a2684020eb90eb85ffc00019af1df6a2684010eb90eb858fc00201480a0b0017b325fb51341c75c875c2c7e00011b262fb513435c280200019be5f0f6a2684080a0eb90fa02c0102f20e011e20d70b1f82107369676ebaf2e08a7f0f01e68ef0eda2edfb218308d722028308d723208020d721d31fd31fd31fed44d0d200d31f20d31fd3ffd70a000af90140ccf9109a28945f0adb31e1f2c087df02b35007b0f2d0845125baf2e0855036baf2e086f823bbf2d0882292f800de01a47fc8ca00cb1f01cf16c9ed542092f80fde70db3cd81003f6eda2edfb02f404216e926c218e4c0221d73930709421c700b38e2d01d72820761e436c20d749c008f2e09320d74ac002f2e09320d71d06c712c2005230b0f2d089d74cd7393001a4e86c128407bbf2e093d74ac000f2e093ed55e2d20001c000915be0ebd72c08142091709601d72c081c12e25210b1e30f20d74a111213009601fa4001fa44f828fa443058baf2e091ed44d0810141d718f405049d7fc8ca0040048307f453f2e08b8e14038307f45bf2e08c22d70a00216e01b3b0f2d090e2c85003cf1612f400c9ed54007230d72c08248e2d21f2e092d200ed44d0d2005113baf2d08f54503091319c01810140d721d70a00f2e08ee2c8ca0058cf16c9ed5493f2c08de20010935bdb31e1d74cd0b4d6c35e", "hex"))[0];
+      let data = (0, core_1.beginCell)().storeUint(1, 1).storeUint(0, 32).store((0, WalletV5R1WalletId_1.storeWalletIdV5R1)(this.walletId)).storeBuffer(this.publicKey, 32).storeBit(0).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(workchain, { code, data });
+    }
+    /**
+     * Get Wallet Balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        let res = await provider.get("seqno", []);
+        return res.stack.readNumber();
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Get Wallet Extensions
+     */
+    async getExtensions(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        const result = await provider.get("get_extensions", []);
+        return result.stack.readCellOpt();
+      } else {
+        return null;
+      }
+    }
+    /**
+     * Get Wallet Extensions
+     */
+    async getExtensionsArray(provider) {
+      const extensions = await this.getExtensions(provider);
+      if (!extensions) {
+        return [];
+      }
+      const dict = core_1.Dictionary.loadDirect(core_1.Dictionary.Keys.BigUint(256), core_1.Dictionary.Values.BigInt(1), extensions);
+      return dict.keys().map((addressHex) => {
+        const wc = this.address.workChain;
+        return core_1.Address.parseRaw(`${wc}:${addressHex.toString(16).padStart(64, "0")}`);
+      });
+    }
+    /**
+     * Get is secret-key authentication enabled
+     */
+    async getIsSecretKeyAuthEnabled(provider) {
+      let res = await provider.get("is_signature_allowed", []);
+      return res.stack.readBoolean();
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      const transfer = await this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Sign and send add extension request
+     */
+    async sendAddExtension(provider, args) {
+      const request = await this.createAddExtension(args);
+      await this.send(provider, request);
+    }
+    /**
+     * Sign and send remove extension request
+     */
+    async sendRemoveExtension(provider, args) {
+      const request = await this.createRemoveExtension(args);
+      await this.send(provider, request);
+    }
+    createActions(args) {
+      const actions = args.messages.map((message) => ({ type: "sendMsg", mode: args.sendMode, outMsg: message }));
+      return actions;
+    }
+    /**
+     * Create signed transfer
+     */
+    createTransfer(args) {
+      return this.createRequest({
+        actions: this.createActions({ messages: args.messages, sendMode: args.sendMode }),
+        ...args
+      });
+    }
+    /**
+     * Create signed add extension request
+     */
+    createAddExtension(args) {
+      return this.createRequest({
+        actions: [{
+          type: "addExtension",
+          address: args.extensionAddress
+        }],
+        ...args
+      });
+    }
+    /**
+     * Create signed remove extension request
+     */
+    createRemoveExtension(args) {
+      return this.createRequest({
+        actions: [{
+          type: "removeExtension",
+          address: args.extensionAddress
+        }],
+        ...args
+      });
+    }
+    /**
+     * Create signed request or extension auth request
+     */
+    createRequest(args) {
+      if (args.authType === "extension") {
+        return (0, createWalletTransfer_1.createWalletTransferV5R1)(args);
+      }
+      return (0, createWalletTransfer_1.createWalletTransferV5R1)({
+        ...args,
+        walletId: (0, WalletV5R1WalletId_1.storeWalletIdV5R1)(this.walletId)
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY + core_1.SendMode.IGNORE_ERRORS,
+            messages: [(0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              extracurrency: args.extracurrency,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })]
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  }
+  WalletContractV5R1$1.WalletContractV5R1 = WalletContractV5R12;
+  WalletContractV5R12.OpCodes = {
+    auth_extension: 1702392942,
+    auth_signed_external: 1936287598,
+    auth_signed_internal: 1936289396
+  };
+  return WalletContractV5R1$1;
+}
+var WalletV5R1Actions = {};
+var hasRequiredWalletV5R1Actions;
+function requireWalletV5R1Actions() {
+  if (hasRequiredWalletV5R1Actions) return WalletV5R1Actions;
+  hasRequiredWalletV5R1Actions = 1;
+  Object.defineProperty(WalletV5R1Actions, "__esModule", { value: true });
+  WalletV5R1Actions.storeOutActionExtendedV5R1 = storeOutActionExtendedV5R1;
+  WalletV5R1Actions.loadOutActionExtendedV5R1 = loadOutActionExtendedV5R1;
+  WalletV5R1Actions.storeOutListExtendedV5R1 = storeOutListExtendedV5R1;
+  WalletV5R1Actions.loadOutListExtendedV5R1 = loadOutListExtendedV5R1;
+  WalletV5R1Actions.toSafeV5R1SendMode = toSafeV5R1SendMode;
+  WalletV5R1Actions.patchV5R1ActionsSendMode = patchV5R1ActionsSendMode;
+  const core_1 = requireDist$5();
+  const WalletV5OutActions_1 = requireWalletV5OutActions();
+  const outActionSetIsPublicKeyEnabledTag = 4;
+  function storeOutActionSetIsPublicKeyEnabled(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionSetIsPublicKeyEnabledTag, 8).storeUint(action.isEnabled ? 1 : 0, 1);
+    };
+  }
+  const outActionAddExtensionTag = 2;
+  function storeOutActionAddExtension(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionAddExtensionTag, 8).storeAddress(action.address);
+    };
+  }
+  const outActionRemoveExtensionTag = 3;
+  function storeOutActionRemoveExtension(action) {
+    return (builder2) => {
+      builder2.storeUint(outActionRemoveExtensionTag, 8).storeAddress(action.address);
+    };
+  }
+  function storeOutActionExtendedV5R1(action) {
+    switch (action.type) {
+      case "setIsPublicKeyEnabled":
+        return storeOutActionSetIsPublicKeyEnabled(action);
+      case "addExtension":
+        return storeOutActionAddExtension(action);
+      case "removeExtension":
+        return storeOutActionRemoveExtension(action);
+      default:
+        throw new Error("Unknown action type" + action?.type);
+    }
+  }
+  function loadOutActionExtendedV5R1(slice) {
+    const tag = slice.loadUint(8);
+    switch (tag) {
+      case outActionSetIsPublicKeyEnabledTag:
+        return {
+          type: "setIsPublicKeyEnabled",
+          isEnabled: !!slice.loadUint(1)
+        };
+      case outActionAddExtensionTag:
+        return {
+          type: "addExtension",
+          address: slice.loadAddress()
+        };
+      case outActionRemoveExtensionTag:
+        return {
+          type: "removeExtension",
+          address: slice.loadAddress()
+        };
+      default:
+        throw new Error(`Unknown extended out action tag 0x${tag.toString(16)}`);
+    }
+  }
+  function storeOutListExtendedV5R1(actions) {
+    const extendedActions = actions.filter(WalletV5OutActions_1.isOutActionExtended);
+    const basicActions = actions.filter(WalletV5OutActions_1.isOutActionBasic);
+    return (builder2) => {
+      const outListPacked = basicActions.length ? (0, core_1.beginCell)().store((0, core_1.storeOutList)(basicActions.slice().reverse())) : null;
+      builder2.storeMaybeRef(outListPacked);
+      if (extendedActions.length === 0) {
+        builder2.storeUint(0, 1);
+      } else {
+        const [first, ...rest] = extendedActions;
+        builder2.storeUint(1, 1).store(storeOutActionExtendedV5R1(first));
+        if (rest.length > 0) {
+          builder2.storeRef(packExtendedActionsRec(rest));
+        }
+      }
+    };
+  }
+  function packExtendedActionsRec(extendedActions) {
+    const [first, ...rest] = extendedActions;
+    let builder2 = (0, core_1.beginCell)().store(storeOutActionExtendedV5R1(first));
+    if (rest.length > 0) {
+      builder2 = builder2.storeRef(packExtendedActionsRec(rest));
+    }
+    return builder2.endCell();
+  }
+  function loadOutListExtendedV5R1(slice) {
+    const actions = [];
+    const outListPacked = slice.loadMaybeRef();
+    if (outListPacked) {
+      const loadedActions = (0, core_1.loadOutList)(outListPacked.beginParse());
+      if (loadedActions.some((a2) => a2.type !== "sendMsg")) {
+        throw new Error("Can't deserialize actions list: only sendMsg actions are allowed for wallet v5r1");
+      }
+      actions.push(...loadedActions);
+    }
+    if (slice.loadBoolean()) {
+      const action = loadOutActionExtendedV5R1(slice);
+      actions.push(action);
+    }
+    while (slice.remainingRefs > 0) {
+      slice = slice.loadRef().beginParse();
+      const action = loadOutActionExtendedV5R1(slice);
+      actions.push(action);
+    }
+    return actions;
+  }
+  function toSafeV5R1SendMode(sendMode, authType) {
+    if (authType === "internal" || authType === "extension") {
+      return sendMode;
+    }
+    return sendMode | core_1.SendMode.IGNORE_ERRORS;
+  }
+  function patchV5R1ActionsSendMode(actions, authType) {
+    return actions.map((action) => action.type === "sendMsg" ? {
+      ...action,
+      mode: toSafeV5R1SendMode(action.mode, authType)
+    } : action);
+  }
+  return WalletV5R1Actions;
+}
+var hasRequiredCreateWalletTransfer;
+function requireCreateWalletTransfer() {
+  if (hasRequiredCreateWalletTransfer) return createWalletTransfer;
+  hasRequiredCreateWalletTransfer = 1;
+  Object.defineProperty(createWalletTransfer, "__esModule", { value: true });
+  createWalletTransfer.createWalletTransferV1 = createWalletTransferV1;
+  createWalletTransfer.createWalletTransferV2 = createWalletTransferV2;
+  createWalletTransfer.createWalletTransferV3 = createWalletTransferV3;
+  createWalletTransfer.createWalletTransferV4 = createWalletTransferV4;
+  createWalletTransfer.createWalletTransferV5Beta = createWalletTransferV5Beta;
+  createWalletTransfer.createWalletTransferV5R1 = createWalletTransferV5R1;
+  const core_1 = requireDist$5();
+  const crypto_1 = requireDist$6();
+  const WalletContractV5Beta_1 = requireWalletContractV5Beta$1();
+  const WalletV5BetaActions_1 = requireWalletV5BetaActions();
+  const singer_1 = requireSinger();
+  const WalletContractV5R1_1 = requireWalletContractV5R1$1();
+  const WalletV5R1Actions_1 = requireWalletV5R1Actions();
+  function packSignatureToFront(signature, signingMessage) {
+    const body = (0, core_1.beginCell)().storeBuffer(signature).storeBuilder(signingMessage).endCell();
+    return body;
+  }
+  function packSignatureToTail(signature, signingMessage) {
+    const body = (0, core_1.beginCell)().storeBuilder(signingMessage).storeBuffer(signature).endCell();
+    return body;
+  }
+  function createWalletTransferV1(args) {
+    let signingMessage = (0, core_1.beginCell)().storeUint(args.seqno, 32);
+    if (args.message) {
+      signingMessage.storeUint(args.sendMode, 8);
+      signingMessage.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(args.message)));
+    }
+    let signature = (0, crypto_1.sign)(signingMessage.endCell().hash(), args.secretKey);
+    const body = (0, core_1.beginCell)().storeBuffer(signature).storeBuilder(signingMessage).endCell();
+    return body;
+  }
+  function createWalletTransferV2(args) {
+    if (args.messages.length > 4) {
+      throw Error("Maximum number of messages in a single transfer is 4");
+    }
+    let signingMessage = (0, core_1.beginCell)().storeUint(args.seqno, 32);
+    if (args.seqno === 0) {
+      for (let i = 0; i < 32; i++) {
+        signingMessage.storeBit(1);
+      }
+    } else {
+      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
+    }
+    for (let m2 of args.messages) {
+      signingMessage.storeUint(args.sendMode, 8);
+      signingMessage.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(m2)));
+    }
+    let signature = (0, crypto_1.sign)(signingMessage.endCell().hash(), args.secretKey);
+    const body = (0, core_1.beginCell)().storeBuffer(signature).storeBuilder(signingMessage).endCell();
+    return body;
+  }
+  function createWalletTransferV3(args) {
+    if (args.messages.length > 4) {
+      throw Error("Maximum number of messages in a single transfer is 4");
+    }
+    let signingMessage = (0, core_1.beginCell)().storeUint(args.walletId, 32);
+    if (args.seqno === 0) {
+      for (let i = 0; i < 32; i++) {
+        signingMessage.storeBit(1);
+      }
+    } else {
+      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
+    }
+    signingMessage.storeUint(args.seqno, 32);
+    for (let m2 of args.messages) {
+      signingMessage.storeUint(args.sendMode, 8);
+      signingMessage.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(m2)));
+    }
+    return (0, singer_1.signPayload)(args, signingMessage, packSignatureToFront);
+  }
+  function createWalletTransferV4(args) {
+    if (args.messages.length > 4) {
+      throw Error("Maximum number of messages in a single transfer is 4");
+    }
+    let signingMessage = (0, core_1.beginCell)().storeUint(args.walletId, 32);
+    if (args.seqno === 0) {
+      for (let i = 0; i < 32; i++) {
+        signingMessage.storeBit(1);
+      }
+    } else {
+      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
+    }
+    signingMessage.storeUint(args.seqno, 32);
+    signingMessage.storeUint(0, 8);
+    for (let m2 of args.messages) {
+      signingMessage.storeUint(args.sendMode, 8);
+      signingMessage.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(m2)));
+    }
+    return (0, singer_1.signPayload)(args, signingMessage, packSignatureToFront);
+  }
+  function createWalletTransferV5Beta(args) {
+    if (args.actions.length > 255) {
+      throw Error("Maximum number of OutActions in a single request is 255");
+    }
+    if (args.authType === "extension") {
+      return (0, core_1.beginCell)().storeUint(WalletContractV5Beta_1.WalletContractV5Beta.OpCodes.auth_extension, 32).store((0, WalletV5BetaActions_1.storeOutListExtendedV5Beta)(args.actions)).endCell();
+    }
+    const signingMessage = (0, core_1.beginCell)().storeUint(args.authType === "internal" ? WalletContractV5Beta_1.WalletContractV5Beta.OpCodes.auth_signed_internal : WalletContractV5Beta_1.WalletContractV5Beta.OpCodes.auth_signed_external, 32).store(args.walletId);
+    if (args.seqno === 0) {
+      for (let i = 0; i < 32; i++) {
+        signingMessage.storeBit(1);
+      }
+    } else {
+      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
+    }
+    signingMessage.storeUint(args.seqno, 32).store((0, WalletV5BetaActions_1.storeOutListExtendedV5Beta)(args.actions));
+    return (0, singer_1.signPayload)(args, signingMessage, packSignatureToTail);
+  }
+  function createWalletTransferV5R1(args) {
+    if (args.actions.length > 255) {
+      throw Error("Maximum number of OutActions in a single request is 255");
+    }
+    args = { ...args };
+    if (args.authType === "extension") {
+      return (0, core_1.beginCell)().storeUint(WalletContractV5R1_1.WalletContractV5R1.OpCodes.auth_extension, 32).storeUint(args.queryId ?? 0, 64).store((0, WalletV5R1Actions_1.storeOutListExtendedV5R1)(args.actions)).endCell();
+    }
+    args.actions = (0, WalletV5R1Actions_1.patchV5R1ActionsSendMode)(args.actions, args.authType);
+    const signingMessage = (0, core_1.beginCell)().storeUint(args.authType === "internal" ? WalletContractV5R1_1.WalletContractV5R1.OpCodes.auth_signed_internal : WalletContractV5R1_1.WalletContractV5R1.OpCodes.auth_signed_external, 32).store(args.walletId);
+    if (args.seqno === 0) {
+      for (let i = 0; i < 32; i++) {
+        signingMessage.storeBit(1);
+      }
+    } else {
+      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
+    }
+    signingMessage.storeUint(args.seqno, 32).store((0, WalletV5R1Actions_1.storeOutListExtendedV5R1)(args.actions));
+    return (0, singer_1.signPayload)(args, signingMessage, packSignatureToTail);
+  }
+  return createWalletTransfer;
+}
+var hasRequiredWalletContractV1R1;
+function requireWalletContractV1R1() {
+  if (hasRequiredWalletContractV1R1) return WalletContractV1R1;
+  hasRequiredWalletContractV1R1 = 1;
+  Object.defineProperty(WalletContractV1R1, "__esModule", { value: true });
+  WalletContractV1R1.WalletContractV1R1 = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  let WalletContractV1R1$1 = class WalletContractV1R12 {
+    static create(args) {
+      return new WalletContractV1R12(args.workchain, args.publicKey);
+    }
+    constructor(workchain, publicKey) {
+      this.workchain = workchain;
+      this.publicKey = publicKey;
+      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEARAAAhP8AIN2k8mCBAgDXGCDXCx/tRNDTH9P/0VESuvKhIvkBVBBE+RDyovgAAdMfMSDXSpbTB9QC+wDe0aTIyx/L/8ntVEH98Ik=", "base64"))[0];
+      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(workchain, { code, data });
+    }
+    /**
+     * Get Wallet Balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        return core_1.Cell.fromBoc(state.state.data)[0].beginParse().loadUint(32);
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      let transfer = this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Create signed transfer
+     */
+    createTransfer(args) {
+      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
+      if (args.sendMode !== null && args.sendMode !== void 0) {
+        sendMode = args.sendMode;
+      }
+      return (0, createWalletTransfer_1.createWalletTransferV1)({
+        seqno: args.seqno,
+        sendMode,
+        secretKey: args.secretKey,
+        message: args.message
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode,
+            message: (0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              extracurrency: args.extracurrency,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  };
+  WalletContractV1R1.WalletContractV1R1 = WalletContractV1R1$1;
+  return WalletContractV1R1;
+}
+var WalletContractV1R2 = {};
+var hasRequiredWalletContractV1R2;
+function requireWalletContractV1R2() {
+  if (hasRequiredWalletContractV1R2) return WalletContractV1R2;
+  hasRequiredWalletContractV1R2 = 1;
+  Object.defineProperty(WalletContractV1R2, "__esModule", { value: true });
+  WalletContractV1R2.WalletContractV1R2 = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  let WalletContractV1R2$1 = class WalletContractV1R22 {
+    static create(args) {
+      return new WalletContractV1R22(args.workchain, args.publicKey);
+    }
+    constructor(workchain, publicKey) {
+      this.workchain = workchain;
+      this.publicKey = publicKey;
+      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAUwAAov8AIN0gggFMl7qXMO1E0NcLH+Ck8mCBAgDXGCDXCx/tRNDTH9P/0VESuvKhIvkBVBBE+RDyovgAAdMfMSDXSpbTB9QC+wDe0aTIyx/L/8ntVNDieG8=", "base64"))[0];
+      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(workchain, { code, data });
+    }
+    /**
+     * Get Wallet Balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        let res = await provider.get("seqno", []);
+        return res.stack.readNumber();
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      let transfer = this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Create signed transfer
+     */
+    createTransfer(args) {
+      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
+      if (args.sendMode !== null && args.sendMode !== void 0) {
+        sendMode = args.sendMode;
+      }
+      return (0, createWalletTransfer_1.createWalletTransferV1)({
+        seqno: args.seqno,
+        sendMode,
+        secretKey: args.secretKey,
+        message: args.message
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode,
+            message: (0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              extracurrency: args.extracurrency,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  };
+  WalletContractV1R2.WalletContractV1R2 = WalletContractV1R2$1;
+  return WalletContractV1R2;
+}
+var WalletContractV1R3 = {};
+var hasRequiredWalletContractV1R3;
+function requireWalletContractV1R3() {
+  if (hasRequiredWalletContractV1R3) return WalletContractV1R3;
+  hasRequiredWalletContractV1R3 = 1;
+  Object.defineProperty(WalletContractV1R3, "__esModule", { value: true });
+  WalletContractV1R3.WalletContractV1R3 = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  let WalletContractV1R3$1 = class WalletContractV1R32 {
+    static create(args) {
+      return new WalletContractV1R32(args.workchain, args.publicKey);
+    }
+    constructor(workchain, publicKey) {
+      this.workchain = workchain;
+      this.publicKey = publicKey;
+      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAXwAAuv8AIN0gggFMl7ohggEznLqxnHGw7UTQ0x/XC//jBOCk8mCBAgDXGCDXCx/tRNDTH9P/0VESuvKhIvkBVBBE+RDyovgAAdMfMSDXSpbTB9QC+wDe0aTIyx/L/8ntVLW4bkI=", "base64"))[0];
+      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(workchain, { code, data });
+    }
+    /**
+     * Get Wallet Balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        let res = await provider.get("seqno", []);
+        return res.stack.readNumber();
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(executor, message) {
+      await executor.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      let transfer = this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Create signed transfer
+     */
+    createTransfer(args) {
+      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
+      if (args.sendMode !== null && args.sendMode !== void 0) {
+        sendMode = args.sendMode;
+      }
+      return (0, createWalletTransfer_1.createWalletTransferV1)({
+        seqno: args.seqno,
+        sendMode,
+        secretKey: args.secretKey,
+        message: args.message
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode,
+            message: (0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  };
+  WalletContractV1R3.WalletContractV1R3 = WalletContractV1R3$1;
+  return WalletContractV1R3;
+}
+var WalletContractV2R1 = {};
+var hasRequiredWalletContractV2R1;
+function requireWalletContractV2R1() {
+  if (hasRequiredWalletContractV2R1) return WalletContractV2R1;
+  hasRequiredWalletContractV2R1 = 1;
+  Object.defineProperty(WalletContractV2R1, "__esModule", { value: true });
+  WalletContractV2R1.WalletContractV2R1 = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  let WalletContractV2R1$1 = class WalletContractV2R12 {
+    static create(args) {
+      return new WalletContractV2R12(args.workchain, args.publicKey);
+    }
+    constructor(workchain, publicKey) {
+      this.workchain = workchain;
+      this.publicKey = publicKey;
+      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAVwAAqv8AIN0gggFMl7qXMO1E0NcLH+Ck8mCDCNcYINMf0x8B+CO78mPtRNDTH9P/0VExuvKhA/kBVBBC+RDyovgAApMg10qW0wfUAvsA6NGkyMsfy//J7VShNwu2", "base64"))[0];
+      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(workchain, { code, data });
+    }
+    /**
+     * Get Wallet Balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        let res = await provider.get("seqno", []);
+        return res.stack.readNumber();
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      let transfer = this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Create signed transfer
+     */
+    createTransfer(args) {
+      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
+      if (args.sendMode !== null && args.sendMode !== void 0) {
+        sendMode = args.sendMode;
+      }
+      return (0, createWalletTransfer_1.createWalletTransferV2)({
+        seqno: args.seqno,
+        sendMode,
+        secretKey: args.secretKey,
+        messages: args.messages,
+        timeout: args.timeout
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode,
+            messages: [(0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              extracurrency: args.extracurrency,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })]
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  };
+  WalletContractV2R1.WalletContractV2R1 = WalletContractV2R1$1;
+  return WalletContractV2R1;
+}
+var WalletContractV2R2 = {};
+var hasRequiredWalletContractV2R2;
+function requireWalletContractV2R2() {
+  if (hasRequiredWalletContractV2R2) return WalletContractV2R2;
+  hasRequiredWalletContractV2R2 = 1;
+  Object.defineProperty(WalletContractV2R2, "__esModule", { value: true });
+  WalletContractV2R2.WalletContractV2R2 = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  let WalletContractV2R2$1 = class WalletContractV2R22 {
+    static create(args) {
+      return new WalletContractV2R22(args.workchain, args.publicKey);
+    }
+    constructor(workchain, publicKey) {
+      this.workchain = workchain;
+      this.publicKey = publicKey;
+      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAYwAAwv8AIN0gggFMl7ohggEznLqxnHGw7UTQ0x/XC//jBOCk8mCDCNcYINMf0x8B+CO78mPtRNDTH9P/0VExuvKhA/kBVBBC+RDyovgAApMg10qW0wfUAvsA6NGkyMsfy//J7VQETNeh", "base64"))[0];
+      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(workchain, { code, data });
+    }
+    /**
+     * Get Wallet Balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        let res = await provider.get("seqno", []);
+        return res.stack.readNumber();
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      let transfer = this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Create signed transfer
+     */
+    createTransfer(args) {
+      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
+      if (args.sendMode !== null && args.sendMode !== void 0) {
+        sendMode = args.sendMode;
+      }
+      return (0, createWalletTransfer_1.createWalletTransferV2)({
+        seqno: args.seqno,
+        sendMode,
+        secretKey: args.secretKey,
+        messages: args.messages,
+        timeout: args.timeout
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode,
+            messages: [(0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              extracurrency: args.extracurrency,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })]
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  };
+  WalletContractV2R2.WalletContractV2R2 = WalletContractV2R2$1;
+  return WalletContractV2R2;
+}
+var WalletContractV3R1 = {};
+var hasRequiredWalletContractV3R1;
+function requireWalletContractV3R1() {
+  if (hasRequiredWalletContractV3R1) return WalletContractV3R1;
+  hasRequiredWalletContractV3R1 = 1;
+  Object.defineProperty(WalletContractV3R1, "__esModule", { value: true });
+  WalletContractV3R1.WalletContractV3R1 = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  let WalletContractV3R1$1 = class WalletContractV3R12 {
+    static create(args) {
+      return new WalletContractV3R12(args.workchain, args.publicKey, args.walletId);
+    }
+    constructor(workchain, publicKey, walletId) {
+      this.workchain = workchain;
+      this.publicKey = publicKey;
+      if (walletId !== null && walletId !== void 0) {
+        this.walletId = walletId;
+      } else {
+        this.walletId = 698983191 + workchain;
+      }
+      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAYgAAwP8AIN0gggFMl7qXMO1E0NcLH+Ck8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVD++buA=", "base64"))[0];
+      let data = (0, core_1.beginCell)().storeUint(0, 32).storeUint(this.walletId, 32).storeBuffer(publicKey).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(workchain, { code, data });
+    }
+    /**
+     * Get wallet balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        let res = await provider.get("seqno", []);
+        return res.stack.readNumber();
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      let transfer = this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Create transfer
+     */
+    createTransfer(args) {
+      return (0, createWalletTransfer_1.createWalletTransferV3)({
+        ...args,
+        sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY,
+        walletId: this.walletId
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode,
+            messages: [(0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              extracurrency: args.extracurrency,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })]
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  };
+  WalletContractV3R1.WalletContractV3R1 = WalletContractV3R1$1;
+  return WalletContractV3R1;
+}
+var WalletContractV3R2 = {};
+var hasRequiredWalletContractV3R2;
+function requireWalletContractV3R2() {
+  if (hasRequiredWalletContractV3R2) return WalletContractV3R2;
+  hasRequiredWalletContractV3R2 = 1;
+  Object.defineProperty(WalletContractV3R2, "__esModule", { value: true });
+  WalletContractV3R2.WalletContractV3R2 = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  let WalletContractV3R2$1 = class WalletContractV3R22 {
+    static create(args) {
+      return new WalletContractV3R22(args.workchain, args.publicKey, args.walletId);
+    }
+    constructor(workchain, publicKey, walletId) {
+      this.workchain = workchain;
+      this.publicKey = publicKey;
+      if (walletId !== null && walletId !== void 0) {
+        this.walletId = walletId;
+      } else {
+        this.walletId = 698983191 + workchain;
+      }
+      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAcQAA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVBC9ba0=", "base64"))[0];
+      let data = (0, core_1.beginCell)().storeUint(0, 32).storeUint(this.walletId, 32).storeBuffer(publicKey).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(workchain, { code, data });
+    }
+    /**
+     * Get wallet balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        let res = await provider.get("seqno", []);
+        return res.stack.readNumber();
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      let transfer = this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Create transfer
+     */
+    createTransfer(args) {
+      return (0, createWalletTransfer_1.createWalletTransferV3)({
+        ...args,
+        sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY,
+        walletId: this.walletId
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode,
+            messages: [(0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              extracurrency: args.extracurrency,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })]
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  };
+  WalletContractV3R2.WalletContractV3R2 = WalletContractV3R2$1;
+  return WalletContractV3R2;
+}
+var WalletContractV4 = {};
+var hasRequiredWalletContractV4;
+function requireWalletContractV4() {
+  if (hasRequiredWalletContractV4) return WalletContractV4;
+  hasRequiredWalletContractV4 = 1;
+  Object.defineProperty(WalletContractV4, "__esModule", { value: true });
+  WalletContractV4.WalletContractV4 = void 0;
+  const core_1 = requireDist$5();
+  const createWalletTransfer_1 = requireCreateWalletTransfer();
+  let WalletContractV4$1 = class WalletContractV42 {
+    static create(args) {
+      return new WalletContractV42(args.workchain, args.publicKey, args.walletId);
+    }
+    constructor(workchain, publicKey, walletId) {
+      this.workchain = workchain;
+      this.publicKey = publicKey;
+      if (walletId !== null && walletId !== void 0) {
+        this.walletId = walletId;
+      } else {
+        this.walletId = 698983191 + workchain;
+      }
+      let code = core_1.Cell.fromBoc(Buffer.from("te6ccgECFAEAAtQAART/APSkE/S88sgLAQIBIAIDAgFIBAUE+PKDCNcYINMf0x/THwL4I7vyZO1E0NMf0x/T//QE0VFDuvKhUVG68qIF+QFUEGT5EPKj+AAkpMjLH1JAyx9SMMv/UhD0AMntVPgPAdMHIcAAn2xRkyDXSpbTB9QC+wDoMOAhwAHjACHAAuMAAcADkTDjDQOkyMsfEssfy/8QERITAubQAdDTAyFxsJJfBOAi10nBIJJfBOAC0x8hghBwbHVnvSKCEGRzdHK9sJJfBeAD+kAwIPpEAcjKB8v/ydDtRNCBAUDXIfQEMFyBAQj0Cm+hMbOSXwfgBdM/yCWCEHBsdWe6kjgw4w0DghBkc3RyupJfBuMNBgcCASAICQB4AfoA9AQw+CdvIjBQCqEhvvLgUIIQcGx1Z4MesXCAGFAEywUmzxZY+gIZ9ADLaRfLH1Jgyz8gyYBA+wAGAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+ICASAKCwBZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEAgFYDA0AEbjJftRNDXCx+AA9sp37UTQgQFA1yH0BDACyMoHy//J0AGBAQj0Cm+hMYAIBIA4PABmtznaiaEAga5Drhf/AABmvHfaiaEAQa5DrhY/AAG7SB/oA1NQi+QAFyMoHFcv/ydB3dIAYyMsFywIizxZQBfoCFMtrEszMyXP7AMhAFIEBCPRR8qcCAHCBAQjXGPoA0z/IVCBHgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAGzxZQBPoCFMtqEssfyz/Jc/sAAgBsgQEI1xj6ANM/MFIkgQEI9Fnyp4IQZHN0cnB0gBjIywXLAlAFzxZQA/oCE8tqyx8Syz/Jc/sAAAr0AMntVA==", "base64"))[0];
+      let data = (0, core_1.beginCell)().storeUint(0, 32).storeUint(this.walletId, 32).storeBuffer(this.publicKey).storeBit(0).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(workchain, { code, data });
+    }
+    /**
+     * Get Wallet Balance
+     */
+    async getBalance(provider) {
+      let state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Get Wallet Seqno
+     */
+    async getSeqno(provider) {
+      let state = await provider.getState();
+      if (state.state.type === "active") {
+        let res = await provider.get("seqno", []);
+        return res.stack.readNumber();
+      } else {
+        return 0;
+      }
+    }
+    /**
+     * Send signed transfer
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send transfer
+     */
+    async sendTransfer(provider, args) {
+      let transfer = this.createTransfer(args);
+      await this.send(provider, transfer);
+    }
+    /**
+     * Create signed transfer
+     */
+    createTransfer(args) {
+      return (0, createWalletTransfer_1.createWalletTransferV4)({
+        ...args,
+        sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY,
+        walletId: this.walletId
+      });
+    }
+    /**
+     * Create sender
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          let seqno = await this.getSeqno(provider);
+          let transfer = this.createTransfer({
+            seqno,
+            secretKey,
+            sendMode: args.sendMode,
+            messages: [(0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              extracurrency: args.extracurrency,
+              init: args.init,
+              body: args.body,
+              bounce: args.bounce
+            })]
+          });
+          await this.send(provider, transfer);
+        }
+      };
+    }
+  };
+  WalletContractV4.WalletContractV4 = WalletContractV4$1;
+  return WalletContractV4;
+}
+var WalletContractV5Beta = {};
+var hasRequiredWalletContractV5Beta;
+function requireWalletContractV5Beta() {
+  if (hasRequiredWalletContractV5Beta) return WalletContractV5Beta;
+  hasRequiredWalletContractV5Beta = 1;
+  (function(exports) {
+    var __createBinding = WalletContractV5Beta && WalletContractV5Beta.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
+      if (k22 === void 0) k22 = k2;
+      var desc = Object.getOwnPropertyDescriptor(m2, k2);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k2];
+        } };
+      }
+      Object.defineProperty(o4, k22, desc);
+    }) : (function(o4, m2, k2, k22) {
+      if (k22 === void 0) k22 = k2;
+      o4[k22] = m2[k2];
+    }));
+    var __exportStar = WalletContractV5Beta && WalletContractV5Beta.__exportStar || function(m2, exports2) {
+      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    __exportStar(requireWalletContractV5Beta$1(), exports);
+    __exportStar(requireWalletV5BetaActions(), exports);
+    __exportStar(requireWalletV5BetaWalletId(), exports);
+  })(WalletContractV5Beta);
+  return WalletContractV5Beta;
+}
+var WalletContractV5R1 = {};
+var hasRequiredWalletContractV5R1;
+function requireWalletContractV5R1() {
+  if (hasRequiredWalletContractV5R1) return WalletContractV5R1;
+  hasRequiredWalletContractV5R1 = 1;
+  (function(exports) {
+    var __createBinding = WalletContractV5R1 && WalletContractV5R1.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
+      if (k22 === void 0) k22 = k2;
+      var desc = Object.getOwnPropertyDescriptor(m2, k2);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k2];
+        } };
+      }
+      Object.defineProperty(o4, k22, desc);
+    }) : (function(o4, m2, k2, k22) {
+      if (k22 === void 0) k22 = k2;
+      o4[k22] = m2[k2];
+    }));
+    var __exportStar = WalletContractV5R1 && WalletContractV5R1.__exportStar || function(m2, exports2) {
+      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    __exportStar(requireWalletContractV5R1$1(), exports);
+    __exportStar(requireWalletV5R1Actions(), exports);
+    __exportStar(requireWalletV5R1WalletId(), exports);
+  })(WalletContractV5R1);
+  return WalletContractV5R1;
+}
+var JettonMaster = {};
+var hasRequiredJettonMaster;
+function requireJettonMaster() {
+  if (hasRequiredJettonMaster) return JettonMaster;
+  hasRequiredJettonMaster = 1;
+  Object.defineProperty(JettonMaster, "__esModule", { value: true });
+  JettonMaster.JettonMaster = void 0;
+  const core_1 = requireDist$5();
+  let JettonMaster$1 = class JettonMaster2 {
+    static create(address) {
+      return new JettonMaster2(address);
+    }
+    constructor(address) {
+      this.address = address;
+    }
+    async getWalletAddress(provider, owner) {
+      let res = await provider.get("get_wallet_address", [{ type: "slice", cell: (0, core_1.beginCell)().storeAddress(owner).endCell() }]);
+      return res.stack.readAddress();
+    }
+    async getJettonData(provider) {
+      let res = await provider.get("get_jetton_data", []);
+      let totalSupply = res.stack.readBigNumber();
+      let mintable = res.stack.readBoolean();
+      let adminAddress = res.stack.readAddress();
+      let content2 = res.stack.readCell();
+      let walletCode = res.stack.readCell();
+      return {
+        totalSupply,
+        mintable,
+        adminAddress,
+        content: content2,
+        walletCode
+      };
+    }
+  };
+  JettonMaster.JettonMaster = JettonMaster$1;
+  return JettonMaster;
+}
+var JettonWallet = {};
+var hasRequiredJettonWallet;
+function requireJettonWallet() {
+  if (hasRequiredJettonWallet) return JettonWallet;
+  hasRequiredJettonWallet = 1;
+  Object.defineProperty(JettonWallet, "__esModule", { value: true });
+  JettonWallet.JettonWallet = void 0;
+  let JettonWallet$12 = class JettonWallet2 {
+    static create(address) {
+      return new JettonWallet2(address);
+    }
+    constructor(address) {
+      this.address = address;
+    }
+    async getBalance(provider) {
+      let state = await provider.getState();
+      if (state.state.type !== "active") {
+        return 0n;
+      }
+      let res = await provider.get("get_wallet_data", []);
+      return res.stack.readBigNumber();
+    }
+  };
+  JettonWallet.JettonWallet = JettonWallet$12;
+  return JettonWallet;
+}
+var MultisigOrder = {};
+var hasRequiredMultisigOrder;
+function requireMultisigOrder() {
+  if (hasRequiredMultisigOrder) return MultisigOrder;
+  hasRequiredMultisigOrder = 1;
+  Object.defineProperty(MultisigOrder, "__esModule", { value: true });
+  MultisigOrder.MultisigOrder = void 0;
+  const crypto_1 = requireDist$6();
+  const core_1 = requireDist$5();
+  let MultisigOrder$1 = class MultisigOrder2 {
+    constructor(payload) {
+      this.signatures = {};
+      this.payload = payload;
+    }
+    static fromCell(cell) {
+      let s2 = cell.beginParse();
+      let signatures = s2.loadMaybeRef()?.beginParse();
+      const messagesCell = s2.asCell();
+      let order = new MultisigOrder2(messagesCell);
+      if (signatures) {
+        while (signatures.remainingBits > 0) {
+          const signature = signatures.loadBuffer(64);
+          const ownerId = signatures.loadUint(8);
+          order.signatures[ownerId] = signature;
+          if (signatures.remainingRefs > 0) {
+            signatures = signatures.loadRef().asSlice();
+          } else {
+            signatures.skip(1);
+          }
+        }
+        signatures.endParse();
+      }
+      return order;
+    }
+    static fromPayload(payload) {
+      return new MultisigOrder2(payload);
+    }
+    addSignature(ownerId, signature, multisig) {
+      const signingHash = this.payload.hash();
+      if (!(0, crypto_1.signVerify)(signingHash, signature, multisig.owners.get(ownerId).slice(0, -1))) {
+        throw Error("invalid signature");
+      }
+      this.signatures[ownerId] = signature;
+    }
+    sign(ownerId, secretKey) {
+      const signingHash = this.payload.hash();
+      this.signatures[ownerId] = (0, crypto_1.sign)(signingHash, secretKey);
+      return signingHash;
+    }
+    unionSignatures(other) {
+      this.signatures = Object.assign({}, this.signatures, other.signatures);
+    }
+    clearSignatures() {
+      this.signatures = {};
+    }
+    toCell(ownerId) {
+      let b2 = (0, core_1.beginCell)().storeBit(0);
+      for (const ownerId2 in this.signatures) {
+        const signature = this.signatures[ownerId2];
+        b2 = (0, core_1.beginCell)().storeBit(1).storeRef((0, core_1.beginCell)().storeBuffer(signature).storeUint(parseInt(ownerId2), 8).storeBuilder(b2).endCell());
+      }
+      return (0, core_1.beginCell)().storeUint(ownerId, 8).storeBuilder(b2).storeBuilder(this.payload.asBuilder()).endCell();
+    }
+  };
+  MultisigOrder.MultisigOrder = MultisigOrder$1;
+  return MultisigOrder;
+}
+var MultisigOrderBuilder = {};
+var hasRequiredMultisigOrderBuilder;
+function requireMultisigOrderBuilder() {
+  if (hasRequiredMultisigOrderBuilder) return MultisigOrderBuilder;
+  hasRequiredMultisigOrderBuilder = 1;
+  Object.defineProperty(MultisigOrderBuilder, "__esModule", { value: true });
+  MultisigOrderBuilder.MultisigOrderBuilder = void 0;
+  const core_1 = requireDist$5();
+  const MultisigOrder_1 = requireMultisigOrder();
+  let MultisigOrderBuilder$1 = class MultisigOrderBuilder {
+    constructor(walletId, offset) {
+      this.messages = (0, core_1.beginCell)();
+      this.queryId = 0n;
+      this.walletId = walletId;
+      this.queryOffset = offset || 7200;
+    }
+    addMessage(message, mode) {
+      if (this.messages.refs >= 4) {
+        throw Error("only 4 refs are allowed");
+      }
+      this.updateQueryId();
+      this.messages.storeUint(mode, 8);
+      this.messages.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(message)).endCell());
+    }
+    clearMessages() {
+      this.messages = (0, core_1.beginCell)();
+    }
+    build() {
+      return MultisigOrder_1.MultisigOrder.fromPayload((0, core_1.beginCell)().storeUint(this.walletId, 32).storeUint(this.queryId, 64).storeBuilder(this.messages).endCell());
+    }
+    updateQueryId() {
+      const time = BigInt(Math.floor(Date.now() / 1e3 + this.queryOffset));
+      this.queryId = time << 32n;
+    }
+  };
+  MultisigOrderBuilder.MultisigOrderBuilder = MultisigOrderBuilder$1;
+  return MultisigOrderBuilder;
+}
+var MultisigWallet = {};
+var hasRequiredMultisigWallet;
+function requireMultisigWallet() {
+  if (hasRequiredMultisigWallet) return MultisigWallet;
+  hasRequiredMultisigWallet = 1;
+  Object.defineProperty(MultisigWallet, "__esModule", { value: true });
+  MultisigWallet.MultisigWallet = void 0;
+  const crypto_1 = requireDist$6();
+  const core_1 = requireDist$5();
+  const MULTISIG_CODE = core_1.Cell.fromBase64("te6ccgECKwEABBgAART/APSkE/S88sgLAQIBIAIDAgFIBAUE2vIgxwCOgzDbPOCDCNcYIPkBAdMH2zwiwAAToVNxePQOb6Hyn9s8VBq6+RDyoAb0BCD5AQHTH1EYuvKq0z9wUwHwCgHCCAGDCryx8mhTFYBA9A5voSCYDqQgwgryZw7f+COqH1NAufJhVCOjU04gIyEiAgLMBgcCASAMDQIBIAgJAgFmCgsAA9GEAiPymAvHoHN9CYbZ5S7Z4BPHohwhJQAtAKkItdJEqCTItdKlwLUAdAT8ArobBKAATwhbpEx4CBukTDgAdAg10rDAJrUAvALyFjPFszJ4HHXI8gBzxb0AMmACASAODwIBIBQVARW77ZbVA0cFUg2zyCoCAUgQEQIBIBITAXOxHXQgwjXGCD5AQHTB4IB1MTtQ9hTIHj0Dm+h8p/XC/9eMfkQ8qCuAfQEIW6TW3Ey4PkBWNs8AaQBgJwA9rtqA6ADoAPoCAXoCEfyAgPyA3XlP+AXkegAA54tkwAAXrhlXP8EA1WZ2oexAAgEgFhcCASAYGQFRtyVbZ4YmRmpGEAgegc30McJNhFpAADMaYeYuAFrgJhwLb+4cC3d0bhAjAYm1WZtnhqvgb+2xxsoicAgej430pBHEoFpAADHDhBACGuQkuuBk9kUWE5kAOeLKhACQCB6IYFImHFImHFImXEA2YlzNijAjAgEgGhsAF7UGtc4QQDVZnah7EAIBIBwdAgOZOB4fARGsGm2eL4G2CUAjABWt+UEAzJV2oewYQAENqTbPBVfBYCMAFa3f3CCAarM7UPYgAiDbPALyZfgAUENxQxPbPO1UIyoACtP/0wcwBKDbPC+uUyCw8mISsQKkJbNTHLmwJYEA4aojoCi8sPJpggGGoPgBBZcCERACPj4wjo0REB/bPEDXePRDEL0F4lQWW1Rz51YQU9zbPFRxClR6vCQlKCYAIO1E0NMf0wfTB9M/9AT0BNEAXgGOGjDSAAHyo9MH0wdQA9cBIPkBBfkBFbrypFAD4GwhIddKqgIi10m68qtwVCATAAwByMv/ywcE1ts87VT4D3AlblOJvrGYEG4QLVDHXwePGzBUJANQTds8UFWgRlAQSRA6SwlTuds8UFQWf+L4AAeDJaGOLCaAQPSWb6UglDBTA7neII4WODk5CNIAAZfTBzAW8AcFkTDifwgHBZJsMeKz5jAGKicoKQBgcI4pA9CDCNcY0wf0BDBTFnj0Dm+h8qXXC/9URUT5EPKmrlIgsVIDvRShI27mbCIyAH5SML6OIF8D+ACTItdKmALTB9QC+wAC6DJwyMoAQBSAQPRDAvAHjhdxyMsAFMsHEssHWM8BWM8WQBOAQPRDAeIBII6KEEUQNEMA2zztVJJfBuIqABzIyx/LB8sHyz/0APQAyQ==");
+  let MultisigWallet$1 = class MultisigWallet2 {
+    constructor(publicKeys, workchain, walletId, k2, opts) {
+      this.provider = null;
+      this.owners = core_1.Dictionary.empty();
+      this.workchain = workchain;
+      this.walletId = walletId;
+      this.k = k2;
+      for (let i = 0; i < publicKeys.length; i += 1) {
+        this.owners.set(i, Buffer.concat([publicKeys[i], Buffer.alloc(1)]));
+      }
+      this.init = {
+        code: MULTISIG_CODE,
+        data: (0, core_1.beginCell)().storeUint(this.walletId, 32).storeUint(this.owners.size, 8).storeUint(this.k, 8).storeUint(0, 64).storeDict(this.owners, core_1.Dictionary.Keys.Uint(8), core_1.Dictionary.Values.Buffer(33)).storeBit(0).endCell()
+      };
+      this.address = opts?.address || (0, core_1.contractAddress)(workchain, this.init);
+      if (opts?.provider) {
+        this.provider = opts.provider;
+      } else if (opts?.client) {
+        this.provider = opts.client.provider(this.address, {
+          code: this.init.code,
+          data: this.init.data
+        });
+      }
+    }
+    static async fromAddress(address, opts) {
+      let provider;
+      if (opts.provider) {
+        provider = opts.provider;
+      } else {
+        if (!opts.client) {
+          throw Error("Either provider or client must be specified");
+        }
+        provider = opts.client.provider(address, {
+          code: null,
+          data: null
+        });
+      }
+      const contractState = (await provider.getState()).state;
+      if (contractState.type !== "active") {
+        throw Error("Contract must be active");
+      }
+      const data = core_1.Cell.fromBoc(contractState.data)[0].beginParse();
+      const walletId = data.loadUint(32);
+      data.skip(8);
+      const k2 = data.loadUint(8);
+      data.skip(64);
+      const owners = data.loadDict(core_1.Dictionary.Keys.Uint(8), core_1.Dictionary.Values.Buffer(33));
+      let publicKeys = [];
+      for (const [key2, value] of owners) {
+        const publicKey = value.subarray(0, 32);
+        publicKeys.push(publicKey);
+      }
+      return new MultisigWallet2(publicKeys, address.workChain, walletId, k2, {
+        address,
+        provider,
+        client: opts.client
+      });
+    }
+    async deployExternal(provider) {
+      if (!provider && !this.provider) {
+        throw Error("you must specify provider if there is no such property in MultisigWallet instance");
+      }
+      if (!provider) {
+        provider = this.provider;
+      }
+      await provider.external(core_1.Cell.EMPTY);
+    }
+    async deployInternal(sender, value = 1000000000n) {
+      await sender.send({
+        sendMode: core_1.SendMode.PAY_GAS_SEPARATELY + core_1.SendMode.IGNORE_ERRORS,
+        to: this.address,
+        value,
+        init: this.init,
+        body: core_1.Cell.EMPTY,
+        bounce: true
+      });
+    }
+    async sendOrder(order, secretKey, provider) {
+      if (!provider && !this.provider) {
+        throw Error("you must specify provider if there is no such property in MultisigWallet instance");
+      }
+      if (!provider) {
+        provider = this.provider;
+      }
+      let publicKey = (0, crypto_1.keyPairFromSecretKey)(secretKey).publicKey;
+      let ownerId = this.getOwnerIdByPubkey(publicKey);
+      let cell = order.toCell(ownerId);
+      let signature = (0, crypto_1.sign)(cell.hash(), secretKey);
+      cell = (0, core_1.beginCell)().storeBuffer(signature).storeSlice(cell.asSlice()).endCell();
+      await provider.external(cell);
+    }
+    async sendOrderWithoutSecretKey(order, signature, ownerId, provider) {
+      if (!provider && !this.provider) {
+        throw Error("you must specify provider if there is no such property in MultisigWallet instance");
+      }
+      if (!provider) {
+        provider = this.provider;
+      }
+      let cell = order.toCell(ownerId);
+      cell = (0, core_1.beginCell)().storeBuffer(signature).storeSlice(cell.asSlice()).endCell();
+      await provider.external(cell);
+    }
+    getOwnerIdByPubkey(publicKey) {
+      for (const [key2, value] of this.owners) {
+        if (value.subarray(0, 32).equals(publicKey)) {
+          return key2;
+        }
+      }
+      throw Error("public key is not an owner");
+    }
+  };
+  MultisigWallet.MultisigWallet = MultisigWallet$1;
+  return MultisigWallet;
+}
+var ElectorContract = {};
+var hasRequiredElectorContract;
+function requireElectorContract() {
+  if (hasRequiredElectorContract) return ElectorContract;
+  hasRequiredElectorContract = 1;
+  Object.defineProperty(ElectorContract, "__esModule", { value: true });
+  ElectorContract.ElectorContract = void 0;
+  const core_1 = requireDist$5();
+  const FrozenDictValue = {
+    serialize(src2, builder2) {
+      throw Error("not implemented");
+    },
+    parse(src2) {
+      const address = new core_1.Address(-1, src2.loadBuffer(32));
+      const weight = src2.loadUintBig(64);
+      const stake = src2.loadCoins();
+      return { address, weight, stake };
+    }
+  };
+  const EntitiesDictValue = {
+    serialize(src2, builder2) {
+      throw Error("not implemented");
+    },
+    parse(src2) {
+      const stake = src2.loadCoins();
+      src2.skip(64);
+      const address = new core_1.Address(-1, src2.loadBuffer(32));
+      const adnl = src2.loadBuffer(32);
+      return { stake, address, adnl };
+    }
+  };
+  let ElectorContract$1 = class ElectorContract2 {
+    //readonly source: ContractSource = new UnknownContractSource('org.ton.elector', -1, 'Elector Contract');
+    static create() {
+      return new ElectorContract2();
+    }
+    constructor() {
+      this.address = core_1.Address.parseRaw("-1:3333333333333333333333333333333333333333333333333333333333333333");
+    }
+    async getReturnedStake(provider, address) {
+      if (address.workChain !== -1) {
+        throw Error("Only masterchain addresses could have stake");
+      }
+      const res = await provider.get("compute_returned_stake", [{ type: "int", value: BigInt("0x" + address.hash.toString("hex")) }]);
+      return res.stack.readBigNumber();
+    }
+    async getPastElectionsList(provider) {
+      const res = await provider.get("past_elections_list", []);
+      const electionsListRaw = new core_1.TupleReader(res.stack.readLispList());
+      const elections = [];
+      while (electionsListRaw.remaining > 0) {
+        const electionsListEntry = electionsListRaw.readTuple();
+        const id = electionsListEntry.readNumber();
+        const unfreezeAt = electionsListEntry.readNumber();
+        electionsListEntry.pop();
+        const stakeHeld = electionsListEntry.readNumber();
+        elections.push({ id, unfreezeAt, stakeHeld });
+      }
+      return elections;
+    }
+    async getPastElections(provider) {
+      const res = await provider.get("past_elections", []);
+      const electionsRaw = new core_1.TupleReader(res.stack.readLispList());
+      const elections = [];
+      while (electionsRaw.remaining > 0) {
+        const electionsEntry = electionsRaw.readTuple();
+        const id = electionsEntry.readNumber();
+        const unfreezeAt = electionsEntry.readNumber();
+        const stakeHeld = electionsEntry.readNumber();
+        electionsEntry.pop();
+        const frozenDict = electionsEntry.readCell();
+        const totalStake = electionsEntry.readBigNumber();
+        const bonuses = electionsEntry.readBigNumber();
+        let frozen = /* @__PURE__ */ new Map();
+        const frozenData = frozenDict.beginParse().loadDictDirect(core_1.Dictionary.Keys.Buffer(32), FrozenDictValue);
+        for (const [key2, value] of frozenData) {
+          frozen.set(BigInt("0x" + key2.toString("hex")).toString(10), { address: value["address"], weight: value["weight"], stake: value["stake"] });
+        }
+        elections.push({ id, unfreezeAt, stakeHeld, totalStake, bonuses, frozen });
+      }
+      return elections;
+    }
+    async getElectionEntities(provider) {
+      const account = await provider.getState();
+      if (account.state.type !== "active") {
+        throw Error("Unexpected error");
+      }
+      const cell = core_1.Cell.fromBoc(account.state.data)[0];
+      const cs = cell.beginParse();
+      if (!cs.loadBit()) {
+        return null;
+      }
+      const sc = cs.loadRef().beginParse();
+      const startWorkTime = sc.loadUint(32);
+      const endElectionsTime = sc.loadUint(32);
+      const minStake = sc.loadCoins();
+      const allStakes = sc.loadCoins();
+      const entitiesData = sc.loadDict(core_1.Dictionary.Keys.Buffer(32), EntitiesDictValue);
+      let entities = [];
+      if (entitiesData) {
+        for (const [key2, value] of entitiesData) {
+          entities.push({ pubkey: key2, stake: value["stake"], address: value["address"], adnl: value["adnl"] });
+        }
+      }
+      return { minStake, allStakes, endElectionsTime, startWorkTime, entities };
+    }
+    // possible code for fetching data via get method if it is possible to set gas limit by request
+    // async getElectionEntities(block: number) {
+    //     const res = await this.client.runMethod(block, this.address, 'participant_list_extended');
+    //     if (res.exitCode !== 0 && res.exitCode !== 1) {
+    //         throw Error('Exit code: ' + res.exitCode);
+    //     }
+    //     let tuple = new TupleReader(res.result);
+    //     const startWorkTime = tuple.readNumber();
+    //     const endElectionsTime = tuple.readNumber();
+    //     const minStake = tuple.readBigNumber();
+    //     const allStakes = tuple.readBigNumber();
+    //     let entriesTuple = tuple.readTuple();
+    //     const entriesRaw = new TupleReader(entriesTuple.readLispList());
+    //     let entities: { pubkey: Buffer, stake: bigint, address: Address, adnl: Buffer }[] = [];
+    //     while (entriesRaw.remaining > 0) {
+    //         const electionsEntry = entriesRaw.readTuple();
+    //         const pubkey = electionsEntry.readBuffer();
+    //         const stake = electionsEntry.readBigNumber();
+    //         const address = electionsEntry.readAddress();
+    //         const adnl = electionsEntry.readBuffer();
+    //         entities.push({ pubkey, stake, address, adnl });
+    //     }
+    //     return { minStake, allStakes, endElectionsTime, startWorkTime, entities };
+    // }
+    async getActiveElectionId(provider) {
+      const res = await provider.get("active_election_id", []);
+      const electionId = res.stack.readNumber();
+      return electionId > 0 ? electionId : null;
+    }
+    async getComplaints(provider, electionId) {
+      const b2 = new core_1.TupleBuilder();
+      b2.writeNumber(electionId);
+      const res = await provider.get("list_complaints", b2.build());
+      if (res.stack.peek().type === "null") {
+        return [];
+      }
+      const complaintsRaw = new core_1.TupleReader(res.stack.readLispList());
+      const results = [];
+      while (complaintsRaw.remaining > 0) {
+        const complaintsEntry = complaintsRaw.readTuple();
+        const id = complaintsEntry.readBigNumber();
+        const completeUnpackedComplaint = complaintsEntry.readTuple();
+        const unpackedComplaints = completeUnpackedComplaint.readTuple();
+        const publicKey = Buffer.from(unpackedComplaints.readBigNumber().toString(16), "hex");
+        unpackedComplaints.readCell();
+        const createdAt = unpackedComplaints.readNumber();
+        const severity = unpackedComplaints.readNumber();
+        const rewardAddress = new core_1.Address(-1, Buffer.from(unpackedComplaints.readBigNumber().toString(16), "hex"));
+        const paid = unpackedComplaints.readBigNumber();
+        const suggestedFine = unpackedComplaints.readBigNumber();
+        const suggestedFinePart = unpackedComplaints.readBigNumber();
+        const votes = [];
+        const votersListRaw = new core_1.TupleReader(completeUnpackedComplaint.readLispList());
+        while (votersListRaw.remaining > 0) {
+          votes.push(votersListRaw.readNumber());
+        }
+        const vsetId = completeUnpackedComplaint.readBigNumber();
+        const remainingWeight = completeUnpackedComplaint.readBigNumber();
+        results.push({
+          id,
+          publicKey,
+          createdAt,
+          severity,
+          paid,
+          suggestedFine,
+          suggestedFinePart,
+          rewardAddress,
+          votes,
+          remainingWeight,
+          vsetId
+        });
+      }
+      return results;
+    }
+  };
+  ElectorContract.ElectorContract = ElectorContract$1;
+  return ElectorContract;
+}
+var ConfigParser = {};
+var hasRequiredConfigParser;
+function requireConfigParser() {
+  if (hasRequiredConfigParser) return ConfigParser;
+  hasRequiredConfigParser = 1;
+  Object.defineProperty(ConfigParser, "__esModule", { value: true });
+  ConfigParser.configParseMasterAddress = configParseMasterAddress;
+  ConfigParser.parseValidatorSet = parseValidatorSet;
+  ConfigParser.parseBridge = parseBridge;
+  ConfigParser.configParseMasterAddressRequired = configParseMasterAddressRequired;
+  ConfigParser.configParse5 = configParse5;
+  ConfigParser.configParse13 = configParse13;
+  ConfigParser.configParse15 = configParse15;
+  ConfigParser.configParse16 = configParse16;
+  ConfigParser.configParse17 = configParse17;
+  ConfigParser.configParse18 = configParse18;
+  ConfigParser.configParse8 = configParse8;
+  ConfigParser.configParse40 = configParse40;
+  ConfigParser.configParseWorkchainDescriptor = configParseWorkchainDescriptor;
+  ConfigParser.configParse12 = configParse12;
+  ConfigParser.configParseValidatorSet = configParseValidatorSet;
+  ConfigParser.configParseBridge = configParseBridge;
+  ConfigParser.configParseGasLimitsPrices = configParseGasLimitsPrices;
+  ConfigParser.configParseMsgPrices = configParseMsgPrices;
+  ConfigParser.configParse28 = configParse28;
+  ConfigParser.configParse29 = configParse29;
+  ConfigParser.parseProposalSetup = parseProposalSetup;
+  ConfigParser.parseVotingSetup = parseVotingSetup;
+  ConfigParser.loadConfigParamById = loadConfigParamById;
+  ConfigParser.loadConfigParamsAsSlice = loadConfigParamsAsSlice;
+  ConfigParser.parseFullConfig = parseFullConfig;
+  const core_1 = requireDist$5();
+  function configParseMasterAddress(slice) {
+    if (slice) {
+      return new core_1.Address(-1, slice.loadBuffer(32));
+    } else {
+      return null;
+    }
+  }
+  function readPublicKey(slice) {
+    if (slice.loadUint(32) !== 2390828938) {
+      throw Error("Invalid config");
+    }
+    return slice.loadBuffer(32);
+  }
+  const ValidatorDescriptionDictValue = {
+    serialize(src2, builder2) {
+      throw Error("not implemented");
+    },
+    parse(src2) {
+      const header = src2.loadUint(8);
+      if (header === 83) {
+        return {
+          publicKey: readPublicKey(src2),
+          weight: src2.loadUintBig(64),
+          adnlAddress: null
+        };
+      } else if (header === 115) {
+        return {
+          publicKey: readPublicKey(src2),
+          weight: src2.loadUintBig(64),
+          adnlAddress: src2.loadBuffer(32)
+        };
+      } else {
+        throw Error("Invalid config");
+      }
+    }
+  };
+  function parseValidatorSet(slice) {
+    const header = slice.loadUint(8);
+    if (header === 17) {
+      const timeSince = slice.loadUint(32);
+      const timeUntil = slice.loadUint(32);
+      const total = slice.loadUint(16);
+      const main2 = slice.loadUint(16);
+      const list = slice.loadDictDirect(core_1.Dictionary.Keys.Uint(16), ValidatorDescriptionDictValue);
+      return {
+        timeSince,
+        timeUntil,
+        total,
+        main: main2,
+        totalWeight: null,
+        list
+      };
+    } else if (header === 18) {
+      const timeSince = slice.loadUint(32);
+      const timeUntil = slice.loadUint(32);
+      const total = slice.loadUint(16);
+      const main2 = slice.loadUint(16);
+      const totalWeight = slice.loadUintBig(64);
+      const list = slice.loadDict(core_1.Dictionary.Keys.Uint(16), ValidatorDescriptionDictValue);
+      return {
+        timeSince,
+        timeUntil,
+        total,
+        main: main2,
+        totalWeight,
+        list
+      };
+    }
+  }
+  function parseBridge(slice) {
+    const bridgeAddress = new core_1.Address(-1, slice.loadBuffer(32));
+    const oracleMultisigAddress = new core_1.Address(-1, slice.loadBuffer(32));
+    const oraclesDict = slice.loadDict(core_1.Dictionary.Keys.Buffer(32), core_1.Dictionary.Values.Buffer(32));
+    const oracles = /* @__PURE__ */ new Map();
+    for (const [local, remote] of oraclesDict) {
+      oracles.set(new core_1.Address(-1, local).toString(), remote);
+    }
+    const externalChainAddress = slice.loadBuffer(32);
+    return {
+      bridgeAddress,
+      oracleMultisigAddress,
+      oracles,
+      externalChainAddress
+    };
+  }
+  function configParseMasterAddressRequired(slice) {
+    if (!slice) {
+      throw Error("Invalid config");
+    }
+    return configParseMasterAddress(slice);
+  }
+  function configParse5(slice) {
+    if (!slice) {
+      throw Error("Invalid config");
+    }
+    const magic = slice.loadUint(8);
+    if (magic === 1) {
+      const blackholeAddr = slice.loadBit() ? new core_1.Address(-1, slice.loadBuffer(32)) : null;
+      const feeBurnNominator = slice.loadUint(32);
+      const feeBurnDenominator = slice.loadUint(32);
+      return {
+        blackholeAddr,
+        feeBurnNominator,
+        feeBurnDenominator
+      };
+    }
+    throw new Error("Invalid config");
+  }
+  function configParse13(slice) {
+    if (!slice) {
+      throw Error("Invalid config");
+    }
+    const magic = slice.loadUint(8);
+    if (magic === 26) {
+      const deposit = slice.loadCoins();
+      const bitPrice = slice.loadCoins();
+      const cellPrice = slice.loadCoins();
+      return {
+        deposit,
+        bitPrice,
+        cellPrice
+      };
+    }
+    throw new Error("Invalid config");
+  }
+  function configParse15(slice) {
+    if (!slice) {
+      throw Error("Invalid config");
+    }
+    const validatorsElectedFor = slice.loadUint(32);
+    const electorsStartBefore = slice.loadUint(32);
+    const electorsEndBefore = slice.loadUint(32);
+    const stakeHeldFor = slice.loadUint(32);
+    return {
+      validatorsElectedFor,
+      electorsStartBefore,
+      electorsEndBefore,
+      stakeHeldFor
+    };
+  }
+  function configParse16(slice) {
+    if (!slice) {
+      throw Error("Invalid config");
+    }
+    const maxValidators = slice.loadUint(16);
+    const maxMainValidators = slice.loadUint(16);
+    const minValidators = slice.loadUint(16);
+    return {
+      maxValidators,
+      maxMainValidators,
+      minValidators
+    };
+  }
+  function configParse17(slice) {
+    if (!slice) {
+      throw Error("Invalid config");
+    }
+    const minStake = slice.loadCoins();
+    const maxStake = slice.loadCoins();
+    const minTotalStake = slice.loadCoins();
+    const maxStakeFactor = slice.loadUint(32);
+    return {
+      minStake,
+      maxStake,
+      minTotalStake,
+      maxStakeFactor
+    };
+  }
+  const StoragePricesDictValue = {
+    serialize(src2, builder2) {
+      throw Error("not implemented");
+    },
+    parse(src2) {
+      const header = src2.loadUint(8);
+      if (header !== 204) {
+        throw Error("Invalid config");
+      }
+      const utime_since = src2.loadUint(32);
+      const bit_price_ps = src2.loadUintBig(64);
+      const cell_price_ps = src2.loadUintBig(64);
+      const mc_bit_price_ps = src2.loadUintBig(64);
+      const mc_cell_price_ps = src2.loadUintBig(64);
+      return {
+        utime_since,
+        bit_price_ps,
+        cell_price_ps,
+        mc_bit_price_ps,
+        mc_cell_price_ps
+      };
+    }
+  };
+  function configParse18(slice) {
+    if (!slice) {
+      throw Error("Invalid config");
+    }
+    return slice.loadDictDirect(core_1.Dictionary.Keys.Buffer(4), StoragePricesDictValue).values();
+  }
+  function configParse8(slice) {
+    if (!slice) {
+      return {
+        version: 0,
+        capabilities: 0n
+      };
+    }
+    const version2 = slice.loadUint(32);
+    const capabilities = slice.loadUintBig(64);
+    return {
+      version: version2,
+      capabilities
+    };
+  }
+  function configParse40(slice) {
+    if (!slice) {
+      return null;
+    }
+    const header = slice.loadUint(8);
+    if (header !== 1) {
+      throw Error("Invalid config");
+    }
+    const defaultFlatFine = slice.loadCoins();
+    const defaultProportionaFine = slice.loadCoins();
+    const severityFlatMult = slice.loadUint(16);
+    const severityProportionalMult = slice.loadUint(16);
+    const unfunishableInterval = slice.loadUint(16);
+    const longInterval = slice.loadUint(16);
+    const longFlatMult = slice.loadUint(16);
+    const longProportionalMult = slice.loadUint(16);
+    const mediumInterval = slice.loadUint(16);
+    const mediumFlatMult = slice.loadUint(16);
+    const mediumProportionalMult = slice.loadUint(16);
+    return {
+      defaultFlatFine,
+      defaultProportionaFine,
+      severityFlatMult,
+      severityProportionalMult,
+      unfunishableInterval,
+      longInterval,
+      longFlatMult,
+      longProportionalMult,
+      mediumInterval,
+      mediumFlatMult,
+      mediumProportionalMult
+    };
+  }
+  function configParseWorkchainDescriptor(slice) {
+    const constructorTag = slice.loadUint(8);
+    if (!(constructorTag == 166 || constructorTag == 167)) {
+      throw Error("Invalid config");
+    }
+    const enabledSince = slice.loadUint(32);
+    const actialMinSplit = slice.loadUint(8);
+    const min_split = slice.loadUint(8);
+    const max_split = slice.loadUint(8);
+    const basic = slice.loadBit();
+    const active = slice.loadBit();
+    const accept_msgs = slice.loadBit();
+    const flags = slice.loadUint(13);
+    const zerostateRootHash = slice.loadBuffer(32);
+    const zerostateFileHash = slice.loadBuffer(32);
+    const version2 = slice.loadUint(32);
+    if (!slice.loadUint(4)) {
+      throw Error("Invalid config");
+    }
+    const vmVersion = slice.loadInt(32);
+    const vmMode = slice.loadUintBig(64);
+    let extension = void 0;
+    if (constructorTag == 167) {
+      const splitMergeTimings = parseWorkchainSplitMergeTimings(slice);
+      const stateSplitDepth = slice.loadUint(8);
+      if (stateSplitDepth > 63) {
+        throw RangeError(`Invalid persistent_state_split_depth: ${stateSplitDepth} expected <= 63`);
+      }
+      extension = {
+        split_merge_timings: splitMergeTimings,
+        persistent_state_split_depth: stateSplitDepth
+      };
+    }
+    return {
+      enabledSince,
+      actialMinSplit,
+      min_split,
+      max_split,
+      basic,
+      active,
+      accept_msgs,
+      flags,
+      zerostateRootHash,
+      zerostateFileHash,
+      version: version2,
+      format: {
+        vmVersion,
+        vmMode
+      },
+      workchain_v2: extension
+    };
+  }
+  function parseWorkchainSplitMergeTimings(slice) {
+    if (slice.loadUint(4) !== 0) {
+      throw Error(`Invalid WcSplitMergeTimings tag expected 0!`);
+    }
+    return {
+      split_merge_delay: slice.loadUint(32),
+      split_merge_interval: slice.loadUint(32),
+      min_split_merge_interval: slice.loadUint(32),
+      max_split_merge_delay: slice.loadUint(32)
+    };
+  }
+  const WorkchainDescriptorDictValue = {
+    serialize(src2, builder2) {
+      throw Error("not implemented");
+    },
+    parse(src2) {
+      return configParseWorkchainDescriptor(src2);
+    }
+  };
+  function configParse12(slice) {
+    if (!slice) {
+      throw Error("Invalid config");
+    }
+    const wd = slice.loadDict(core_1.Dictionary.Keys.Uint(32), WorkchainDescriptorDictValue);
+    if (wd) {
+      return wd;
+    }
+    throw Error("No workchains exist");
+  }
+  function configParseValidatorSet(slice) {
+    if (!slice) {
+      return null;
+    }
+    return parseValidatorSet(slice);
+  }
+  function configParseBridge(slice) {
+    if (!slice) {
+      return null;
+    }
+    return parseBridge(slice);
+  }
+  function parseGasLimitsInternal(slice) {
+    const tag = slice.loadUint(8);
+    if (tag === 222) {
+      const gasPrice = slice.loadUintBig(64);
+      const gasLimit = slice.loadUintBig(64);
+      const specialGasLimit = slice.loadUintBig(64);
+      const gasCredit = slice.loadUintBig(64);
+      const blockGasLimit = slice.loadUintBig(64);
+      const freezeDueLimit = slice.loadUintBig(64);
+      const deleteDueLimit = slice.loadUintBig(64);
+      return {
+        gasPrice,
+        gasLimit,
+        specialGasLimit,
+        gasCredit,
+        blockGasLimit,
+        freezeDueLimit,
+        deleteDueLimit
+      };
+    } else if (tag === 221) {
+      const gasPrice = slice.loadUintBig(64);
+      const gasLimit = slice.loadUintBig(64);
+      const gasCredit = slice.loadUintBig(64);
+      const blockGasLimit = slice.loadUintBig(64);
+      const freezeDueLimit = slice.loadUintBig(64);
+      const deleteDueLimit = slice.loadUintBig(64);
+      return {
+        gasPrice,
+        gasLimit,
+        gasCredit,
+        blockGasLimit,
+        freezeDueLimit,
+        deleteDueLimit
+      };
+    } else {
+      throw Error("Invalid config");
+    }
+  }
+  function configParseGasLimitsPrices(slice) {
+    if (!slice) {
+      throw Error("Invalid config");
+    }
+    const tag = slice.loadUint(8);
+    if (tag === 209) {
+      const flatLimit = slice.loadUintBig(64);
+      const flatGasPrice = slice.loadUintBig(64);
+      const other = parseGasLimitsInternal(slice);
+      return {
+        flatLimit,
+        flatGasPrice,
+        other
+      };
+    } else {
+      throw Error("Invalid config");
+    }
+  }
+  function configParseMsgPrices(slice) {
+    if (!slice) {
+      throw new Error("Invalid config");
+    }
+    const magic = slice.loadUint(8);
+    if (magic !== 234) {
+      throw new Error("Invalid msg prices param");
+    }
+    return {
+      lumpPrice: slice.loadUintBig(64),
+      bitPrice: slice.loadUintBig(64),
+      cellPrice: slice.loadUintBig(64),
+      ihrPriceFactor: slice.loadUint(32),
+      firstFrac: slice.loadUint(16),
+      nextFrac: slice.loadUint(16)
+    };
+  }
+  function configParse28(slice) {
+    if (!slice) {
+      throw new Error("Invalid config");
+    }
+    const magic = slice.loadUint(8);
+    if (magic === 193) {
+      const masterCatchainLifetime = slice.loadUint(32);
+      const shardCatchainLifetime = slice.loadUint(32);
+      const shardValidatorsLifetime = slice.loadUint(32);
+      const shardValidatorsCount = slice.loadUint(32);
+      return {
+        masterCatchainLifetime,
+        shardCatchainLifetime,
+        shardValidatorsLifetime,
+        shardValidatorsCount
+      };
+    }
+    if (magic === 194) {
+      const flags = slice.loadUint(7);
+      const suffleMasterValidators = slice.loadBit();
+      const masterCatchainLifetime = slice.loadUint(32);
+      const shardCatchainLifetime = slice.loadUint(32);
+      const shardValidatorsLifetime = slice.loadUint(32);
+      const shardValidatorsCount = slice.loadUint(32);
+      return {
+        flags,
+        suffleMasterValidators,
+        masterCatchainLifetime,
+        shardCatchainLifetime,
+        shardValidatorsLifetime,
+        shardValidatorsCount
+      };
+    }
+    throw new Error("Invalid config");
+  }
+  function configParse29(slice) {
+    if (!slice) {
+      throw new Error("Invalid config");
+    }
+    const magic = slice.loadUint(8);
+    if (magic === 214) {
+      const roundCandidates = slice.loadUint(32);
+      const nextCandidateDelay = slice.loadUint(32);
+      const consensusTimeout = slice.loadUint(32);
+      const fastAttempts = slice.loadUint(32);
+      const attemptDuration = slice.loadUint(32);
+      const catchainMaxDeps = slice.loadUint(32);
+      const maxBlockBytes = slice.loadUint(32);
+      const maxColaltedBytes = slice.loadUint(32);
+      return {
+        roundCandidates,
+        nextCandidateDelay,
+        consensusTimeout,
+        fastAttempts,
+        attemptDuration,
+        catchainMaxDeps,
+        maxBlockBytes,
+        maxColaltedBytes
+      };
+    } else if (magic === 215) {
+      const flags = slice.loadUint(7);
+      const newCatchainIds = slice.loadBit();
+      const roundCandidates = slice.loadUint(8);
+      const nextCandidateDelay = slice.loadUint(32);
+      const consensusTimeout = slice.loadUint(32);
+      const fastAttempts = slice.loadUint(32);
+      const attemptDuration = slice.loadUint(32);
+      const catchainMaxDeps = slice.loadUint(32);
+      const maxBlockBytes = slice.loadUint(32);
+      const maxColaltedBytes = slice.loadUint(32);
+      return {
+        flags,
+        newCatchainIds,
+        roundCandidates,
+        nextCandidateDelay,
+        consensusTimeout,
+        fastAttempts,
+        attemptDuration,
+        catchainMaxDeps,
+        maxBlockBytes,
+        maxColaltedBytes
+      };
+    } else if (magic === 216) {
+      const flags = slice.loadUint(7);
+      const newCatchainIds = slice.loadBit();
+      const roundCandidates = slice.loadUint(8);
+      const nextCandidateDelay = slice.loadUint(32);
+      const consensusTimeout = slice.loadUint(32);
+      const fastAttempts = slice.loadUint(32);
+      const attemptDuration = slice.loadUint(32);
+      const catchainMaxDeps = slice.loadUint(32);
+      const maxBlockBytes = slice.loadUint(32);
+      const maxColaltedBytes = slice.loadUint(32);
+      const protoVersion = slice.loadUint(16);
+      return {
+        flags,
+        newCatchainIds,
+        roundCandidates,
+        nextCandidateDelay,
+        consensusTimeout,
+        fastAttempts,
+        attemptDuration,
+        catchainMaxDeps,
+        maxBlockBytes,
+        maxColaltedBytes,
+        protoVersion
+      };
+    } else if (magic === 217) {
+      const flags = slice.loadUint(7);
+      const newCatchainIds = slice.loadBit();
+      const roundCandidates = slice.loadUint(8);
+      const nextCandidateDelay = slice.loadUint(32);
+      const consensusTimeout = slice.loadUint(32);
+      const fastAttempts = slice.loadUint(32);
+      const attemptDuration = slice.loadUint(32);
+      const catchainMaxDeps = slice.loadUint(32);
+      const maxBlockBytes = slice.loadUint(32);
+      const maxColaltedBytes = slice.loadUint(32);
+      const protoVersion = slice.loadUint(16);
+      const catchainMaxBlocksCoeff = slice.loadUint(32);
+      return {
+        flags,
+        newCatchainIds,
+        roundCandidates,
+        nextCandidateDelay,
+        consensusTimeout,
+        fastAttempts,
+        attemptDuration,
+        catchainMaxDeps,
+        maxBlockBytes,
+        maxColaltedBytes,
+        protoVersion,
+        catchainMaxBlocksCoeff
+      };
+    }
+    throw new Error("Invalid config");
+  }
+  function parseProposalSetup(slice) {
+    const magic = slice.loadUint(8);
+    if (magic !== 54) {
+      throw new Error("Invalid config");
+    }
+    const minTotalRounds = slice.loadUint(8);
+    const maxTotalRounds = slice.loadUint(8);
+    const minWins = slice.loadUint(8);
+    const maxLoses = slice.loadUint(8);
+    const minStoreSec = slice.loadUint(32);
+    const maxStoreSec = slice.loadUint(32);
+    const bitPrice = slice.loadUint(32);
+    const cellPrice = slice.loadUint(32);
+    return { minTotalRounds, maxTotalRounds, minWins, maxLoses, minStoreSec, maxStoreSec, bitPrice, cellPrice };
+  }
+  function parseVotingSetup(slice) {
+    if (!slice) {
+      throw new Error("Invalid config");
+    }
+    const magic = slice.loadUint(8);
+    if (magic !== 145) {
+      throw new Error("Invalid config");
+    }
+    const normalParams = parseProposalSetup(slice.loadRef().beginParse());
+    const criticalParams = parseProposalSetup(slice.loadRef().beginParse());
+    return { normalParams, criticalParams };
+  }
+  function loadConfigParams(configBase64) {
+    const comfigMap = core_1.Cell.fromBase64(configBase64).beginParse().loadDictDirect(core_1.Dictionary.Keys.Int(32), core_1.Dictionary.Values.Cell());
+    return comfigMap;
+  }
+  function loadConfigParamById(configBase64, id) {
+    return loadConfigParams(configBase64).get(id);
+  }
+  function loadConfigParamsAsSlice(configBase64) {
+    const pramsAsCells = loadConfigParams(configBase64);
+    const params = /* @__PURE__ */ new Map();
+    for (const [key2, value] of pramsAsCells) {
+      params.set(key2, value.beginParse());
+    }
+    return params;
+  }
+  function parseFullConfig(configs) {
+    return {
+      configAddress: configParseMasterAddressRequired(configs.get(0)),
+      electorAddress: configParseMasterAddressRequired(configs.get(1)),
+      minterAddress: configParseMasterAddress(configs.get(2)),
+      feeCollectorAddress: configParseMasterAddress(configs.get(3)),
+      dnsRootAddress: configParseMasterAddress(configs.get(4)),
+      burningConfig: configParse5(configs.get(5)),
+      globalVersion: configParse8(configs.get(8)),
+      workchains: configParse12(configs.get(12)),
+      voting: parseVotingSetup(configs.get(11)),
+      validators: {
+        ...configParse15(configs.get(15)),
+        ...configParse16(configs.get(16)),
+        ...configParse17(configs.get(17))
+      },
+      storagePrices: configParse18(configs.get(18)),
+      gasPrices: {
+        masterchain: configParseGasLimitsPrices(configs.get(20)),
+        workchain: configParseGasLimitsPrices(configs.get(21))
+      },
+      msgPrices: {
+        masterchain: configParseMsgPrices(configs.get(24)),
+        workchain: configParseMsgPrices(configs.get(25))
+      },
+      validatorSets: {
+        prevValidators: configParseValidatorSet(configs.get(32)),
+        prevTempValidators: configParseValidatorSet(configs.get(33)),
+        currentValidators: configParseValidatorSet(configs.get(34)),
+        currentTempValidators: configParseValidatorSet(configs.get(35)),
+        nextValidators: configParseValidatorSet(configs.get(36)),
+        nextTempValidators: configParseValidatorSet(configs.get(37))
+      },
+      validatorsPunish: configParse40(configs.get(40)),
+      bridges: {
+        ethereum: configParseBridge(configs.get(71)),
+        binance: configParseBridge(configs.get(72)),
+        polygon: configParseBridge(configs.get(73))
+      },
+      catchain: configParse28(configs.get(28)),
+      consensus: configParse29(configs.get(29))
+      // TODO: mint_new_price:Grams mint_add_price:Grams = ConfigParam 6;
+      // TODO: to_mint:ExtraCurrencyCollection = ConfigParam 7
+      // TODO: mandatory_params:(Hashmap 32 True) = ConfigParam 9
+      // TODO: critical_params:(Hashmap 32 True) = ConfigParam 10
+      // TODO: BlockCreateFees = ConfigParam 14
+    };
+  }
+  return ConfigParser;
+}
+var fees = {};
+var hasRequiredFees;
+function requireFees() {
+  if (hasRequiredFees) return fees;
+  hasRequiredFees = 1;
+  Object.defineProperty(fees, "__esModule", { value: true });
+  fees.computeStorageFees = computeStorageFees;
+  fees.computeFwdFees = computeFwdFees;
+  fees.computeGasPrices = computeGasPrices;
+  fees.computeExternalMessageFees = computeExternalMessageFees;
+  fees.computeMessageForwardFees = computeMessageForwardFees;
+  const core_1 = requireDist$5();
+  function computeStorageFees(data) {
+    const { lastPaid, now, storagePrices, storageStat, special, masterchain } = data;
+    if (now <= lastPaid || storagePrices.length === 0 || now < storagePrices[0].utime_since || special) {
+      return BigInt(0);
+    }
+    let upto = Math.max(lastPaid, storagePrices[0].utime_since);
+    let total = BigInt(0);
+    for (let i = 0; i < storagePrices.length && upto < now; i++) {
+      let valid_until = i < storagePrices.length - 1 ? Math.min(now, storagePrices[i + 1].utime_since) : now;
+      let payment = BigInt(0);
+      if (upto < valid_until) {
+        let delta = valid_until - upto;
+        payment += BigInt(storageStat.cells) * (masterchain ? storagePrices[i].mc_cell_price_ps : storagePrices[i].cell_price_ps);
+        payment += BigInt(storageStat.bits) * (masterchain ? storagePrices[i].mc_bit_price_ps : storagePrices[i].bit_price_ps);
+        payment = payment * BigInt(delta);
+      }
+      upto = valid_until;
+      total += payment;
+    }
+    return shr16ceil(total);
+  }
+  function computeFwdFees(msgPrices, cells, bits) {
+    return msgPrices.lumpPrice + shr16ceil(msgPrices.bitPrice * bits + msgPrices.cellPrice * cells);
+  }
+  function computeGasPrices(gasUsed, prices) {
+    if (gasUsed <= prices.flatLimit) {
+      return prices.flatPrice;
+    } else {
+      return prices.flatPrice + (prices.price * (gasUsed - prices.flatLimit) >> 16n);
+    }
+  }
+  function computeExternalMessageFees(msgPrices, cell) {
+    let storageStats = collectCellStats(cell);
+    storageStats.bits -= cell.bits.length;
+    storageStats.cells -= 1;
+    return computeFwdFees(msgPrices, BigInt(storageStats.cells), BigInt(storageStats.bits));
+  }
+  function computeMessageForwardFees(msgPrices, cell) {
+    let msg = (0, core_1.loadMessageRelaxed)(cell.beginParse());
+    let storageStats = { bits: 0, cells: 0 };
+    if (msg.init) {
+      const rawBuilder = new core_1.Cell().asBuilder();
+      (0, core_1.storeStateInit)(msg.init)(rawBuilder);
+      const raw = rawBuilder.endCell();
+      let c = collectCellStats(raw);
+      c.bits -= raw.bits.length;
+      c.cells -= 1;
+      storageStats.bits += c.bits;
+      storageStats.cells += c.cells;
+    }
+    let bc = collectCellStats(msg.body);
+    bc.bits -= msg.body.bits.length;
+    bc.cells -= 1;
+    storageStats.bits += bc.bits;
+    storageStats.cells += bc.cells;
+    let fees2 = computeFwdFees(msgPrices, BigInt(storageStats.cells), BigInt(storageStats.bits));
+    let res = fees2 * BigInt(msgPrices.firstFrac) >> 16n;
+    let remaining = fees2 - res;
+    return { fees: res, remaining };
+  }
+  function collectCellStats(cell) {
+    let bits = cell.bits.length;
+    let cells = 1;
+    for (let ref of cell.refs) {
+      let r = collectCellStats(ref);
+      cells += r.cells;
+      bits += r.bits;
+    }
+    return { bits, cells };
+  }
+  function shr16ceil(src2) {
+    let rem = src2 % 65536n;
+    let res = src2 >> 16n;
+    if (rem !== 0n) {
+      res += 1n;
+    }
+    return res;
+  }
+  return fees;
+}
+var hasRequiredDist$1;
+function requireDist$1() {
+  if (hasRequiredDist$1) return dist;
+  hasRequiredDist$1 = 1;
+  (function(exports) {
+    var __createBinding = dist && dist.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
+      if (k22 === void 0) k22 = k2;
+      var desc = Object.getOwnPropertyDescriptor(m2, k2);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k2];
+        } };
+      }
+      Object.defineProperty(o4, k22, desc);
+    }) : (function(o4, m2, k2, k22) {
+      if (k22 === void 0) k22 = k2;
+      o4[k22] = m2[k2];
+    }));
+    var __exportStar = dist && dist.__exportStar || function(m2, exports2) {
+      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.computeStorageFees = exports.computeMessageForwardFees = exports.computeGasPrices = exports.computeFwdFees = exports.computeExternalMessageFees = exports.loadConfigParamsAsSlice = exports.loadConfigParamById = exports.parseFullConfig = exports.parseVotingSetup = exports.parseValidatorSet = exports.parseProposalSetup = exports.parseBridge = exports.configParseWorkchainDescriptor = exports.configParseValidatorSet = exports.configParseMsgPrices = exports.configParseMasterAddressRequired = exports.configParseMasterAddress = exports.configParseGasLimitsPrices = exports.configParseBridge = exports.configParse40 = exports.configParse29 = exports.configParse28 = exports.configParse18 = exports.configParse17 = exports.configParse16 = exports.configParse15 = exports.configParse13 = exports.configParse12 = exports.configParse8 = exports.configParse5 = exports.ElectorContract = exports.MultisigWallet = exports.MultisigOrderBuilder = exports.MultisigOrder = exports.JettonWallet = exports.JettonMaster = exports.WalletContractV5R1 = exports.WalletContractV5Beta = exports.WalletContractV4 = exports.WalletContractV3R2 = exports.WalletContractV3R1 = exports.WalletContractV2R2 = exports.WalletContractV2R1 = exports.WalletContractV1R3 = exports.WalletContractV1R2 = exports.WalletContractV1R1 = exports.TonClient4 = exports.TonClient = exports.HttpApi = void 0;
+    __exportStar(requireDist$5(), exports);
+    var HttpApi_1 = requireHttpApi();
+    Object.defineProperty(exports, "HttpApi", { enumerable: true, get: function() {
+      return HttpApi_1.HttpApi;
+    } });
+    var TonClient_1 = requireTonClient();
+    Object.defineProperty(exports, "TonClient", { enumerable: true, get: function() {
+      return TonClient_1.TonClient;
+    } });
+    var TonClient4_1 = requireTonClient4();
+    Object.defineProperty(exports, "TonClient4", { enumerable: true, get: function() {
+      return TonClient4_1.TonClient4;
+    } });
+    var WalletContractV1R1_1 = requireWalletContractV1R1();
+    Object.defineProperty(exports, "WalletContractV1R1", { enumerable: true, get: function() {
+      return WalletContractV1R1_1.WalletContractV1R1;
+    } });
+    var WalletContractV1R2_1 = requireWalletContractV1R2();
+    Object.defineProperty(exports, "WalletContractV1R2", { enumerable: true, get: function() {
+      return WalletContractV1R2_1.WalletContractV1R2;
+    } });
+    var WalletContractV1R3_1 = requireWalletContractV1R3();
+    Object.defineProperty(exports, "WalletContractV1R3", { enumerable: true, get: function() {
+      return WalletContractV1R3_1.WalletContractV1R3;
+    } });
+    var WalletContractV2R1_1 = requireWalletContractV2R1();
+    Object.defineProperty(exports, "WalletContractV2R1", { enumerable: true, get: function() {
+      return WalletContractV2R1_1.WalletContractV2R1;
+    } });
+    var WalletContractV2R2_1 = requireWalletContractV2R2();
+    Object.defineProperty(exports, "WalletContractV2R2", { enumerable: true, get: function() {
+      return WalletContractV2R2_1.WalletContractV2R2;
+    } });
+    var WalletContractV3R1_1 = requireWalletContractV3R1();
+    Object.defineProperty(exports, "WalletContractV3R1", { enumerable: true, get: function() {
+      return WalletContractV3R1_1.WalletContractV3R1;
+    } });
+    var WalletContractV3R2_1 = requireWalletContractV3R2();
+    Object.defineProperty(exports, "WalletContractV3R2", { enumerable: true, get: function() {
+      return WalletContractV3R2_1.WalletContractV3R2;
+    } });
+    var WalletContractV4_1 = requireWalletContractV4();
+    Object.defineProperty(exports, "WalletContractV4", { enumerable: true, get: function() {
+      return WalletContractV4_1.WalletContractV4;
+    } });
+    var WalletContractV5Beta_1 = requireWalletContractV5Beta();
+    Object.defineProperty(exports, "WalletContractV5Beta", { enumerable: true, get: function() {
+      return WalletContractV5Beta_1.WalletContractV5Beta;
+    } });
+    var WalletContractV5R1_1 = requireWalletContractV5R1();
+    Object.defineProperty(exports, "WalletContractV5R1", { enumerable: true, get: function() {
+      return WalletContractV5R1_1.WalletContractV5R1;
+    } });
+    var JettonMaster_1 = requireJettonMaster();
+    Object.defineProperty(exports, "JettonMaster", { enumerable: true, get: function() {
+      return JettonMaster_1.JettonMaster;
+    } });
+    var JettonWallet_1 = requireJettonWallet();
+    Object.defineProperty(exports, "JettonWallet", { enumerable: true, get: function() {
+      return JettonWallet_1.JettonWallet;
+    } });
+    var MultisigOrder_1 = requireMultisigOrder();
+    Object.defineProperty(exports, "MultisigOrder", { enumerable: true, get: function() {
+      return MultisigOrder_1.MultisigOrder;
+    } });
+    var MultisigOrderBuilder_1 = requireMultisigOrderBuilder();
+    Object.defineProperty(exports, "MultisigOrderBuilder", { enumerable: true, get: function() {
+      return MultisigOrderBuilder_1.MultisigOrderBuilder;
+    } });
+    var MultisigWallet_1 = requireMultisigWallet();
+    Object.defineProperty(exports, "MultisigWallet", { enumerable: true, get: function() {
+      return MultisigWallet_1.MultisigWallet;
+    } });
+    var ElectorContract_1 = requireElectorContract();
+    Object.defineProperty(exports, "ElectorContract", { enumerable: true, get: function() {
+      return ElectorContract_1.ElectorContract;
+    } });
+    var ConfigParser_1 = requireConfigParser();
+    Object.defineProperty(exports, "configParse5", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse5;
+    } });
+    Object.defineProperty(exports, "configParse8", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse8;
+    } });
+    Object.defineProperty(exports, "configParse12", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse12;
+    } });
+    Object.defineProperty(exports, "configParse13", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse13;
+    } });
+    Object.defineProperty(exports, "configParse15", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse15;
+    } });
+    Object.defineProperty(exports, "configParse16", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse16;
+    } });
+    Object.defineProperty(exports, "configParse17", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse17;
+    } });
+    Object.defineProperty(exports, "configParse18", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse18;
+    } });
+    Object.defineProperty(exports, "configParse28", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse28;
+    } });
+    Object.defineProperty(exports, "configParse29", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse29;
+    } });
+    Object.defineProperty(exports, "configParse40", { enumerable: true, get: function() {
+      return ConfigParser_1.configParse40;
+    } });
+    Object.defineProperty(exports, "configParseBridge", { enumerable: true, get: function() {
+      return ConfigParser_1.configParseBridge;
+    } });
+    Object.defineProperty(exports, "configParseGasLimitsPrices", { enumerable: true, get: function() {
+      return ConfigParser_1.configParseGasLimitsPrices;
+    } });
+    Object.defineProperty(exports, "configParseMasterAddress", { enumerable: true, get: function() {
+      return ConfigParser_1.configParseMasterAddress;
+    } });
+    Object.defineProperty(exports, "configParseMasterAddressRequired", { enumerable: true, get: function() {
+      return ConfigParser_1.configParseMasterAddressRequired;
+    } });
+    Object.defineProperty(exports, "configParseMsgPrices", { enumerable: true, get: function() {
+      return ConfigParser_1.configParseMsgPrices;
+    } });
+    Object.defineProperty(exports, "configParseValidatorSet", { enumerable: true, get: function() {
+      return ConfigParser_1.configParseValidatorSet;
+    } });
+    Object.defineProperty(exports, "configParseWorkchainDescriptor", { enumerable: true, get: function() {
+      return ConfigParser_1.configParseWorkchainDescriptor;
+    } });
+    Object.defineProperty(exports, "parseBridge", { enumerable: true, get: function() {
+      return ConfigParser_1.parseBridge;
+    } });
+    Object.defineProperty(exports, "parseProposalSetup", { enumerable: true, get: function() {
+      return ConfigParser_1.parseProposalSetup;
+    } });
+    Object.defineProperty(exports, "parseValidatorSet", { enumerable: true, get: function() {
+      return ConfigParser_1.parseValidatorSet;
+    } });
+    Object.defineProperty(exports, "parseVotingSetup", { enumerable: true, get: function() {
+      return ConfigParser_1.parseVotingSetup;
+    } });
+    Object.defineProperty(exports, "parseFullConfig", { enumerable: true, get: function() {
+      return ConfigParser_1.parseFullConfig;
+    } });
+    Object.defineProperty(exports, "loadConfigParamById", { enumerable: true, get: function() {
+      return ConfigParser_1.loadConfigParamById;
+    } });
+    Object.defineProperty(exports, "loadConfigParamsAsSlice", { enumerable: true, get: function() {
+      return ConfigParser_1.loadConfigParamsAsSlice;
+    } });
+    var fees_1 = requireFees();
+    Object.defineProperty(exports, "computeExternalMessageFees", { enumerable: true, get: function() {
+      return fees_1.computeExternalMessageFees;
+    } });
+    Object.defineProperty(exports, "computeFwdFees", { enumerable: true, get: function() {
+      return fees_1.computeFwdFees;
+    } });
+    Object.defineProperty(exports, "computeGasPrices", { enumerable: true, get: function() {
+      return fees_1.computeGasPrices;
+    } });
+    Object.defineProperty(exports, "computeMessageForwardFees", { enumerable: true, get: function() {
+      return fees_1.computeMessageForwardFees;
+    } });
+    Object.defineProperty(exports, "computeStorageFees", { enumerable: true, get: function() {
+      return fees_1.computeStorageFees;
+    } });
+  })(dist);
+  return dist;
+}
+var lib = {};
+var nodes = {};
+var g = typeof globalThis !== "undefined" && globalThis || typeof self !== "undefined" && self || // eslint-disable-next-line no-undef
+typeof global !== "undefined" && global || {};
+var support = {
+  searchParams: "URLSearchParams" in g,
+  iterable: "Symbol" in g && "iterator" in Symbol,
+  blob: "FileReader" in g && "Blob" in g && (function() {
+    try {
+      new Blob();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  })(),
+  formData: "FormData" in g,
+  arrayBuffer: "ArrayBuffer" in g
+};
+function isDataView(obj) {
+  return obj && DataView.prototype.isPrototypeOf(obj);
+}
+if (support.arrayBuffer) {
+  var viewClasses = [
+    "[object Int8Array]",
+    "[object Uint8Array]",
+    "[object Uint8ClampedArray]",
+    "[object Int16Array]",
+    "[object Uint16Array]",
+    "[object Int32Array]",
+    "[object Uint32Array]",
+    "[object Float32Array]",
+    "[object Float64Array]"
+  ];
+  var isArrayBufferView = ArrayBuffer.isView || function(obj) {
+    return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1;
+  };
+}
+function normalizeName(name) {
+  if (typeof name !== "string") {
+    name = String(name);
+  }
+  if (/[^a-z0-9\-#$%&'*+.^_`|~!]/i.test(name) || name === "") {
+    throw new TypeError('Invalid character in header field name: "' + name + '"');
+  }
+  return name.toLowerCase();
+}
+function normalizeValue(value) {
+  if (typeof value !== "string") {
+    value = String(value);
+  }
+  return value;
+}
+function iteratorFor(items) {
+  var iterator = {
+    next: function() {
+      var value = items.shift();
+      return { done: value === void 0, value };
+    }
+  };
+  if (support.iterable) {
+    iterator[Symbol.iterator] = function() {
+      return iterator;
+    };
+  }
+  return iterator;
+}
+function Headers$1(headers) {
+  this.map = {};
+  if (headers instanceof Headers$1) {
+    headers.forEach(function(value, name) {
+      this.append(name, value);
+    }, this);
+  } else if (Array.isArray(headers)) {
+    headers.forEach(function(header) {
+      if (header.length != 2) {
+        throw new TypeError("Headers constructor: expected name/value pair to be length 2, found" + header.length);
+      }
+      this.append(header[0], header[1]);
+    }, this);
+  } else if (headers) {
+    Object.getOwnPropertyNames(headers).forEach(function(name) {
+      this.append(name, headers[name]);
+    }, this);
+  }
+}
+Headers$1.prototype.append = function(name, value) {
+  name = normalizeName(name);
+  value = normalizeValue(value);
+  var oldValue = this.map[name];
+  this.map[name] = oldValue ? oldValue + ", " + value : value;
+};
+Headers$1.prototype["delete"] = function(name) {
+  delete this.map[normalizeName(name)];
+};
+Headers$1.prototype.get = function(name) {
+  name = normalizeName(name);
+  return this.has(name) ? this.map[name] : null;
+};
+Headers$1.prototype.has = function(name) {
+  return this.map.hasOwnProperty(normalizeName(name));
+};
+Headers$1.prototype.set = function(name, value) {
+  this.map[normalizeName(name)] = normalizeValue(value);
+};
+Headers$1.prototype.forEach = function(callback, thisArg) {
+  for (var name in this.map) {
+    if (this.map.hasOwnProperty(name)) {
+      callback.call(thisArg, this.map[name], name, this);
+    }
+  }
+};
+Headers$1.prototype.keys = function() {
+  var items = [];
+  this.forEach(function(value, name) {
+    items.push(name);
+  });
+  return iteratorFor(items);
+};
+Headers$1.prototype.values = function() {
+  var items = [];
+  this.forEach(function(value) {
+    items.push(value);
+  });
+  return iteratorFor(items);
+};
+Headers$1.prototype.entries = function() {
+  var items = [];
+  this.forEach(function(value, name) {
+    items.push([name, value]);
+  });
+  return iteratorFor(items);
+};
+if (support.iterable) {
+  Headers$1.prototype[Symbol.iterator] = Headers$1.prototype.entries;
+}
+function consumed(body) {
+  if (body._noBody) return;
+  if (body.bodyUsed) {
+    return Promise.reject(new TypeError("Already read"));
+  }
+  body.bodyUsed = true;
+}
+function fileReaderReady(reader2) {
+  return new Promise(function(resolve, reject) {
+    reader2.onload = function() {
+      resolve(reader2.result);
+    };
+    reader2.onerror = function() {
+      reject(reader2.error);
+    };
+  });
+}
+function readBlobAsArrayBuffer(blob) {
+  var reader2 = new FileReader();
+  var promise = fileReaderReady(reader2);
+  reader2.readAsArrayBuffer(blob);
+  return promise;
+}
+function readBlobAsText(blob) {
+  var reader2 = new FileReader();
+  var promise = fileReaderReady(reader2);
+  var match = /charset=([A-Za-z0-9_-]+)/.exec(blob.type);
+  var encoding2 = match ? match[1] : "utf-8";
+  reader2.readAsText(blob, encoding2);
+  return promise;
+}
+function readArrayBufferAsText(buf2) {
+  var view = new Uint8Array(buf2);
+  var chars = new Array(view.length);
+  for (var i = 0; i < view.length; i++) {
+    chars[i] = String.fromCharCode(view[i]);
+  }
+  return chars.join("");
+}
+function bufferClone(buf2) {
+  if (buf2.slice) {
+    return buf2.slice(0);
+  } else {
+    var view = new Uint8Array(buf2.byteLength);
+    view.set(new Uint8Array(buf2));
+    return view.buffer;
+  }
+}
+function Body() {
+  this.bodyUsed = false;
+  this._initBody = function(body) {
+    this.bodyUsed = this.bodyUsed;
+    this._bodyInit = body;
+    if (!body) {
+      this._noBody = true;
+      this._bodyText = "";
+    } else if (typeof body === "string") {
+      this._bodyText = body;
+    } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+      this._bodyBlob = body;
+    } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+      this._bodyFormData = body;
+    } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+      this._bodyText = body.toString();
+    } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+      this._bodyArrayBuffer = bufferClone(body.buffer);
+      this._bodyInit = new Blob([this._bodyArrayBuffer]);
+    } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+      this._bodyArrayBuffer = bufferClone(body);
+    } else {
+      this._bodyText = body = Object.prototype.toString.call(body);
+    }
+    if (!this.headers.get("content-type")) {
+      if (typeof body === "string") {
+        this.headers.set("content-type", "text/plain;charset=UTF-8");
+      } else if (this._bodyBlob && this._bodyBlob.type) {
+        this.headers.set("content-type", this._bodyBlob.type);
+      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        this.headers.set("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+      }
+    }
+  };
+  if (support.blob) {
+    this.blob = function() {
+      var rejected = consumed(this);
+      if (rejected) {
+        return rejected;
+      }
+      if (this._bodyBlob) {
+        return Promise.resolve(this._bodyBlob);
+      } else if (this._bodyArrayBuffer) {
+        return Promise.resolve(new Blob([this._bodyArrayBuffer]));
+      } else if (this._bodyFormData) {
+        throw new Error("could not read FormData body as blob");
+      } else {
+        return Promise.resolve(new Blob([this._bodyText]));
+      }
+    };
+  }
+  this.arrayBuffer = function() {
+    if (this._bodyArrayBuffer) {
+      var isConsumed = consumed(this);
+      if (isConsumed) {
+        return isConsumed;
+      } else if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
+        return Promise.resolve(
+          this._bodyArrayBuffer.buffer.slice(
+            this._bodyArrayBuffer.byteOffset,
+            this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
+          )
+        );
+      } else {
+        return Promise.resolve(this._bodyArrayBuffer);
+      }
+    } else if (support.blob) {
+      return this.blob().then(readBlobAsArrayBuffer);
+    } else {
+      throw new Error("could not read as ArrayBuffer");
+    }
+  };
+  this.text = function() {
+    var rejected = consumed(this);
+    if (rejected) {
+      return rejected;
+    }
+    if (this._bodyBlob) {
+      return readBlobAsText(this._bodyBlob);
+    } else if (this._bodyArrayBuffer) {
+      return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer));
+    } else if (this._bodyFormData) {
+      throw new Error("could not read FormData body as text");
+    } else {
+      return Promise.resolve(this._bodyText);
+    }
+  };
+  if (support.formData) {
+    this.formData = function() {
+      return this.text().then(decode);
+    };
+  }
+  this.json = function() {
+    return this.text().then(JSON.parse);
+  };
+  return this;
+}
+var methods = ["CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "TRACE"];
+function normalizeMethod(method) {
+  var upcased = method.toUpperCase();
+  return methods.indexOf(upcased) > -1 ? upcased : method;
+}
+function Request$1(input, options) {
+  if (!(this instanceof Request$1)) {
+    throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.');
+  }
+  options = options || {};
+  var body = options.body;
+  if (input instanceof Request$1) {
+    if (input.bodyUsed) {
+      throw new TypeError("Already read");
+    }
+    this.url = input.url;
+    this.credentials = input.credentials;
+    if (!options.headers) {
+      this.headers = new Headers$1(input.headers);
+    }
+    this.method = input.method;
+    this.mode = input.mode;
+    this.signal = input.signal;
+    if (!body && input._bodyInit != null) {
+      body = input._bodyInit;
+      input.bodyUsed = true;
+    }
+  } else {
+    this.url = String(input);
+  }
+  this.credentials = options.credentials || this.credentials || "same-origin";
+  if (options.headers || !this.headers) {
+    this.headers = new Headers$1(options.headers);
+  }
+  this.method = normalizeMethod(options.method || this.method || "GET");
+  this.mode = options.mode || this.mode || null;
+  this.signal = options.signal || this.signal || (function() {
+    if ("AbortController" in g) {
+      var ctrl = new AbortController();
+      return ctrl.signal;
+    }
+  })();
+  this.referrer = null;
+  if ((this.method === "GET" || this.method === "HEAD") && body) {
+    throw new TypeError("Body not allowed for GET or HEAD requests");
+  }
+  this._initBody(body);
+  if (this.method === "GET" || this.method === "HEAD") {
+    if (options.cache === "no-store" || options.cache === "no-cache") {
+      var reParamSearch = /([?&])_=[^&]*/;
+      if (reParamSearch.test(this.url)) {
+        this.url = this.url.replace(reParamSearch, "$1_=" + (/* @__PURE__ */ new Date()).getTime());
+      } else {
+        var reQueryString = /\?/;
+        this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + (/* @__PURE__ */ new Date()).getTime();
+      }
+    }
+  }
+}
+Request$1.prototype.clone = function() {
+  return new Request$1(this, { body: this._bodyInit });
+};
+function decode(body) {
+  var form = new FormData();
+  body.trim().split("&").forEach(function(bytes) {
+    if (bytes) {
+      var split = bytes.split("=");
+      var name = split.shift().replace(/\+/g, " ");
+      var value = split.join("=").replace(/\+/g, " ");
+      form.append(decodeURIComponent(name), decodeURIComponent(value));
+    }
+  });
+  return form;
+}
+function parseHeaders(rawHeaders) {
+  var headers = new Headers$1();
+  var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, " ");
+  preProcessedHeaders.split("\r").map(function(header) {
+    return header.indexOf("\n") === 0 ? header.substr(1, header.length) : header;
+  }).forEach(function(line) {
+    var parts = line.split(":");
+    var key2 = parts.shift().trim();
+    if (key2) {
+      var value = parts.join(":").trim();
+      try {
+        headers.append(key2, value);
+      } catch (error2) {
+        console.warn("Response " + error2.message);
+      }
+    }
+  });
+  return headers;
+}
+Body.call(Request$1.prototype);
+function Response$1(bodyInit, options) {
+  if (!(this instanceof Response$1)) {
+    throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.');
+  }
+  if (!options) {
+    options = {};
+  }
+  this.type = "default";
+  this.status = options.status === void 0 ? 200 : options.status;
+  if (this.status < 200 || this.status > 599) {
+    throw new RangeError("Failed to construct 'Response': The status provided (0) is outside the range [200, 599].");
+  }
+  this.ok = this.status >= 200 && this.status < 300;
+  this.statusText = options.statusText === void 0 ? "" : "" + options.statusText;
+  this.headers = new Headers$1(options.headers);
+  this.url = options.url || "";
+  this._initBody(bodyInit);
+}
+Body.call(Response$1.prototype);
+Response$1.prototype.clone = function() {
+  return new Response$1(this._bodyInit, {
+    status: this.status,
+    statusText: this.statusText,
+    headers: new Headers$1(this.headers),
+    url: this.url
+  });
+};
+Response$1.error = function() {
+  var response = new Response$1(null, { status: 200, statusText: "" });
+  response.ok = false;
+  response.status = 0;
+  response.type = "error";
+  return response;
+};
+var redirectStatuses = [301, 302, 303, 307, 308];
+Response$1.redirect = function(url, status) {
+  if (redirectStatuses.indexOf(status) === -1) {
+    throw new RangeError("Invalid status code");
+  }
+  return new Response$1(null, { status, headers: { location: url } });
+};
+var DOMException = g.DOMException;
+try {
+  new DOMException();
+} catch (err) {
+  DOMException = function(message, name) {
+    this.message = message;
+    this.name = name;
+    var error2 = Error(message);
+    this.stack = error2.stack;
+  };
+  DOMException.prototype = Object.create(Error.prototype);
+  DOMException.prototype.constructor = DOMException;
+}
+function fetch$1(input, init) {
+  return new Promise(function(resolve, reject) {
+    var request = new Request$1(input, init);
+    if (request.signal && request.signal.aborted) {
+      return reject(new DOMException("Aborted", "AbortError"));
+    }
+    var xhr = new XMLHttpRequest();
+    function abortXhr() {
+      xhr.abort();
+    }
+    xhr.onload = function() {
+      var options = {
+        statusText: xhr.statusText,
+        headers: parseHeaders(xhr.getAllResponseHeaders() || "")
+      };
+      if (request.url.indexOf("file://") === 0 && (xhr.status < 200 || xhr.status > 599)) {
+        options.status = 200;
+      } else {
+        options.status = xhr.status;
+      }
+      options.url = "responseURL" in xhr ? xhr.responseURL : options.headers.get("X-Request-URL");
+      var body = "response" in xhr ? xhr.response : xhr.responseText;
+      setTimeout(function() {
+        resolve(new Response$1(body, options));
+      }, 0);
+    };
+    xhr.onerror = function() {
+      setTimeout(function() {
+        reject(new TypeError("Network request failed"));
+      }, 0);
+    };
+    xhr.ontimeout = function() {
+      setTimeout(function() {
+        reject(new TypeError("Network request timed out"));
+      }, 0);
+    };
+    xhr.onabort = function() {
+      setTimeout(function() {
+        reject(new DOMException("Aborted", "AbortError"));
+      }, 0);
+    };
+    function fixUrl(url) {
+      try {
+        return url === "" && g.location.href ? g.location.href : url;
+      } catch (e) {
+        return url;
+      }
+    }
+    xhr.open(request.method, fixUrl(request.url), true);
+    if (request.credentials === "include") {
+      xhr.withCredentials = true;
+    } else if (request.credentials === "omit") {
+      xhr.withCredentials = false;
+    }
+    if ("responseType" in xhr) {
+      if (support.blob) {
+        xhr.responseType = "blob";
+      } else if (support.arrayBuffer) {
+        xhr.responseType = "arraybuffer";
+      }
+    }
+    if (init && typeof init.headers === "object" && !(init.headers instanceof Headers$1 || g.Headers && init.headers instanceof g.Headers)) {
+      var names = [];
+      Object.getOwnPropertyNames(init.headers).forEach(function(name) {
+        names.push(normalizeName(name));
+        xhr.setRequestHeader(name, normalizeValue(init.headers[name]));
+      });
+      request.headers.forEach(function(value, name) {
+        if (names.indexOf(name) === -1) {
+          xhr.setRequestHeader(name, value);
+        }
+      });
+    } else {
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value);
+      });
+    }
+    if (request.signal) {
+      request.signal.addEventListener("abort", abortXhr);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          request.signal.removeEventListener("abort", abortXhr);
+        }
+      };
+    }
+    xhr.send(typeof request._bodyInit === "undefined" ? null : request._bodyInit);
+  });
+}
+fetch$1.polyfill = true;
+if (!g.fetch) {
+  g.fetch = fetch$1;
+  g.Headers = Headers$1;
+  g.Request = Request$1;
+  g.Response = Response$1;
+}
+var fetchNpmBrowserify;
+var hasRequiredFetchNpmBrowserify;
+function requireFetchNpmBrowserify() {
+  if (hasRequiredFetchNpmBrowserify) return fetchNpmBrowserify;
+  hasRequiredFetchNpmBrowserify = 1;
+  fetchNpmBrowserify = self.fetch.bind(self);
+  return fetchNpmBrowserify;
+}
+var hasRequiredNodes;
+function requireNodes() {
+  if (hasRequiredNodes) return nodes;
+  hasRequiredNodes = 1;
+  var __awaiter = nodes && nodes.__awaiter || function(thisArg, _arguments, P2, generator2) {
+    function adopt(value) {
+      return value instanceof P2 ? value : new P2(function(resolve) {
+        resolve(value);
+      });
+    }
+    return new (P2 || (P2 = Promise))(function(resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator2.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator2["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator2 = generator2.apply(thisArg, _arguments || [])).next());
+    });
+  };
+  Object.defineProperty(nodes, "__esModule", { value: true });
+  nodes.Nodes = void 0;
+  requireFetchNpmBrowserify();
+  class Nodes {
+    ///////////////////////////////////
+    constructor() {
+      this.nodeIndex = -1;
+      this.committee = /* @__PURE__ */ new Set();
+      this.topology = [];
+      this.initTime = 0;
+    }
+    ///////////////////////////////////
+    init(nodesUrl) {
+      return __awaiter(this, void 0, void 0, function* () {
+        this.nodeIndex = -1;
+        this.committee.clear();
+        this.topology = [];
+        this.initTime = Date.now();
+        let topology = [];
+        try {
+          const response = yield fetch(nodesUrl);
+          const data = yield response.json();
+          topology = data;
+        } catch (e) {
+          throw new Error(`exception in fetch(${nodesUrl}): ${e}`);
+        }
+        for (const node of topology) {
+          if (node.Healthy === "1") {
+            this.topology.push(node);
+          }
+        }
+        if (this.topology.length === 0)
+          throw new Error(`no healthy nodes in ${nodesUrl}`);
+      });
+    }
+    getHealthyFor(protonet) {
+      var _a2;
+      const res = [];
+      for (const node of this.topology) {
+        if (node.Weight > 0 && ((_a2 = node.Mngr) === null || _a2 === void 0 ? void 0 : _a2.health[protonet])) {
+          res.push(node);
+        }
+      }
+      return res;
+    }
+  }
+  nodes.Nodes = Nodes;
+  return nodes;
+}
+const version = "2.3.3";
+const require$$1$1 = {
+  version
+};
+var hasRequiredLib;
+function requireLib() {
+  if (hasRequiredLib) return lib;
+  hasRequiredLib = 1;
+  var __awaiter = lib && lib.__awaiter || function(thisArg, _arguments, P2, generator2) {
+    function adopt(value) {
+      return value instanceof P2 ? value : new P2(function(resolve) {
+        resolve(value);
+      });
+    }
+    return new (P2 || (P2 = Promise))(function(resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator2.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator2["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator2 = generator2.apply(thisArg, _arguments || [])).next());
+    });
+  };
+  Object.defineProperty(lib, "__esModule", { value: true });
+  lib.getHttpV4Endpoint = lib.getHttpV4Endpoints = lib.getHttpEndpoint = lib.getHttpEndpoints = lib.Access = void 0;
+  const nodes_1 = requireNodes();
+  class Access {
+    //////////////////////////////////
+    constructor() {
+      this.host = "ton.access.orbs.network";
+      this.urlVersion = 1;
+      this.nodes = new nodes_1.Nodes();
+    }
+    //////////////////////////////////
+    init() {
+      return __awaiter(this, void 0, void 0, function* () {
+        const pjson = require$$1$1;
+        yield this.nodes.init(`https://${this.host}/mngr/nodes?npm_version=${pjson.version}`);
+      });
+    }
+    //////////////////////////////////
+    makeProtonet(edgeProtocol, network) {
+      let res = "";
+      switch (edgeProtocol) {
+        case "toncenter-api-v2":
+          res += "v2-";
+          break;
+        case "ton-api-v4":
+          res += "v4-";
+          break;
+      }
+      res += network;
+      return res;
+    }
+    //////////////////////////////////
+    weightedRandom(nodes2) {
+      let sumWeights = 0;
+      for (const node of nodes2) {
+        sumWeights += node.Weight;
+      }
+      const rnd = Math.floor(Math.random() * sumWeights);
+      let cur = 0;
+      for (const node of nodes2) {
+        if (rnd >= cur && rnd < cur + node.Weight)
+          return node;
+        cur += node.Weight;
+      }
+    }
+    //////////////////////////////////
+    buildUrls(network, edgeProtocol, suffix, single) {
+      if (!suffix)
+        suffix = "";
+      if (!edgeProtocol)
+        edgeProtocol = "toncenter-api-v2";
+      if (!network)
+        network = "mainnet";
+      if (suffix.length)
+        suffix = suffix.replace(/^\/+/, "");
+      const res = [];
+      const protonet = this.makeProtonet(edgeProtocol, network);
+      let healthyNodes = this.nodes.getHealthyFor(protonet);
+      if (!(healthyNodes === null || healthyNodes === void 0 ? void 0 : healthyNodes.length))
+        throw new Error(`no healthy nodes for ${protonet}`);
+      if (single && healthyNodes.length) {
+        const chosen = this.weightedRandom(healthyNodes);
+        if (chosen)
+          healthyNodes = [chosen];
+        else
+          throw new Error("weightedRandom return empty");
+      }
+      for (const node of healthyNodes) {
+        let url = `https://${this.host}/${node.NodeId}/${this.urlVersion}/${network}/${edgeProtocol}`;
+        if (suffix.length)
+          url += `/${suffix}`;
+        res.push(url);
+      }
+      return res;
+    }
+  }
+  lib.Access = Access;
+  function getEndpoints(network, edgeProtocol, suffix, single) {
+    return __awaiter(this, void 0, void 0, function* () {
+      const access = new Access();
+      yield access.init();
+      const res = access.buildUrls(network, edgeProtocol, suffix, single);
+      return res;
+    });
+  }
+  function getHttpEndpoints(config, single) {
+    return __awaiter(this, void 0, void 0, function* () {
+      const network = (config === null || config === void 0 ? void 0 : config.network) ? config.network : "mainnet";
+      let suffix = "jsonRPC";
+      if ((config === null || config === void 0 ? void 0 : config.protocol) === "rest") {
+        suffix = "";
+      }
+      return yield getEndpoints(network, "toncenter-api-v2", suffix, single);
+    });
+  }
+  lib.getHttpEndpoints = getHttpEndpoints;
+  function getHttpEndpoint(config) {
+    return __awaiter(this, void 0, void 0, function* () {
+      const endpoints = yield getHttpEndpoints(config, true);
+      return endpoints[0];
+    });
+  }
+  lib.getHttpEndpoint = getHttpEndpoint;
+  function getHttpV4Endpoints(config, single) {
+    return __awaiter(this, void 0, void 0, function* () {
+      const network = (config === null || config === void 0 ? void 0 : config.network) ? config.network : "mainnet";
+      if ((config === null || config === void 0 ? void 0 : config.protocol) === "json-rpc") {
+        throw Error("config.protocol json-rpc is not supported for getTonApiV4Endpoints");
+      }
+      const suffix = "";
+      return yield getEndpoints(network, "ton-api-v4", suffix, single);
+    });
+  }
+  lib.getHttpV4Endpoints = getHttpV4Endpoints;
+  function getHttpV4Endpoint(config) {
+    return __awaiter(this, void 0, void 0, function* () {
+      const endpoints = yield getHttpV4Endpoints(config, true);
+      return endpoints[0];
+    });
+  }
+  lib.getHttpV4Endpoint = getHttpV4Endpoint;
+  return lib;
+}
+var hasRequiredTonClientApi;
+function requireTonClientApi() {
+  if (hasRequiredTonClientApi) return tonClientApi;
+  hasRequiredTonClientApi = 1;
+  Object.defineProperty(tonClientApi, "__esModule", { value: true });
+  tonClientApi.createApi = void 0;
+  const ton_1 = requireDist$1();
+  const ton_access_1 = requireLib();
+  async function createApi(network) {
+    const endpoint = await (0, ton_access_1.getHttpV4Endpoint)({ network });
+    return new ton_1.TonClient4({ endpoint, timeout: 15e3 });
+  }
+  tonClientApi.createApi = createApi;
+  return tonClientApi;
+}
+var key = {};
+var hasRequiredKey;
+function requireKey() {
+  if (hasRequiredKey) return key;
+  hasRequiredKey = 1;
+  Object.defineProperty(key, "__esModule", { value: true });
+  key.importKey = void 0;
+  const crypto_1 = requireDist$6();
+  async function importKey(key2) {
+    if (typeof key2 === "string") {
+      return await (0, crypto_1.mnemonicToWalletKey)(key2.split(" "));
+    } else if (Array.isArray(key2)) {
+      return await (0, crypto_1.mnemonicToWalletKey)(key2);
+    } else {
+      return (0, crypto_1.keyPairFromSecretKey)(key2);
+    }
+  }
+  key.importKey = importKey;
+  return key;
+}
+var wallets = {};
+var HighloadWalletContractV2 = {};
+var hasRequiredHighloadWalletContractV2;
+function requireHighloadWalletContractV2() {
+  if (hasRequiredHighloadWalletContractV2) return HighloadWalletContractV2;
+  hasRequiredHighloadWalletContractV2 = 1;
+  Object.defineProperty(HighloadWalletContractV2, "__esModule", { value: true });
+  HighloadWalletContractV2.HighloadWalletContractV2 = void 0;
+  const core_1 = requireDist$5();
+  const crypto_1 = requireDist$6();
+  const utils_1 = requireUtils$1();
+  let HighloadWalletContractV2$1 = class HighloadWalletContractV22 {
+    constructor(workchain, publicKey, walletId) {
+      this.workchain = workchain;
+      this.publicKey = publicKey;
+      if (walletId !== null && walletId !== void 0) {
+        this.walletId = walletId;
+      } else {
+        this.walletId = 698983191 + workchain;
+      }
+      const code = core_1.Cell.fromBase64("te6cckEBCQEA5QABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQHq8oMI1xgg0x/TP/gjqh9TILnyY+1E0NMf0z/T//QE0VNggED0Dm+hMfJgUXO68qIH+QFUEIf5EPKjAvQE0fgAf44WIYAQ9HhvpSCYAtMH1DAB+wCRMuIBs+ZbgyWhyEA0gED0Q4rmMQHIyx8Tyz/L//QAye1UCAAE0DACASAGBwAXvZznaiaGmvmOuF/8AEG+X5dqJoaY+Y6Z/p/5j6AmipEEAgegc30JjJLb/JXdHxQANCCAQPSWb6VsEiCUMFMDud4gkzM2AZJsIeKzn55UWg==");
+      const data = (0, core_1.beginCell)().storeUint(this.walletId, 32).storeUint(0, 64).storeBuffer(this.publicKey, 32).storeDict(null).endCell();
+      this.init = { code, data };
+      this.address = (0, core_1.contractAddress)(this.workchain, this.init);
+    }
+    static create(args) {
+      return new HighloadWalletContractV22(args.workchain, args.publicKey, args.walletId);
+    }
+    /**
+     * Get wallet balance.
+     */
+    async getBalance(provider) {
+      const state = await provider.getState();
+      return state.balance;
+    }
+    /**
+     * Send signed message.
+     */
+    async send(provider, message) {
+      await provider.external(message);
+    }
+    /**
+     * Sign and send message.
+     */
+    async sendTransfer(provider, args) {
+      const message = this.createTransfer(args);
+      await this.send(provider, message);
+    }
+    /**
+     * Create signed message.
+     */
+    createTransfer(args) {
+      let seqno = Math.floor(Math.random() * (1 << 32));
+      if (args.seqno !== null && args.seqno !== void 0) {
+        seqno = args.seqno;
+      }
+      let timeout = 5 * 60;
+      if (args.timeout !== null && args.timeout !== void 0 && args.timeout < timeout) {
+        timeout = args.timeout;
+      }
+      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY | core_1.SendMode.IGNORE_ERRORS;
+      if (args.sendMode !== null && args.sendMode !== void 0) {
+        sendMode = args.sendMode;
+      }
+      let now = Date.now();
+      if (args.now !== null && args.now !== void 0) {
+        now = args.now;
+      }
+      return (0, core_1.beginCell)().store(storeSignedTransferHighloadWalletV2({
+        secretKey: args.secretKey,
+        messages: args.messages,
+        seqno,
+        sendMode,
+        timeout,
+        walletId: this.walletId,
+        now
+      })).endCell();
+    }
+    /**
+     * Load signed message.
+     */
+    loadTransfer(src2) {
+      return loadSignedTransferHighloadWalletV2(src2);
+    }
+    /**
+     * Send signed message and wait for processing.
+     */
+    async sendTransferAndWait(provider, args, sleepInterval = 3e3) {
+      const transfer = this.createTransfer(args);
+      const { queryId } = this.loadTransfer(transfer.beginParse());
+      while (true) {
+        try {
+          await provider.external(transfer);
+        } catch (e) {
+        }
+        await (0, utils_1.sleep)(sleepInterval);
+        const state = await provider.getState();
+        if (state.state.type === "uninit") {
+          continue;
+        }
+        const status = await this.getProcessedStatus(provider, queryId);
+        if (status === "processed") {
+          return;
+        } else if (status === "forgotten") {
+          throw new Error("The transfer was forgotten");
+        }
+      }
+    }
+    /**
+     * Get processed status of message.
+     */
+    async getProcessedStatus(provider, queryId) {
+      const { stack } = await provider.get("processed?", [{ type: "int", value: queryId }]);
+      const processedStatus = stack.readBigNumber();
+      switch (processedStatus) {
+        case -1n:
+          return "processed";
+        case 0n:
+          return "unprocessed";
+        case 1n:
+          return "forgotten";
+        default:
+          throw new Error("Unknown processed status " + processedStatus);
+      }
+    }
+    /**
+     * Create sender.
+     */
+    sender(provider, secretKey) {
+      return {
+        send: async (args) => {
+          await this.sendTransferAndWait(provider, {
+            secretKey,
+            sendMode: args.sendMode,
+            messages: [(0, core_1.internal)({
+              to: args.to,
+              value: args.value,
+              bounce: args.bounce,
+              init: args.init,
+              body: args.body
+            })]
+          });
+        },
+        address: this.address
+      };
+    }
+  };
+  HighloadWalletContractV2.HighloadWalletContractV2 = HighloadWalletContractV2$1;
+  function createMessageRelaxedValue() {
+    return {
+      serialize: (args, builder2) => {
+        const { sendMode, message } = args;
+        const messageRelaxed = (0, core_1.beginCell)().storeWritable((0, core_1.storeMessageRelaxed)(message));
+        builder2.storeUint(sendMode, 8);
+        builder2.storeRef(messageRelaxed);
+      },
+      parse: (src2) => {
+        const sendMode = src2.loadUint(8);
+        const message = (0, core_1.loadMessageRelaxed)(src2.loadRef().beginParse());
+        return { sendMode, message };
+      }
+    };
+  }
+  function getQueryId(now, timeout, seqno) {
+    const validUntil = Math.floor(now / 1e3) + timeout;
+    return (BigInt(validUntil) << 32n) + BigInt(seqno);
+  }
+  function storeSignedTransferHighloadWalletV2(args) {
+    return (builder2) => {
+      const { secretKey, messages, seqno, sendMode, now, timeout, walletId } = args;
+      const queryId = getQueryId(now, timeout, seqno);
+      const dict = core_1.Dictionary.empty(core_1.Dictionary.Keys.Int(16), createMessageRelaxedValue());
+      for (const [i, message] of messages.entries()) {
+        dict.set(i, { sendMode, message });
+      }
+      const signedMessage = (0, core_1.beginCell)().storeUint(walletId, 32).storeUint(queryId, 64).storeDict(dict).endCell();
+      const hash = signedMessage.hash();
+      const signature = (0, crypto_1.sign)(hash, secretKey);
+      builder2.storeBuffer(signature);
+      builder2.storeSlice(signedMessage.beginParse());
+    };
+  }
+  function loadSignedTransferHighloadWalletV2(src2) {
+    const signature = src2.loadBuffer(64);
+    const walletId = src2.loadUint(32);
+    const queryId = src2.loadUintBig(64);
+    const dict = src2.loadDict(core_1.Dictionary.Keys.Int(16), createMessageRelaxedValue());
+    const messages = dict.values();
+    return {
+      signature,
+      walletId,
+      queryId,
+      messages
+    };
+  }
+  return HighloadWalletContractV2;
+}
+var hasRequiredWallets;
+function requireWallets() {
+  if (hasRequiredWallets) return wallets;
+  hasRequiredWallets = 1;
+  Object.defineProperty(wallets, "__esModule", { value: true });
+  wallets.createSender = wallets.createWallet = wallets.createHighloadV2 = void 0;
+  const HighloadWalletContractV2_1 = requireHighloadWalletContractV2();
+  const ton_client_api_1 = requireTonClientApi();
+  const WORKCHAIN = 0;
+  function createHighloadV2(publicKey) {
+    return HighloadWalletContractV2_1.HighloadWalletContractV2.create({ workchain: WORKCHAIN, publicKey });
+  }
+  wallets.createHighloadV2 = createHighloadV2;
+  function createWallet(walletType, publicKey) {
+    switch (walletType) {
+      case "highload-v2":
+        return createHighloadV2(publicKey);
+      default:
+        throw new Error("Unsupported wallet type");
+    }
+  }
+  wallets.createWallet = createWallet;
+  async function createSender(walletType, keypair, clientOrNetwork) {
+    const isNetwork = clientOrNetwork === "testnet" || clientOrNetwork === "mainnet";
+    const client = isNetwork ? await (0, ton_client_api_1.createApi)(clientOrNetwork) : clientOrNetwork;
+    const wallet = createWallet(walletType, keypair.publicKey);
+    return client.open(wallet).sender(keypair.secretKey);
+  }
+  wallets.createSender = createSender;
+  return wallets;
+}
+var error = {};
+var hasRequiredError;
+function requireError() {
+  if (hasRequiredError) return error;
+  hasRequiredError = 1;
+  Object.defineProperty(error, "__esModule", { value: true });
+  error.NoSenderError = void 0;
+  class NoSenderError extends Error {
+    constructor() {
+      super("Sender is not set");
+    }
+  }
+  error.NoSenderError = NoSenderError;
+  return error;
+}
+var TonAPI = {};
 var axios_1;
 var hasRequiredAxios;
 function requireAxios() {
@@ -57882,5607 +73475,6 @@ function requireAxios() {
   axios_1 = axios;
   return axios_1;
 }
-const version$1 = "15.3.1";
-const require$$4$1 = {
-  version: version$1
-};
-var hasRequiredHttpApi;
-function requireHttpApi() {
-  if (hasRequiredHttpApi) return HttpApi;
-  hasRequiredHttpApi = 1;
-  var __importDefault = HttpApi && HttpApi.__importDefault || function(mod) {
-    return mod && mod.__esModule ? mod : { "default": mod };
-  };
-  Object.defineProperty(HttpApi, "__esModule", { value: true });
-  HttpApi.HttpApi = void 0;
-  const TonCache_1 = requireTonCache();
-  const dataloader_1 = __importDefault(requireDataloader());
-  const axios_12 = __importDefault(/* @__PURE__ */ requireAxios());
-  const zod_1 = /* @__PURE__ */ requireZod();
-  const version2 = require$$4$1.version;
-  const blockIdExt = zod_1.z.object({
-    "@type": zod_1.z.literal("ton.blockIdExt"),
-    workchain: zod_1.z.number(),
-    shard: zod_1.z.string(),
-    seqno: zod_1.z.number(),
-    root_hash: zod_1.z.string(),
-    file_hash: zod_1.z.string()
-  });
-  const addressInformation = zod_1.z.object({
-    balance: zod_1.z.union([zod_1.z.number(), zod_1.z.string()]),
-    extra_currencies: zod_1.z.optional(zod_1.z.array(zod_1.z.object({
-      "@type": zod_1.z.literal("extraCurrency"),
-      id: zod_1.z.number(),
-      amount: zod_1.z.string()
-    }))),
-    state: zod_1.z.union([zod_1.z.literal("active"), zod_1.z.literal("uninitialized"), zod_1.z.literal("frozen")]),
-    data: zod_1.z.string(),
-    code: zod_1.z.string(),
-    last_transaction_id: zod_1.z.object({
-      "@type": zod_1.z.literal("internal.transactionId"),
-      lt: zod_1.z.string(),
-      hash: zod_1.z.string()
-    }),
-    block_id: blockIdExt,
-    sync_utime: zod_1.z.number()
-  });
-  const bocResponse = zod_1.z.object({
-    "@type": zod_1.z.literal("ok")
-  });
-  const feeResponse = zod_1.z.object({
-    "@type": zod_1.z.literal("query.fees"),
-    source_fees: zod_1.z.object({
-      "@type": zod_1.z.literal("fees"),
-      in_fwd_fee: zod_1.z.number(),
-      storage_fee: zod_1.z.number(),
-      gas_fee: zod_1.z.number(),
-      fwd_fee: zod_1.z.number()
-    })
-  });
-  const callGetMethod = zod_1.z.object({
-    gas_used: zod_1.z.number(),
-    exit_code: zod_1.z.number(),
-    stack: zod_1.z.array(zod_1.z.unknown())
-  });
-  const messageData = zod_1.z.union([
-    zod_1.z.object({
-      "@type": zod_1.z.literal("msg.dataRaw"),
-      "body": zod_1.z.string()
-    }),
-    zod_1.z.object({
-      "@type": zod_1.z.literal("msg.dataText"),
-      "text": zod_1.z.string()
-    }),
-    zod_1.z.object({
-      "@type": zod_1.z.literal("msg.dataDecryptedText"),
-      "text": zod_1.z.string()
-    }),
-    zod_1.z.object({
-      "@type": zod_1.z.literal("msg.dataEncryptedText"),
-      "text": zod_1.z.string()
-    })
-  ]);
-  const message = zod_1.z.object({
-    source: zod_1.z.string(),
-    destination: zod_1.z.string(),
-    value: zod_1.z.string(),
-    fwd_fee: zod_1.z.string(),
-    ihr_fee: zod_1.z.string(),
-    created_lt: zod_1.z.string(),
-    body_hash: zod_1.z.string(),
-    msg_data: messageData,
-    message: zod_1.z.string().optional()
-  });
-  const transaction = zod_1.z.object({
-    data: zod_1.z.string(),
-    utime: zod_1.z.number(),
-    transaction_id: zod_1.z.object({
-      lt: zod_1.z.string(),
-      hash: zod_1.z.string()
-    }),
-    fee: zod_1.z.string(),
-    storage_fee: zod_1.z.string(),
-    other_fee: zod_1.z.string(),
-    in_msg: zod_1.z.union([zod_1.z.undefined(), message]),
-    out_msgs: zod_1.z.array(message)
-  });
-  const getTransactions = zod_1.z.array(transaction);
-  const getMasterchain = zod_1.z.object({
-    state_root_hash: zod_1.z.string(),
-    last: blockIdExt,
-    init: blockIdExt
-  });
-  const getShards = zod_1.z.object({
-    shards: zod_1.z.array(blockIdExt)
-  });
-  const blockShortTxt = zod_1.z.object({
-    "@type": zod_1.z.literal("blocks.shortTxId"),
-    mode: zod_1.z.number(),
-    account: zod_1.z.string(),
-    lt: zod_1.z.string(),
-    hash: zod_1.z.string()
-  });
-  const getBlockTransactions = zod_1.z.object({
-    id: blockIdExt,
-    req_count: zod_1.z.number(),
-    incomplete: zod_1.z.boolean(),
-    transactions: zod_1.z.array(blockShortTxt)
-  });
-  class TypedCache {
-    constructor(namespace, cache, codec, keyEncoder) {
-      this.namespace = namespace;
-      this.cache = cache;
-      this.codec = codec;
-      this.keyEncoder = keyEncoder;
-    }
-    async get(key2) {
-      let ex = await this.cache.get(this.namespace, this.keyEncoder(key2));
-      if (ex) {
-        let decoded = this.codec.safeParse(JSON.parse(ex));
-        if (decoded.success) {
-          return decoded.data;
-        }
-      }
-      return null;
-    }
-    async set(key2, value) {
-      if (value !== null) {
-        await this.cache.set(this.namespace, this.keyEncoder(key2), JSON.stringify(value));
-      } else {
-        await this.cache.set(this.namespace, this.keyEncoder(key2), null);
-      }
-    }
-  }
-  let HttpApi$1 = class HttpApi {
-    constructor(endpoint, parameters) {
-      this.endpoint = endpoint;
-      this.cache = new TonCache_1.InMemoryCache();
-      this.parameters = {
-        timeout: parameters?.timeout || 3e4,
-        // 30 seconds by default
-        apiKey: parameters?.apiKey,
-        adapter: parameters?.adapter
-      };
-      this.shardCache = new TypedCache("ton-shard", this.cache, zod_1.z.array(blockIdExt), (src2) => src2 + "");
-      this.shardLoader = new dataloader_1.default(async (src2) => {
-        return await Promise.all(src2.map(async (v2) => {
-          const cached = await this.shardCache.get(v2);
-          if (cached) {
-            return cached;
-          }
-          let loaded = (await this.doCall("shards", { seqno: v2 }, getShards)).shards;
-          await this.shardCache.set(v2, loaded);
-          return loaded;
-        }));
-      });
-      this.shardTransactionsCache = new TypedCache("ton-shard-tx", this.cache, getBlockTransactions, (src2) => src2.workchain + ":" + src2.shard + ":" + src2.seqno);
-      this.shardTransactionsLoader = new dataloader_1.default(async (src2) => {
-        return await Promise.all(src2.map(async (v2) => {
-          const cached = await this.shardTransactionsCache.get(v2);
-          if (cached) {
-            return cached;
-          }
-          let loaded = await this.doCall("getBlockTransactions", { workchain: v2.workchain, seqno: v2.seqno, shard: v2.shard }, getBlockTransactions);
-          await this.shardTransactionsCache.set(v2, loaded);
-          return loaded;
-        }));
-      }, { cacheKeyFn: (src2) => src2.workchain + ":" + src2.shard + ":" + src2.seqno });
-    }
-    getAddressInformation(address) {
-      return this.doCall("getAddressInformation", { address: address.toString() }, addressInformation);
-    }
-    async getTransactions(address, opts) {
-      const inclusive = opts.inclusive;
-      delete opts.inclusive;
-      let hash = void 0;
-      if (opts.hash) {
-        hash = Buffer.from(opts.hash, "base64").toString("hex");
-      }
-      let limit = opts.limit;
-      if (opts.hash && opts.lt && inclusive !== true) {
-        limit++;
-      }
-      let res = await this.doCall("getTransactions", { address: address.toString(), ...opts, limit, hash }, getTransactions);
-      if (res.length > limit) {
-        res = res.slice(0, limit);
-      }
-      if (opts.hash && opts.lt && inclusive !== true) {
-        res.shift();
-        return res;
-      } else {
-        return res;
-      }
-    }
-    async getMasterchainInfo() {
-      return await this.doCall("getMasterchainInfo", {}, getMasterchain);
-    }
-    async getShards(seqno) {
-      return await this.shardLoader.load(seqno);
-    }
-    async getBlockTransactions(workchain, seqno, shard) {
-      return await this.shardTransactionsLoader.load({ workchain, seqno, shard });
-    }
-    async getTransaction(address, lt2, hash) {
-      let convHash = Buffer.from(hash, "base64").toString("hex");
-      let res = await this.doCall("getTransactions", { address: address.toString(), lt: lt2, hash: convHash, limit: 1 }, getTransactions);
-      let ex = res.find((v2) => v2.transaction_id.lt === lt2 && v2.transaction_id.hash === hash);
-      if (ex) {
-        return ex;
-      } else {
-        return null;
-      }
-    }
-    async callGetMethod(address, method, stack) {
-      return await this.doCall("runGetMethod", { address: address.toString(), method, stack: serializeStack(stack) }, callGetMethod);
-    }
-    async sendBoc(body) {
-      await this.doCall("sendBoc", { boc: body.toString("base64") }, bocResponse);
-    }
-    async estimateFee(address, args) {
-      return await this.doCall("estimateFee", {
-        address: address.toString(),
-        body: args.body.toBoc().toString("base64"),
-        "init_data": args.initData ? args.initData.toBoc().toString("base64") : "",
-        "init_code": args.initCode ? args.initCode.toBoc().toString("base64") : "",
-        ignore_chksig: args.ignoreSignature
-      }, feeResponse);
-    }
-    async tryLocateResultTx(source, destination, created_lt) {
-      return await this.doCall("tryLocateResultTx", { source: source.toString(), destination: destination.toString(), created_lt }, transaction);
-    }
-    async tryLocateSourceTx(source, destination, created_lt) {
-      return await this.doCall("tryLocateSourceTx", { source: source.toString(), destination: destination.toString(), created_lt }, transaction);
-    }
-    async doCall(method, body, codec) {
-      let headers = {
-        "Content-Type": "application/json",
-        "X-Ton-Client-Version": version2
-      };
-      if (this.parameters.apiKey) {
-        headers["X-API-Key"] = this.parameters.apiKey;
-      }
-      let res = await axios_12.default.post(this.endpoint, JSON.stringify({
-        id: "1",
-        jsonrpc: "2.0",
-        method,
-        params: body
-      }), {
-        headers,
-        timeout: this.parameters.timeout,
-        adapter: this.parameters.adapter
-      });
-      if (res.status !== 200 || !res.data.ok) {
-        throw Error("Received error: " + JSON.stringify(res.data));
-      }
-      let decoded = codec.safeParse(res.data.result);
-      if (decoded.success) {
-        return decoded.data;
-      } else {
-        throw Error("Malformed response: " + decoded.error.format()._errors.join(", "));
-      }
-    }
-  };
-  HttpApi.HttpApi = HttpApi$1;
-  function serializeStack(src2) {
-    let stack = [];
-    for (let s2 of src2) {
-      if (s2.type === "int") {
-        stack.push(["num", s2.value.toString()]);
-      } else if (s2.type === "cell") {
-        stack.push(["tvm.Cell", s2.cell.toBoc().toString("base64")]);
-      } else if (s2.type === "slice") {
-        stack.push(["tvm.Slice", s2.cell.toBoc().toString("base64")]);
-      } else if (s2.type === "builder") {
-        stack.push(["tvm.Builder", s2.cell.toBoc().toString("base64")]);
-      } else {
-        throw Error("Unsupported stack item type: " + s2.type);
-      }
-    }
-    return stack;
-  }
-  return HttpApi;
-}
-var TonClient = {};
-var hasRequiredTonClient;
-function requireTonClient() {
-  if (hasRequiredTonClient) return TonClient;
-  hasRequiredTonClient = 1;
-  Object.defineProperty(TonClient, "__esModule", { value: true });
-  TonClient.TonClient = void 0;
-  const HttpApi_1 = requireHttpApi();
-  const core_1 = requireDist$4();
-  let TonClient$1 = class TonClient {
-    constructor(parameters) {
-      this.parameters = {
-        endpoint: parameters.endpoint
-      };
-      this.api = new HttpApi_1.HttpApi(this.parameters.endpoint, {
-        timeout: parameters.timeout,
-        apiKey: parameters.apiKey,
-        adapter: parameters.httpAdapter
-      });
-    }
-    /**
-     * Get Address Balance
-     * @param address address for balance check
-     * @returns balance
-     */
-    async getBalance(address) {
-      return (await this.getContractState(address)).balance;
-    }
-    /**
-     * Invoke get method
-     * @param address contract address
-     * @param name name of method
-     * @param params optional parameters
-     * @returns stack and gas_used field
-     */
-    async runMethod(address, name, stack = []) {
-      let res = await this.api.callGetMethod(address, name, stack);
-      if (res.exit_code !== 0) {
-        throw Error("Unable to execute get method. Got exit_code: " + res.exit_code);
-      }
-      return { gas_used: res.gas_used, stack: parseStack(res.stack) };
-    }
-    /**
-     * Invoke get method
-     * @param address contract address
-     * @param name name of method
-     * @param params optional parameters
-     * @returns stack and gas_used field
-     * @deprecated use runMethod instead
-     */
-    async callGetMethod(address, name, stack = []) {
-      return this.runMethod(address, name, stack);
-    }
-    /**
-     * Invoke get method that returns error code instead of throwing error
-     * @param address contract address
-     * @param name name of method
-     * @param params optional parameters
-     * @returns stack and gas_used field
-    */
-    async runMethodWithError(address, name, params = []) {
-      let res = await this.api.callGetMethod(address, name, params);
-      return { gas_used: res.gas_used, stack: parseStack(res.stack), exit_code: res.exit_code };
-    }
-    /**
-     * Invoke get method that returns error code instead of throwing error
-     * @param address contract address
-     * @param name name of method
-     * @param params optional parameters
-     * @returns stack and gas_used field
-     * @deprecated use runMethodWithError instead
-     */
-    async callGetMethodWithError(address, name, stack = []) {
-      return this.runMethodWithError(address, name, stack);
-    }
-    /**
-     * Get transactions
-     * @param address address
-     */
-    async getTransactions(address, opts) {
-      let tx = await this.api.getTransactions(address, opts);
-      let res = [];
-      for (let r of tx) {
-        res.push((0, core_1.loadTransaction)(core_1.Cell.fromBoc(Buffer.from(r.data, "base64"))[0].beginParse()));
-      }
-      return res;
-    }
-    /**
-     * Get transaction by it's id
-     * @param address address
-     * @param lt logical time
-     * @param hash transaction hash
-     * @returns transaction or null if not exist
-     */
-    async getTransaction(address, lt2, hash) {
-      let res = await this.api.getTransaction(address, lt2, hash);
-      if (res) {
-        return (0, core_1.loadTransaction)(core_1.Cell.fromBoc(Buffer.from(res.data, "base64"))[0].beginParse());
-      } else {
-        return null;
-      }
-    }
-    /**
-     * Locate outcoming transaction of destination address by incoming message
-     * @param source message source address
-     * @param destination message destination address
-     * @param created_lt message's created lt
-     * @returns transaction
-     */
-    async tryLocateResultTx(source, destination, created_lt) {
-      let res = await this.api.tryLocateResultTx(source, destination, created_lt);
-      return (0, core_1.loadTransaction)(core_1.Cell.fromBase64(res.data).beginParse());
-    }
-    /**
-     * Locate incoming transaction of source address by outcoming message
-     * @param source message source address
-     * @param destination message destination address
-     * @param created_lt message's created lt
-     * @returns transaction
-     */
-    async tryLocateSourceTx(source, destination, created_lt) {
-      let res = await this.api.tryLocateSourceTx(source, destination, created_lt);
-      return (0, core_1.loadTransaction)(core_1.Cell.fromBase64(res.data).beginParse());
-    }
-    /**
-     * Fetch latest masterchain info
-     * @returns masterchain info
-     */
-    async getMasterchainInfo() {
-      let r = await this.api.getMasterchainInfo();
-      return {
-        workchain: r.init.workchain,
-        shard: r.last.shard,
-        initSeqno: r.init.seqno,
-        latestSeqno: r.last.seqno
-      };
-    }
-    /**
-     * Fetch latest workchain shards
-     * @param seqno masterchain seqno
-     */
-    async getWorkchainShards(seqno) {
-      let r = await this.api.getShards(seqno);
-      return r.map((m2) => ({
-        workchain: m2.workchain,
-        shard: m2.shard,
-        seqno: m2.seqno
-      }));
-    }
-    /**
-     * Fetch transactions inf shards
-     * @param workchain
-     * @param seqno
-     * @param shard
-     */
-    async getShardTransactions(workchain, seqno, shard) {
-      let tx = await this.api.getBlockTransactions(workchain, seqno, shard);
-      if (tx.incomplete) {
-        throw Error("Unsupported");
-      }
-      return tx.transactions.map((v2) => ({
-        account: core_1.Address.parseRaw(v2.account),
-        lt: v2.lt,
-        hash: v2.hash
-      }));
-    }
-    /**
-     * Send message to a network
-     * @param src source message
-     */
-    async sendMessage(src2) {
-      const boc = (0, core_1.beginCell)().store((0, core_1.storeMessage)(src2)).endCell().toBoc();
-      await this.api.sendBoc(boc);
-    }
-    /**
-     * Send file to a network
-     * @param src source file
-     */
-    async sendFile(src2) {
-      await this.api.sendBoc(src2);
-    }
-    /**
-     * Estimate fees for external message
-     * @param address target address
-     * @returns
-     */
-    async estimateExternalMessageFee(address, args) {
-      return await this.api.estimateFee(address, { body: args.body, initCode: args.initCode, initData: args.initData, ignoreSignature: args.ignoreSignature });
-    }
-    /**
-     * Send external message to contract
-     * @param contract contract to send message
-     * @param src message body
-     */
-    async sendExternalMessage(contract, src2) {
-      if (await this.isContractDeployed(contract.address) || !contract.init) {
-        const message = (0, core_1.external)({
-          to: contract.address,
-          body: src2
-        });
-        await this.sendMessage(message);
-      } else {
-        const message = (0, core_1.external)({
-          to: contract.address,
-          init: contract.init,
-          body: src2
-        });
-        await this.sendMessage(message);
-      }
-    }
-    /**
-     * Check if contract is deployed
-     * @param address addres to check
-     * @returns true if contract is in active state
-     */
-    async isContractDeployed(address) {
-      return (await this.getContractState(address)).state === "active";
-    }
-    /**
-     * Resolves contract state
-     * @param address contract address
-     */
-    async getContractState(address) {
-      let info = await this.api.getAddressInformation(address);
-      let balance = BigInt(info.balance);
-      let state = info.state;
-      return {
-        balance,
-        extra_currencies: info.extra_currencies,
-        state,
-        code: info.code !== "" ? Buffer.from(info.code, "base64") : null,
-        data: info.data !== "" ? Buffer.from(info.data, "base64") : null,
-        lastTransaction: info.last_transaction_id.lt !== "0" ? {
-          lt: info.last_transaction_id.lt,
-          hash: info.last_transaction_id.hash
-        } : null,
-        blockId: {
-          workchain: info.block_id.workchain,
-          shard: info.block_id.shard,
-          seqno: info.block_id.seqno
-        },
-        timestampt: info.sync_utime
-      };
-    }
-    /**
-     * Open contract
-     * @param src source contract
-     * @returns contract
-     */
-    open(src2) {
-      return (0, core_1.openContract)(src2, (args) => createProvider(this, args.address, args.init));
-    }
-    /**
-     * Create a provider
-     * @param address address
-     * @param init optional init
-     * @returns provider
-     */
-    provider(address, init) {
-      return createProvider(this, address, init ?? null);
-    }
-  };
-  TonClient.TonClient = TonClient$1;
-  function parseStackEntry(x2) {
-    const typeName = x2["@type"];
-    switch (typeName) {
-      case "tvm.list":
-      case "tvm.tuple":
-        return x2.elements.map(parseStackEntry);
-      case "tvm.cell":
-        return core_1.Cell.fromBoc(Buffer.from(x2.bytes, "base64"))[0];
-      case "tvm.slice":
-        return core_1.Cell.fromBoc(Buffer.from(x2.bytes, "base64"))[0];
-      case "tvm.stackEntryCell":
-        return parseStackEntry(x2.cell);
-      case "tvm.stackEntrySlice":
-        return parseStackEntry(x2.slice);
-      case "tvm.stackEntryTuple":
-        return parseStackEntry(x2.tuple);
-      case "tvm.stackEntryList":
-        return parseStackEntry(x2.list);
-      case "tvm.stackEntryNumber":
-        return parseStackEntry(x2.number);
-      case "tvm.numberDecimal":
-        return BigInt(x2.number);
-      default:
-        throw Error("Unsupported item type: " + typeName);
-    }
-  }
-  function parseStackItem(s2) {
-    if (s2[0] === "num") {
-      let val = s2[1];
-      if (val.startsWith("-")) {
-        return { type: "int", value: -BigInt(val.slice(1)) };
-      } else {
-        return { type: "int", value: BigInt(val) };
-      }
-    } else if (s2[0] === "null") {
-      return { type: "null" };
-    } else if (s2[0] === "cell") {
-      return { type: "cell", cell: core_1.Cell.fromBoc(Buffer.from(s2[1].bytes, "base64"))[0] };
-    } else if (s2[0] === "slice") {
-      return { type: "slice", cell: core_1.Cell.fromBoc(Buffer.from(s2[1].bytes, "base64"))[0] };
-    } else if (s2[0] === "builder") {
-      return { type: "builder", cell: core_1.Cell.fromBoc(Buffer.from(s2[1].bytes, "base64"))[0] };
-    } else if (s2[0] === "tuple" || s2[0] === "list") {
-      if (s2[1].elements.length === 0) {
-        return { type: "null" };
-      }
-      return { type: "tuple", items: s2[1].elements.map(parseStackEntry) };
-    } else {
-      throw Error("Unsupported stack item type: " + s2[0]);
-    }
-  }
-  function parseStack(src2) {
-    let stack = [];
-    for (let s2 of src2) {
-      stack.push(parseStackItem(s2));
-    }
-    return new core_1.TupleReader(stack);
-  }
-  function createProvider(client, address, init) {
-    return {
-      async getState() {
-        let state = await client.getContractState(address);
-        let balance = state.balance;
-        let last = state.lastTransaction ? { lt: BigInt(state.lastTransaction.lt), hash: Buffer.from(state.lastTransaction.hash, "base64") } : null;
-        let ecMap = null;
-        let storage;
-        if (state.state === "active") {
-          storage = {
-            type: "active",
-            code: state.code ? state.code : null,
-            data: state.data ? state.data : null
-          };
-        } else if (state.state === "uninitialized") {
-          storage = {
-            type: "uninit"
-          };
-        } else if (state.state === "frozen") {
-          storage = {
-            type: "frozen",
-            stateHash: Buffer.alloc(0)
-          };
-        } else {
-          throw Error("Unsupported state");
-        }
-        if (state.extra_currencies && state.extra_currencies.length > 0) {
-          ecMap = {};
-          for (let ec of state.extra_currencies) {
-            ecMap[ec.id] = BigInt(ec.amount);
-          }
-        }
-        return {
-          balance,
-          extracurrency: ecMap,
-          last,
-          state: storage
-        };
-      },
-      async get(name, args) {
-        if (typeof name !== "string") {
-          throw new Error("Method name must be a string for TonClient provider");
-        }
-        let method = await client.runMethod(address, name, args);
-        return { stack: method.stack };
-      },
-      async external(message) {
-        let neededInit = null;
-        if (init && !await client.isContractDeployed(address)) {
-          neededInit = init;
-        }
-        const ext = (0, core_1.external)({
-          to: address,
-          init: neededInit,
-          body: message
-        });
-        let boc = (0, core_1.beginCell)().store((0, core_1.storeMessage)(ext)).endCell().toBoc();
-        await client.sendFile(boc);
-      },
-      async internal(via, message) {
-        let neededInit = null;
-        if (init && !await client.isContractDeployed(address)) {
-          neededInit = init;
-        }
-        let bounce = true;
-        if (message.bounce !== null && message.bounce !== void 0) {
-          bounce = message.bounce;
-        }
-        let value;
-        if (typeof message.value === "string") {
-          value = (0, core_1.toNano)(message.value);
-        } else {
-          value = message.value;
-        }
-        let body = null;
-        if (typeof message.body === "string") {
-          body = (0, core_1.comment)(message.body);
-        } else if (message.body) {
-          body = message.body;
-        }
-        await via.send({
-          to: address,
-          value,
-          bounce,
-          sendMode: message.sendMode,
-          extracurrency: message.extracurrency,
-          init: neededInit,
-          body
-        });
-      },
-      open(contract) {
-        return (0, core_1.openContract)(contract, (args) => createProvider(client, args.address, args.init ?? null));
-      },
-      getTransactions(address2, lt2, hash, limit) {
-        return client.getTransactions(address2, { limit: limit ?? 100, lt: lt2.toString(), hash: hash.toString("base64"), inclusive: true });
-      }
-    };
-  }
-  return TonClient;
-}
-var TonClient4 = {};
-var toUrlSafe = {};
-var hasRequiredToUrlSafe;
-function requireToUrlSafe() {
-  if (hasRequiredToUrlSafe) return toUrlSafe;
-  hasRequiredToUrlSafe = 1;
-  Object.defineProperty(toUrlSafe, "__esModule", { value: true });
-  toUrlSafe.toUrlSafe = toUrlSafe$1;
-  function toUrlSafe$1(src2) {
-    while (src2.indexOf("/") >= 0) {
-      src2 = src2.replace("/", "_");
-    }
-    while (src2.indexOf("+") >= 0) {
-      src2 = src2.replace("+", "-");
-    }
-    while (src2.indexOf("=") >= 0) {
-      src2 = src2.replace("=", "");
-    }
-    return src2;
-  }
-  return toUrlSafe;
-}
-var hasRequiredTonClient4;
-function requireTonClient4() {
-  if (hasRequiredTonClient4) return TonClient4;
-  hasRequiredTonClient4 = 1;
-  var __classPrivateFieldSet = TonClient4 && TonClient4.__classPrivateFieldSet || function(receiver, state, value, kind, f2) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f2) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f2 : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return kind === "a" ? f2.call(receiver, value) : f2 ? f2.value = value : state.set(receiver, value), value;
-  };
-  var __classPrivateFieldGet = TonClient4 && TonClient4.__classPrivateFieldGet || function(receiver, state, kind, f2) {
-    if (kind === "a" && !f2) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f2 : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f2 : kind === "a" ? f2.call(receiver) : f2 ? f2.value : state.get(receiver);
-  };
-  var __importDefault = TonClient4 && TonClient4.__importDefault || function(mod) {
-    return mod && mod.__esModule ? mod : { "default": mod };
-  };
-  var _TonClient4_endpoint, _TonClient4_timeout, _TonClient4_adapter, _TonClient4_axios;
-  Object.defineProperty(TonClient4, "__esModule", { value: true });
-  TonClient4.TonClient4 = void 0;
-  const axios_12 = __importDefault(/* @__PURE__ */ requireAxios());
-  const core_1 = requireDist$4();
-  const toUrlSafe_1 = requireToUrlSafe();
-  const zod_1 = /* @__PURE__ */ requireZod();
-  let TonClient4$1 = class TonClient4 {
-    constructor(args) {
-      _TonClient4_endpoint.set(this, void 0);
-      _TonClient4_timeout.set(this, void 0);
-      _TonClient4_adapter.set(this, void 0);
-      _TonClient4_axios.set(this, void 0);
-      __classPrivateFieldSet(this, _TonClient4_axios, axios_12.default.create(), "f");
-      __classPrivateFieldSet(this, _TonClient4_endpoint, args.endpoint, "f");
-      __classPrivateFieldSet(this, _TonClient4_timeout, args.timeout || 5e3, "f");
-      __classPrivateFieldSet(this, _TonClient4_adapter, args.httpAdapter, "f");
-      if (args.requestInterceptor) {
-        __classPrivateFieldGet(this, _TonClient4_axios, "f").interceptors.request.use(args.requestInterceptor);
-      }
-    }
-    /**
-     * Get Last Block
-     * @returns last block info
-     */
-    async getLastBlock() {
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/latest", { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let lastBlock = lastBlockCodec.safeParse(res.data);
-      if (!lastBlock.success) {
-        throw Error("Mailformed response: " + lastBlock.error.format()._errors.join(", "));
-      }
-      return lastBlock.data;
-    }
-    /**
-     * Get block info
-     * @param seqno block sequence number
-     * @returns block info
-     */
-    async getBlock(seqno) {
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let block = blockCodec.safeParse(res.data);
-      if (!block.success) {
-        throw Error("Mailformed response");
-      }
-      if (!block.data.exist) {
-        throw Error("Block is out of scope");
-      }
-      return block.data.block;
-    }
-    /**
-     * Get block info by unix timestamp
-     * @param ts unix timestamp
-     * @returns block info
-     */
-    async getBlockByUtime(ts) {
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/utime/" + ts, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let block = blockCodec.safeParse(res.data);
-      if (!block.success) {
-        throw Error("Mailformed response");
-      }
-      if (!block.data.exist) {
-        throw Error("Block is out of scope");
-      }
-      return block.data.block;
-    }
-    /**
-     * Get block info by unix timestamp
-     * @param seqno block sequence number
-     * @param address account address
-     * @returns account info
-     */
-    async getAccount(seqno, address) {
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/" + address.toString({ urlSafe: true }), { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let account = accountCodec.safeParse(res.data);
-      if (!account.success) {
-        throw Error("Mailformed response");
-      }
-      return account.data;
-    }
-    /**
-     * Get account lite info (without code and data)
-     * @param seqno block sequence number
-     * @param address account address
-     * @returns account lite info
-     */
-    async getAccountLite(seqno, address) {
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/" + address.toString({ urlSafe: true }) + "/lite", { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let account = accountLiteCodec.safeParse(res.data);
-      if (!account.success) {
-        throw Error("Mailformed response");
-      }
-      return account.data;
-    }
-    /**
-     * Check if contract is deployed
-     * @param address addres to check
-     * @returns true if contract is in active state
-     */
-    async isContractDeployed(seqno, address) {
-      let account = await this.getAccountLite(seqno, address);
-      return account.account.state.type === "active";
-    }
-    /**
-     * Check if account was updated since
-     * @param seqno block sequence number
-     * @param address account address
-     * @param lt account last transaction lt
-     * @returns account change info
-     */
-    async isAccountChanged(seqno, address, lt2) {
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/" + address.toString({ urlSafe: true }) + "/changed/" + lt2.toString(10), { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let changed = changedCodec.safeParse(res.data);
-      if (!changed.success) {
-        throw Error("Mailformed response");
-      }
-      return changed.data;
-    }
-    /**
-     * Load unparsed account transactions
-     * @param address address
-     * @param lt last transaction lt
-     * @param hash last transaction hash
-     * @returns unparsed transactions
-     */
-    async getAccountTransactions(address, lt2, hash) {
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/account/" + address.toString({ urlSafe: true }) + "/tx/" + lt2.toString(10) + "/" + (0, toUrlSafe_1.toUrlSafe)(hash.toString("base64")), { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let transactions = transactionsCodec.safeParse(res.data);
-      if (!transactions.success) {
-        throw Error("Mailformed response");
-      }
-      let data = transactions.data;
-      let tx = [];
-      let cells = core_1.Cell.fromBoc(Buffer.from(data.boc, "base64"));
-      for (let i = 0; i < data.blocks.length; i++) {
-        tx.push({
-          block: data.blocks[i],
-          tx: (0, core_1.loadTransaction)(cells[i].beginParse())
-        });
-      }
-      return tx;
-    }
-    /**
-     * Load parsed account transactions
-     * @param address address
-     * @param lt last transaction lt
-     * @param hash last transaction hash
-     * @param count number of transactions to load
-     * @returns parsed transactions
-     */
-    async getAccountTransactionsParsed(address, lt2, hash, count = 20) {
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/account/" + address.toString({ urlSafe: true }) + "/tx/parsed/" + lt2.toString(10) + "/" + (0, toUrlSafe_1.toUrlSafe)(hash.toString("base64")), {
-        adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"),
-        timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f"),
-        params: {
-          count
-        }
-      });
-      let parsedTransactionsRes = parsedTransactionsCodec.safeParse(res.data);
-      if (!parsedTransactionsRes.success) {
-        throw Error("Mailformed response");
-      }
-      return parsedTransactionsRes.data;
-    }
-    /**
-     * Get network config
-     * @param seqno block sequence number
-     * @param ids optional config ids
-     * @returns network config
-     */
-    async getConfig(seqno, ids) {
-      let tail = "";
-      if (ids && ids.length > 0) {
-        tail = "/" + [...ids].sort().join(",");
-      }
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/config" + tail, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let config = configCodec.safeParse(res.data);
-      if (!config.success) {
-        throw Error("Mailformed response");
-      }
-      return config.data;
-    }
-    /**
-     * Execute run method
-     * @param seqno block sequence number
-     * @param address account address
-     * @param name method name
-     * @param args method arguments
-     * @returns method result
-     */
-    async runMethod(seqno, address, name, args) {
-      let tail = args && args.length > 0 ? "/" + (0, toUrlSafe_1.toUrlSafe)((0, core_1.serializeTuple)(args).toBoc({ idx: false, crc32: false }).toString("base64")) : "";
-      let url = __classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/block/" + seqno + "/" + address.toString({ urlSafe: true }) + "/run/" + encodeURIComponent(name) + tail;
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").get(url, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let runMethod = runMethodCodec.safeParse(res.data);
-      if (!runMethod.success) {
-        throw Error("Mailformed response");
-      }
-      let resultTuple = runMethod.data.resultRaw ? (0, core_1.parseTuple)(core_1.Cell.fromBoc(Buffer.from(runMethod.data.resultRaw, "base64"))[0]) : [];
-      return {
-        exitCode: runMethod.data.exitCode,
-        result: resultTuple,
-        resultRaw: runMethod.data.resultRaw,
-        block: runMethod.data.block,
-        shardBlock: runMethod.data.shardBlock,
-        reader: new core_1.TupleReader(resultTuple)
-      };
-    }
-    /**
-     * Send external message
-     * @param message message boc
-     * @returns message status
-     */
-    async sendMessage(message) {
-      let res = await __classPrivateFieldGet(this, _TonClient4_axios, "f").post(__classPrivateFieldGet(this, _TonClient4_endpoint, "f") + "/send", { boc: message.toString("base64") }, { adapter: __classPrivateFieldGet(this, _TonClient4_adapter, "f"), timeout: __classPrivateFieldGet(this, _TonClient4_timeout, "f") });
-      let send = sendCodec.safeParse(res.data);
-      if (!send.success) {
-        throw Error("Mailformed response");
-      }
-      return { status: res.data.status };
-    }
-    /**
-     * Open smart contract
-     * @param contract contract
-     * @returns opened contract
-     */
-    open(contract) {
-      return (0, core_1.openContract)(contract, (args) => createProvider(this, null, args.address, args.init));
-    }
-    /**
-     * Open smart contract
-     * @param block block number
-     * @param contract contract
-     * @returns opened contract
-     */
-    openAt(block, contract) {
-      return (0, core_1.openContract)(contract, (args) => createProvider(this, block, args.address, args.init));
-    }
-    /**
-     * Create provider
-     * @param address address
-     * @param init optional init data
-     * @returns provider
-     */
-    provider(address, init) {
-      return createProvider(this, null, address, init ?? null);
-    }
-    /**
-     * Create provider at specified block number
-     * @param block block number
-     * @param address address
-     * @param init optional init data
-     * @returns provider
-     */
-    providerAt(block, address, init) {
-      return createProvider(this, block, address, init ?? null);
-    }
-  };
-  TonClient4.TonClient4 = TonClient4$1;
-  _TonClient4_endpoint = /* @__PURE__ */ new WeakMap(), _TonClient4_timeout = /* @__PURE__ */ new WeakMap(), _TonClient4_adapter = /* @__PURE__ */ new WeakMap(), _TonClient4_axios = /* @__PURE__ */ new WeakMap();
-  function createProvider(client, block, address, init) {
-    return {
-      async getState() {
-        let sq = block;
-        if (sq === null) {
-          let res = await client.getLastBlock();
-          sq = res.last.seqno;
-        }
-        let state = await client.getAccount(sq, address);
-        let last = state.account.last ? { lt: BigInt(state.account.last.lt), hash: Buffer.from(state.account.last.hash, "base64") } : null;
-        let storage;
-        if (state.account.state.type === "active") {
-          storage = {
-            type: "active",
-            code: state.account.state.code ? Buffer.from(state.account.state.code, "base64") : null,
-            data: state.account.state.data ? Buffer.from(state.account.state.data, "base64") : null
-          };
-        } else if (state.account.state.type === "uninit") {
-          storage = {
-            type: "uninit"
-          };
-        } else if (state.account.state.type === "frozen") {
-          storage = {
-            type: "frozen",
-            stateHash: Buffer.from(state.account.state.stateHash, "base64")
-          };
-        } else {
-          throw Error("Unsupported state");
-        }
-        let ecMap = null;
-        if (state.account.balance.currencies) {
-          ecMap = {};
-          let currencies = state.account.balance.currencies;
-          for (let [k2, v2] of Object.entries(currencies)) {
-            ecMap[Number(k2)] = BigInt(v2);
-          }
-        }
-        return {
-          balance: BigInt(state.account.balance.coins),
-          extracurrency: ecMap,
-          last,
-          state: storage
-        };
-      },
-      async get(name, args) {
-        if (typeof name !== "string") {
-          throw new Error("Method name must be a string for TonClient4 provider");
-        }
-        let sq = block;
-        if (sq === null) {
-          let res = await client.getLastBlock();
-          sq = res.last.seqno;
-        }
-        let method = await client.runMethod(sq, address, name, args);
-        if (method.exitCode !== 0 && method.exitCode !== 1) {
-          throw Error("Exit code: " + method.exitCode);
-        }
-        return {
-          stack: new core_1.TupleReader(method.result)
-        };
-      },
-      async external(message) {
-        let last = await client.getLastBlock();
-        let neededInit = null;
-        if (init && (await client.getAccountLite(last.last.seqno, address)).account.state.type !== "active") {
-          neededInit = init;
-        }
-        const ext = (0, core_1.external)({
-          to: address,
-          init: neededInit,
-          body: message
-        });
-        let pkg = (0, core_1.beginCell)().store((0, core_1.storeMessage)(ext)).endCell().toBoc();
-        await client.sendMessage(pkg);
-      },
-      async internal(via, message) {
-        let last = await client.getLastBlock();
-        let neededInit = null;
-        if (init && (await client.getAccountLite(last.last.seqno, address)).account.state.type !== "active") {
-          neededInit = init;
-        }
-        let bounce = true;
-        if (message.bounce !== null && message.bounce !== void 0) {
-          bounce = message.bounce;
-        }
-        let value;
-        if (typeof message.value === "string") {
-          value = (0, core_1.toNano)(message.value);
-        } else {
-          value = message.value;
-        }
-        let body = null;
-        if (typeof message.body === "string") {
-          body = (0, core_1.comment)(message.body);
-        } else if (message.body) {
-          body = message.body;
-        }
-        await via.send({
-          to: address,
-          value,
-          extracurrency: message.extracurrency,
-          bounce,
-          sendMode: message.sendMode,
-          init: neededInit,
-          body
-        });
-      },
-      open(contract) {
-        return (0, core_1.openContract)(contract, (args) => createProvider(client, block, args.address, args.init ?? null));
-      },
-      async getTransactions(address2, lt2, hash, limit) {
-        const useLimit = typeof limit === "number";
-        if (useLimit && limit <= 0) {
-          return [];
-        }
-        let transactions = [];
-        do {
-          const txs = await client.getAccountTransactions(address2, lt2, hash);
-          const firstTx = txs[0].tx;
-          const [firstLt, firstHash] = [firstTx.lt, firstTx.hash()];
-          const needSkipFirst = transactions.length > 0 && firstLt === lt2 && firstHash.equals(hash);
-          if (needSkipFirst) {
-            txs.shift();
-          }
-          if (txs.length === 0) {
-            break;
-          }
-          const lastTx = txs[txs.length - 1].tx;
-          const [lastLt, lastHash] = [lastTx.lt, lastTx.hash()];
-          if (lastLt === lt2 && lastHash.equals(hash)) {
-            break;
-          }
-          transactions.push(...txs.map((tx) => tx.tx));
-          lt2 = lastLt;
-          hash = lastHash;
-        } while (useLimit && transactions.length < limit);
-        if (useLimit) {
-          transactions = transactions.slice(0, limit);
-        }
-        return transactions;
-      }
-    };
-  }
-  const lastBlockCodec = zod_1.z.object({
-    last: zod_1.z.object({
-      seqno: zod_1.z.number(),
-      shard: zod_1.z.string(),
-      workchain: zod_1.z.number(),
-      fileHash: zod_1.z.string(),
-      rootHash: zod_1.z.string()
-    }),
-    init: zod_1.z.object({
-      fileHash: zod_1.z.string(),
-      rootHash: zod_1.z.string()
-    }),
-    stateRootHash: zod_1.z.string(),
-    now: zod_1.z.number()
-  });
-  const blockCodec = zod_1.z.union([zod_1.z.object({
-    exist: zod_1.z.literal(false)
-  }), zod_1.z.object({
-    exist: zod_1.z.literal(true),
-    block: zod_1.z.object({
-      shards: zod_1.z.array(zod_1.z.object({
-        workchain: zod_1.z.number(),
-        seqno: zod_1.z.number(),
-        shard: zod_1.z.string(),
-        rootHash: zod_1.z.string(),
-        fileHash: zod_1.z.string(),
-        transactions: zod_1.z.array(zod_1.z.object({
-          account: zod_1.z.string(),
-          hash: zod_1.z.string(),
-          lt: zod_1.z.string()
-        }))
-      }))
-    })
-  })]);
-  const storageStatCodec = zod_1.z.object({
-    lastPaid: zod_1.z.number(),
-    duePayment: zod_1.z.union([zod_1.z.null(), zod_1.z.string()]),
-    used: zod_1.z.object({
-      bits: zod_1.z.number(),
-      cells: zod_1.z.number(),
-      publicCells: zod_1.z.number().optional()
-    })
-  });
-  const accountCodec = zod_1.z.object({
-    account: zod_1.z.object({
-      state: zod_1.z.union([
-        zod_1.z.object({ type: zod_1.z.literal("uninit") }),
-        zod_1.z.object({ type: zod_1.z.literal("active"), code: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]), data: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]) }),
-        zod_1.z.object({ type: zod_1.z.literal("frozen"), stateHash: zod_1.z.string() })
-      ]),
-      balance: zod_1.z.object({
-        coins: zod_1.z.string(),
-        currencies: zod_1.z.record(zod_1.z.string(), zod_1.z.string())
-      }),
-      last: zod_1.z.union([
-        zod_1.z.null(),
-        zod_1.z.object({
-          lt: zod_1.z.string(),
-          hash: zod_1.z.string()
-        })
-      ]),
-      storageStat: zod_1.z.union([zod_1.z.null(), storageStatCodec])
-    }),
-    block: zod_1.z.object({
-      workchain: zod_1.z.number(),
-      seqno: zod_1.z.number(),
-      shard: zod_1.z.string(),
-      rootHash: zod_1.z.string(),
-      fileHash: zod_1.z.string()
-    })
-  });
-  const accountLiteCodec = zod_1.z.object({
-    account: zod_1.z.object({
-      state: zod_1.z.union([
-        zod_1.z.object({ type: zod_1.z.literal("uninit") }),
-        zod_1.z.object({ type: zod_1.z.literal("active"), codeHash: zod_1.z.string(), dataHash: zod_1.z.string() }),
-        zod_1.z.object({ type: zod_1.z.literal("frozen"), stateHash: zod_1.z.string() })
-      ]),
-      balance: zod_1.z.object({
-        coins: zod_1.z.string(),
-        currencies: zod_1.z.record(zod_1.z.string(), zod_1.z.string())
-      }),
-      last: zod_1.z.union([
-        zod_1.z.null(),
-        zod_1.z.object({
-          lt: zod_1.z.string(),
-          hash: zod_1.z.string()
-        })
-      ]),
-      storageStat: zod_1.z.union([zod_1.z.null(), storageStatCodec])
-    })
-  });
-  const changedCodec = zod_1.z.object({
-    changed: zod_1.z.boolean(),
-    block: zod_1.z.object({
-      workchain: zod_1.z.number(),
-      seqno: zod_1.z.number(),
-      shard: zod_1.z.string(),
-      rootHash: zod_1.z.string(),
-      fileHash: zod_1.z.string()
-    })
-  });
-  const runMethodCodec = zod_1.z.object({
-    exitCode: zod_1.z.number(),
-    resultRaw: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]),
-    block: zod_1.z.object({
-      workchain: zod_1.z.number(),
-      seqno: zod_1.z.number(),
-      shard: zod_1.z.string(),
-      rootHash: zod_1.z.string(),
-      fileHash: zod_1.z.string()
-    }),
-    shardBlock: zod_1.z.object({
-      workchain: zod_1.z.number(),
-      seqno: zod_1.z.number(),
-      shard: zod_1.z.string(),
-      rootHash: zod_1.z.string(),
-      fileHash: zod_1.z.string()
-    })
-  });
-  const configCodec = zod_1.z.object({
-    config: zod_1.z.object({
-      cell: zod_1.z.string(),
-      address: zod_1.z.string(),
-      globalBalance: zod_1.z.object({
-        coins: zod_1.z.string()
-      })
-    })
-  });
-  const sendCodec = zod_1.z.object({
-    status: zod_1.z.number()
-  });
-  const blocksCodec = zod_1.z.array(zod_1.z.object({
-    workchain: zod_1.z.number(),
-    seqno: zod_1.z.number(),
-    shard: zod_1.z.string(),
-    rootHash: zod_1.z.string(),
-    fileHash: zod_1.z.string()
-  }));
-  const transactionsCodec = zod_1.z.object({
-    blocks: blocksCodec,
-    boc: zod_1.z.string()
-  });
-  const parsedAddressExternalCodec = zod_1.z.object({
-    bits: zod_1.z.number(),
-    data: zod_1.z.string()
-  });
-  const parsedMessageInfoCodec = zod_1.z.union([
-    zod_1.z.object({
-      type: zod_1.z.literal("internal"),
-      value: zod_1.z.string(),
-      dest: zod_1.z.string(),
-      src: zod_1.z.string(),
-      bounced: zod_1.z.boolean(),
-      bounce: zod_1.z.boolean(),
-      ihrDisabled: zod_1.z.boolean(),
-      createdAt: zod_1.z.number(),
-      createdLt: zod_1.z.string(),
-      fwdFee: zod_1.z.string(),
-      ihrFee: zod_1.z.string()
-    }),
-    zod_1.z.object({
-      type: zod_1.z.literal("external-in"),
-      dest: zod_1.z.string(),
-      src: zod_1.z.union([parsedAddressExternalCodec, zod_1.z.null()]),
-      importFee: zod_1.z.string()
-    }),
-    zod_1.z.object({
-      type: zod_1.z.literal("external-out"),
-      dest: zod_1.z.union([parsedAddressExternalCodec, zod_1.z.null()])
-    })
-  ]);
-  const parsedStateInitCodec = zod_1.z.object({
-    splitDepth: zod_1.z.union([zod_1.z.number(), zod_1.z.null()]),
-    code: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]),
-    data: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]),
-    special: zod_1.z.union([zod_1.z.object({ tick: zod_1.z.boolean(), tock: zod_1.z.boolean() }), zod_1.z.null()])
-  });
-  const parsedMessageCodec = zod_1.z.object({
-    body: zod_1.z.string(),
-    info: parsedMessageInfoCodec,
-    init: zod_1.z.union([parsedStateInitCodec, zod_1.z.null()])
-  });
-  const accountStatusCodec = zod_1.z.union([zod_1.z.literal("uninitialized"), zod_1.z.literal("frozen"), zod_1.z.literal("active"), zod_1.z.literal("non-existing")]);
-  const txBodyCodec = zod_1.z.union([
-    zod_1.z.object({ type: zod_1.z.literal("comment"), comment: zod_1.z.string() }),
-    zod_1.z.object({ type: zod_1.z.literal("payload"), cell: zod_1.z.string() })
-  ]);
-  const parsedOperationItemCodec = zod_1.z.union([
-    zod_1.z.object({ kind: zod_1.z.literal("ton"), amount: zod_1.z.string() }),
-    zod_1.z.object({ kind: zod_1.z.literal("token"), amount: zod_1.z.string() })
-  ]);
-  const supportedMessageTypeCodec = zod_1.z.union([
-    zod_1.z.literal("jetton::excesses"),
-    zod_1.z.literal("jetton::transfer"),
-    zod_1.z.literal("jetton::transfer_notification"),
-    zod_1.z.literal("deposit"),
-    zod_1.z.literal("deposit::ok"),
-    zod_1.z.literal("withdraw"),
-    zod_1.z.literal("withdraw::all"),
-    zod_1.z.literal("withdraw::delayed"),
-    zod_1.z.literal("withdraw::ok"),
-    zod_1.z.literal("airdrop")
-  ]);
-  const opCodec = zod_1.z.object({
-    type: supportedMessageTypeCodec,
-    options: zod_1.z.optional(zod_1.z.record(zod_1.z.string()))
-  });
-  const parsedOperationCodec = zod_1.z.object({
-    address: zod_1.z.string(),
-    comment: zod_1.z.optional(zod_1.z.string()),
-    items: zod_1.z.array(parsedOperationItemCodec),
-    op: zod_1.z.optional(opCodec)
-  });
-  const parsedTransactionCodec = zod_1.z.object({
-    address: zod_1.z.string(),
-    lt: zod_1.z.string(),
-    hash: zod_1.z.string(),
-    prevTransaction: zod_1.z.object({
-      lt: zod_1.z.string(),
-      hash: zod_1.z.string()
-    }),
-    time: zod_1.z.number(),
-    outMessagesCount: zod_1.z.number(),
-    oldStatus: accountStatusCodec,
-    newStatus: accountStatusCodec,
-    fees: zod_1.z.string(),
-    update: zod_1.z.object({
-      oldHash: zod_1.z.string(),
-      newHash: zod_1.z.string()
-    }),
-    inMessage: zod_1.z.union([parsedMessageCodec, zod_1.z.null()]),
-    outMessages: zod_1.z.array(parsedMessageCodec),
-    parsed: zod_1.z.object({
-      seqno: zod_1.z.union([zod_1.z.number(), zod_1.z.null()]),
-      body: zod_1.z.union([txBodyCodec, zod_1.z.null()]),
-      status: zod_1.z.union([zod_1.z.literal("success"), zod_1.z.literal("failed"), zod_1.z.literal("pending")]),
-      dest: zod_1.z.union([zod_1.z.string(), zod_1.z.null()]),
-      kind: zod_1.z.union([zod_1.z.literal("out"), zod_1.z.literal("in")]),
-      amount: zod_1.z.string(),
-      resolvedAddress: zod_1.z.string(),
-      bounced: zod_1.z.boolean(),
-      mentioned: zod_1.z.array(zod_1.z.string())
-    }),
-    operation: parsedOperationCodec
-  });
-  const parsedTransactionsCodec = zod_1.z.object({
-    blocks: blocksCodec,
-    transactions: zod_1.z.array(parsedTransactionCodec)
-  });
-  return TonClient4;
-}
-var WalletContractV1R1 = {};
-var createWalletTransfer = {};
-var WalletContractV5Beta$1 = {};
-var WalletV5BetaWalletId = {};
-var hasRequiredWalletV5BetaWalletId;
-function requireWalletV5BetaWalletId() {
-  if (hasRequiredWalletV5BetaWalletId) return WalletV5BetaWalletId;
-  hasRequiredWalletV5BetaWalletId = 1;
-  Object.defineProperty(WalletV5BetaWalletId, "__esModule", { value: true });
-  WalletV5BetaWalletId.loadWalletIdV5Beta = loadWalletIdV5Beta;
-  WalletV5BetaWalletId.storeWalletIdV5Beta = storeWalletIdV5Beta;
-  const core_1 = requireDist$4();
-  const walletV5BetaVersionsSerialisation = {
-    v5: 0
-  };
-  function loadWalletIdV5Beta(value) {
-    const bitReader = new core_1.BitReader(new core_1.BitString(typeof value === "bigint" ? Buffer.from(value.toString(16), "hex") : value instanceof core_1.Slice ? value.loadBuffer(10) : value, 0, 80));
-    const networkGlobalId = bitReader.loadInt(32);
-    const workchain = bitReader.loadInt(8);
-    const walletVersionRaw = bitReader.loadUint(8);
-    const subwalletNumber = bitReader.loadUint(32);
-    const walletVersion = Object.entries(walletV5BetaVersionsSerialisation).find(([_, value2]) => value2 === walletVersionRaw)?.[0];
-    if (walletVersion === void 0) {
-      throw new Error(`Can't deserialize walletId: unknown wallet version ${walletVersionRaw}`);
-    }
-    return { networkGlobalId, workchain, walletVersion, subwalletNumber };
-  }
-  function storeWalletIdV5Beta(walletId) {
-    return (builder2) => {
-      builder2.storeInt(walletId.networkGlobalId, 32);
-      builder2.storeInt(walletId.workchain, 8);
-      builder2.storeUint(walletV5BetaVersionsSerialisation[walletId.walletVersion], 8);
-      builder2.storeUint(walletId.subwalletNumber, 32);
-    };
-  }
-  return WalletV5BetaWalletId;
-}
-var hasRequiredWalletContractV5Beta$1;
-function requireWalletContractV5Beta$1() {
-  if (hasRequiredWalletContractV5Beta$1) return WalletContractV5Beta$1;
-  hasRequiredWalletContractV5Beta$1 = 1;
-  Object.defineProperty(WalletContractV5Beta$1, "__esModule", { value: true });
-  WalletContractV5Beta$1.WalletContractV5Beta = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  const WalletV5BetaWalletId_1 = requireWalletV5BetaWalletId();
-  class WalletContractV5Beta2 {
-    static create(args) {
-      const walletId = {
-        networkGlobalId: args.walletId?.networkGlobalId ?? -239,
-        workchain: args?.walletId?.workchain ?? 0,
-        subwalletNumber: args?.walletId?.subwalletNumber ?? 0,
-        walletVersion: args?.walletId?.walletVersion ?? "v5"
-      };
-      return new WalletContractV5Beta2(walletId, args.publicKey);
-    }
-    constructor(walletId, publicKey) {
-      this.walletId = walletId;
-      this.publicKey = publicKey;
-      this.walletId = walletId;
-      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAIwAIQgLkzzsvTG1qYeoPK1RH0mZ4WyavNjfbLe7mvNGqgm80Eg3NjhE=", "base64"))[0];
-      let data = (0, core_1.beginCell)().storeInt(0, 33).store((0, WalletV5BetaWalletId_1.storeWalletIdV5Beta)(this.walletId)).storeBuffer(this.publicKey, 32).storeBit(0).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(this.walletId.workchain, { code, data });
-    }
-    /**
-     * Get Wallet Balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        let res = await provider.get("seqno", []);
-        return res.stack.readNumber();
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Get Wallet Extensions
-     */
-    async getExtensions(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        const result = await provider.get("get_extensions", []);
-        return result.stack.readCellOpt();
-      } else {
-        return null;
-      }
-    }
-    /**
-     * Get Wallet Extensions
-     */
-    async getExtensionsArray(provider) {
-      const extensions = await this.getExtensions(provider);
-      if (!extensions) {
-        return [];
-      }
-      const dict = core_1.Dictionary.loadDirect(core_1.Dictionary.Keys.BigUint(256), core_1.Dictionary.Values.BigInt(8), extensions);
-      return dict.keys().map((key2) => {
-        const wc = dict.get(key2);
-        const addressHex = key2 ^ wc + 1n;
-        return core_1.Address.parseRaw(`${wc}:${addressHex.toString(16).padStart(64, "0")}`);
-      });
-    }
-    /**
-     * Get is secret-key authentication enabled
-     */
-    async getIsSecretKeyAuthEnabled(provider) {
-      let res = await provider.get("get_is_signature_auth_allowed", []);
-      const result = res.stack.readNumber();
-      return result !== 0;
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      const transfer = await this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Sign and send add extension request
-     */
-    async sendAddExtension(provider, args) {
-      const request = await this.createAddExtension(args);
-      await this.send(provider, request);
-    }
-    /**
-     * Sign and send remove extension request
-     */
-    async sendRemoveExtension(provider, args) {
-      const request = await this.createRemoveExtension(args);
-      await this.send(provider, request);
-    }
-    /**
-     * Sign and send actions batch
-     */
-    async sendActionsBatch(provider, args) {
-      const request = await this.createRequest(args);
-      await this.send(provider, request);
-    }
-    createActions(args) {
-      const actions = args.messages.map((message) => ({ type: "sendMsg", mode: args.sendMode, outMsg: message }));
-      return actions;
-    }
-    /**
-     * Create signed transfer
-     */
-    createTransfer(args) {
-      return this.createRequest({
-        ...args,
-        actions: this.createActions({ messages: args.messages, sendMode: args.sendMode })
-      });
-    }
-    /**
-     * Create signed add extension request
-     */
-    createAddExtension(args) {
-      return this.createRequest({
-        ...args,
-        actions: [{
-          type: "addExtension",
-          address: args.extensionAddress
-        }]
-      });
-    }
-    /**
-     * Create signed remove extension request
-     */
-    createRemoveExtension(args) {
-      return this.createRequest({
-        ...args,
-        actions: [{
-          type: "removeExtension",
-          address: args.extensionAddress
-        }]
-      });
-    }
-    /**
-     * Create signed request or extension auth request
-     */
-    createRequest(args) {
-      if (args.authType === "extension") {
-        return (0, createWalletTransfer_1.createWalletTransferV5Beta)(args);
-      }
-      return (0, createWalletTransfer_1.createWalletTransferV5Beta)({
-        ...args,
-        walletId: (0, WalletV5BetaWalletId_1.storeWalletIdV5Beta)(this.walletId)
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY + core_1.SendMode.IGNORE_ERRORS,
-            messages: [(0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              extracurrency: args.extracurrency,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })]
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  }
-  WalletContractV5Beta$1.WalletContractV5Beta = WalletContractV5Beta2;
-  WalletContractV5Beta2.OpCodes = {
-    auth_extension: 1702392942,
-    auth_signed_external: 1936287598,
-    auth_signed_internal: 1936289396
-  };
-  return WalletContractV5Beta$1;
-}
-var WalletV5BetaActions = {};
-var WalletV5OutActions = {};
-var hasRequiredWalletV5OutActions;
-function requireWalletV5OutActions() {
-  if (hasRequiredWalletV5OutActions) return WalletV5OutActions;
-  hasRequiredWalletV5OutActions = 1;
-  Object.defineProperty(WalletV5OutActions, "__esModule", { value: true });
-  WalletV5OutActions.isOutActionExtended = isOutActionExtended;
-  WalletV5OutActions.isOutActionBasic = isOutActionBasic;
-  function isOutActionExtended(action) {
-    return action.type === "setIsPublicKeyEnabled" || action.type === "addExtension" || action.type === "removeExtension";
-  }
-  function isOutActionBasic(action) {
-    return !isOutActionExtended(action);
-  }
-  return WalletV5OutActions;
-}
-var hasRequiredWalletV5BetaActions;
-function requireWalletV5BetaActions() {
-  if (hasRequiredWalletV5BetaActions) return WalletV5BetaActions;
-  hasRequiredWalletV5BetaActions = 1;
-  Object.defineProperty(WalletV5BetaActions, "__esModule", { value: true });
-  WalletV5BetaActions.storeOutActionExtendedV5Beta = storeOutActionExtendedV5Beta;
-  WalletV5BetaActions.loadOutActionV5BetaExtended = loadOutActionV5BetaExtended;
-  WalletV5BetaActions.storeOutListExtendedV5Beta = storeOutListExtendedV5Beta;
-  WalletV5BetaActions.loadOutListExtendedV5Beta = loadOutListExtendedV5Beta;
-  const core_1 = requireDist$4();
-  const WalletV5OutActions_1 = requireWalletV5OutActions();
-  const outActionSetIsPublicKeyEnabledTag = 550222170;
-  function storeOutActionSetIsPublicKeyEnabled(action) {
-    return (builder2) => {
-      builder2.storeUint(outActionSetIsPublicKeyEnabledTag, 32).storeUint(action.isEnabled ? 1 : 0, 1);
-    };
-  }
-  const outActionAddExtensionTag = 474012575;
-  function storeOutActionAddExtension(action) {
-    return (builder2) => {
-      builder2.storeUint(outActionAddExtensionTag, 32).storeAddress(action.address);
-    };
-  }
-  const outActionRemoveExtensionTag = 1588524196;
-  function storeOutActionRemoveExtension(action) {
-    return (builder2) => {
-      builder2.storeUint(outActionRemoveExtensionTag, 32).storeAddress(action.address);
-    };
-  }
-  function storeOutActionExtendedV5Beta(action) {
-    switch (action.type) {
-      case "setIsPublicKeyEnabled":
-        return storeOutActionSetIsPublicKeyEnabled(action);
-      case "addExtension":
-        return storeOutActionAddExtension(action);
-      case "removeExtension":
-        return storeOutActionRemoveExtension(action);
-      default:
-        throw new Error("Unknown action type" + action?.type);
-    }
-  }
-  function loadOutActionV5BetaExtended(slice) {
-    const tag = slice.loadUint(32);
-    switch (tag) {
-      case outActionSetIsPublicKeyEnabledTag:
-        return {
-          type: "setIsPublicKeyEnabled",
-          isEnabled: !!slice.loadUint(1)
-        };
-      case outActionAddExtensionTag:
-        return {
-          type: "addExtension",
-          address: slice.loadAddress()
-        };
-      case outActionRemoveExtensionTag:
-        return {
-          type: "removeExtension",
-          address: slice.loadAddress()
-        };
-      default:
-        throw new Error(`Unknown extended out action tag 0x${tag.toString(16)}`);
-    }
-  }
-  function storeOutListExtendedV5Beta(actions) {
-    const [action, ...rest] = actions;
-    if (!action || !(0, WalletV5OutActions_1.isOutActionExtended)(action)) {
-      if (actions.some(WalletV5OutActions_1.isOutActionExtended)) {
-        throw new Error("Can't serialize actions list: all extended actions must be placed before out actions");
-      }
-      return (builder2) => {
-        builder2.storeUint(0, 1).storeRef((0, core_1.beginCell)().store((0, core_1.storeOutList)(actions)).endCell());
-      };
-    }
-    return (builder2) => {
-      builder2.storeUint(1, 1).store(storeOutActionExtendedV5Beta(action)).storeRef((0, core_1.beginCell)().store(storeOutListExtendedV5Beta(rest)).endCell());
-    };
-  }
-  function loadOutListExtendedV5Beta(slice) {
-    const actions = [];
-    while (slice.loadUint(1)) {
-      const action = loadOutActionV5BetaExtended(slice);
-      actions.push(action);
-      slice = slice.loadRef().beginParse();
-    }
-    const commonAction = (0, core_1.loadOutList)(slice.loadRef().beginParse());
-    if (commonAction.some((i) => i.type === "setCode")) {
-      throw new Error("Can't deserialize actions list: only sendMsg actions are allowed for wallet v5");
-    }
-    return actions.concat(commonAction);
-  }
-  return WalletV5BetaActions;
-}
-var singer = {};
-var hasRequiredSinger;
-function requireSinger() {
-  if (hasRequiredSinger) return singer;
-  hasRequiredSinger = 1;
-  Object.defineProperty(singer, "__esModule", { value: true });
-  singer.signPayload = signPayload;
-  const crypto_1 = requireDist$5();
-  function signPayload(args, signingMessage, packMessage) {
-    if ("secretKey" in args) {
-      return packMessage((0, crypto_1.sign)(signingMessage.endCell().hash(), args.secretKey), signingMessage);
-    } else {
-      return args.signer(signingMessage.endCell()).then((signature) => packMessage(signature, signingMessage));
-    }
-  }
-  return singer;
-}
-var WalletContractV5R1$1 = {};
-var WalletV5R1WalletId = {};
-var hasRequiredWalletV5R1WalletId;
-function requireWalletV5R1WalletId() {
-  if (hasRequiredWalletV5R1WalletId) return WalletV5R1WalletId;
-  hasRequiredWalletV5R1WalletId = 1;
-  Object.defineProperty(WalletV5R1WalletId, "__esModule", { value: true });
-  WalletV5R1WalletId.isWalletIdV5R1ClientContext = isWalletIdV5R1ClientContext;
-  WalletV5R1WalletId.loadWalletIdV5R1 = loadWalletIdV5R1;
-  WalletV5R1WalletId.storeWalletIdV5R1 = storeWalletIdV5R1;
-  const core_1 = requireDist$4();
-  function isWalletIdV5R1ClientContext(context) {
-    return typeof context !== "number";
-  }
-  const walletV5R1VersionsSerialisation = {
-    v5r1: 0
-  };
-  function loadWalletIdV5R1(value, networkGlobalId) {
-    const val = new core_1.BitReader(new core_1.BitString(typeof value === "bigint" ? Buffer.from(value.toString(16), "hex") : value instanceof core_1.Slice ? value.loadBuffer(4) : value, 0, 32)).loadInt(32);
-    const context = BigInt(val) ^ BigInt(networkGlobalId);
-    const bitReader = (0, core_1.beginCell)().storeInt(context, 32).endCell().beginParse();
-    const isClientContext = bitReader.loadUint(1);
-    if (isClientContext) {
-      const workchain = bitReader.loadInt(8);
-      const walletVersionRaw = bitReader.loadUint(8);
-      const subwalletNumber = bitReader.loadUint(15);
-      const walletVersion = Object.entries(walletV5R1VersionsSerialisation).find(([_, value2]) => value2 === walletVersionRaw)?.[0];
-      if (walletVersion === void 0) {
-        throw new Error(`Can't deserialize walletId: unknown wallet version ${walletVersionRaw}`);
-      }
-      return {
-        networkGlobalId,
-        context: {
-          walletVersion,
-          workchain,
-          subwalletNumber
-        }
-      };
-    } else {
-      const context2 = bitReader.loadUint(31);
-      return {
-        networkGlobalId,
-        context: context2
-      };
-    }
-  }
-  function storeWalletIdV5R1(walletId) {
-    return (builder2) => {
-      let context;
-      if (isWalletIdV5R1ClientContext(walletId.context)) {
-        context = (0, core_1.beginCell)().storeUint(1, 1).storeInt(walletId.context.workchain, 8).storeUint(walletV5R1VersionsSerialisation[walletId.context.walletVersion], 8).storeUint(walletId.context.subwalletNumber, 15).endCell().beginParse().loadInt(32);
-      } else {
-        context = (0, core_1.beginCell)().storeUint(0, 1).storeUint(walletId.context, 31).endCell().beginParse().loadInt(32);
-      }
-      return builder2.storeInt(BigInt(walletId.networkGlobalId) ^ BigInt(context), 32);
-    };
-  }
-  return WalletV5R1WalletId;
-}
-var hasRequiredWalletContractV5R1$1;
-function requireWalletContractV5R1$1() {
-  if (hasRequiredWalletContractV5R1$1) return WalletContractV5R1$1;
-  hasRequiredWalletContractV5R1$1 = 1;
-  Object.defineProperty(WalletContractV5R1$1, "__esModule", { value: true });
-  WalletContractV5R1$1.WalletContractV5R1 = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  const WalletV5R1WalletId_1 = requireWalletV5R1WalletId();
-  class WalletContractV5R12 {
-    static create(args) {
-      let workchain = 0;
-      if ("workchain" in args && args.workchain != void 0) {
-        workchain = args.workchain;
-      }
-      if (args.walletId?.context && (0, WalletV5R1WalletId_1.isWalletIdV5R1ClientContext)(args.walletId.context) && args.walletId.context.workchain != void 0) {
-        workchain = args.walletId.context.workchain;
-      }
-      return new WalletContractV5R12(workchain, args.publicKey, {
-        networkGlobalId: args.walletId?.networkGlobalId ?? -239,
-        context: args.walletId?.context ?? {
-          workchain: 0,
-          walletVersion: "v5r1",
-          subwalletNumber: 0
-        }
-      });
-    }
-    constructor(workchain, publicKey, walletId) {
-      this.publicKey = publicKey;
-      this.walletId = walletId;
-      this.walletId = walletId;
-      let code = core_1.Cell.fromBoc(Buffer.from("b5ee9c7241021401000281000114ff00f4a413f4bcf2c80b01020120020d020148030402dcd020d749c120915b8f6320d70b1f2082106578746ebd21821073696e74bdb0925f03e082106578746eba8eb48020d72101d074d721fa4030fa44f828fa443058bd915be0ed44d0810141d721f4058307f40e6fa1319130e18040d721707fdb3ce03120d749810280b99130e070e2100f020120050c020120060902016e07080019adce76a2684020eb90eb85ffc00019af1df6a2684010eb90eb858fc00201480a0b0017b325fb51341c75c875c2c7e00011b262fb513435c280200019be5f0f6a2684080a0eb90fa02c0102f20e011e20d70b1f82107369676ebaf2e08a7f0f01e68ef0eda2edfb218308d722028308d723208020d721d31fd31fd31fed44d0d200d31f20d31fd3ffd70a000af90140ccf9109a28945f0adb31e1f2c087df02b35007b0f2d0845125baf2e0855036baf2e086f823bbf2d0882292f800de01a47fc8ca00cb1f01cf16c9ed542092f80fde70db3cd81003f6eda2edfb02f404216e926c218e4c0221d73930709421c700b38e2d01d72820761e436c20d749c008f2e09320d74ac002f2e09320d71d06c712c2005230b0f2d089d74cd7393001a4e86c128407bbf2e093d74ac000f2e093ed55e2d20001c000915be0ebd72c08142091709601d72c081c12e25210b1e30f20d74a111213009601fa4001fa44f828fa443058baf2e091ed44d0810141d718f405049d7fc8ca0040048307f453f2e08b8e14038307f45bf2e08c22d70a00216e01b3b0f2d090e2c85003cf1612f400c9ed54007230d72c08248e2d21f2e092d200ed44d0d2005113baf2d08f54503091319c01810140d721d70a00f2e08ee2c8ca0058cf16c9ed5493f2c08de20010935bdb31e1d74cd0b4d6c35e", "hex"))[0];
-      let data = (0, core_1.beginCell)().storeUint(1, 1).storeUint(0, 32).store((0, WalletV5R1WalletId_1.storeWalletIdV5R1)(this.walletId)).storeBuffer(this.publicKey, 32).storeBit(0).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(workchain, { code, data });
-    }
-    /**
-     * Get Wallet Balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        let res = await provider.get("seqno", []);
-        return res.stack.readNumber();
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Get Wallet Extensions
-     */
-    async getExtensions(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        const result = await provider.get("get_extensions", []);
-        return result.stack.readCellOpt();
-      } else {
-        return null;
-      }
-    }
-    /**
-     * Get Wallet Extensions
-     */
-    async getExtensionsArray(provider) {
-      const extensions = await this.getExtensions(provider);
-      if (!extensions) {
-        return [];
-      }
-      const dict = core_1.Dictionary.loadDirect(core_1.Dictionary.Keys.BigUint(256), core_1.Dictionary.Values.BigInt(1), extensions);
-      return dict.keys().map((addressHex) => {
-        const wc = this.address.workChain;
-        return core_1.Address.parseRaw(`${wc}:${addressHex.toString(16).padStart(64, "0")}`);
-      });
-    }
-    /**
-     * Get is secret-key authentication enabled
-     */
-    async getIsSecretKeyAuthEnabled(provider) {
-      let res = await provider.get("is_signature_allowed", []);
-      return res.stack.readBoolean();
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      const transfer = await this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Sign and send add extension request
-     */
-    async sendAddExtension(provider, args) {
-      const request = await this.createAddExtension(args);
-      await this.send(provider, request);
-    }
-    /**
-     * Sign and send remove extension request
-     */
-    async sendRemoveExtension(provider, args) {
-      const request = await this.createRemoveExtension(args);
-      await this.send(provider, request);
-    }
-    createActions(args) {
-      const actions = args.messages.map((message) => ({ type: "sendMsg", mode: args.sendMode, outMsg: message }));
-      return actions;
-    }
-    /**
-     * Create signed transfer
-     */
-    createTransfer(args) {
-      return this.createRequest({
-        actions: this.createActions({ messages: args.messages, sendMode: args.sendMode }),
-        ...args
-      });
-    }
-    /**
-     * Create signed add extension request
-     */
-    createAddExtension(args) {
-      return this.createRequest({
-        actions: [{
-          type: "addExtension",
-          address: args.extensionAddress
-        }],
-        ...args
-      });
-    }
-    /**
-     * Create signed remove extension request
-     */
-    createRemoveExtension(args) {
-      return this.createRequest({
-        actions: [{
-          type: "removeExtension",
-          address: args.extensionAddress
-        }],
-        ...args
-      });
-    }
-    /**
-     * Create signed request or extension auth request
-     */
-    createRequest(args) {
-      if (args.authType === "extension") {
-        return (0, createWalletTransfer_1.createWalletTransferV5R1)(args);
-      }
-      return (0, createWalletTransfer_1.createWalletTransferV5R1)({
-        ...args,
-        walletId: (0, WalletV5R1WalletId_1.storeWalletIdV5R1)(this.walletId)
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY + core_1.SendMode.IGNORE_ERRORS,
-            messages: [(0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              extracurrency: args.extracurrency,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })]
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  }
-  WalletContractV5R1$1.WalletContractV5R1 = WalletContractV5R12;
-  WalletContractV5R12.OpCodes = {
-    auth_extension: 1702392942,
-    auth_signed_external: 1936287598,
-    auth_signed_internal: 1936289396
-  };
-  return WalletContractV5R1$1;
-}
-var WalletV5R1Actions = {};
-var hasRequiredWalletV5R1Actions;
-function requireWalletV5R1Actions() {
-  if (hasRequiredWalletV5R1Actions) return WalletV5R1Actions;
-  hasRequiredWalletV5R1Actions = 1;
-  Object.defineProperty(WalletV5R1Actions, "__esModule", { value: true });
-  WalletV5R1Actions.storeOutActionExtendedV5R1 = storeOutActionExtendedV5R1;
-  WalletV5R1Actions.loadOutActionExtendedV5R1 = loadOutActionExtendedV5R1;
-  WalletV5R1Actions.storeOutListExtendedV5R1 = storeOutListExtendedV5R1;
-  WalletV5R1Actions.loadOutListExtendedV5R1 = loadOutListExtendedV5R1;
-  WalletV5R1Actions.toSafeV5R1SendMode = toSafeV5R1SendMode;
-  WalletV5R1Actions.patchV5R1ActionsSendMode = patchV5R1ActionsSendMode;
-  const core_1 = requireDist$4();
-  const WalletV5OutActions_1 = requireWalletV5OutActions();
-  const outActionSetIsPublicKeyEnabledTag = 4;
-  function storeOutActionSetIsPublicKeyEnabled(action) {
-    return (builder2) => {
-      builder2.storeUint(outActionSetIsPublicKeyEnabledTag, 8).storeUint(action.isEnabled ? 1 : 0, 1);
-    };
-  }
-  const outActionAddExtensionTag = 2;
-  function storeOutActionAddExtension(action) {
-    return (builder2) => {
-      builder2.storeUint(outActionAddExtensionTag, 8).storeAddress(action.address);
-    };
-  }
-  const outActionRemoveExtensionTag = 3;
-  function storeOutActionRemoveExtension(action) {
-    return (builder2) => {
-      builder2.storeUint(outActionRemoveExtensionTag, 8).storeAddress(action.address);
-    };
-  }
-  function storeOutActionExtendedV5R1(action) {
-    switch (action.type) {
-      case "setIsPublicKeyEnabled":
-        return storeOutActionSetIsPublicKeyEnabled(action);
-      case "addExtension":
-        return storeOutActionAddExtension(action);
-      case "removeExtension":
-        return storeOutActionRemoveExtension(action);
-      default:
-        throw new Error("Unknown action type" + action?.type);
-    }
-  }
-  function loadOutActionExtendedV5R1(slice) {
-    const tag = slice.loadUint(8);
-    switch (tag) {
-      case outActionSetIsPublicKeyEnabledTag:
-        return {
-          type: "setIsPublicKeyEnabled",
-          isEnabled: !!slice.loadUint(1)
-        };
-      case outActionAddExtensionTag:
-        return {
-          type: "addExtension",
-          address: slice.loadAddress()
-        };
-      case outActionRemoveExtensionTag:
-        return {
-          type: "removeExtension",
-          address: slice.loadAddress()
-        };
-      default:
-        throw new Error(`Unknown extended out action tag 0x${tag.toString(16)}`);
-    }
-  }
-  function storeOutListExtendedV5R1(actions) {
-    const extendedActions = actions.filter(WalletV5OutActions_1.isOutActionExtended);
-    const basicActions = actions.filter(WalletV5OutActions_1.isOutActionBasic);
-    return (builder2) => {
-      const outListPacked = basicActions.length ? (0, core_1.beginCell)().store((0, core_1.storeOutList)(basicActions.slice().reverse())) : null;
-      builder2.storeMaybeRef(outListPacked);
-      if (extendedActions.length === 0) {
-        builder2.storeUint(0, 1);
-      } else {
-        const [first, ...rest] = extendedActions;
-        builder2.storeUint(1, 1).store(storeOutActionExtendedV5R1(first));
-        if (rest.length > 0) {
-          builder2.storeRef(packExtendedActionsRec(rest));
-        }
-      }
-    };
-  }
-  function packExtendedActionsRec(extendedActions) {
-    const [first, ...rest] = extendedActions;
-    let builder2 = (0, core_1.beginCell)().store(storeOutActionExtendedV5R1(first));
-    if (rest.length > 0) {
-      builder2 = builder2.storeRef(packExtendedActionsRec(rest));
-    }
-    return builder2.endCell();
-  }
-  function loadOutListExtendedV5R1(slice) {
-    const actions = [];
-    const outListPacked = slice.loadMaybeRef();
-    if (outListPacked) {
-      const loadedActions = (0, core_1.loadOutList)(outListPacked.beginParse());
-      if (loadedActions.some((a2) => a2.type !== "sendMsg")) {
-        throw new Error("Can't deserialize actions list: only sendMsg actions are allowed for wallet v5r1");
-      }
-      actions.push(...loadedActions);
-    }
-    if (slice.loadBoolean()) {
-      const action = loadOutActionExtendedV5R1(slice);
-      actions.push(action);
-    }
-    while (slice.remainingRefs > 0) {
-      slice = slice.loadRef().beginParse();
-      const action = loadOutActionExtendedV5R1(slice);
-      actions.push(action);
-    }
-    return actions;
-  }
-  function toSafeV5R1SendMode(sendMode, authType) {
-    if (authType === "internal" || authType === "extension") {
-      return sendMode;
-    }
-    return sendMode | core_1.SendMode.IGNORE_ERRORS;
-  }
-  function patchV5R1ActionsSendMode(actions, authType) {
-    return actions.map((action) => action.type === "sendMsg" ? {
-      ...action,
-      mode: toSafeV5R1SendMode(action.mode, authType)
-    } : action);
-  }
-  return WalletV5R1Actions;
-}
-var hasRequiredCreateWalletTransfer;
-function requireCreateWalletTransfer() {
-  if (hasRequiredCreateWalletTransfer) return createWalletTransfer;
-  hasRequiredCreateWalletTransfer = 1;
-  Object.defineProperty(createWalletTransfer, "__esModule", { value: true });
-  createWalletTransfer.createWalletTransferV1 = createWalletTransferV1;
-  createWalletTransfer.createWalletTransferV2 = createWalletTransferV2;
-  createWalletTransfer.createWalletTransferV3 = createWalletTransferV3;
-  createWalletTransfer.createWalletTransferV4 = createWalletTransferV4;
-  createWalletTransfer.createWalletTransferV5Beta = createWalletTransferV5Beta;
-  createWalletTransfer.createWalletTransferV5R1 = createWalletTransferV5R1;
-  const core_1 = requireDist$4();
-  const crypto_1 = requireDist$5();
-  const WalletContractV5Beta_1 = requireWalletContractV5Beta$1();
-  const WalletV5BetaActions_1 = requireWalletV5BetaActions();
-  const singer_1 = requireSinger();
-  const WalletContractV5R1_1 = requireWalletContractV5R1$1();
-  const WalletV5R1Actions_1 = requireWalletV5R1Actions();
-  function packSignatureToFront(signature, signingMessage) {
-    const body = (0, core_1.beginCell)().storeBuffer(signature).storeBuilder(signingMessage).endCell();
-    return body;
-  }
-  function packSignatureToTail(signature, signingMessage) {
-    const body = (0, core_1.beginCell)().storeBuilder(signingMessage).storeBuffer(signature).endCell();
-    return body;
-  }
-  function createWalletTransferV1(args) {
-    let signingMessage = (0, core_1.beginCell)().storeUint(args.seqno, 32);
-    if (args.message) {
-      signingMessage.storeUint(args.sendMode, 8);
-      signingMessage.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(args.message)));
-    }
-    let signature = (0, crypto_1.sign)(signingMessage.endCell().hash(), args.secretKey);
-    const body = (0, core_1.beginCell)().storeBuffer(signature).storeBuilder(signingMessage).endCell();
-    return body;
-  }
-  function createWalletTransferV2(args) {
-    if (args.messages.length > 4) {
-      throw Error("Maximum number of messages in a single transfer is 4");
-    }
-    let signingMessage = (0, core_1.beginCell)().storeUint(args.seqno, 32);
-    if (args.seqno === 0) {
-      for (let i = 0; i < 32; i++) {
-        signingMessage.storeBit(1);
-      }
-    } else {
-      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
-    }
-    for (let m2 of args.messages) {
-      signingMessage.storeUint(args.sendMode, 8);
-      signingMessage.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(m2)));
-    }
-    let signature = (0, crypto_1.sign)(signingMessage.endCell().hash(), args.secretKey);
-    const body = (0, core_1.beginCell)().storeBuffer(signature).storeBuilder(signingMessage).endCell();
-    return body;
-  }
-  function createWalletTransferV3(args) {
-    if (args.messages.length > 4) {
-      throw Error("Maximum number of messages in a single transfer is 4");
-    }
-    let signingMessage = (0, core_1.beginCell)().storeUint(args.walletId, 32);
-    if (args.seqno === 0) {
-      for (let i = 0; i < 32; i++) {
-        signingMessage.storeBit(1);
-      }
-    } else {
-      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
-    }
-    signingMessage.storeUint(args.seqno, 32);
-    for (let m2 of args.messages) {
-      signingMessage.storeUint(args.sendMode, 8);
-      signingMessage.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(m2)));
-    }
-    return (0, singer_1.signPayload)(args, signingMessage, packSignatureToFront);
-  }
-  function createWalletTransferV4(args) {
-    if (args.messages.length > 4) {
-      throw Error("Maximum number of messages in a single transfer is 4");
-    }
-    let signingMessage = (0, core_1.beginCell)().storeUint(args.walletId, 32);
-    if (args.seqno === 0) {
-      for (let i = 0; i < 32; i++) {
-        signingMessage.storeBit(1);
-      }
-    } else {
-      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
-    }
-    signingMessage.storeUint(args.seqno, 32);
-    signingMessage.storeUint(0, 8);
-    for (let m2 of args.messages) {
-      signingMessage.storeUint(args.sendMode, 8);
-      signingMessage.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(m2)));
-    }
-    return (0, singer_1.signPayload)(args, signingMessage, packSignatureToFront);
-  }
-  function createWalletTransferV5Beta(args) {
-    if (args.actions.length > 255) {
-      throw Error("Maximum number of OutActions in a single request is 255");
-    }
-    if (args.authType === "extension") {
-      return (0, core_1.beginCell)().storeUint(WalletContractV5Beta_1.WalletContractV5Beta.OpCodes.auth_extension, 32).store((0, WalletV5BetaActions_1.storeOutListExtendedV5Beta)(args.actions)).endCell();
-    }
-    const signingMessage = (0, core_1.beginCell)().storeUint(args.authType === "internal" ? WalletContractV5Beta_1.WalletContractV5Beta.OpCodes.auth_signed_internal : WalletContractV5Beta_1.WalletContractV5Beta.OpCodes.auth_signed_external, 32).store(args.walletId);
-    if (args.seqno === 0) {
-      for (let i = 0; i < 32; i++) {
-        signingMessage.storeBit(1);
-      }
-    } else {
-      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
-    }
-    signingMessage.storeUint(args.seqno, 32).store((0, WalletV5BetaActions_1.storeOutListExtendedV5Beta)(args.actions));
-    return (0, singer_1.signPayload)(args, signingMessage, packSignatureToTail);
-  }
-  function createWalletTransferV5R1(args) {
-    if (args.actions.length > 255) {
-      throw Error("Maximum number of OutActions in a single request is 255");
-    }
-    args = { ...args };
-    if (args.authType === "extension") {
-      return (0, core_1.beginCell)().storeUint(WalletContractV5R1_1.WalletContractV5R1.OpCodes.auth_extension, 32).storeUint(args.queryId ?? 0, 64).store((0, WalletV5R1Actions_1.storeOutListExtendedV5R1)(args.actions)).endCell();
-    }
-    args.actions = (0, WalletV5R1Actions_1.patchV5R1ActionsSendMode)(args.actions, args.authType);
-    const signingMessage = (0, core_1.beginCell)().storeUint(args.authType === "internal" ? WalletContractV5R1_1.WalletContractV5R1.OpCodes.auth_signed_internal : WalletContractV5R1_1.WalletContractV5R1.OpCodes.auth_signed_external, 32).store(args.walletId);
-    if (args.seqno === 0) {
-      for (let i = 0; i < 32; i++) {
-        signingMessage.storeBit(1);
-      }
-    } else {
-      signingMessage.storeUint(args.timeout || Math.floor(Date.now() / 1e3) + 60, 32);
-    }
-    signingMessage.storeUint(args.seqno, 32).store((0, WalletV5R1Actions_1.storeOutListExtendedV5R1)(args.actions));
-    return (0, singer_1.signPayload)(args, signingMessage, packSignatureToTail);
-  }
-  return createWalletTransfer;
-}
-var hasRequiredWalletContractV1R1;
-function requireWalletContractV1R1() {
-  if (hasRequiredWalletContractV1R1) return WalletContractV1R1;
-  hasRequiredWalletContractV1R1 = 1;
-  Object.defineProperty(WalletContractV1R1, "__esModule", { value: true });
-  WalletContractV1R1.WalletContractV1R1 = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  let WalletContractV1R1$1 = class WalletContractV1R12 {
-    static create(args) {
-      return new WalletContractV1R12(args.workchain, args.publicKey);
-    }
-    constructor(workchain, publicKey) {
-      this.workchain = workchain;
-      this.publicKey = publicKey;
-      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEARAAAhP8AIN2k8mCBAgDXGCDXCx/tRNDTH9P/0VESuvKhIvkBVBBE+RDyovgAAdMfMSDXSpbTB9QC+wDe0aTIyx/L/8ntVEH98Ik=", "base64"))[0];
-      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(workchain, { code, data });
-    }
-    /**
-     * Get Wallet Balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        return core_1.Cell.fromBoc(state.state.data)[0].beginParse().loadUint(32);
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      let transfer = this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Create signed transfer
-     */
-    createTransfer(args) {
-      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
-      if (args.sendMode !== null && args.sendMode !== void 0) {
-        sendMode = args.sendMode;
-      }
-      return (0, createWalletTransfer_1.createWalletTransferV1)({
-        seqno: args.seqno,
-        sendMode,
-        secretKey: args.secretKey,
-        message: args.message
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode,
-            message: (0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              extracurrency: args.extracurrency,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  };
-  WalletContractV1R1.WalletContractV1R1 = WalletContractV1R1$1;
-  return WalletContractV1R1;
-}
-var WalletContractV1R2 = {};
-var hasRequiredWalletContractV1R2;
-function requireWalletContractV1R2() {
-  if (hasRequiredWalletContractV1R2) return WalletContractV1R2;
-  hasRequiredWalletContractV1R2 = 1;
-  Object.defineProperty(WalletContractV1R2, "__esModule", { value: true });
-  WalletContractV1R2.WalletContractV1R2 = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  let WalletContractV1R2$1 = class WalletContractV1R22 {
-    static create(args) {
-      return new WalletContractV1R22(args.workchain, args.publicKey);
-    }
-    constructor(workchain, publicKey) {
-      this.workchain = workchain;
-      this.publicKey = publicKey;
-      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAUwAAov8AIN0gggFMl7qXMO1E0NcLH+Ck8mCBAgDXGCDXCx/tRNDTH9P/0VESuvKhIvkBVBBE+RDyovgAAdMfMSDXSpbTB9QC+wDe0aTIyx/L/8ntVNDieG8=", "base64"))[0];
-      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(workchain, { code, data });
-    }
-    /**
-     * Get Wallet Balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        let res = await provider.get("seqno", []);
-        return res.stack.readNumber();
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      let transfer = this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Create signed transfer
-     */
-    createTransfer(args) {
-      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
-      if (args.sendMode !== null && args.sendMode !== void 0) {
-        sendMode = args.sendMode;
-      }
-      return (0, createWalletTransfer_1.createWalletTransferV1)({
-        seqno: args.seqno,
-        sendMode,
-        secretKey: args.secretKey,
-        message: args.message
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode,
-            message: (0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              extracurrency: args.extracurrency,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  };
-  WalletContractV1R2.WalletContractV1R2 = WalletContractV1R2$1;
-  return WalletContractV1R2;
-}
-var WalletContractV1R3 = {};
-var hasRequiredWalletContractV1R3;
-function requireWalletContractV1R3() {
-  if (hasRequiredWalletContractV1R3) return WalletContractV1R3;
-  hasRequiredWalletContractV1R3 = 1;
-  Object.defineProperty(WalletContractV1R3, "__esModule", { value: true });
-  WalletContractV1R3.WalletContractV1R3 = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  let WalletContractV1R3$1 = class WalletContractV1R32 {
-    static create(args) {
-      return new WalletContractV1R32(args.workchain, args.publicKey);
-    }
-    constructor(workchain, publicKey) {
-      this.workchain = workchain;
-      this.publicKey = publicKey;
-      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAXwAAuv8AIN0gggFMl7ohggEznLqxnHGw7UTQ0x/XC//jBOCk8mCBAgDXGCDXCx/tRNDTH9P/0VESuvKhIvkBVBBE+RDyovgAAdMfMSDXSpbTB9QC+wDe0aTIyx/L/8ntVLW4bkI=", "base64"))[0];
-      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(workchain, { code, data });
-    }
-    /**
-     * Get Wallet Balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        let res = await provider.get("seqno", []);
-        return res.stack.readNumber();
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(executor, message) {
-      await executor.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      let transfer = this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Create signed transfer
-     */
-    createTransfer(args) {
-      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
-      if (args.sendMode !== null && args.sendMode !== void 0) {
-        sendMode = args.sendMode;
-      }
-      return (0, createWalletTransfer_1.createWalletTransferV1)({
-        seqno: args.seqno,
-        sendMode,
-        secretKey: args.secretKey,
-        message: args.message
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode,
-            message: (0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  };
-  WalletContractV1R3.WalletContractV1R3 = WalletContractV1R3$1;
-  return WalletContractV1R3;
-}
-var WalletContractV2R1 = {};
-var hasRequiredWalletContractV2R1;
-function requireWalletContractV2R1() {
-  if (hasRequiredWalletContractV2R1) return WalletContractV2R1;
-  hasRequiredWalletContractV2R1 = 1;
-  Object.defineProperty(WalletContractV2R1, "__esModule", { value: true });
-  WalletContractV2R1.WalletContractV2R1 = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  let WalletContractV2R1$1 = class WalletContractV2R12 {
-    static create(args) {
-      return new WalletContractV2R12(args.workchain, args.publicKey);
-    }
-    constructor(workchain, publicKey) {
-      this.workchain = workchain;
-      this.publicKey = publicKey;
-      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAVwAAqv8AIN0gggFMl7qXMO1E0NcLH+Ck8mCDCNcYINMf0x8B+CO78mPtRNDTH9P/0VExuvKhA/kBVBBC+RDyovgAApMg10qW0wfUAvsA6NGkyMsfy//J7VShNwu2", "base64"))[0];
-      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(workchain, { code, data });
-    }
-    /**
-     * Get Wallet Balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        let res = await provider.get("seqno", []);
-        return res.stack.readNumber();
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      let transfer = this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Create signed transfer
-     */
-    createTransfer(args) {
-      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
-      if (args.sendMode !== null && args.sendMode !== void 0) {
-        sendMode = args.sendMode;
-      }
-      return (0, createWalletTransfer_1.createWalletTransferV2)({
-        seqno: args.seqno,
-        sendMode,
-        secretKey: args.secretKey,
-        messages: args.messages,
-        timeout: args.timeout
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode,
-            messages: [(0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              extracurrency: args.extracurrency,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })]
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  };
-  WalletContractV2R1.WalletContractV2R1 = WalletContractV2R1$1;
-  return WalletContractV2R1;
-}
-var WalletContractV2R2 = {};
-var hasRequiredWalletContractV2R2;
-function requireWalletContractV2R2() {
-  if (hasRequiredWalletContractV2R2) return WalletContractV2R2;
-  hasRequiredWalletContractV2R2 = 1;
-  Object.defineProperty(WalletContractV2R2, "__esModule", { value: true });
-  WalletContractV2R2.WalletContractV2R2 = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  let WalletContractV2R2$1 = class WalletContractV2R22 {
-    static create(args) {
-      return new WalletContractV2R22(args.workchain, args.publicKey);
-    }
-    constructor(workchain, publicKey) {
-      this.workchain = workchain;
-      this.publicKey = publicKey;
-      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAYwAAwv8AIN0gggFMl7ohggEznLqxnHGw7UTQ0x/XC//jBOCk8mCDCNcYINMf0x8B+CO78mPtRNDTH9P/0VExuvKhA/kBVBBC+RDyovgAApMg10qW0wfUAvsA6NGkyMsfy//J7VQETNeh", "base64"))[0];
-      let data = (0, core_1.beginCell)().storeUint(0, 32).storeBuffer(publicKey).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(workchain, { code, data });
-    }
-    /**
-     * Get Wallet Balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        let res = await provider.get("seqno", []);
-        return res.stack.readNumber();
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      let transfer = this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Create signed transfer
-     */
-    createTransfer(args) {
-      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY;
-      if (args.sendMode !== null && args.sendMode !== void 0) {
-        sendMode = args.sendMode;
-      }
-      return (0, createWalletTransfer_1.createWalletTransferV2)({
-        seqno: args.seqno,
-        sendMode,
-        secretKey: args.secretKey,
-        messages: args.messages,
-        timeout: args.timeout
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode,
-            messages: [(0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              extracurrency: args.extracurrency,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })]
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  };
-  WalletContractV2R2.WalletContractV2R2 = WalletContractV2R2$1;
-  return WalletContractV2R2;
-}
-var WalletContractV3R1 = {};
-var hasRequiredWalletContractV3R1;
-function requireWalletContractV3R1() {
-  if (hasRequiredWalletContractV3R1) return WalletContractV3R1;
-  hasRequiredWalletContractV3R1 = 1;
-  Object.defineProperty(WalletContractV3R1, "__esModule", { value: true });
-  WalletContractV3R1.WalletContractV3R1 = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  let WalletContractV3R1$1 = class WalletContractV3R12 {
-    static create(args) {
-      return new WalletContractV3R12(args.workchain, args.publicKey, args.walletId);
-    }
-    constructor(workchain, publicKey, walletId) {
-      this.workchain = workchain;
-      this.publicKey = publicKey;
-      if (walletId !== null && walletId !== void 0) {
-        this.walletId = walletId;
-      } else {
-        this.walletId = 698983191 + workchain;
-      }
-      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAYgAAwP8AIN0gggFMl7qXMO1E0NcLH+Ck8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVD++buA=", "base64"))[0];
-      let data = (0, core_1.beginCell)().storeUint(0, 32).storeUint(this.walletId, 32).storeBuffer(publicKey).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(workchain, { code, data });
-    }
-    /**
-     * Get wallet balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        let res = await provider.get("seqno", []);
-        return res.stack.readNumber();
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      let transfer = this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Create transfer
-     */
-    createTransfer(args) {
-      return (0, createWalletTransfer_1.createWalletTransferV3)({
-        ...args,
-        sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY,
-        walletId: this.walletId
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode,
-            messages: [(0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              extracurrency: args.extracurrency,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })]
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  };
-  WalletContractV3R1.WalletContractV3R1 = WalletContractV3R1$1;
-  return WalletContractV3R1;
-}
-var WalletContractV3R2 = {};
-var hasRequiredWalletContractV3R2;
-function requireWalletContractV3R2() {
-  if (hasRequiredWalletContractV3R2) return WalletContractV3R2;
-  hasRequiredWalletContractV3R2 = 1;
-  Object.defineProperty(WalletContractV3R2, "__esModule", { value: true });
-  WalletContractV3R2.WalletContractV3R2 = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  let WalletContractV3R2$1 = class WalletContractV3R22 {
-    static create(args) {
-      return new WalletContractV3R22(args.workchain, args.publicKey, args.walletId);
-    }
-    constructor(workchain, publicKey, walletId) {
-      this.workchain = workchain;
-      this.publicKey = publicKey;
-      if (walletId !== null && walletId !== void 0) {
-        this.walletId = walletId;
-      } else {
-        this.walletId = 698983191 + workchain;
-      }
-      let code = core_1.Cell.fromBoc(Buffer.from("te6cckEBAQEAcQAA3v8AIN0gggFMl7ohggEznLqxn3Gw7UTQ0x/THzHXC//jBOCk8mCDCNcYINMf0x/TH/gjE7vyY+1E0NMf0x/T/9FRMrryoVFEuvKiBPkBVBBV+RDyo/gAkyDXSpbTB9QC+wDo0QGkyMsfyx/L/8ntVBC9ba0=", "base64"))[0];
-      let data = (0, core_1.beginCell)().storeUint(0, 32).storeUint(this.walletId, 32).storeBuffer(publicKey).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(workchain, { code, data });
-    }
-    /**
-     * Get wallet balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        let res = await provider.get("seqno", []);
-        return res.stack.readNumber();
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      let transfer = this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Create transfer
-     */
-    createTransfer(args) {
-      return (0, createWalletTransfer_1.createWalletTransferV3)({
-        ...args,
-        sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY,
-        walletId: this.walletId
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode,
-            messages: [(0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              extracurrency: args.extracurrency,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })]
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  };
-  WalletContractV3R2.WalletContractV3R2 = WalletContractV3R2$1;
-  return WalletContractV3R2;
-}
-var WalletContractV4 = {};
-var hasRequiredWalletContractV4;
-function requireWalletContractV4() {
-  if (hasRequiredWalletContractV4) return WalletContractV4;
-  hasRequiredWalletContractV4 = 1;
-  Object.defineProperty(WalletContractV4, "__esModule", { value: true });
-  WalletContractV4.WalletContractV4 = void 0;
-  const core_1 = requireDist$4();
-  const createWalletTransfer_1 = requireCreateWalletTransfer();
-  let WalletContractV4$1 = class WalletContractV42 {
-    static create(args) {
-      return new WalletContractV42(args.workchain, args.publicKey, args.walletId);
-    }
-    constructor(workchain, publicKey, walletId) {
-      this.workchain = workchain;
-      this.publicKey = publicKey;
-      if (walletId !== null && walletId !== void 0) {
-        this.walletId = walletId;
-      } else {
-        this.walletId = 698983191 + workchain;
-      }
-      let code = core_1.Cell.fromBoc(Buffer.from("te6ccgECFAEAAtQAART/APSkE/S88sgLAQIBIAIDAgFIBAUE+PKDCNcYINMf0x/THwL4I7vyZO1E0NMf0x/T//QE0VFDuvKhUVG68qIF+QFUEGT5EPKj+AAkpMjLH1JAyx9SMMv/UhD0AMntVPgPAdMHIcAAn2xRkyDXSpbTB9QC+wDoMOAhwAHjACHAAuMAAcADkTDjDQOkyMsfEssfy/8QERITAubQAdDTAyFxsJJfBOAi10nBIJJfBOAC0x8hghBwbHVnvSKCEGRzdHK9sJJfBeAD+kAwIPpEAcjKB8v/ydDtRNCBAUDXIfQEMFyBAQj0Cm+hMbOSXwfgBdM/yCWCEHBsdWe6kjgw4w0DghBkc3RyupJfBuMNBgcCASAICQB4AfoA9AQw+CdvIjBQCqEhvvLgUIIQcGx1Z4MesXCAGFAEywUmzxZY+gIZ9ADLaRfLH1Jgyz8gyYBA+wAGAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+ICASAKCwBZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEAgFYDA0AEbjJftRNDXCx+AA9sp37UTQgQFA1yH0BDACyMoHy//J0AGBAQj0Cm+hMYAIBIA4PABmtznaiaEAga5Drhf/AABmvHfaiaEAQa5DrhY/AAG7SB/oA1NQi+QAFyMoHFcv/ydB3dIAYyMsFywIizxZQBfoCFMtrEszMyXP7AMhAFIEBCPRR8qcCAHCBAQjXGPoA0z/IVCBHgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAGzxZQBPoCFMtqEssfyz/Jc/sAAgBsgQEI1xj6ANM/MFIkgQEI9Fnyp4IQZHN0cnB0gBjIywXLAlAFzxZQA/oCE8tqyx8Syz/Jc/sAAAr0AMntVA==", "base64"))[0];
-      let data = (0, core_1.beginCell)().storeUint(0, 32).storeUint(this.walletId, 32).storeBuffer(this.publicKey).storeBit(0).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(workchain, { code, data });
-    }
-    /**
-     * Get Wallet Balance
-     */
-    async getBalance(provider) {
-      let state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Get Wallet Seqno
-     */
-    async getSeqno(provider) {
-      let state = await provider.getState();
-      if (state.state.type === "active") {
-        let res = await provider.get("seqno", []);
-        return res.stack.readNumber();
-      } else {
-        return 0;
-      }
-    }
-    /**
-     * Send signed transfer
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send transfer
-     */
-    async sendTransfer(provider, args) {
-      let transfer = this.createTransfer(args);
-      await this.send(provider, transfer);
-    }
-    /**
-     * Create signed transfer
-     */
-    createTransfer(args) {
-      return (0, createWalletTransfer_1.createWalletTransferV4)({
-        ...args,
-        sendMode: args.sendMode ?? core_1.SendMode.PAY_GAS_SEPARATELY,
-        walletId: this.walletId
-      });
-    }
-    /**
-     * Create sender
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          let seqno = await this.getSeqno(provider);
-          let transfer = this.createTransfer({
-            seqno,
-            secretKey,
-            sendMode: args.sendMode,
-            messages: [(0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              extracurrency: args.extracurrency,
-              init: args.init,
-              body: args.body,
-              bounce: args.bounce
-            })]
-          });
-          await this.send(provider, transfer);
-        }
-      };
-    }
-  };
-  WalletContractV4.WalletContractV4 = WalletContractV4$1;
-  return WalletContractV4;
-}
-var WalletContractV5Beta = {};
-var hasRequiredWalletContractV5Beta;
-function requireWalletContractV5Beta() {
-  if (hasRequiredWalletContractV5Beta) return WalletContractV5Beta;
-  hasRequiredWalletContractV5Beta = 1;
-  (function(exports) {
-    var __createBinding = WalletContractV5Beta && WalletContractV5Beta.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
-      if (k22 === void 0) k22 = k2;
-      var desc = Object.getOwnPropertyDescriptor(m2, k2);
-      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m2[k2];
-        } };
-      }
-      Object.defineProperty(o4, k22, desc);
-    }) : (function(o4, m2, k2, k22) {
-      if (k22 === void 0) k22 = k2;
-      o4[k22] = m2[k2];
-    }));
-    var __exportStar = WalletContractV5Beta && WalletContractV5Beta.__exportStar || function(m2, exports2) {
-      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    __exportStar(requireWalletContractV5Beta$1(), exports);
-    __exportStar(requireWalletV5BetaActions(), exports);
-    __exportStar(requireWalletV5BetaWalletId(), exports);
-  })(WalletContractV5Beta);
-  return WalletContractV5Beta;
-}
-var WalletContractV5R1 = {};
-var hasRequiredWalletContractV5R1;
-function requireWalletContractV5R1() {
-  if (hasRequiredWalletContractV5R1) return WalletContractV5R1;
-  hasRequiredWalletContractV5R1 = 1;
-  (function(exports) {
-    var __createBinding = WalletContractV5R1 && WalletContractV5R1.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
-      if (k22 === void 0) k22 = k2;
-      var desc = Object.getOwnPropertyDescriptor(m2, k2);
-      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m2[k2];
-        } };
-      }
-      Object.defineProperty(o4, k22, desc);
-    }) : (function(o4, m2, k2, k22) {
-      if (k22 === void 0) k22 = k2;
-      o4[k22] = m2[k2];
-    }));
-    var __exportStar = WalletContractV5R1 && WalletContractV5R1.__exportStar || function(m2, exports2) {
-      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    __exportStar(requireWalletContractV5R1$1(), exports);
-    __exportStar(requireWalletV5R1Actions(), exports);
-    __exportStar(requireWalletV5R1WalletId(), exports);
-  })(WalletContractV5R1);
-  return WalletContractV5R1;
-}
-var JettonMaster = {};
-var hasRequiredJettonMaster;
-function requireJettonMaster() {
-  if (hasRequiredJettonMaster) return JettonMaster;
-  hasRequiredJettonMaster = 1;
-  Object.defineProperty(JettonMaster, "__esModule", { value: true });
-  JettonMaster.JettonMaster = void 0;
-  const core_1 = requireDist$4();
-  let JettonMaster$1 = class JettonMaster2 {
-    static create(address) {
-      return new JettonMaster2(address);
-    }
-    constructor(address) {
-      this.address = address;
-    }
-    async getWalletAddress(provider, owner) {
-      let res = await provider.get("get_wallet_address", [{ type: "slice", cell: (0, core_1.beginCell)().storeAddress(owner).endCell() }]);
-      return res.stack.readAddress();
-    }
-    async getJettonData(provider) {
-      let res = await provider.get("get_jetton_data", []);
-      let totalSupply = res.stack.readBigNumber();
-      let mintable = res.stack.readBoolean();
-      let adminAddress = res.stack.readAddress();
-      let content2 = res.stack.readCell();
-      let walletCode = res.stack.readCell();
-      return {
-        totalSupply,
-        mintable,
-        adminAddress,
-        content: content2,
-        walletCode
-      };
-    }
-  };
-  JettonMaster.JettonMaster = JettonMaster$1;
-  return JettonMaster;
-}
-var JettonWallet = {};
-var hasRequiredJettonWallet;
-function requireJettonWallet() {
-  if (hasRequiredJettonWallet) return JettonWallet;
-  hasRequiredJettonWallet = 1;
-  Object.defineProperty(JettonWallet, "__esModule", { value: true });
-  JettonWallet.JettonWallet = void 0;
-  let JettonWallet$12 = class JettonWallet2 {
-    static create(address) {
-      return new JettonWallet2(address);
-    }
-    constructor(address) {
-      this.address = address;
-    }
-    async getBalance(provider) {
-      let state = await provider.getState();
-      if (state.state.type !== "active") {
-        return 0n;
-      }
-      let res = await provider.get("get_wallet_data", []);
-      return res.stack.readBigNumber();
-    }
-  };
-  JettonWallet.JettonWallet = JettonWallet$12;
-  return JettonWallet;
-}
-var MultisigOrder = {};
-var hasRequiredMultisigOrder;
-function requireMultisigOrder() {
-  if (hasRequiredMultisigOrder) return MultisigOrder;
-  hasRequiredMultisigOrder = 1;
-  Object.defineProperty(MultisigOrder, "__esModule", { value: true });
-  MultisigOrder.MultisigOrder = void 0;
-  const crypto_1 = requireDist$5();
-  const core_1 = requireDist$4();
-  let MultisigOrder$1 = class MultisigOrder2 {
-    constructor(payload) {
-      this.signatures = {};
-      this.payload = payload;
-    }
-    static fromCell(cell) {
-      let s2 = cell.beginParse();
-      let signatures = s2.loadMaybeRef()?.beginParse();
-      const messagesCell = s2.asCell();
-      let order = new MultisigOrder2(messagesCell);
-      if (signatures) {
-        while (signatures.remainingBits > 0) {
-          const signature = signatures.loadBuffer(64);
-          const ownerId = signatures.loadUint(8);
-          order.signatures[ownerId] = signature;
-          if (signatures.remainingRefs > 0) {
-            signatures = signatures.loadRef().asSlice();
-          } else {
-            signatures.skip(1);
-          }
-        }
-        signatures.endParse();
-      }
-      return order;
-    }
-    static fromPayload(payload) {
-      return new MultisigOrder2(payload);
-    }
-    addSignature(ownerId, signature, multisig) {
-      const signingHash = this.payload.hash();
-      if (!(0, crypto_1.signVerify)(signingHash, signature, multisig.owners.get(ownerId).slice(0, -1))) {
-        throw Error("invalid signature");
-      }
-      this.signatures[ownerId] = signature;
-    }
-    sign(ownerId, secretKey) {
-      const signingHash = this.payload.hash();
-      this.signatures[ownerId] = (0, crypto_1.sign)(signingHash, secretKey);
-      return signingHash;
-    }
-    unionSignatures(other) {
-      this.signatures = Object.assign({}, this.signatures, other.signatures);
-    }
-    clearSignatures() {
-      this.signatures = {};
-    }
-    toCell(ownerId) {
-      let b2 = (0, core_1.beginCell)().storeBit(0);
-      for (const ownerId2 in this.signatures) {
-        const signature = this.signatures[ownerId2];
-        b2 = (0, core_1.beginCell)().storeBit(1).storeRef((0, core_1.beginCell)().storeBuffer(signature).storeUint(parseInt(ownerId2), 8).storeBuilder(b2).endCell());
-      }
-      return (0, core_1.beginCell)().storeUint(ownerId, 8).storeBuilder(b2).storeBuilder(this.payload.asBuilder()).endCell();
-    }
-  };
-  MultisigOrder.MultisigOrder = MultisigOrder$1;
-  return MultisigOrder;
-}
-var MultisigOrderBuilder = {};
-var hasRequiredMultisigOrderBuilder;
-function requireMultisigOrderBuilder() {
-  if (hasRequiredMultisigOrderBuilder) return MultisigOrderBuilder;
-  hasRequiredMultisigOrderBuilder = 1;
-  Object.defineProperty(MultisigOrderBuilder, "__esModule", { value: true });
-  MultisigOrderBuilder.MultisigOrderBuilder = void 0;
-  const core_1 = requireDist$4();
-  const MultisigOrder_1 = requireMultisigOrder();
-  let MultisigOrderBuilder$1 = class MultisigOrderBuilder {
-    constructor(walletId, offset) {
-      this.messages = (0, core_1.beginCell)();
-      this.queryId = 0n;
-      this.walletId = walletId;
-      this.queryOffset = offset || 7200;
-    }
-    addMessage(message, mode) {
-      if (this.messages.refs >= 4) {
-        throw Error("only 4 refs are allowed");
-      }
-      this.updateQueryId();
-      this.messages.storeUint(mode, 8);
-      this.messages.storeRef((0, core_1.beginCell)().store((0, core_1.storeMessageRelaxed)(message)).endCell());
-    }
-    clearMessages() {
-      this.messages = (0, core_1.beginCell)();
-    }
-    build() {
-      return MultisigOrder_1.MultisigOrder.fromPayload((0, core_1.beginCell)().storeUint(this.walletId, 32).storeUint(this.queryId, 64).storeBuilder(this.messages).endCell());
-    }
-    updateQueryId() {
-      const time = BigInt(Math.floor(Date.now() / 1e3 + this.queryOffset));
-      this.queryId = time << 32n;
-    }
-  };
-  MultisigOrderBuilder.MultisigOrderBuilder = MultisigOrderBuilder$1;
-  return MultisigOrderBuilder;
-}
-var MultisigWallet = {};
-var hasRequiredMultisigWallet;
-function requireMultisigWallet() {
-  if (hasRequiredMultisigWallet) return MultisigWallet;
-  hasRequiredMultisigWallet = 1;
-  Object.defineProperty(MultisigWallet, "__esModule", { value: true });
-  MultisigWallet.MultisigWallet = void 0;
-  const crypto_1 = requireDist$5();
-  const core_1 = requireDist$4();
-  const MULTISIG_CODE = core_1.Cell.fromBase64("te6ccgECKwEABBgAART/APSkE/S88sgLAQIBIAIDAgFIBAUE2vIgxwCOgzDbPOCDCNcYIPkBAdMH2zwiwAAToVNxePQOb6Hyn9s8VBq6+RDyoAb0BCD5AQHTH1EYuvKq0z9wUwHwCgHCCAGDCryx8mhTFYBA9A5voSCYDqQgwgryZw7f+COqH1NAufJhVCOjU04gIyEiAgLMBgcCASAMDQIBIAgJAgFmCgsAA9GEAiPymAvHoHN9CYbZ5S7Z4BPHohwhJQAtAKkItdJEqCTItdKlwLUAdAT8ArobBKAATwhbpEx4CBukTDgAdAg10rDAJrUAvALyFjPFszJ4HHXI8gBzxb0AMmACASAODwIBIBQVARW77ZbVA0cFUg2zyCoCAUgQEQIBIBITAXOxHXQgwjXGCD5AQHTB4IB1MTtQ9hTIHj0Dm+h8p/XC/9eMfkQ8qCuAfQEIW6TW3Ey4PkBWNs8AaQBgJwA9rtqA6ADoAPoCAXoCEfyAgPyA3XlP+AXkegAA54tkwAAXrhlXP8EA1WZ2oexAAgEgFhcCASAYGQFRtyVbZ4YmRmpGEAgegc30McJNhFpAADMaYeYuAFrgJhwLb+4cC3d0bhAjAYm1WZtnhqvgb+2xxsoicAgej430pBHEoFpAADHDhBACGuQkuuBk9kUWE5kAOeLKhACQCB6IYFImHFImHFImXEA2YlzNijAjAgEgGhsAF7UGtc4QQDVZnah7EAIBIBwdAgOZOB4fARGsGm2eL4G2CUAjABWt+UEAzJV2oewYQAENqTbPBVfBYCMAFa3f3CCAarM7UPYgAiDbPALyZfgAUENxQxPbPO1UIyoACtP/0wcwBKDbPC+uUyCw8mISsQKkJbNTHLmwJYEA4aojoCi8sPJpggGGoPgBBZcCERACPj4wjo0REB/bPEDXePRDEL0F4lQWW1Rz51YQU9zbPFRxClR6vCQlKCYAIO1E0NMf0wfTB9M/9AT0BNEAXgGOGjDSAAHyo9MH0wdQA9cBIPkBBfkBFbrypFAD4GwhIddKqgIi10m68qtwVCATAAwByMv/ywcE1ts87VT4D3AlblOJvrGYEG4QLVDHXwePGzBUJANQTds8UFWgRlAQSRA6SwlTuds8UFQWf+L4AAeDJaGOLCaAQPSWb6UglDBTA7neII4WODk5CNIAAZfTBzAW8AcFkTDifwgHBZJsMeKz5jAGKicoKQBgcI4pA9CDCNcY0wf0BDBTFnj0Dm+h8qXXC/9URUT5EPKmrlIgsVIDvRShI27mbCIyAH5SML6OIF8D+ACTItdKmALTB9QC+wAC6DJwyMoAQBSAQPRDAvAHjhdxyMsAFMsHEssHWM8BWM8WQBOAQPRDAeIBII6KEEUQNEMA2zztVJJfBuIqABzIyx/LB8sHyz/0APQAyQ==");
-  let MultisigWallet$1 = class MultisigWallet2 {
-    constructor(publicKeys, workchain, walletId, k2, opts) {
-      this.provider = null;
-      this.owners = core_1.Dictionary.empty();
-      this.workchain = workchain;
-      this.walletId = walletId;
-      this.k = k2;
-      for (let i = 0; i < publicKeys.length; i += 1) {
-        this.owners.set(i, Buffer.concat([publicKeys[i], Buffer.alloc(1)]));
-      }
-      this.init = {
-        code: MULTISIG_CODE,
-        data: (0, core_1.beginCell)().storeUint(this.walletId, 32).storeUint(this.owners.size, 8).storeUint(this.k, 8).storeUint(0, 64).storeDict(this.owners, core_1.Dictionary.Keys.Uint(8), core_1.Dictionary.Values.Buffer(33)).storeBit(0).endCell()
-      };
-      this.address = opts?.address || (0, core_1.contractAddress)(workchain, this.init);
-      if (opts?.provider) {
-        this.provider = opts.provider;
-      } else if (opts?.client) {
-        this.provider = opts.client.provider(this.address, {
-          code: this.init.code,
-          data: this.init.data
-        });
-      }
-    }
-    static async fromAddress(address, opts) {
-      let provider;
-      if (opts.provider) {
-        provider = opts.provider;
-      } else {
-        if (!opts.client) {
-          throw Error("Either provider or client must be specified");
-        }
-        provider = opts.client.provider(address, {
-          code: null,
-          data: null
-        });
-      }
-      const contractState = (await provider.getState()).state;
-      if (contractState.type !== "active") {
-        throw Error("Contract must be active");
-      }
-      const data = core_1.Cell.fromBoc(contractState.data)[0].beginParse();
-      const walletId = data.loadUint(32);
-      data.skip(8);
-      const k2 = data.loadUint(8);
-      data.skip(64);
-      const owners = data.loadDict(core_1.Dictionary.Keys.Uint(8), core_1.Dictionary.Values.Buffer(33));
-      let publicKeys = [];
-      for (const [key2, value] of owners) {
-        const publicKey = value.subarray(0, 32);
-        publicKeys.push(publicKey);
-      }
-      return new MultisigWallet2(publicKeys, address.workChain, walletId, k2, {
-        address,
-        provider,
-        client: opts.client
-      });
-    }
-    async deployExternal(provider) {
-      if (!provider && !this.provider) {
-        throw Error("you must specify provider if there is no such property in MultisigWallet instance");
-      }
-      if (!provider) {
-        provider = this.provider;
-      }
-      await provider.external(core_1.Cell.EMPTY);
-    }
-    async deployInternal(sender, value = 1000000000n) {
-      await sender.send({
-        sendMode: core_1.SendMode.PAY_GAS_SEPARATELY + core_1.SendMode.IGNORE_ERRORS,
-        to: this.address,
-        value,
-        init: this.init,
-        body: core_1.Cell.EMPTY,
-        bounce: true
-      });
-    }
-    async sendOrder(order, secretKey, provider) {
-      if (!provider && !this.provider) {
-        throw Error("you must specify provider if there is no such property in MultisigWallet instance");
-      }
-      if (!provider) {
-        provider = this.provider;
-      }
-      let publicKey = (0, crypto_1.keyPairFromSecretKey)(secretKey).publicKey;
-      let ownerId = this.getOwnerIdByPubkey(publicKey);
-      let cell = order.toCell(ownerId);
-      let signature = (0, crypto_1.sign)(cell.hash(), secretKey);
-      cell = (0, core_1.beginCell)().storeBuffer(signature).storeSlice(cell.asSlice()).endCell();
-      await provider.external(cell);
-    }
-    async sendOrderWithoutSecretKey(order, signature, ownerId, provider) {
-      if (!provider && !this.provider) {
-        throw Error("you must specify provider if there is no such property in MultisigWallet instance");
-      }
-      if (!provider) {
-        provider = this.provider;
-      }
-      let cell = order.toCell(ownerId);
-      cell = (0, core_1.beginCell)().storeBuffer(signature).storeSlice(cell.asSlice()).endCell();
-      await provider.external(cell);
-    }
-    getOwnerIdByPubkey(publicKey) {
-      for (const [key2, value] of this.owners) {
-        if (value.subarray(0, 32).equals(publicKey)) {
-          return key2;
-        }
-      }
-      throw Error("public key is not an owner");
-    }
-  };
-  MultisigWallet.MultisigWallet = MultisigWallet$1;
-  return MultisigWallet;
-}
-var ElectorContract = {};
-var hasRequiredElectorContract;
-function requireElectorContract() {
-  if (hasRequiredElectorContract) return ElectorContract;
-  hasRequiredElectorContract = 1;
-  Object.defineProperty(ElectorContract, "__esModule", { value: true });
-  ElectorContract.ElectorContract = void 0;
-  const core_1 = requireDist$4();
-  const FrozenDictValue = {
-    serialize(src2, builder2) {
-      throw Error("not implemented");
-    },
-    parse(src2) {
-      const address = new core_1.Address(-1, src2.loadBuffer(32));
-      const weight = src2.loadUintBig(64);
-      const stake = src2.loadCoins();
-      return { address, weight, stake };
-    }
-  };
-  const EntitiesDictValue = {
-    serialize(src2, builder2) {
-      throw Error("not implemented");
-    },
-    parse(src2) {
-      const stake = src2.loadCoins();
-      src2.skip(64);
-      const address = new core_1.Address(-1, src2.loadBuffer(32));
-      const adnl = src2.loadBuffer(32);
-      return { stake, address, adnl };
-    }
-  };
-  let ElectorContract$1 = class ElectorContract2 {
-    //readonly source: ContractSource = new UnknownContractSource('org.ton.elector', -1, 'Elector Contract');
-    static create() {
-      return new ElectorContract2();
-    }
-    constructor() {
-      this.address = core_1.Address.parseRaw("-1:3333333333333333333333333333333333333333333333333333333333333333");
-    }
-    async getReturnedStake(provider, address) {
-      if (address.workChain !== -1) {
-        throw Error("Only masterchain addresses could have stake");
-      }
-      const res = await provider.get("compute_returned_stake", [{ type: "int", value: BigInt("0x" + address.hash.toString("hex")) }]);
-      return res.stack.readBigNumber();
-    }
-    async getPastElectionsList(provider) {
-      const res = await provider.get("past_elections_list", []);
-      const electionsListRaw = new core_1.TupleReader(res.stack.readLispList());
-      const elections = [];
-      while (electionsListRaw.remaining > 0) {
-        const electionsListEntry = electionsListRaw.readTuple();
-        const id = electionsListEntry.readNumber();
-        const unfreezeAt = electionsListEntry.readNumber();
-        electionsListEntry.pop();
-        const stakeHeld = electionsListEntry.readNumber();
-        elections.push({ id, unfreezeAt, stakeHeld });
-      }
-      return elections;
-    }
-    async getPastElections(provider) {
-      const res = await provider.get("past_elections", []);
-      const electionsRaw = new core_1.TupleReader(res.stack.readLispList());
-      const elections = [];
-      while (electionsRaw.remaining > 0) {
-        const electionsEntry = electionsRaw.readTuple();
-        const id = electionsEntry.readNumber();
-        const unfreezeAt = electionsEntry.readNumber();
-        const stakeHeld = electionsEntry.readNumber();
-        electionsEntry.pop();
-        const frozenDict = electionsEntry.readCell();
-        const totalStake = electionsEntry.readBigNumber();
-        const bonuses = electionsEntry.readBigNumber();
-        let frozen = /* @__PURE__ */ new Map();
-        const frozenData = frozenDict.beginParse().loadDictDirect(core_1.Dictionary.Keys.Buffer(32), FrozenDictValue);
-        for (const [key2, value] of frozenData) {
-          frozen.set(BigInt("0x" + key2.toString("hex")).toString(10), { address: value["address"], weight: value["weight"], stake: value["stake"] });
-        }
-        elections.push({ id, unfreezeAt, stakeHeld, totalStake, bonuses, frozen });
-      }
-      return elections;
-    }
-    async getElectionEntities(provider) {
-      const account = await provider.getState();
-      if (account.state.type !== "active") {
-        throw Error("Unexpected error");
-      }
-      const cell = core_1.Cell.fromBoc(account.state.data)[0];
-      const cs = cell.beginParse();
-      if (!cs.loadBit()) {
-        return null;
-      }
-      const sc = cs.loadRef().beginParse();
-      const startWorkTime = sc.loadUint(32);
-      const endElectionsTime = sc.loadUint(32);
-      const minStake = sc.loadCoins();
-      const allStakes = sc.loadCoins();
-      const entitiesData = sc.loadDict(core_1.Dictionary.Keys.Buffer(32), EntitiesDictValue);
-      let entities = [];
-      if (entitiesData) {
-        for (const [key2, value] of entitiesData) {
-          entities.push({ pubkey: key2, stake: value["stake"], address: value["address"], adnl: value["adnl"] });
-        }
-      }
-      return { minStake, allStakes, endElectionsTime, startWorkTime, entities };
-    }
-    // possible code for fetching data via get method if it is possible to set gas limit by request
-    // async getElectionEntities(block: number) {
-    //     const res = await this.client.runMethod(block, this.address, 'participant_list_extended');
-    //     if (res.exitCode !== 0 && res.exitCode !== 1) {
-    //         throw Error('Exit code: ' + res.exitCode);
-    //     }
-    //     let tuple = new TupleReader(res.result);
-    //     const startWorkTime = tuple.readNumber();
-    //     const endElectionsTime = tuple.readNumber();
-    //     const minStake = tuple.readBigNumber();
-    //     const allStakes = tuple.readBigNumber();
-    //     let entriesTuple = tuple.readTuple();
-    //     const entriesRaw = new TupleReader(entriesTuple.readLispList());
-    //     let entities: { pubkey: Buffer, stake: bigint, address: Address, adnl: Buffer }[] = [];
-    //     while (entriesRaw.remaining > 0) {
-    //         const electionsEntry = entriesRaw.readTuple();
-    //         const pubkey = electionsEntry.readBuffer();
-    //         const stake = electionsEntry.readBigNumber();
-    //         const address = electionsEntry.readAddress();
-    //         const adnl = electionsEntry.readBuffer();
-    //         entities.push({ pubkey, stake, address, adnl });
-    //     }
-    //     return { minStake, allStakes, endElectionsTime, startWorkTime, entities };
-    // }
-    async getActiveElectionId(provider) {
-      const res = await provider.get("active_election_id", []);
-      const electionId = res.stack.readNumber();
-      return electionId > 0 ? electionId : null;
-    }
-    async getComplaints(provider, electionId) {
-      const b2 = new core_1.TupleBuilder();
-      b2.writeNumber(electionId);
-      const res = await provider.get("list_complaints", b2.build());
-      if (res.stack.peek().type === "null") {
-        return [];
-      }
-      const complaintsRaw = new core_1.TupleReader(res.stack.readLispList());
-      const results = [];
-      while (complaintsRaw.remaining > 0) {
-        const complaintsEntry = complaintsRaw.readTuple();
-        const id = complaintsEntry.readBigNumber();
-        const completeUnpackedComplaint = complaintsEntry.readTuple();
-        const unpackedComplaints = completeUnpackedComplaint.readTuple();
-        const publicKey = Buffer.from(unpackedComplaints.readBigNumber().toString(16), "hex");
-        unpackedComplaints.readCell();
-        const createdAt = unpackedComplaints.readNumber();
-        const severity = unpackedComplaints.readNumber();
-        const rewardAddress = new core_1.Address(-1, Buffer.from(unpackedComplaints.readBigNumber().toString(16), "hex"));
-        const paid = unpackedComplaints.readBigNumber();
-        const suggestedFine = unpackedComplaints.readBigNumber();
-        const suggestedFinePart = unpackedComplaints.readBigNumber();
-        const votes = [];
-        const votersListRaw = new core_1.TupleReader(completeUnpackedComplaint.readLispList());
-        while (votersListRaw.remaining > 0) {
-          votes.push(votersListRaw.readNumber());
-        }
-        const vsetId = completeUnpackedComplaint.readBigNumber();
-        const remainingWeight = completeUnpackedComplaint.readBigNumber();
-        results.push({
-          id,
-          publicKey,
-          createdAt,
-          severity,
-          paid,
-          suggestedFine,
-          suggestedFinePart,
-          rewardAddress,
-          votes,
-          remainingWeight,
-          vsetId
-        });
-      }
-      return results;
-    }
-  };
-  ElectorContract.ElectorContract = ElectorContract$1;
-  return ElectorContract;
-}
-var ConfigParser = {};
-var hasRequiredConfigParser;
-function requireConfigParser() {
-  if (hasRequiredConfigParser) return ConfigParser;
-  hasRequiredConfigParser = 1;
-  Object.defineProperty(ConfigParser, "__esModule", { value: true });
-  ConfigParser.configParseMasterAddress = configParseMasterAddress;
-  ConfigParser.parseValidatorSet = parseValidatorSet;
-  ConfigParser.parseBridge = parseBridge;
-  ConfigParser.configParseMasterAddressRequired = configParseMasterAddressRequired;
-  ConfigParser.configParse5 = configParse5;
-  ConfigParser.configParse13 = configParse13;
-  ConfigParser.configParse15 = configParse15;
-  ConfigParser.configParse16 = configParse16;
-  ConfigParser.configParse17 = configParse17;
-  ConfigParser.configParse18 = configParse18;
-  ConfigParser.configParse8 = configParse8;
-  ConfigParser.configParse40 = configParse40;
-  ConfigParser.configParseWorkchainDescriptor = configParseWorkchainDescriptor;
-  ConfigParser.configParse12 = configParse12;
-  ConfigParser.configParseValidatorSet = configParseValidatorSet;
-  ConfigParser.configParseBridge = configParseBridge;
-  ConfigParser.configParseGasLimitsPrices = configParseGasLimitsPrices;
-  ConfigParser.configParseMsgPrices = configParseMsgPrices;
-  ConfigParser.configParse28 = configParse28;
-  ConfigParser.configParse29 = configParse29;
-  ConfigParser.parseProposalSetup = parseProposalSetup;
-  ConfigParser.parseVotingSetup = parseVotingSetup;
-  ConfigParser.loadConfigParamById = loadConfigParamById;
-  ConfigParser.loadConfigParamsAsSlice = loadConfigParamsAsSlice;
-  ConfigParser.parseFullConfig = parseFullConfig;
-  const core_1 = requireDist$4();
-  function configParseMasterAddress(slice) {
-    if (slice) {
-      return new core_1.Address(-1, slice.loadBuffer(32));
-    } else {
-      return null;
-    }
-  }
-  function readPublicKey(slice) {
-    if (slice.loadUint(32) !== 2390828938) {
-      throw Error("Invalid config");
-    }
-    return slice.loadBuffer(32);
-  }
-  const ValidatorDescriptionDictValue = {
-    serialize(src2, builder2) {
-      throw Error("not implemented");
-    },
-    parse(src2) {
-      const header = src2.loadUint(8);
-      if (header === 83) {
-        return {
-          publicKey: readPublicKey(src2),
-          weight: src2.loadUintBig(64),
-          adnlAddress: null
-        };
-      } else if (header === 115) {
-        return {
-          publicKey: readPublicKey(src2),
-          weight: src2.loadUintBig(64),
-          adnlAddress: src2.loadBuffer(32)
-        };
-      } else {
-        throw Error("Invalid config");
-      }
-    }
-  };
-  function parseValidatorSet(slice) {
-    const header = slice.loadUint(8);
-    if (header === 17) {
-      const timeSince = slice.loadUint(32);
-      const timeUntil = slice.loadUint(32);
-      const total = slice.loadUint(16);
-      const main2 = slice.loadUint(16);
-      const list = slice.loadDictDirect(core_1.Dictionary.Keys.Uint(16), ValidatorDescriptionDictValue);
-      return {
-        timeSince,
-        timeUntil,
-        total,
-        main: main2,
-        totalWeight: null,
-        list
-      };
-    } else if (header === 18) {
-      const timeSince = slice.loadUint(32);
-      const timeUntil = slice.loadUint(32);
-      const total = slice.loadUint(16);
-      const main2 = slice.loadUint(16);
-      const totalWeight = slice.loadUintBig(64);
-      const list = slice.loadDict(core_1.Dictionary.Keys.Uint(16), ValidatorDescriptionDictValue);
-      return {
-        timeSince,
-        timeUntil,
-        total,
-        main: main2,
-        totalWeight,
-        list
-      };
-    }
-  }
-  function parseBridge(slice) {
-    const bridgeAddress = new core_1.Address(-1, slice.loadBuffer(32));
-    const oracleMultisigAddress = new core_1.Address(-1, slice.loadBuffer(32));
-    const oraclesDict = slice.loadDict(core_1.Dictionary.Keys.Buffer(32), core_1.Dictionary.Values.Buffer(32));
-    const oracles = /* @__PURE__ */ new Map();
-    for (const [local, remote] of oraclesDict) {
-      oracles.set(new core_1.Address(-1, local).toString(), remote);
-    }
-    const externalChainAddress = slice.loadBuffer(32);
-    return {
-      bridgeAddress,
-      oracleMultisigAddress,
-      oracles,
-      externalChainAddress
-    };
-  }
-  function configParseMasterAddressRequired(slice) {
-    if (!slice) {
-      throw Error("Invalid config");
-    }
-    return configParseMasterAddress(slice);
-  }
-  function configParse5(slice) {
-    if (!slice) {
-      throw Error("Invalid config");
-    }
-    const magic = slice.loadUint(8);
-    if (magic === 1) {
-      const blackholeAddr = slice.loadBit() ? new core_1.Address(-1, slice.loadBuffer(32)) : null;
-      const feeBurnNominator = slice.loadUint(32);
-      const feeBurnDenominator = slice.loadUint(32);
-      return {
-        blackholeAddr,
-        feeBurnNominator,
-        feeBurnDenominator
-      };
-    }
-    throw new Error("Invalid config");
-  }
-  function configParse13(slice) {
-    if (!slice) {
-      throw Error("Invalid config");
-    }
-    const magic = slice.loadUint(8);
-    if (magic === 26) {
-      const deposit = slice.loadCoins();
-      const bitPrice = slice.loadCoins();
-      const cellPrice = slice.loadCoins();
-      return {
-        deposit,
-        bitPrice,
-        cellPrice
-      };
-    }
-    throw new Error("Invalid config");
-  }
-  function configParse15(slice) {
-    if (!slice) {
-      throw Error("Invalid config");
-    }
-    const validatorsElectedFor = slice.loadUint(32);
-    const electorsStartBefore = slice.loadUint(32);
-    const electorsEndBefore = slice.loadUint(32);
-    const stakeHeldFor = slice.loadUint(32);
-    return {
-      validatorsElectedFor,
-      electorsStartBefore,
-      electorsEndBefore,
-      stakeHeldFor
-    };
-  }
-  function configParse16(slice) {
-    if (!slice) {
-      throw Error("Invalid config");
-    }
-    const maxValidators = slice.loadUint(16);
-    const maxMainValidators = slice.loadUint(16);
-    const minValidators = slice.loadUint(16);
-    return {
-      maxValidators,
-      maxMainValidators,
-      minValidators
-    };
-  }
-  function configParse17(slice) {
-    if (!slice) {
-      throw Error("Invalid config");
-    }
-    const minStake = slice.loadCoins();
-    const maxStake = slice.loadCoins();
-    const minTotalStake = slice.loadCoins();
-    const maxStakeFactor = slice.loadUint(32);
-    return {
-      minStake,
-      maxStake,
-      minTotalStake,
-      maxStakeFactor
-    };
-  }
-  const StoragePricesDictValue = {
-    serialize(src2, builder2) {
-      throw Error("not implemented");
-    },
-    parse(src2) {
-      const header = src2.loadUint(8);
-      if (header !== 204) {
-        throw Error("Invalid config");
-      }
-      const utime_since = src2.loadUint(32);
-      const bit_price_ps = src2.loadUintBig(64);
-      const cell_price_ps = src2.loadUintBig(64);
-      const mc_bit_price_ps = src2.loadUintBig(64);
-      const mc_cell_price_ps = src2.loadUintBig(64);
-      return {
-        utime_since,
-        bit_price_ps,
-        cell_price_ps,
-        mc_bit_price_ps,
-        mc_cell_price_ps
-      };
-    }
-  };
-  function configParse18(slice) {
-    if (!slice) {
-      throw Error("Invalid config");
-    }
-    return slice.loadDictDirect(core_1.Dictionary.Keys.Buffer(4), StoragePricesDictValue).values();
-  }
-  function configParse8(slice) {
-    if (!slice) {
-      return {
-        version: 0,
-        capabilities: 0n
-      };
-    }
-    const version2 = slice.loadUint(32);
-    const capabilities = slice.loadUintBig(64);
-    return {
-      version: version2,
-      capabilities
-    };
-  }
-  function configParse40(slice) {
-    if (!slice) {
-      return null;
-    }
-    const header = slice.loadUint(8);
-    if (header !== 1) {
-      throw Error("Invalid config");
-    }
-    const defaultFlatFine = slice.loadCoins();
-    const defaultProportionaFine = slice.loadCoins();
-    const severityFlatMult = slice.loadUint(16);
-    const severityProportionalMult = slice.loadUint(16);
-    const unfunishableInterval = slice.loadUint(16);
-    const longInterval = slice.loadUint(16);
-    const longFlatMult = slice.loadUint(16);
-    const longProportionalMult = slice.loadUint(16);
-    const mediumInterval = slice.loadUint(16);
-    const mediumFlatMult = slice.loadUint(16);
-    const mediumProportionalMult = slice.loadUint(16);
-    return {
-      defaultFlatFine,
-      defaultProportionaFine,
-      severityFlatMult,
-      severityProportionalMult,
-      unfunishableInterval,
-      longInterval,
-      longFlatMult,
-      longProportionalMult,
-      mediumInterval,
-      mediumFlatMult,
-      mediumProportionalMult
-    };
-  }
-  function configParseWorkchainDescriptor(slice) {
-    const constructorTag = slice.loadUint(8);
-    if (!(constructorTag == 166 || constructorTag == 167)) {
-      throw Error("Invalid config");
-    }
-    const enabledSince = slice.loadUint(32);
-    const actialMinSplit = slice.loadUint(8);
-    const min_split = slice.loadUint(8);
-    const max_split = slice.loadUint(8);
-    const basic = slice.loadBit();
-    const active = slice.loadBit();
-    const accept_msgs = slice.loadBit();
-    const flags = slice.loadUint(13);
-    const zerostateRootHash = slice.loadBuffer(32);
-    const zerostateFileHash = slice.loadBuffer(32);
-    const version2 = slice.loadUint(32);
-    if (!slice.loadUint(4)) {
-      throw Error("Invalid config");
-    }
-    const vmVersion = slice.loadInt(32);
-    const vmMode = slice.loadUintBig(64);
-    let extension = void 0;
-    if (constructorTag == 167) {
-      const splitMergeTimings = parseWorkchainSplitMergeTimings(slice);
-      const stateSplitDepth = slice.loadUint(8);
-      if (stateSplitDepth > 63) {
-        throw RangeError(`Invalid persistent_state_split_depth: ${stateSplitDepth} expected <= 63`);
-      }
-      extension = {
-        split_merge_timings: splitMergeTimings,
-        persistent_state_split_depth: stateSplitDepth
-      };
-    }
-    return {
-      enabledSince,
-      actialMinSplit,
-      min_split,
-      max_split,
-      basic,
-      active,
-      accept_msgs,
-      flags,
-      zerostateRootHash,
-      zerostateFileHash,
-      version: version2,
-      format: {
-        vmVersion,
-        vmMode
-      },
-      workchain_v2: extension
-    };
-  }
-  function parseWorkchainSplitMergeTimings(slice) {
-    if (slice.loadUint(4) !== 0) {
-      throw Error(`Invalid WcSplitMergeTimings tag expected 0!`);
-    }
-    return {
-      split_merge_delay: slice.loadUint(32),
-      split_merge_interval: slice.loadUint(32),
-      min_split_merge_interval: slice.loadUint(32),
-      max_split_merge_delay: slice.loadUint(32)
-    };
-  }
-  const WorkchainDescriptorDictValue = {
-    serialize(src2, builder2) {
-      throw Error("not implemented");
-    },
-    parse(src2) {
-      return configParseWorkchainDescriptor(src2);
-    }
-  };
-  function configParse12(slice) {
-    if (!slice) {
-      throw Error("Invalid config");
-    }
-    const wd = slice.loadDict(core_1.Dictionary.Keys.Uint(32), WorkchainDescriptorDictValue);
-    if (wd) {
-      return wd;
-    }
-    throw Error("No workchains exist");
-  }
-  function configParseValidatorSet(slice) {
-    if (!slice) {
-      return null;
-    }
-    return parseValidatorSet(slice);
-  }
-  function configParseBridge(slice) {
-    if (!slice) {
-      return null;
-    }
-    return parseBridge(slice);
-  }
-  function parseGasLimitsInternal(slice) {
-    const tag = slice.loadUint(8);
-    if (tag === 222) {
-      const gasPrice = slice.loadUintBig(64);
-      const gasLimit = slice.loadUintBig(64);
-      const specialGasLimit = slice.loadUintBig(64);
-      const gasCredit = slice.loadUintBig(64);
-      const blockGasLimit = slice.loadUintBig(64);
-      const freezeDueLimit = slice.loadUintBig(64);
-      const deleteDueLimit = slice.loadUintBig(64);
-      return {
-        gasPrice,
-        gasLimit,
-        specialGasLimit,
-        gasCredit,
-        blockGasLimit,
-        freezeDueLimit,
-        deleteDueLimit
-      };
-    } else if (tag === 221) {
-      const gasPrice = slice.loadUintBig(64);
-      const gasLimit = slice.loadUintBig(64);
-      const gasCredit = slice.loadUintBig(64);
-      const blockGasLimit = slice.loadUintBig(64);
-      const freezeDueLimit = slice.loadUintBig(64);
-      const deleteDueLimit = slice.loadUintBig(64);
-      return {
-        gasPrice,
-        gasLimit,
-        gasCredit,
-        blockGasLimit,
-        freezeDueLimit,
-        deleteDueLimit
-      };
-    } else {
-      throw Error("Invalid config");
-    }
-  }
-  function configParseGasLimitsPrices(slice) {
-    if (!slice) {
-      throw Error("Invalid config");
-    }
-    const tag = slice.loadUint(8);
-    if (tag === 209) {
-      const flatLimit = slice.loadUintBig(64);
-      const flatGasPrice = slice.loadUintBig(64);
-      const other = parseGasLimitsInternal(slice);
-      return {
-        flatLimit,
-        flatGasPrice,
-        other
-      };
-    } else {
-      throw Error("Invalid config");
-    }
-  }
-  function configParseMsgPrices(slice) {
-    if (!slice) {
-      throw new Error("Invalid config");
-    }
-    const magic = slice.loadUint(8);
-    if (magic !== 234) {
-      throw new Error("Invalid msg prices param");
-    }
-    return {
-      lumpPrice: slice.loadUintBig(64),
-      bitPrice: slice.loadUintBig(64),
-      cellPrice: slice.loadUintBig(64),
-      ihrPriceFactor: slice.loadUint(32),
-      firstFrac: slice.loadUint(16),
-      nextFrac: slice.loadUint(16)
-    };
-  }
-  function configParse28(slice) {
-    if (!slice) {
-      throw new Error("Invalid config");
-    }
-    const magic = slice.loadUint(8);
-    if (magic === 193) {
-      const masterCatchainLifetime = slice.loadUint(32);
-      const shardCatchainLifetime = slice.loadUint(32);
-      const shardValidatorsLifetime = slice.loadUint(32);
-      const shardValidatorsCount = slice.loadUint(32);
-      return {
-        masterCatchainLifetime,
-        shardCatchainLifetime,
-        shardValidatorsLifetime,
-        shardValidatorsCount
-      };
-    }
-    if (magic === 194) {
-      const flags = slice.loadUint(7);
-      const suffleMasterValidators = slice.loadBit();
-      const masterCatchainLifetime = slice.loadUint(32);
-      const shardCatchainLifetime = slice.loadUint(32);
-      const shardValidatorsLifetime = slice.loadUint(32);
-      const shardValidatorsCount = slice.loadUint(32);
-      return {
-        flags,
-        suffleMasterValidators,
-        masterCatchainLifetime,
-        shardCatchainLifetime,
-        shardValidatorsLifetime,
-        shardValidatorsCount
-      };
-    }
-    throw new Error("Invalid config");
-  }
-  function configParse29(slice) {
-    if (!slice) {
-      throw new Error("Invalid config");
-    }
-    const magic = slice.loadUint(8);
-    if (magic === 214) {
-      const roundCandidates = slice.loadUint(32);
-      const nextCandidateDelay = slice.loadUint(32);
-      const consensusTimeout = slice.loadUint(32);
-      const fastAttempts = slice.loadUint(32);
-      const attemptDuration = slice.loadUint(32);
-      const catchainMaxDeps = slice.loadUint(32);
-      const maxBlockBytes = slice.loadUint(32);
-      const maxColaltedBytes = slice.loadUint(32);
-      return {
-        roundCandidates,
-        nextCandidateDelay,
-        consensusTimeout,
-        fastAttempts,
-        attemptDuration,
-        catchainMaxDeps,
-        maxBlockBytes,
-        maxColaltedBytes
-      };
-    } else if (magic === 215) {
-      const flags = slice.loadUint(7);
-      const newCatchainIds = slice.loadBit();
-      const roundCandidates = slice.loadUint(8);
-      const nextCandidateDelay = slice.loadUint(32);
-      const consensusTimeout = slice.loadUint(32);
-      const fastAttempts = slice.loadUint(32);
-      const attemptDuration = slice.loadUint(32);
-      const catchainMaxDeps = slice.loadUint(32);
-      const maxBlockBytes = slice.loadUint(32);
-      const maxColaltedBytes = slice.loadUint(32);
-      return {
-        flags,
-        newCatchainIds,
-        roundCandidates,
-        nextCandidateDelay,
-        consensusTimeout,
-        fastAttempts,
-        attemptDuration,
-        catchainMaxDeps,
-        maxBlockBytes,
-        maxColaltedBytes
-      };
-    } else if (magic === 216) {
-      const flags = slice.loadUint(7);
-      const newCatchainIds = slice.loadBit();
-      const roundCandidates = slice.loadUint(8);
-      const nextCandidateDelay = slice.loadUint(32);
-      const consensusTimeout = slice.loadUint(32);
-      const fastAttempts = slice.loadUint(32);
-      const attemptDuration = slice.loadUint(32);
-      const catchainMaxDeps = slice.loadUint(32);
-      const maxBlockBytes = slice.loadUint(32);
-      const maxColaltedBytes = slice.loadUint(32);
-      const protoVersion = slice.loadUint(16);
-      return {
-        flags,
-        newCatchainIds,
-        roundCandidates,
-        nextCandidateDelay,
-        consensusTimeout,
-        fastAttempts,
-        attemptDuration,
-        catchainMaxDeps,
-        maxBlockBytes,
-        maxColaltedBytes,
-        protoVersion
-      };
-    } else if (magic === 217) {
-      const flags = slice.loadUint(7);
-      const newCatchainIds = slice.loadBit();
-      const roundCandidates = slice.loadUint(8);
-      const nextCandidateDelay = slice.loadUint(32);
-      const consensusTimeout = slice.loadUint(32);
-      const fastAttempts = slice.loadUint(32);
-      const attemptDuration = slice.loadUint(32);
-      const catchainMaxDeps = slice.loadUint(32);
-      const maxBlockBytes = slice.loadUint(32);
-      const maxColaltedBytes = slice.loadUint(32);
-      const protoVersion = slice.loadUint(16);
-      const catchainMaxBlocksCoeff = slice.loadUint(32);
-      return {
-        flags,
-        newCatchainIds,
-        roundCandidates,
-        nextCandidateDelay,
-        consensusTimeout,
-        fastAttempts,
-        attemptDuration,
-        catchainMaxDeps,
-        maxBlockBytes,
-        maxColaltedBytes,
-        protoVersion,
-        catchainMaxBlocksCoeff
-      };
-    }
-    throw new Error("Invalid config");
-  }
-  function parseProposalSetup(slice) {
-    const magic = slice.loadUint(8);
-    if (magic !== 54) {
-      throw new Error("Invalid config");
-    }
-    const minTotalRounds = slice.loadUint(8);
-    const maxTotalRounds = slice.loadUint(8);
-    const minWins = slice.loadUint(8);
-    const maxLoses = slice.loadUint(8);
-    const minStoreSec = slice.loadUint(32);
-    const maxStoreSec = slice.loadUint(32);
-    const bitPrice = slice.loadUint(32);
-    const cellPrice = slice.loadUint(32);
-    return { minTotalRounds, maxTotalRounds, minWins, maxLoses, minStoreSec, maxStoreSec, bitPrice, cellPrice };
-  }
-  function parseVotingSetup(slice) {
-    if (!slice) {
-      throw new Error("Invalid config");
-    }
-    const magic = slice.loadUint(8);
-    if (magic !== 145) {
-      throw new Error("Invalid config");
-    }
-    const normalParams = parseProposalSetup(slice.loadRef().beginParse());
-    const criticalParams = parseProposalSetup(slice.loadRef().beginParse());
-    return { normalParams, criticalParams };
-  }
-  function loadConfigParams(configBase64) {
-    const comfigMap = core_1.Cell.fromBase64(configBase64).beginParse().loadDictDirect(core_1.Dictionary.Keys.Int(32), core_1.Dictionary.Values.Cell());
-    return comfigMap;
-  }
-  function loadConfigParamById(configBase64, id) {
-    return loadConfigParams(configBase64).get(id);
-  }
-  function loadConfigParamsAsSlice(configBase64) {
-    const pramsAsCells = loadConfigParams(configBase64);
-    const params = /* @__PURE__ */ new Map();
-    for (const [key2, value] of pramsAsCells) {
-      params.set(key2, value.beginParse());
-    }
-    return params;
-  }
-  function parseFullConfig(configs) {
-    return {
-      configAddress: configParseMasterAddressRequired(configs.get(0)),
-      electorAddress: configParseMasterAddressRequired(configs.get(1)),
-      minterAddress: configParseMasterAddress(configs.get(2)),
-      feeCollectorAddress: configParseMasterAddress(configs.get(3)),
-      dnsRootAddress: configParseMasterAddress(configs.get(4)),
-      burningConfig: configParse5(configs.get(5)),
-      globalVersion: configParse8(configs.get(8)),
-      workchains: configParse12(configs.get(12)),
-      voting: parseVotingSetup(configs.get(11)),
-      validators: {
-        ...configParse15(configs.get(15)),
-        ...configParse16(configs.get(16)),
-        ...configParse17(configs.get(17))
-      },
-      storagePrices: configParse18(configs.get(18)),
-      gasPrices: {
-        masterchain: configParseGasLimitsPrices(configs.get(20)),
-        workchain: configParseGasLimitsPrices(configs.get(21))
-      },
-      msgPrices: {
-        masterchain: configParseMsgPrices(configs.get(24)),
-        workchain: configParseMsgPrices(configs.get(25))
-      },
-      validatorSets: {
-        prevValidators: configParseValidatorSet(configs.get(32)),
-        prevTempValidators: configParseValidatorSet(configs.get(33)),
-        currentValidators: configParseValidatorSet(configs.get(34)),
-        currentTempValidators: configParseValidatorSet(configs.get(35)),
-        nextValidators: configParseValidatorSet(configs.get(36)),
-        nextTempValidators: configParseValidatorSet(configs.get(37))
-      },
-      validatorsPunish: configParse40(configs.get(40)),
-      bridges: {
-        ethereum: configParseBridge(configs.get(71)),
-        binance: configParseBridge(configs.get(72)),
-        polygon: configParseBridge(configs.get(73))
-      },
-      catchain: configParse28(configs.get(28)),
-      consensus: configParse29(configs.get(29))
-      // TODO: mint_new_price:Grams mint_add_price:Grams = ConfigParam 6;
-      // TODO: to_mint:ExtraCurrencyCollection = ConfigParam 7
-      // TODO: mandatory_params:(Hashmap 32 True) = ConfigParam 9
-      // TODO: critical_params:(Hashmap 32 True) = ConfigParam 10
-      // TODO: BlockCreateFees = ConfigParam 14
-    };
-  }
-  return ConfigParser;
-}
-var fees = {};
-var hasRequiredFees;
-function requireFees() {
-  if (hasRequiredFees) return fees;
-  hasRequiredFees = 1;
-  Object.defineProperty(fees, "__esModule", { value: true });
-  fees.computeStorageFees = computeStorageFees;
-  fees.computeFwdFees = computeFwdFees;
-  fees.computeGasPrices = computeGasPrices;
-  fees.computeExternalMessageFees = computeExternalMessageFees;
-  fees.computeMessageForwardFees = computeMessageForwardFees;
-  const core_1 = requireDist$4();
-  function computeStorageFees(data) {
-    const { lastPaid, now, storagePrices, storageStat, special, masterchain } = data;
-    if (now <= lastPaid || storagePrices.length === 0 || now < storagePrices[0].utime_since || special) {
-      return BigInt(0);
-    }
-    let upto = Math.max(lastPaid, storagePrices[0].utime_since);
-    let total = BigInt(0);
-    for (let i = 0; i < storagePrices.length && upto < now; i++) {
-      let valid_until = i < storagePrices.length - 1 ? Math.min(now, storagePrices[i + 1].utime_since) : now;
-      let payment = BigInt(0);
-      if (upto < valid_until) {
-        let delta = valid_until - upto;
-        payment += BigInt(storageStat.cells) * (masterchain ? storagePrices[i].mc_cell_price_ps : storagePrices[i].cell_price_ps);
-        payment += BigInt(storageStat.bits) * (masterchain ? storagePrices[i].mc_bit_price_ps : storagePrices[i].bit_price_ps);
-        payment = payment * BigInt(delta);
-      }
-      upto = valid_until;
-      total += payment;
-    }
-    return shr16ceil(total);
-  }
-  function computeFwdFees(msgPrices, cells, bits) {
-    return msgPrices.lumpPrice + shr16ceil(msgPrices.bitPrice * bits + msgPrices.cellPrice * cells);
-  }
-  function computeGasPrices(gasUsed, prices) {
-    if (gasUsed <= prices.flatLimit) {
-      return prices.flatPrice;
-    } else {
-      return prices.flatPrice + (prices.price * (gasUsed - prices.flatLimit) >> 16n);
-    }
-  }
-  function computeExternalMessageFees(msgPrices, cell) {
-    let storageStats = collectCellStats(cell);
-    storageStats.bits -= cell.bits.length;
-    storageStats.cells -= 1;
-    return computeFwdFees(msgPrices, BigInt(storageStats.cells), BigInt(storageStats.bits));
-  }
-  function computeMessageForwardFees(msgPrices, cell) {
-    let msg = (0, core_1.loadMessageRelaxed)(cell.beginParse());
-    let storageStats = { bits: 0, cells: 0 };
-    if (msg.init) {
-      const rawBuilder = new core_1.Cell().asBuilder();
-      (0, core_1.storeStateInit)(msg.init)(rawBuilder);
-      const raw = rawBuilder.endCell();
-      let c = collectCellStats(raw);
-      c.bits -= raw.bits.length;
-      c.cells -= 1;
-      storageStats.bits += c.bits;
-      storageStats.cells += c.cells;
-    }
-    let bc = collectCellStats(msg.body);
-    bc.bits -= msg.body.bits.length;
-    bc.cells -= 1;
-    storageStats.bits += bc.bits;
-    storageStats.cells += bc.cells;
-    let fees2 = computeFwdFees(msgPrices, BigInt(storageStats.cells), BigInt(storageStats.bits));
-    let res = fees2 * BigInt(msgPrices.firstFrac) >> 16n;
-    let remaining = fees2 - res;
-    return { fees: res, remaining };
-  }
-  function collectCellStats(cell) {
-    let bits = cell.bits.length;
-    let cells = 1;
-    for (let ref of cell.refs) {
-      let r = collectCellStats(ref);
-      cells += r.cells;
-      bits += r.bits;
-    }
-    return { bits, cells };
-  }
-  function shr16ceil(src2) {
-    let rem = src2 % 65536n;
-    let res = src2 >> 16n;
-    if (rem !== 0n) {
-      res += 1n;
-    }
-    return res;
-  }
-  return fees;
-}
-var hasRequiredDist$1;
-function requireDist$1() {
-  if (hasRequiredDist$1) return dist;
-  hasRequiredDist$1 = 1;
-  (function(exports) {
-    var __createBinding = dist && dist.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
-      if (k22 === void 0) k22 = k2;
-      var desc = Object.getOwnPropertyDescriptor(m2, k2);
-      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m2[k2];
-        } };
-      }
-      Object.defineProperty(o4, k22, desc);
-    }) : (function(o4, m2, k2, k22) {
-      if (k22 === void 0) k22 = k2;
-      o4[k22] = m2[k2];
-    }));
-    var __exportStar = dist && dist.__exportStar || function(m2, exports2) {
-      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
-    };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.computeStorageFees = exports.computeMessageForwardFees = exports.computeGasPrices = exports.computeFwdFees = exports.computeExternalMessageFees = exports.loadConfigParamsAsSlice = exports.loadConfigParamById = exports.parseFullConfig = exports.parseVotingSetup = exports.parseValidatorSet = exports.parseProposalSetup = exports.parseBridge = exports.configParseWorkchainDescriptor = exports.configParseValidatorSet = exports.configParseMsgPrices = exports.configParseMasterAddressRequired = exports.configParseMasterAddress = exports.configParseGasLimitsPrices = exports.configParseBridge = exports.configParse40 = exports.configParse29 = exports.configParse28 = exports.configParse18 = exports.configParse17 = exports.configParse16 = exports.configParse15 = exports.configParse13 = exports.configParse12 = exports.configParse8 = exports.configParse5 = exports.ElectorContract = exports.MultisigWallet = exports.MultisigOrderBuilder = exports.MultisigOrder = exports.JettonWallet = exports.JettonMaster = exports.WalletContractV5R1 = exports.WalletContractV5Beta = exports.WalletContractV4 = exports.WalletContractV3R2 = exports.WalletContractV3R1 = exports.WalletContractV2R2 = exports.WalletContractV2R1 = exports.WalletContractV1R3 = exports.WalletContractV1R2 = exports.WalletContractV1R1 = exports.TonClient4 = exports.TonClient = exports.HttpApi = void 0;
-    __exportStar(requireDist$4(), exports);
-    var HttpApi_1 = requireHttpApi();
-    Object.defineProperty(exports, "HttpApi", { enumerable: true, get: function() {
-      return HttpApi_1.HttpApi;
-    } });
-    var TonClient_1 = requireTonClient();
-    Object.defineProperty(exports, "TonClient", { enumerable: true, get: function() {
-      return TonClient_1.TonClient;
-    } });
-    var TonClient4_1 = requireTonClient4();
-    Object.defineProperty(exports, "TonClient4", { enumerable: true, get: function() {
-      return TonClient4_1.TonClient4;
-    } });
-    var WalletContractV1R1_1 = requireWalletContractV1R1();
-    Object.defineProperty(exports, "WalletContractV1R1", { enumerable: true, get: function() {
-      return WalletContractV1R1_1.WalletContractV1R1;
-    } });
-    var WalletContractV1R2_1 = requireWalletContractV1R2();
-    Object.defineProperty(exports, "WalletContractV1R2", { enumerable: true, get: function() {
-      return WalletContractV1R2_1.WalletContractV1R2;
-    } });
-    var WalletContractV1R3_1 = requireWalletContractV1R3();
-    Object.defineProperty(exports, "WalletContractV1R3", { enumerable: true, get: function() {
-      return WalletContractV1R3_1.WalletContractV1R3;
-    } });
-    var WalletContractV2R1_1 = requireWalletContractV2R1();
-    Object.defineProperty(exports, "WalletContractV2R1", { enumerable: true, get: function() {
-      return WalletContractV2R1_1.WalletContractV2R1;
-    } });
-    var WalletContractV2R2_1 = requireWalletContractV2R2();
-    Object.defineProperty(exports, "WalletContractV2R2", { enumerable: true, get: function() {
-      return WalletContractV2R2_1.WalletContractV2R2;
-    } });
-    var WalletContractV3R1_1 = requireWalletContractV3R1();
-    Object.defineProperty(exports, "WalletContractV3R1", { enumerable: true, get: function() {
-      return WalletContractV3R1_1.WalletContractV3R1;
-    } });
-    var WalletContractV3R2_1 = requireWalletContractV3R2();
-    Object.defineProperty(exports, "WalletContractV3R2", { enumerable: true, get: function() {
-      return WalletContractV3R2_1.WalletContractV3R2;
-    } });
-    var WalletContractV4_1 = requireWalletContractV4();
-    Object.defineProperty(exports, "WalletContractV4", { enumerable: true, get: function() {
-      return WalletContractV4_1.WalletContractV4;
-    } });
-    var WalletContractV5Beta_1 = requireWalletContractV5Beta();
-    Object.defineProperty(exports, "WalletContractV5Beta", { enumerable: true, get: function() {
-      return WalletContractV5Beta_1.WalletContractV5Beta;
-    } });
-    var WalletContractV5R1_1 = requireWalletContractV5R1();
-    Object.defineProperty(exports, "WalletContractV5R1", { enumerable: true, get: function() {
-      return WalletContractV5R1_1.WalletContractV5R1;
-    } });
-    var JettonMaster_1 = requireJettonMaster();
-    Object.defineProperty(exports, "JettonMaster", { enumerable: true, get: function() {
-      return JettonMaster_1.JettonMaster;
-    } });
-    var JettonWallet_1 = requireJettonWallet();
-    Object.defineProperty(exports, "JettonWallet", { enumerable: true, get: function() {
-      return JettonWallet_1.JettonWallet;
-    } });
-    var MultisigOrder_1 = requireMultisigOrder();
-    Object.defineProperty(exports, "MultisigOrder", { enumerable: true, get: function() {
-      return MultisigOrder_1.MultisigOrder;
-    } });
-    var MultisigOrderBuilder_1 = requireMultisigOrderBuilder();
-    Object.defineProperty(exports, "MultisigOrderBuilder", { enumerable: true, get: function() {
-      return MultisigOrderBuilder_1.MultisigOrderBuilder;
-    } });
-    var MultisigWallet_1 = requireMultisigWallet();
-    Object.defineProperty(exports, "MultisigWallet", { enumerable: true, get: function() {
-      return MultisigWallet_1.MultisigWallet;
-    } });
-    var ElectorContract_1 = requireElectorContract();
-    Object.defineProperty(exports, "ElectorContract", { enumerable: true, get: function() {
-      return ElectorContract_1.ElectorContract;
-    } });
-    var ConfigParser_1 = requireConfigParser();
-    Object.defineProperty(exports, "configParse5", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse5;
-    } });
-    Object.defineProperty(exports, "configParse8", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse8;
-    } });
-    Object.defineProperty(exports, "configParse12", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse12;
-    } });
-    Object.defineProperty(exports, "configParse13", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse13;
-    } });
-    Object.defineProperty(exports, "configParse15", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse15;
-    } });
-    Object.defineProperty(exports, "configParse16", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse16;
-    } });
-    Object.defineProperty(exports, "configParse17", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse17;
-    } });
-    Object.defineProperty(exports, "configParse18", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse18;
-    } });
-    Object.defineProperty(exports, "configParse28", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse28;
-    } });
-    Object.defineProperty(exports, "configParse29", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse29;
-    } });
-    Object.defineProperty(exports, "configParse40", { enumerable: true, get: function() {
-      return ConfigParser_1.configParse40;
-    } });
-    Object.defineProperty(exports, "configParseBridge", { enumerable: true, get: function() {
-      return ConfigParser_1.configParseBridge;
-    } });
-    Object.defineProperty(exports, "configParseGasLimitsPrices", { enumerable: true, get: function() {
-      return ConfigParser_1.configParseGasLimitsPrices;
-    } });
-    Object.defineProperty(exports, "configParseMasterAddress", { enumerable: true, get: function() {
-      return ConfigParser_1.configParseMasterAddress;
-    } });
-    Object.defineProperty(exports, "configParseMasterAddressRequired", { enumerable: true, get: function() {
-      return ConfigParser_1.configParseMasterAddressRequired;
-    } });
-    Object.defineProperty(exports, "configParseMsgPrices", { enumerable: true, get: function() {
-      return ConfigParser_1.configParseMsgPrices;
-    } });
-    Object.defineProperty(exports, "configParseValidatorSet", { enumerable: true, get: function() {
-      return ConfigParser_1.configParseValidatorSet;
-    } });
-    Object.defineProperty(exports, "configParseWorkchainDescriptor", { enumerable: true, get: function() {
-      return ConfigParser_1.configParseWorkchainDescriptor;
-    } });
-    Object.defineProperty(exports, "parseBridge", { enumerable: true, get: function() {
-      return ConfigParser_1.parseBridge;
-    } });
-    Object.defineProperty(exports, "parseProposalSetup", { enumerable: true, get: function() {
-      return ConfigParser_1.parseProposalSetup;
-    } });
-    Object.defineProperty(exports, "parseValidatorSet", { enumerable: true, get: function() {
-      return ConfigParser_1.parseValidatorSet;
-    } });
-    Object.defineProperty(exports, "parseVotingSetup", { enumerable: true, get: function() {
-      return ConfigParser_1.parseVotingSetup;
-    } });
-    Object.defineProperty(exports, "parseFullConfig", { enumerable: true, get: function() {
-      return ConfigParser_1.parseFullConfig;
-    } });
-    Object.defineProperty(exports, "loadConfigParamById", { enumerable: true, get: function() {
-      return ConfigParser_1.loadConfigParamById;
-    } });
-    Object.defineProperty(exports, "loadConfigParamsAsSlice", { enumerable: true, get: function() {
-      return ConfigParser_1.loadConfigParamsAsSlice;
-    } });
-    var fees_1 = requireFees();
-    Object.defineProperty(exports, "computeExternalMessageFees", { enumerable: true, get: function() {
-      return fees_1.computeExternalMessageFees;
-    } });
-    Object.defineProperty(exports, "computeFwdFees", { enumerable: true, get: function() {
-      return fees_1.computeFwdFees;
-    } });
-    Object.defineProperty(exports, "computeGasPrices", { enumerable: true, get: function() {
-      return fees_1.computeGasPrices;
-    } });
-    Object.defineProperty(exports, "computeMessageForwardFees", { enumerable: true, get: function() {
-      return fees_1.computeMessageForwardFees;
-    } });
-    Object.defineProperty(exports, "computeStorageFees", { enumerable: true, get: function() {
-      return fees_1.computeStorageFees;
-    } });
-  })(dist);
-  return dist;
-}
-var lib = {};
-var nodes = {};
-var g = typeof globalThis !== "undefined" && globalThis || typeof self !== "undefined" && self || // eslint-disable-next-line no-undef
-typeof global !== "undefined" && global || {};
-var support = {
-  searchParams: "URLSearchParams" in g,
-  iterable: "Symbol" in g && "iterator" in Symbol,
-  blob: "FileReader" in g && "Blob" in g && (function() {
-    try {
-      new Blob();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  })(),
-  formData: "FormData" in g,
-  arrayBuffer: "ArrayBuffer" in g
-};
-function isDataView(obj) {
-  return obj && DataView.prototype.isPrototypeOf(obj);
-}
-if (support.arrayBuffer) {
-  var viewClasses = [
-    "[object Int8Array]",
-    "[object Uint8Array]",
-    "[object Uint8ClampedArray]",
-    "[object Int16Array]",
-    "[object Uint16Array]",
-    "[object Int32Array]",
-    "[object Uint32Array]",
-    "[object Float32Array]",
-    "[object Float64Array]"
-  ];
-  var isArrayBufferView = ArrayBuffer.isView || function(obj) {
-    return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1;
-  };
-}
-function normalizeName(name) {
-  if (typeof name !== "string") {
-    name = String(name);
-  }
-  if (/[^a-z0-9\-#$%&'*+.^_`|~!]/i.test(name) || name === "") {
-    throw new TypeError('Invalid character in header field name: "' + name + '"');
-  }
-  return name.toLowerCase();
-}
-function normalizeValue(value) {
-  if (typeof value !== "string") {
-    value = String(value);
-  }
-  return value;
-}
-function iteratorFor(items) {
-  var iterator = {
-    next: function() {
-      var value = items.shift();
-      return { done: value === void 0, value };
-    }
-  };
-  if (support.iterable) {
-    iterator[Symbol.iterator] = function() {
-      return iterator;
-    };
-  }
-  return iterator;
-}
-function Headers$1(headers) {
-  this.map = {};
-  if (headers instanceof Headers$1) {
-    headers.forEach(function(value, name) {
-      this.append(name, value);
-    }, this);
-  } else if (Array.isArray(headers)) {
-    headers.forEach(function(header) {
-      if (header.length != 2) {
-        throw new TypeError("Headers constructor: expected name/value pair to be length 2, found" + header.length);
-      }
-      this.append(header[0], header[1]);
-    }, this);
-  } else if (headers) {
-    Object.getOwnPropertyNames(headers).forEach(function(name) {
-      this.append(name, headers[name]);
-    }, this);
-  }
-}
-Headers$1.prototype.append = function(name, value) {
-  name = normalizeName(name);
-  value = normalizeValue(value);
-  var oldValue = this.map[name];
-  this.map[name] = oldValue ? oldValue + ", " + value : value;
-};
-Headers$1.prototype["delete"] = function(name) {
-  delete this.map[normalizeName(name)];
-};
-Headers$1.prototype.get = function(name) {
-  name = normalizeName(name);
-  return this.has(name) ? this.map[name] : null;
-};
-Headers$1.prototype.has = function(name) {
-  return this.map.hasOwnProperty(normalizeName(name));
-};
-Headers$1.prototype.set = function(name, value) {
-  this.map[normalizeName(name)] = normalizeValue(value);
-};
-Headers$1.prototype.forEach = function(callback, thisArg) {
-  for (var name in this.map) {
-    if (this.map.hasOwnProperty(name)) {
-      callback.call(thisArg, this.map[name], name, this);
-    }
-  }
-};
-Headers$1.prototype.keys = function() {
-  var items = [];
-  this.forEach(function(value, name) {
-    items.push(name);
-  });
-  return iteratorFor(items);
-};
-Headers$1.prototype.values = function() {
-  var items = [];
-  this.forEach(function(value) {
-    items.push(value);
-  });
-  return iteratorFor(items);
-};
-Headers$1.prototype.entries = function() {
-  var items = [];
-  this.forEach(function(value, name) {
-    items.push([name, value]);
-  });
-  return iteratorFor(items);
-};
-if (support.iterable) {
-  Headers$1.prototype[Symbol.iterator] = Headers$1.prototype.entries;
-}
-function consumed(body) {
-  if (body._noBody) return;
-  if (body.bodyUsed) {
-    return Promise.reject(new TypeError("Already read"));
-  }
-  body.bodyUsed = true;
-}
-function fileReaderReady(reader2) {
-  return new Promise(function(resolve, reject) {
-    reader2.onload = function() {
-      resolve(reader2.result);
-    };
-    reader2.onerror = function() {
-      reject(reader2.error);
-    };
-  });
-}
-function readBlobAsArrayBuffer(blob) {
-  var reader2 = new FileReader();
-  var promise = fileReaderReady(reader2);
-  reader2.readAsArrayBuffer(blob);
-  return promise;
-}
-function readBlobAsText(blob) {
-  var reader2 = new FileReader();
-  var promise = fileReaderReady(reader2);
-  var match = /charset=([A-Za-z0-9_-]+)/.exec(blob.type);
-  var encoding2 = match ? match[1] : "utf-8";
-  reader2.readAsText(blob, encoding2);
-  return promise;
-}
-function readArrayBufferAsText(buf2) {
-  var view = new Uint8Array(buf2);
-  var chars = new Array(view.length);
-  for (var i = 0; i < view.length; i++) {
-    chars[i] = String.fromCharCode(view[i]);
-  }
-  return chars.join("");
-}
-function bufferClone(buf2) {
-  if (buf2.slice) {
-    return buf2.slice(0);
-  } else {
-    var view = new Uint8Array(buf2.byteLength);
-    view.set(new Uint8Array(buf2));
-    return view.buffer;
-  }
-}
-function Body() {
-  this.bodyUsed = false;
-  this._initBody = function(body) {
-    this.bodyUsed = this.bodyUsed;
-    this._bodyInit = body;
-    if (!body) {
-      this._noBody = true;
-      this._bodyText = "";
-    } else if (typeof body === "string") {
-      this._bodyText = body;
-    } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-      this._bodyBlob = body;
-    } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-      this._bodyFormData = body;
-    } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-      this._bodyText = body.toString();
-    } else if (support.arrayBuffer && support.blob && isDataView(body)) {
-      this._bodyArrayBuffer = bufferClone(body.buffer);
-      this._bodyInit = new Blob([this._bodyArrayBuffer]);
-    } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
-      this._bodyArrayBuffer = bufferClone(body);
-    } else {
-      this._bodyText = body = Object.prototype.toString.call(body);
-    }
-    if (!this.headers.get("content-type")) {
-      if (typeof body === "string") {
-        this.headers.set("content-type", "text/plain;charset=UTF-8");
-      } else if (this._bodyBlob && this._bodyBlob.type) {
-        this.headers.set("content-type", this._bodyBlob.type);
-      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-        this.headers.set("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
-      }
-    }
-  };
-  if (support.blob) {
-    this.blob = function() {
-      var rejected = consumed(this);
-      if (rejected) {
-        return rejected;
-      }
-      if (this._bodyBlob) {
-        return Promise.resolve(this._bodyBlob);
-      } else if (this._bodyArrayBuffer) {
-        return Promise.resolve(new Blob([this._bodyArrayBuffer]));
-      } else if (this._bodyFormData) {
-        throw new Error("could not read FormData body as blob");
-      } else {
-        return Promise.resolve(new Blob([this._bodyText]));
-      }
-    };
-  }
-  this.arrayBuffer = function() {
-    if (this._bodyArrayBuffer) {
-      var isConsumed = consumed(this);
-      if (isConsumed) {
-        return isConsumed;
-      } else if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
-        return Promise.resolve(
-          this._bodyArrayBuffer.buffer.slice(
-            this._bodyArrayBuffer.byteOffset,
-            this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
-          )
-        );
-      } else {
-        return Promise.resolve(this._bodyArrayBuffer);
-      }
-    } else if (support.blob) {
-      return this.blob().then(readBlobAsArrayBuffer);
-    } else {
-      throw new Error("could not read as ArrayBuffer");
-    }
-  };
-  this.text = function() {
-    var rejected = consumed(this);
-    if (rejected) {
-      return rejected;
-    }
-    if (this._bodyBlob) {
-      return readBlobAsText(this._bodyBlob);
-    } else if (this._bodyArrayBuffer) {
-      return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer));
-    } else if (this._bodyFormData) {
-      throw new Error("could not read FormData body as text");
-    } else {
-      return Promise.resolve(this._bodyText);
-    }
-  };
-  if (support.formData) {
-    this.formData = function() {
-      return this.text().then(decode);
-    };
-  }
-  this.json = function() {
-    return this.text().then(JSON.parse);
-  };
-  return this;
-}
-var methods = ["CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "TRACE"];
-function normalizeMethod(method) {
-  var upcased = method.toUpperCase();
-  return methods.indexOf(upcased) > -1 ? upcased : method;
-}
-function Request$1(input, options) {
-  if (!(this instanceof Request$1)) {
-    throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.');
-  }
-  options = options || {};
-  var body = options.body;
-  if (input instanceof Request$1) {
-    if (input.bodyUsed) {
-      throw new TypeError("Already read");
-    }
-    this.url = input.url;
-    this.credentials = input.credentials;
-    if (!options.headers) {
-      this.headers = new Headers$1(input.headers);
-    }
-    this.method = input.method;
-    this.mode = input.mode;
-    this.signal = input.signal;
-    if (!body && input._bodyInit != null) {
-      body = input._bodyInit;
-      input.bodyUsed = true;
-    }
-  } else {
-    this.url = String(input);
-  }
-  this.credentials = options.credentials || this.credentials || "same-origin";
-  if (options.headers || !this.headers) {
-    this.headers = new Headers$1(options.headers);
-  }
-  this.method = normalizeMethod(options.method || this.method || "GET");
-  this.mode = options.mode || this.mode || null;
-  this.signal = options.signal || this.signal || (function() {
-    if ("AbortController" in g) {
-      var ctrl = new AbortController();
-      return ctrl.signal;
-    }
-  })();
-  this.referrer = null;
-  if ((this.method === "GET" || this.method === "HEAD") && body) {
-    throw new TypeError("Body not allowed for GET or HEAD requests");
-  }
-  this._initBody(body);
-  if (this.method === "GET" || this.method === "HEAD") {
-    if (options.cache === "no-store" || options.cache === "no-cache") {
-      var reParamSearch = /([?&])_=[^&]*/;
-      if (reParamSearch.test(this.url)) {
-        this.url = this.url.replace(reParamSearch, "$1_=" + (/* @__PURE__ */ new Date()).getTime());
-      } else {
-        var reQueryString = /\?/;
-        this.url += (reQueryString.test(this.url) ? "&" : "?") + "_=" + (/* @__PURE__ */ new Date()).getTime();
-      }
-    }
-  }
-}
-Request$1.prototype.clone = function() {
-  return new Request$1(this, { body: this._bodyInit });
-};
-function decode(body) {
-  var form = new FormData();
-  body.trim().split("&").forEach(function(bytes) {
-    if (bytes) {
-      var split = bytes.split("=");
-      var name = split.shift().replace(/\+/g, " ");
-      var value = split.join("=").replace(/\+/g, " ");
-      form.append(decodeURIComponent(name), decodeURIComponent(value));
-    }
-  });
-  return form;
-}
-function parseHeaders(rawHeaders) {
-  var headers = new Headers$1();
-  var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, " ");
-  preProcessedHeaders.split("\r").map(function(header) {
-    return header.indexOf("\n") === 0 ? header.substr(1, header.length) : header;
-  }).forEach(function(line) {
-    var parts = line.split(":");
-    var key2 = parts.shift().trim();
-    if (key2) {
-      var value = parts.join(":").trim();
-      try {
-        headers.append(key2, value);
-      } catch (error2) {
-        console.warn("Response " + error2.message);
-      }
-    }
-  });
-  return headers;
-}
-Body.call(Request$1.prototype);
-function Response$1(bodyInit, options) {
-  if (!(this instanceof Response$1)) {
-    throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.');
-  }
-  if (!options) {
-    options = {};
-  }
-  this.type = "default";
-  this.status = options.status === void 0 ? 200 : options.status;
-  if (this.status < 200 || this.status > 599) {
-    throw new RangeError("Failed to construct 'Response': The status provided (0) is outside the range [200, 599].");
-  }
-  this.ok = this.status >= 200 && this.status < 300;
-  this.statusText = options.statusText === void 0 ? "" : "" + options.statusText;
-  this.headers = new Headers$1(options.headers);
-  this.url = options.url || "";
-  this._initBody(bodyInit);
-}
-Body.call(Response$1.prototype);
-Response$1.prototype.clone = function() {
-  return new Response$1(this._bodyInit, {
-    status: this.status,
-    statusText: this.statusText,
-    headers: new Headers$1(this.headers),
-    url: this.url
-  });
-};
-Response$1.error = function() {
-  var response = new Response$1(null, { status: 200, statusText: "" });
-  response.ok = false;
-  response.status = 0;
-  response.type = "error";
-  return response;
-};
-var redirectStatuses = [301, 302, 303, 307, 308];
-Response$1.redirect = function(url, status) {
-  if (redirectStatuses.indexOf(status) === -1) {
-    throw new RangeError("Invalid status code");
-  }
-  return new Response$1(null, { status, headers: { location: url } });
-};
-var DOMException = g.DOMException;
-try {
-  new DOMException();
-} catch (err) {
-  DOMException = function(message, name) {
-    this.message = message;
-    this.name = name;
-    var error2 = Error(message);
-    this.stack = error2.stack;
-  };
-  DOMException.prototype = Object.create(Error.prototype);
-  DOMException.prototype.constructor = DOMException;
-}
-function fetch$1(input, init) {
-  return new Promise(function(resolve, reject) {
-    var request = new Request$1(input, init);
-    if (request.signal && request.signal.aborted) {
-      return reject(new DOMException("Aborted", "AbortError"));
-    }
-    var xhr = new XMLHttpRequest();
-    function abortXhr() {
-      xhr.abort();
-    }
-    xhr.onload = function() {
-      var options = {
-        statusText: xhr.statusText,
-        headers: parseHeaders(xhr.getAllResponseHeaders() || "")
-      };
-      if (request.url.indexOf("file://") === 0 && (xhr.status < 200 || xhr.status > 599)) {
-        options.status = 200;
-      } else {
-        options.status = xhr.status;
-      }
-      options.url = "responseURL" in xhr ? xhr.responseURL : options.headers.get("X-Request-URL");
-      var body = "response" in xhr ? xhr.response : xhr.responseText;
-      setTimeout(function() {
-        resolve(new Response$1(body, options));
-      }, 0);
-    };
-    xhr.onerror = function() {
-      setTimeout(function() {
-        reject(new TypeError("Network request failed"));
-      }, 0);
-    };
-    xhr.ontimeout = function() {
-      setTimeout(function() {
-        reject(new TypeError("Network request timed out"));
-      }, 0);
-    };
-    xhr.onabort = function() {
-      setTimeout(function() {
-        reject(new DOMException("Aborted", "AbortError"));
-      }, 0);
-    };
-    function fixUrl(url) {
-      try {
-        return url === "" && g.location.href ? g.location.href : url;
-      } catch (e) {
-        return url;
-      }
-    }
-    xhr.open(request.method, fixUrl(request.url), true);
-    if (request.credentials === "include") {
-      xhr.withCredentials = true;
-    } else if (request.credentials === "omit") {
-      xhr.withCredentials = false;
-    }
-    if ("responseType" in xhr) {
-      if (support.blob) {
-        xhr.responseType = "blob";
-      } else if (support.arrayBuffer) {
-        xhr.responseType = "arraybuffer";
-      }
-    }
-    if (init && typeof init.headers === "object" && !(init.headers instanceof Headers$1 || g.Headers && init.headers instanceof g.Headers)) {
-      var names = [];
-      Object.getOwnPropertyNames(init.headers).forEach(function(name) {
-        names.push(normalizeName(name));
-        xhr.setRequestHeader(name, normalizeValue(init.headers[name]));
-      });
-      request.headers.forEach(function(value, name) {
-        if (names.indexOf(name) === -1) {
-          xhr.setRequestHeader(name, value);
-        }
-      });
-    } else {
-      request.headers.forEach(function(value, name) {
-        xhr.setRequestHeader(name, value);
-      });
-    }
-    if (request.signal) {
-      request.signal.addEventListener("abort", abortXhr);
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-          request.signal.removeEventListener("abort", abortXhr);
-        }
-      };
-    }
-    xhr.send(typeof request._bodyInit === "undefined" ? null : request._bodyInit);
-  });
-}
-fetch$1.polyfill = true;
-if (!g.fetch) {
-  g.fetch = fetch$1;
-  g.Headers = Headers$1;
-  g.Request = Request$1;
-  g.Response = Response$1;
-}
-var fetchNpmBrowserify;
-var hasRequiredFetchNpmBrowserify;
-function requireFetchNpmBrowserify() {
-  if (hasRequiredFetchNpmBrowserify) return fetchNpmBrowserify;
-  hasRequiredFetchNpmBrowserify = 1;
-  fetchNpmBrowserify = self.fetch.bind(self);
-  return fetchNpmBrowserify;
-}
-var hasRequiredNodes;
-function requireNodes() {
-  if (hasRequiredNodes) return nodes;
-  hasRequiredNodes = 1;
-  var __awaiter = nodes && nodes.__awaiter || function(thisArg, _arguments, P2, generator2) {
-    function adopt(value) {
-      return value instanceof P2 ? value : new P2(function(resolve) {
-        resolve(value);
-      });
-    }
-    return new (P2 || (P2 = Promise))(function(resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator2.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator2["throw"](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator2 = generator2.apply(thisArg, _arguments || [])).next());
-    });
-  };
-  Object.defineProperty(nodes, "__esModule", { value: true });
-  nodes.Nodes = void 0;
-  requireFetchNpmBrowserify();
-  class Nodes {
-    ///////////////////////////////////
-    constructor() {
-      this.nodeIndex = -1;
-      this.committee = /* @__PURE__ */ new Set();
-      this.topology = [];
-      this.initTime = 0;
-    }
-    ///////////////////////////////////
-    init(nodesUrl) {
-      return __awaiter(this, void 0, void 0, function* () {
-        this.nodeIndex = -1;
-        this.committee.clear();
-        this.topology = [];
-        this.initTime = Date.now();
-        let topology = [];
-        try {
-          const response = yield fetch(nodesUrl);
-          const data = yield response.json();
-          topology = data;
-        } catch (e) {
-          throw new Error(`exception in fetch(${nodesUrl}): ${e}`);
-        }
-        for (const node of topology) {
-          if (node.Healthy === "1") {
-            this.topology.push(node);
-          }
-        }
-        if (this.topology.length === 0)
-          throw new Error(`no healthy nodes in ${nodesUrl}`);
-      });
-    }
-    getHealthyFor(protonet) {
-      var _a2;
-      const res = [];
-      for (const node of this.topology) {
-        if (node.Weight > 0 && ((_a2 = node.Mngr) === null || _a2 === void 0 ? void 0 : _a2.health[protonet])) {
-          res.push(node);
-        }
-      }
-      return res;
-    }
-  }
-  nodes.Nodes = Nodes;
-  return nodes;
-}
-const version = "2.3.3";
-const require$$1$1 = {
-  version
-};
-var hasRequiredLib;
-function requireLib() {
-  if (hasRequiredLib) return lib;
-  hasRequiredLib = 1;
-  var __awaiter = lib && lib.__awaiter || function(thisArg, _arguments, P2, generator2) {
-    function adopt(value) {
-      return value instanceof P2 ? value : new P2(function(resolve) {
-        resolve(value);
-      });
-    }
-    return new (P2 || (P2 = Promise))(function(resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator2.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator2["throw"](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator2 = generator2.apply(thisArg, _arguments || [])).next());
-    });
-  };
-  Object.defineProperty(lib, "__esModule", { value: true });
-  lib.getHttpV4Endpoint = lib.getHttpV4Endpoints = lib.getHttpEndpoint = lib.getHttpEndpoints = lib.Access = void 0;
-  const nodes_1 = requireNodes();
-  class Access {
-    //////////////////////////////////
-    constructor() {
-      this.host = "ton.access.orbs.network";
-      this.urlVersion = 1;
-      this.nodes = new nodes_1.Nodes();
-    }
-    //////////////////////////////////
-    init() {
-      return __awaiter(this, void 0, void 0, function* () {
-        const pjson = require$$1$1;
-        yield this.nodes.init(`https://${this.host}/mngr/nodes?npm_version=${pjson.version}`);
-      });
-    }
-    //////////////////////////////////
-    makeProtonet(edgeProtocol, network) {
-      let res = "";
-      switch (edgeProtocol) {
-        case "toncenter-api-v2":
-          res += "v2-";
-          break;
-        case "ton-api-v4":
-          res += "v4-";
-          break;
-      }
-      res += network;
-      return res;
-    }
-    //////////////////////////////////
-    weightedRandom(nodes2) {
-      let sumWeights = 0;
-      for (const node of nodes2) {
-        sumWeights += node.Weight;
-      }
-      const rnd = Math.floor(Math.random() * sumWeights);
-      let cur = 0;
-      for (const node of nodes2) {
-        if (rnd >= cur && rnd < cur + node.Weight)
-          return node;
-        cur += node.Weight;
-      }
-    }
-    //////////////////////////////////
-    buildUrls(network, edgeProtocol, suffix, single) {
-      if (!suffix)
-        suffix = "";
-      if (!edgeProtocol)
-        edgeProtocol = "toncenter-api-v2";
-      if (!network)
-        network = "mainnet";
-      if (suffix.length)
-        suffix = suffix.replace(/^\/+/, "");
-      const res = [];
-      const protonet = this.makeProtonet(edgeProtocol, network);
-      let healthyNodes = this.nodes.getHealthyFor(protonet);
-      if (!(healthyNodes === null || healthyNodes === void 0 ? void 0 : healthyNodes.length))
-        throw new Error(`no healthy nodes for ${protonet}`);
-      if (single && healthyNodes.length) {
-        const chosen = this.weightedRandom(healthyNodes);
-        if (chosen)
-          healthyNodes = [chosen];
-        else
-          throw new Error("weightedRandom return empty");
-      }
-      for (const node of healthyNodes) {
-        let url = `https://${this.host}/${node.NodeId}/${this.urlVersion}/${network}/${edgeProtocol}`;
-        if (suffix.length)
-          url += `/${suffix}`;
-        res.push(url);
-      }
-      return res;
-    }
-  }
-  lib.Access = Access;
-  function getEndpoints(network, edgeProtocol, suffix, single) {
-    return __awaiter(this, void 0, void 0, function* () {
-      const access = new Access();
-      yield access.init();
-      const res = access.buildUrls(network, edgeProtocol, suffix, single);
-      return res;
-    });
-  }
-  function getHttpEndpoints(config, single) {
-    return __awaiter(this, void 0, void 0, function* () {
-      const network = (config === null || config === void 0 ? void 0 : config.network) ? config.network : "mainnet";
-      let suffix = "jsonRPC";
-      if ((config === null || config === void 0 ? void 0 : config.protocol) === "rest") {
-        suffix = "";
-      }
-      return yield getEndpoints(network, "toncenter-api-v2", suffix, single);
-    });
-  }
-  lib.getHttpEndpoints = getHttpEndpoints;
-  function getHttpEndpoint(config) {
-    return __awaiter(this, void 0, void 0, function* () {
-      const endpoints = yield getHttpEndpoints(config, true);
-      return endpoints[0];
-    });
-  }
-  lib.getHttpEndpoint = getHttpEndpoint;
-  function getHttpV4Endpoints(config, single) {
-    return __awaiter(this, void 0, void 0, function* () {
-      const network = (config === null || config === void 0 ? void 0 : config.network) ? config.network : "mainnet";
-      if ((config === null || config === void 0 ? void 0 : config.protocol) === "json-rpc") {
-        throw Error("config.protocol json-rpc is not supported for getTonApiV4Endpoints");
-      }
-      const suffix = "";
-      return yield getEndpoints(network, "ton-api-v4", suffix, single);
-    });
-  }
-  lib.getHttpV4Endpoints = getHttpV4Endpoints;
-  function getHttpV4Endpoint(config) {
-    return __awaiter(this, void 0, void 0, function* () {
-      const endpoints = yield getHttpV4Endpoints(config, true);
-      return endpoints[0];
-    });
-  }
-  lib.getHttpV4Endpoint = getHttpV4Endpoint;
-  return lib;
-}
-var hasRequiredTonClientApi;
-function requireTonClientApi() {
-  if (hasRequiredTonClientApi) return tonClientApi;
-  hasRequiredTonClientApi = 1;
-  Object.defineProperty(tonClientApi, "__esModule", { value: true });
-  tonClientApi.createApi = void 0;
-  const ton_1 = requireDist$1();
-  const ton_access_1 = requireLib();
-  async function createApi(network) {
-    const endpoint = await (0, ton_access_1.getHttpV4Endpoint)({ network });
-    return new ton_1.TonClient4({ endpoint, timeout: 15e3 });
-  }
-  tonClientApi.createApi = createApi;
-  return tonClientApi;
-}
-var key = {};
-var hasRequiredKey;
-function requireKey() {
-  if (hasRequiredKey) return key;
-  hasRequiredKey = 1;
-  Object.defineProperty(key, "__esModule", { value: true });
-  key.importKey = void 0;
-  const crypto_1 = requireDist$5();
-  async function importKey(key2) {
-    if (typeof key2 === "string") {
-      return await (0, crypto_1.mnemonicToWalletKey)(key2.split(" "));
-    } else if (Array.isArray(key2)) {
-      return await (0, crypto_1.mnemonicToWalletKey)(key2);
-    } else {
-      return (0, crypto_1.keyPairFromSecretKey)(key2);
-    }
-  }
-  key.importKey = importKey;
-  return key;
-}
-var wallets = {};
-var HighloadWalletContractV2 = {};
-var hasRequiredHighloadWalletContractV2;
-function requireHighloadWalletContractV2() {
-  if (hasRequiredHighloadWalletContractV2) return HighloadWalletContractV2;
-  hasRequiredHighloadWalletContractV2 = 1;
-  Object.defineProperty(HighloadWalletContractV2, "__esModule", { value: true });
-  HighloadWalletContractV2.HighloadWalletContractV2 = void 0;
-  const core_1 = requireDist$4();
-  const crypto_1 = requireDist$5();
-  const utils_1 = requireUtils$1();
-  let HighloadWalletContractV2$1 = class HighloadWalletContractV22 {
-    constructor(workchain, publicKey, walletId) {
-      this.workchain = workchain;
-      this.publicKey = publicKey;
-      if (walletId !== null && walletId !== void 0) {
-        this.walletId = walletId;
-      } else {
-        this.walletId = 698983191 + workchain;
-      }
-      const code = core_1.Cell.fromBase64("te6cckEBCQEA5QABFP8A9KQT9LzyyAsBAgEgAgMCAUgEBQHq8oMI1xgg0x/TP/gjqh9TILnyY+1E0NMf0z/T//QE0VNggED0Dm+hMfJgUXO68qIH+QFUEIf5EPKjAvQE0fgAf44WIYAQ9HhvpSCYAtMH1DAB+wCRMuIBs+ZbgyWhyEA0gED0Q4rmMQHIyx8Tyz/L//QAye1UCAAE0DACASAGBwAXvZznaiaGmvmOuF/8AEG+X5dqJoaY+Y6Z/p/5j6AmipEEAgegc30JjJLb/JXdHxQANCCAQPSWb6VsEiCUMFMDud4gkzM2AZJsIeKzn55UWg==");
-      const data = (0, core_1.beginCell)().storeUint(this.walletId, 32).storeUint(0, 64).storeBuffer(this.publicKey, 32).storeDict(null).endCell();
-      this.init = { code, data };
-      this.address = (0, core_1.contractAddress)(this.workchain, this.init);
-    }
-    static create(args) {
-      return new HighloadWalletContractV22(args.workchain, args.publicKey, args.walletId);
-    }
-    /**
-     * Get wallet balance.
-     */
-    async getBalance(provider) {
-      const state = await provider.getState();
-      return state.balance;
-    }
-    /**
-     * Send signed message.
-     */
-    async send(provider, message) {
-      await provider.external(message);
-    }
-    /**
-     * Sign and send message.
-     */
-    async sendTransfer(provider, args) {
-      const message = this.createTransfer(args);
-      await this.send(provider, message);
-    }
-    /**
-     * Create signed message.
-     */
-    createTransfer(args) {
-      let seqno = Math.floor(Math.random() * (1 << 32));
-      if (args.seqno !== null && args.seqno !== void 0) {
-        seqno = args.seqno;
-      }
-      let timeout = 5 * 60;
-      if (args.timeout !== null && args.timeout !== void 0 && args.timeout < timeout) {
-        timeout = args.timeout;
-      }
-      let sendMode = core_1.SendMode.PAY_GAS_SEPARATELY | core_1.SendMode.IGNORE_ERRORS;
-      if (args.sendMode !== null && args.sendMode !== void 0) {
-        sendMode = args.sendMode;
-      }
-      let now = Date.now();
-      if (args.now !== null && args.now !== void 0) {
-        now = args.now;
-      }
-      return (0, core_1.beginCell)().store(storeSignedTransferHighloadWalletV2({
-        secretKey: args.secretKey,
-        messages: args.messages,
-        seqno,
-        sendMode,
-        timeout,
-        walletId: this.walletId,
-        now
-      })).endCell();
-    }
-    /**
-     * Load signed message.
-     */
-    loadTransfer(src2) {
-      return loadSignedTransferHighloadWalletV2(src2);
-    }
-    /**
-     * Send signed message and wait for processing.
-     */
-    async sendTransferAndWait(provider, args, sleepInterval = 3e3) {
-      const transfer = this.createTransfer(args);
-      const { queryId } = this.loadTransfer(transfer.beginParse());
-      while (true) {
-        try {
-          await provider.external(transfer);
-        } catch (e) {
-        }
-        await (0, utils_1.sleep)(sleepInterval);
-        const state = await provider.getState();
-        if (state.state.type === "uninit") {
-          continue;
-        }
-        const status = await this.getProcessedStatus(provider, queryId);
-        if (status === "processed") {
-          return;
-        } else if (status === "forgotten") {
-          throw new Error("The transfer was forgotten");
-        }
-      }
-    }
-    /**
-     * Get processed status of message.
-     */
-    async getProcessedStatus(provider, queryId) {
-      const { stack } = await provider.get("processed?", [{ type: "int", value: queryId }]);
-      const processedStatus = stack.readBigNumber();
-      switch (processedStatus) {
-        case -1n:
-          return "processed";
-        case 0n:
-          return "unprocessed";
-        case 1n:
-          return "forgotten";
-        default:
-          throw new Error("Unknown processed status " + processedStatus);
-      }
-    }
-    /**
-     * Create sender.
-     */
-    sender(provider, secretKey) {
-      return {
-        send: async (args) => {
-          await this.sendTransferAndWait(provider, {
-            secretKey,
-            sendMode: args.sendMode,
-            messages: [(0, core_1.internal)({
-              to: args.to,
-              value: args.value,
-              bounce: args.bounce,
-              init: args.init,
-              body: args.body
-            })]
-          });
-        },
-        address: this.address
-      };
-    }
-  };
-  HighloadWalletContractV2.HighloadWalletContractV2 = HighloadWalletContractV2$1;
-  function createMessageRelaxedValue() {
-    return {
-      serialize: (args, builder2) => {
-        const { sendMode, message } = args;
-        const messageRelaxed = (0, core_1.beginCell)().storeWritable((0, core_1.storeMessageRelaxed)(message));
-        builder2.storeUint(sendMode, 8);
-        builder2.storeRef(messageRelaxed);
-      },
-      parse: (src2) => {
-        const sendMode = src2.loadUint(8);
-        const message = (0, core_1.loadMessageRelaxed)(src2.loadRef().beginParse());
-        return { sendMode, message };
-      }
-    };
-  }
-  function getQueryId(now, timeout, seqno) {
-    const validUntil = Math.floor(now / 1e3) + timeout;
-    return (BigInt(validUntil) << 32n) + BigInt(seqno);
-  }
-  function storeSignedTransferHighloadWalletV2(args) {
-    return (builder2) => {
-      const { secretKey, messages, seqno, sendMode, now, timeout, walletId } = args;
-      const queryId = getQueryId(now, timeout, seqno);
-      const dict = core_1.Dictionary.empty(core_1.Dictionary.Keys.Int(16), createMessageRelaxedValue());
-      for (const [i, message] of messages.entries()) {
-        dict.set(i, { sendMode, message });
-      }
-      const signedMessage = (0, core_1.beginCell)().storeUint(walletId, 32).storeUint(queryId, 64).storeDict(dict).endCell();
-      const hash = signedMessage.hash();
-      const signature = (0, crypto_1.sign)(hash, secretKey);
-      builder2.storeBuffer(signature);
-      builder2.storeSlice(signedMessage.beginParse());
-    };
-  }
-  function loadSignedTransferHighloadWalletV2(src2) {
-    const signature = src2.loadBuffer(64);
-    const walletId = src2.loadUint(32);
-    const queryId = src2.loadUintBig(64);
-    const dict = src2.loadDict(core_1.Dictionary.Keys.Int(16), createMessageRelaxedValue());
-    const messages = dict.values();
-    return {
-      signature,
-      walletId,
-      queryId,
-      messages
-    };
-  }
-  return HighloadWalletContractV2;
-}
-var hasRequiredWallets;
-function requireWallets() {
-  if (hasRequiredWallets) return wallets;
-  hasRequiredWallets = 1;
-  Object.defineProperty(wallets, "__esModule", { value: true });
-  wallets.createSender = wallets.createWallet = wallets.createHighloadV2 = void 0;
-  const HighloadWalletContractV2_1 = requireHighloadWalletContractV2();
-  const ton_client_api_1 = requireTonClientApi();
-  const WORKCHAIN = 0;
-  function createHighloadV2(publicKey) {
-    return HighloadWalletContractV2_1.HighloadWalletContractV2.create({ workchain: WORKCHAIN, publicKey });
-  }
-  wallets.createHighloadV2 = createHighloadV2;
-  function createWallet(walletType, publicKey) {
-    switch (walletType) {
-      case "highload-v2":
-        return createHighloadV2(publicKey);
-      default:
-        throw new Error("Unsupported wallet type");
-    }
-  }
-  wallets.createWallet = createWallet;
-  async function createSender(walletType, keypair, clientOrNetwork) {
-    const isNetwork = clientOrNetwork === "testnet" || clientOrNetwork === "mainnet";
-    const client = isNetwork ? await (0, ton_client_api_1.createApi)(clientOrNetwork) : clientOrNetwork;
-    const wallet = createWallet(walletType, keypair.publicKey);
-    return client.open(wallet).sender(keypair.secretKey);
-  }
-  wallets.createSender = createSender;
-  return wallets;
-}
-var error = {};
-var hasRequiredError;
-function requireError() {
-  if (hasRequiredError) return error;
-  hasRequiredError = 1;
-  Object.defineProperty(error, "__esModule", { value: true });
-  error.NoSenderError = void 0;
-  class NoSenderError extends Error {
-    constructor() {
-      super("Sender is not set");
-    }
-  }
-  error.NoSenderError = NoSenderError;
-  return error;
-}
-var TonAPI = {};
 var hasRequiredTonAPI;
 function requireTonAPI() {
   if (hasRequiredTonAPI) return TonAPI;
@@ -63492,7 +73484,7 @@ function requireTonAPI() {
   };
   Object.defineProperty(TonAPI, "__esModule", { value: true });
   TonAPI.TonAPI = void 0;
-  const core_1 = requireDist$4();
+  const core_1 = requireDist$5();
   const zod_1 = __importDefault(/* @__PURE__ */ requireZod());
   const axios_12 = __importDefault(/* @__PURE__ */ requireAxios());
   const Address2 = zod_1.default.string().transform((v2) => core_1.Address.parseRaw(v2));
@@ -64281,7 +74273,7 @@ class WalletJettonClass {
   async getJettonBalance(jettonAddress) {
     const jettonWalletAddress = await this.getJettonWalletAddress(jettonAddress);
     try {
-      const result = await this.client.runGetMethod(distExports$3.Address.parse(jettonWalletAddress), "get_wallet_data");
+      const result = await this.getClient().runGetMethod(distExports$3.Address.parse(jettonWalletAddress), "get_wallet_data");
       const parsedStack = ParseStack(result.stack);
       const balance = parsedStack[0].type === "int" ? parsedStack[0].value : 0n;
       return balance.toString();
@@ -64294,7 +74286,7 @@ class WalletJettonClass {
       throw new Error(`Invalid jetton address: ${jettonAddress}`);
     }
     try {
-      const result = await this.client.runGetMethod(distExports$3.Address.parse(jettonAddress), "get_wallet_address", SerializeStack([
+      const result = await this.getClient().runGetMethod(distExports$3.Address.parse(jettonAddress), "get_wallet_address", SerializeStack([
         { type: "slice", cell: distExports$3.beginCell().storeAddress(distExports$3.Address.parse(this.getAddress())).endCell() }
       ]));
       const parsedStack = ParseStack(result.stack);
@@ -64308,7 +74300,7 @@ class WalletJettonClass {
     }
   }
   async getJettons(params) {
-    return this.client.jettonsByOwnerAddress({
+    return this.getClient().jettonsByOwnerAddress({
       ...params,
       ownerAddress: this.getAddress()
     });
@@ -64316,7 +74308,7 @@ class WalletJettonClass {
 }
 class WalletNftClass {
   async getNfts(params) {
-    const out = await this.client.nftItemsByOwner({
+    const out = await this.getClient().nftItemsByOwner({
       ownerAddress: [this.getAddress()],
       offset: params.offset ?? 0,
       limit: params.limit ?? 100
@@ -64327,7 +74319,7 @@ class WalletNftClass {
     };
   }
   async getNft(address) {
-    const result = await this.client.nftItemsByAddress({
+    const result = await this.getClient().nftItemsByAddress({
       address: [address]
     });
     if (result.items.length > 0) {
@@ -64514,7 +74506,7 @@ async function wrapWalletInterface(wallet, _tonClient) {
   });
   return newProxy;
 }
-const perf = typeof performance === "object" && performance && typeof performance.now === "function" ? performance : Date;
+const defaultPerf = typeof performance === "object" && performance && typeof performance.now === "function" ? performance : Date;
 const warned = /* @__PURE__ */ new Set();
 const PROCESS = typeof process === "object" && !!process ? process : {};
 const emitWarning = (msg, type, code, fn2) => {
@@ -64602,6 +74594,13 @@ class LRUCache {
   #disposeAfter;
   #fetchMethod;
   #memoMethod;
+  #perf;
+  /**
+   * {@link LRUCache.OptionsBase.perf}
+   */
+  get perf() {
+    return this.#perf;
+  }
   /**
    * {@link LRUCache.OptionsBase.ttl}
    */
@@ -64770,7 +74769,13 @@ class LRUCache {
     return this.#disposeAfter;
   }
   constructor(options) {
-    const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, onInsert, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, memoMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort } = options;
+    const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, onInsert, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, memoMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort, perf } = options;
+    if (perf !== void 0) {
+      if (typeof perf?.now !== "function") {
+        throw new TypeError("perf option must have a now() method if specified");
+      }
+    }
+    this.#perf = perf ?? defaultPerf;
     if (max !== 0 && !isPosInt(max)) {
       throw new TypeError("max option must be a nonnegative integer");
     }
@@ -64879,7 +74884,7 @@ class LRUCache {
     const starts = new ZeroArray(this.#max);
     this.#ttls = ttls;
     this.#starts = starts;
-    this.#setItemTTL = (index, ttl, start = perf.now()) => {
+    this.#setItemTTL = (index, ttl, start = this.#perf.now()) => {
       starts[index] = ttl !== 0 ? start : 0;
       ttls[index] = ttl;
       if (ttl !== 0 && this.ttlAutopurge) {
@@ -64894,7 +74899,7 @@ class LRUCache {
       }
     };
     this.#updateItemAge = (index) => {
-      starts[index] = ttls[index] !== 0 ? perf.now() : 0;
+      starts[index] = ttls[index] !== 0 ? this.#perf.now() : 0;
     };
     this.#statusTTL = (status, index) => {
       if (ttls[index]) {
@@ -64911,7 +74916,7 @@ class LRUCache {
     };
     let cachedNow = 0;
     const getNow = () => {
-      const n = perf.now();
+      const n = this.#perf.now();
       if (this.ttlResolution > 0) {
         cachedNow = n;
         const t = setTimeout(() => cachedNow = 0, this.ttlResolution);
@@ -65214,7 +75219,7 @@ class LRUCache {
       const ttl = this.#ttls[i];
       const start = this.#starts[i];
       if (ttl && start) {
-        const remain = ttl - (perf.now() - start);
+        const remain = ttl - (this.#perf.now() - start);
         entry.ttl = remain;
         entry.start = Date.now();
       }
@@ -65248,7 +75253,7 @@ class LRUCache {
       const entry = { value };
       if (this.#ttls && this.#starts) {
         entry.ttl = this.#ttls[i];
-        const age = perf.now() - this.#starts[i];
+        const age = this.#perf.now() - this.#starts[i];
         entry.start = Math.floor(Date.now() - age);
       }
       if (this.#sizes) {
@@ -65272,7 +75277,7 @@ class LRUCache {
     for (const [key2, entry] of arr) {
       if (entry.start) {
         const age = Date.now() - entry.start;
-        entry.start = perf.now() - age;
+        entry.start = this.#perf.now() - age;
       }
       this.set(key2, entry.value, entry);
     }
@@ -65545,9 +75550,10 @@ class LRUCache {
         return fetchFail(ac.signal.reason);
       }
       const bf2 = p2;
-      if (this.#valList[index] === p2) {
+      const vl = this.#valList[index];
+      if (vl === p2 || ignoreAbort && updateCache && vl === void 0) {
         if (v3 === void 0) {
-          if (bf2.__staleWhileFetching) {
+          if (bf2.__staleWhileFetching !== void 0) {
             this.#valList[index] = bf2.__staleWhileFetching;
           } else {
             this.#delete(k2, "fetch");
@@ -68501,6 +78507,12 @@ class WalletV5R1Adapter {
       client: this.client
     });
   }
+  getPublicKey() {
+    return this.publicKey;
+  }
+  getClient() {
+    return this.client;
+  }
   /**
    * Sign raw bytes with wallet's private key
    */
@@ -68578,18 +78590,6 @@ class WalletV5R1Adapter {
       body: transfer
     });
     return distExports$3.beginCell().store(distExports$3.storeMessage(ext)).endCell().toBoc().toString("base64");
-  }
-  /**
-   * Get wallet's current balance in nanotons
-   */
-  async getBalance() {
-    try {
-      const balance = await CallForSuccess(async () => this.client.getBalance(this.walletContract.address), 5, 1e3);
-      return balance;
-    } catch (error2) {
-      log$1.warn("Failed to get balance", { error: error2 });
-      throw error2;
-    }
   }
   /**
    * Get state init for wallet deployment
@@ -68948,6 +78948,12 @@ class WalletV4R2Adapter {
       client: this.client
     });
   }
+  getPublicKey() {
+    return this.publicKey;
+  }
+  getClient() {
+    return this.client;
+  }
   /**
    * Sign raw bytes with wallet's private key
    */
@@ -69001,18 +79007,6 @@ class WalletV4R2Adapter {
       return distExports$3.beginCell().store(distExports$3.storeMessage(ext)).endCell().toBoc().toString("base64");
     } catch (error2) {
       log.warn("Failed to get signed send transaction", { error: error2 });
-      throw error2;
-    }
-  }
-  /**
-   * Get wallet's current balance in nanotons
-   */
-  async getBalance() {
-    try {
-      const balance = await CallForSuccess(async () => this.client.getBalance(this.walletContract.address), 5, 1e3);
-      return balance;
-    } catch (error2) {
-      log.warn("Failed to get balance", { error: error2 });
       throw error2;
     }
   }
@@ -69096,7 +79090,6 @@ function requireUtils() {
   if (hasRequiredUtils) return utils;
   hasRequiredUtils = 1;
   (function(exports) {
-    /*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) */
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.wrapXOFConstructorWithOpts = exports.wrapConstructorWithOpts = exports.wrapConstructor = exports.Hash = exports.nextTick = exports.swap32IfBE = exports.byteSwapIfBE = exports.swap8IfBE = exports.isLE = void 0;
     exports.isBytes = isBytes;
@@ -70560,10 +80553,7 @@ class Signer {
     };
   }
 }
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
-var __publicField = (obj, key2, value) => __defNormalProp(obj, key2 + "", value);
-var __async$1 = (__this, __arguments, generator2) => {
+var __async$2 = (__this, __arguments, generator2) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -70585,27 +80575,86 @@ var __async$1 = (__this, __arguments, generator2) => {
 };
 class SwiftStorageAdapter {
   constructor(swiftStorage) {
-    __publicField(this, "swiftStorage");
     this.swiftStorage = swiftStorage;
   }
   get(key2) {
-    return __async$1(this, null, function* () {
+    return __async$2(this, null, function* () {
       return yield this.swiftStorage.get(key2);
     });
   }
   set(key2, value) {
-    return __async$1(this, null, function* () {
+    return __async$2(this, null, function* () {
       yield this.swiftStorage.set(key2, value);
     });
   }
   remove(key2) {
-    return __async$1(this, null, function* () {
+    return __async$2(this, null, function* () {
       yield this.swiftStorage.remove(key2);
     });
   }
   clear() {
-    return __async$1(this, null, function* () {
+    return __async$2(this, null, function* () {
       yield this.swiftStorage.clear();
+    });
+  }
+}
+var __async$1 = (__this, __arguments, generator2) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator2.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator2.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x2) => x2.done ? resolve(x2.value) : Promise.resolve(x2.value).then(fulfilled, rejected);
+    step((generator2 = generator2.apply(__this, __arguments)).next());
+  });
+};
+class SwiftWalletAdapter {
+  constructor(swiftWalletAdapter, client) {
+    this.swiftWalletAdapter = swiftWalletAdapter;
+    this.client = client;
+  }
+  getPublicKey() {
+    return this.swiftWalletAdapter.getPublicKey();
+  }
+  getNetwork() {
+    return this.swiftWalletAdapter.getNetwork();
+  }
+  getClient() {
+    return this.client;
+  }
+  /** Get wallet's TON address */
+  getAddress(options) {
+    return this.swiftWalletAdapter.getAddress(options);
+  }
+  /** Get state init for wallet deployment base64 encoded boc */
+  getStateInit() {
+    return __async$1(this, null, function* () {
+      return this.swiftWalletAdapter.getStateInit();
+    });
+  }
+  getSignedSendTransaction(input, options) {
+    return __async$1(this, null, function* () {
+      return this.swiftWalletAdapter.getSignedSendTransaction(input, options);
+    });
+  }
+  getSignedSignData(input, options) {
+    return __async$1(this, null, function* () {
+      return this.swiftWalletAdapter.getSignedSignData(input, options);
+    });
+  }
+  getSignedTonProof(input, options) {
+    return __async$1(this, null, function* () {
+      return this.swiftWalletAdapter.getSignedTonProof(input, options);
     });
   }
 }
@@ -70656,11 +80705,8 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
     isReady() {
       return initialized && walletKit;
     },
-    processInjectedBridgeRequest(messageInfo, request) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        return walletKit.processInjectedBridgeRequest(messageInfo, request);
-      });
+    jettonsManager() {
+      return walletKit.jettons;
     },
     setEventsListeners(callback) {
       if (!initialized) throw new Error("WalletKit Bridge not initialized");
@@ -70691,98 +80737,61 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
       walletKit.removeDisconnectCallback();
       console.log("🗑️ All event listeners removed");
     },
-    createV4R2WalletUsingMnemonic(mnemonic2, parameters) {
+    createSignerFromMnemonic(mnemonic2) {
+      return __async(this, null, function* () {
+        if (!initialized) throw new Error("WalletKit Bridge not initialized");
+        console.log("➕ Bridge: Creating signer from mnemonic");
+        if (!mnemonic2) {
+          throw new Error("Mnemonic is required to create signer");
+        }
+        return yield Signer.fromMnemonic(mnemonic2, { type: "ton" });
+      });
+    },
+    createSignerFromPrivateKey(privateKey) {
+      return __async(this, null, function* () {
+        if (!initialized) throw new Error("WalletKit Bridge not initialized");
+        console.log("➕ Bridge: Creating signer from private key");
+        if (!privateKey) {
+          throw new Error("Private key is required to create signer");
+        }
+        return yield Signer.fromPrivateKey(privateKey);
+      });
+    },
+    createV4R2WalletAdapter(signer, parameters) {
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Creating V4R2 wallet using mnemonic");
-        if (!mnemonic2) {
-          throw new Error("Mnemonic required for mnemonic wallet type");
-        }
-        const signer = yield Signer.fromMnemonic(mnemonic2, { type: "ton" });
-        return yield WalletV4R2Adapter.create(signer, {
+        return yield WalletV4R2Adapter.create(this.jsSigner(signer), {
           client: walletKit.getApiClient(),
           network: parameters.network
         });
       });
     },
-    createV4R2WalletUsingSecretKey(secretKey, parameters) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating V4R2 wallet using secret key");
-        if (!secretKey) {
-          throw new Error("Secret key required for secret key wallet type");
-        }
-        const signer = yield Signer.fromPrivateKey(secretKey);
-        return yield WalletV4R2Adapter.create(signer, {
-          client: walletKit.getApiClient(),
-          network: parameters.network
-        });
-      });
-    },
-    createV4R2WalletUsingSigner(signer, parameters) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating V4R2 wallet");
-        if (!signer) {
-          throw new Error("Signer required for wallet creation");
-        }
-        const customSigner = {
-          sign: (bytes) => __async(null, null, function* () {
-            return yield signer.sign(bytes);
-          }),
-          publicKey: signer.publicKey()
-        };
-        return yield WalletV4R2Adapter.create(customSigner, {
-          client: walletKit.getApiClient(),
-          network: parameters.network
-        });
-      });
-    },
-    createV5R1WalletUsingMnemonic(mnemonic2, parameters) {
+    createV5R1WalletAdapter(signer, parameters) {
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Creating V5R1 wallet using mnemonic");
-        if (!mnemonic2) {
-          throw new Error("Mnemonic required for mnemonic wallet type");
-        }
-        const signer = yield Signer.fromMnemonic(mnemonic2, { type: "ton" });
-        return yield WalletV5R1Adapter.create(signer, {
+        return yield WalletV5R1Adapter.create(this.jsSigner(signer), {
           client: walletKit.getApiClient(),
           network: parameters.network
         });
       });
     },
-    createV5R1WalletUsingSecretKey(secretKey, parameters) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating V5R1 wallet using secret key");
-        if (!secretKey) {
-          throw new Error("Secret key required for secret key wallet type");
-        }
-        const signer = yield Signer.fromPrivateKey(secretKey);
-        return yield WalletV5R1Adapter.create(signer, {
-          client: walletKit.getApiClient(),
-          network: parameters.network
-        });
-      });
-    },
-    createV5R1WalletUsingSigner(signer, parameters) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating V5R1 wallet");
-        if (!signer) {
-          throw new Error("Signer required for wallet creation");
-        }
-        const customSigner = {
+    jsSigner(signer) {
+      if (isSwiftObject(signer)) {
+        return {
           sign: (bytes) => __async(null, null, function* () {
             return yield signer.sign(bytes);
           }),
           publicKey: signer.publicKey()
         };
-        return yield WalletV5R1Adapter.create(customSigner, {
-          client: walletKit.getApiClient(),
-          network: parameters.network
-        });
+      }
+      return signer;
+    },
+    processInjectedBridgeRequest(messageInfo, request) {
+      return __async(this, null, function* () {
+        if (!initialized) throw new Error("WalletKit Bridge not initialized");
+        return walletKit.processInjectedBridgeRequest(messageInfo, request);
       });
     },
     // Wallet management
@@ -70790,7 +80799,7 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("➕ Bridge: Adding wallet:");
-        const wallet = yield walletKit.addWallet(walletAdapter);
+        const wallet = yield walletKit.addWallet(this.jsWalletAdapter(walletAdapter));
         if (wallet) {
           console.log("✅ Wallet added:", wallet.getAddress());
         } else {
@@ -70798,6 +80807,17 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
         }
         return wallet;
       });
+    },
+    jsWalletAdapter(walletAdapter) {
+      if (isSwiftObject(walletAdapter)) {
+        return new SwiftWalletAdapter(walletAdapter, walletKit.getApiClient());
+      }
+      return walletAdapter;
+    },
+    getWallet(address) {
+      if (!initialized) throw new Error("WalletKit Bridge not initialized");
+      console.log("🔍 Bridge: Getting wallet for address:", address);
+      return walletKit.getWallet(address);
     },
     removeWallet(address) {
       return __async(this, null, function* () {
@@ -70985,6 +81005,24 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
     }
   };
 });
+function parseSwiftConstructorPattern(str) {
+  const match = str.match(/^\[object ([A-Za-z_$][A-Za-z0-9_$]*)\.([A-Za-z_$][A-Za-z0-9_$]*)Constructor\]$/);
+  if (match) {
+    return {
+      namespace: match[1],
+      className: match[2],
+      fullName: `${match[1]}.${match[2]}`
+    };
+  }
+  return null;
+}
+function isSwiftObject(obj) {
+  if (obj && obj.constructor) {
+    const pattern = parseSwiftConstructorPattern(obj.constructor.toString());
+    return pattern !== null;
+  }
+  return false;
+}
 const main = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null
 }, Symbol.toStringTag, { value: "Module" }));

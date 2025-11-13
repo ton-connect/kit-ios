@@ -39,24 +39,20 @@ class MainViewModel: ObservableObject {
             
             var tonWallets: [TONWalletProtocol] = []
             
+            let kit = try await TONWalletKit.mainnet()
+            
             for wallet in wallets {
                 switch wallet.data.version {
                 case .unknown: continue
                 case .v4r2:
-                    let tonWallet = try await TONWalletKit.mainnet().addV4R2Wallet(
-                        mnemonic: TONMnemonic(
-                            value: wallet.data.mnemonic
-                        ),
-                        parameters: .init(network: .mainnet)
-                    )
+                    let signer = try await kit.signer(mnemonic: TONMnemonic(value: wallet.data.mnemonic))
+                    let adapter = try await kit.walletV4R2Adapter(signer: signer, parameters: .init(network: .mainnet))
+                    let tonWallet = try await kit.add(walletAdapter: adapter)
                     tonWallets.append(tonWallet)
                 case .v5r1:
-                    let tonWallet = try await TONWalletKit.mainnet().addV5R1Wallet(
-                        mnemonic: TONMnemonic(
-                            value: wallet.data.mnemonic
-                        ),
-                        parameters: .init(network: .mainnet)
-                    )
+                    let signer = try await kit.signer(mnemonic: TONMnemonic(value: wallet.data.mnemonic))
+                    let adapter = try await kit.walletV5R1Adapter(signer: signer, parameters: .init(network: .mainnet))
+                    let tonWallet = try await kit.add(walletAdapter: adapter)
                     tonWallets.append(tonWallet)
                 }
             }
@@ -68,6 +64,7 @@ class MainViewModel: ObservableObject {
             }
         } catch {
             state = .addWallet
+            debugPrint(error.localizedDescription)
         }
     }
     

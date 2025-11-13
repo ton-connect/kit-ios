@@ -148,10 +148,10 @@ class TonConnectBridge {
 }
 const TONCONNECT_BRIDGE_REQUEST = "TONCONNECT_BRIDGE_REQUEST";
 const TONCONNECT_BRIDGE_RESPONSE = "TONCONNECT_BRIDGE_RESPONSE";
-const TONCONNECT_BRIDGE_EVENT$1 = "TONCONNECT_BRIDGE_EVENT";
+const TONCONNECT_BRIDGE_EVENT = "TONCONNECT_BRIDGE_EVENT";
 const INJECT_CONTENT_SCRIPT = "INJECT_CONTENT_SCRIPT";
-const DEFAULT_REQUEST_TIMEOUT$1 = 3e5;
-const RESTORE_CONNECTION_TIMEOUT$1 = 1e4;
+const DEFAULT_REQUEST_TIMEOUT = 3e5;
+const RESTORE_CONNECTION_TIMEOUT = 1e4;
 const SUPPORTED_PROTOCOL_VERSION = 2;
 class ExtensionTransport {
   extensionId = null;
@@ -183,7 +183,7 @@ class ExtensionTransport {
         this.handleResponse(data);
         return;
       }
-      if (data.type === TONCONNECT_BRIDGE_EVENT$1 && data.source === this.source) {
+      if (data.type === TONCONNECT_BRIDGE_EVENT && data.source === this.source) {
         this.handleEvent(data.event);
         return;
       }
@@ -227,7 +227,7 @@ class ExtensionTransport {
     }
     return new Promise((resolve, reject) => {
       const messageId = crypto.randomUUID();
-      const timeout = request.method === "restoreConnection" ? RESTORE_CONNECTION_TIMEOUT$1 : DEFAULT_REQUEST_TIMEOUT$1;
+      const timeout = request.method === "restoreConnection" ? RESTORE_CONNECTION_TIMEOUT : DEFAULT_REQUEST_TIMEOUT;
       const timeoutId = setTimeout(() => {
         if (this.pendingRequests.has(messageId)) {
           this.pendingRequests.delete(messageId);
@@ -491,9 +491,6 @@ function injectBridge(window2, options, argsTransport) {
 function injectBridgeCode(window2, options, transport) {
   injectBridge(window2, options, transport);
 }
-const TONCONNECT_BRIDGE_EVENT = "TONCONNECT_BRIDGE_EVENT";
-const DEFAULT_REQUEST_TIMEOUT = 3e5;
-const RESTORE_CONNECTION_TIMEOUT = 1e4;
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
 var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
@@ -513,7 +510,6 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -537,17 +533,14 @@ var __async = (__this, __arguments, generator) => {
 window.injectWalletKit = (options) => {
   try {
     injectBridgeCode(window, options, new SwiftTransport(window));
-    console.log("TonConnect bridge injected - forwarding to extension");
-  } catch (error) {
-    console.error("Failed to inject TonConnect bridge:", error);
+  } catch (_error) {
   }
 };
 window.id = crypto.randomUUID();
 class SwiftTransport {
   constructor(window2) {
-    __publicField(this, "window");
-    __publicField(this, "eventCallback", null);
-    __publicField(this, "messageListener", null);
+    this.eventCallback = null;
+    this.messageListener = null;
     this.window = window2;
     this.setupMessageListener();
   }
@@ -575,9 +568,13 @@ class SwiftTransport {
   send(request) {
     return __async(this, null, function* () {
       let timeout = request.method === "restoreConnection" ? RESTORE_CONNECTION_TIMEOUT : DEFAULT_REQUEST_TIMEOUT;
-      let response = yield window.webkit.messageHandlers.walletKitInjectionBridge.postMessage(
-        __spreadProps(__spreadValues({}, request), { frameID: window.id, timeout })
-      );
+      let response = yield window.webkit.messageHandlers.walletKitInjectionBridge.postMessage(__spreadProps(__spreadValues({}, request), {
+        frameID: window.id,
+        timeout
+      }));
+      if (!response || typeof response !== "object") {
+        return Promise.reject(new Error("Invalid response"));
+      }
       if (response.success) {
         return Promise.resolve(response.payload);
       } else {

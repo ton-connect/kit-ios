@@ -1,9 +1,9 @@
 //
-//  TONWalletSigner.swift
+//  TONEncodableWallet.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 16.10.2025.
-//
+//  Created by Nikita Rodionov on 12.11.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,18 @@
 
 import Foundation
 
-public protocol TONWalletSigner {
+class TONEncodableWallet: JSValueEncodable {
+    let wallet: any TONWalletProtocol
     
-    func sign(data: Data) throws -> Data
+    init(wallet: any TONWalletProtocol) {
+        self.wallet = wallet
+    }
+    
+    func encode(in context: JSContext) throws -> Any {
+        if let value = wallet as? JSValueEncodable {
+            return try value.encode(in: context)
+        }
+        // TODO: Create TONWalletJSAdapter
+        throw "Unable to encode \(wallet.self) to JSValue"
+    }
 }

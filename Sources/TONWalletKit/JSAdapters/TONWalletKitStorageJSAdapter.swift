@@ -26,7 +26,7 @@
 
 import Foundation
 
-class TONWalletKitStorageAdapter: NSObject, JSWalletKitStorage {
+class TONWalletKitStorageJSAdapter: NSObject, JSWalletKitStorage {
     private weak var context: JSContext?
     private let storage: TONWalletKitStorage
     
@@ -68,7 +68,7 @@ class TONWalletKitStorageAdapter: NSObject, JSWalletKitStorage {
         }
     }
     
-    @objc(clear) func clear() -> JSValue {
+    @objc func clear() -> JSValue {
         do {
             try storage.clear()
             return JSValue(newPromiseResolvedWithResult: JSValue(undefinedIn: context), in: context)

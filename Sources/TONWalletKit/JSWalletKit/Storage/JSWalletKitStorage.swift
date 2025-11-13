@@ -31,5 +31,5 @@ import JavaScriptCore
     @objc(set::) func save(key: String, value: String) -> JSValue
     @objc(get:) func get(key: String) -> JSValue
     @objc(remove:) func remove(key: String) -> JSValue
-    @objc(clear) func clear() -> JSValue
+    @objc func clear() -> JSValue
 }

@@ -1,8 +1,8 @@
 //
-//  JSWalletAdapter.swift
+//  TONWalletSigner.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 17.10.2025.
+//  Created by Nikita Rodionov on 16.10.2025.
 //
 //  Copyright (c) 2025 TON Connect
 //
@@ -25,16 +25,9 @@
 //  SOFTWARE.
 
 import Foundation
-import JavaScriptCore
 
-@objc public protocol JSWalletAdapter: JSExport {
-    @objc(getPublicKey) func publicKey() -> JSValue
-    @objc(getNetwork) func network() -> JSValue
+public protocol TONWalletSignerProtocol: AnyObject {
     
-    @objc(getAddress:) func address(options: JSValue) -> JSValue
-    @objc(getStateInit) func stateInit() -> JSValue
-    
-    @objc(getSignedSendTransaction::) func signedSendTransaction(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedSignData::) func signedSignData(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedTonProof::) func signedTonProof(input: JSValue, options: JSValue) -> JSValue
+    func sign(data: Data) async throws -> TONHex
+    func publicKey() -> TONHex
 }

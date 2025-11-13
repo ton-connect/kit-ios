@@ -1,9 +1,9 @@
 //
-//  TONBridgeEventsHandlerAdapter.swift
+//  TONWalletKitInjectableBridge.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 17.10.2025.
-//
+//  Created by Nikita Rodionov on 12.11.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,39 +25,42 @@
 //  SOFTWARE.
 
 import Foundation
+import Combine
 
-class TONBridgeEventsHandlerAdapter: JSBridgeEventsHandler {
-    private weak var handler: TONBridgeEventsHandler?
-    private weak var context: JSContext?
+class TONWalletKitInjectableBridge {
+    private let walletKit: any JSDynamicObject
+    private let bridgeTransport: JSBridgeTransport
     
-    var isValid: Bool {
-        return handler != nil && context != nil
+    init(
+        walletKit: any JSDynamicObject,
+        bridgeTransport: JSBridgeTransport
+    ) {
+        self.walletKit = walletKit
+        self.bridgeTransport = bridgeTransport
     }
     
-    init(handler: TONBridgeEventsHandler, context: JSContext) {
-        self.handler = handler
-        self.context = context
+    func request(message: TONBridgeEventMessage, request: Any) async throws {
+        try await walletKit.processInjectedBridgeRequest(message, AnyJSValueEncodable(request))
     }
     
-    func handle(event: JSWalletKitSwiftBridgeEvent) throws {
-        guard let handler, let context else {
-            throw "Unable to handle event: \(event.type)"
-        }
-        
-        let event = try TONWalletKitEvent(bridgeEvent: event, context: context)
-        
-        try handler.handle(event: event)
+    func waitForResponse() -> AnyPublisher<Response, Error> {
+        bridgeTransport.waitForResponse()
+            .map { response in
+                Response(
+                    sessionID: response.sessionID,
+                    messageID: response.messageID,
+                    message: response.message
+                )
+            }
+            .eraseToAnyPublisher()
     }
+}
+
+extension TONWalletKitInjectableBridge {
     
-    func invalidate() {
-        handler = nil
-        context = nil
-    }
-    
-    static func == (lhs: TONBridgeEventsHandlerAdapter, rhs: TONBridgeEventsHandler) -> Bool {
-        guard let lhs = lhs.handler else {
-            return false
-        }
-        return lhs === rhs
+    struct Response {
+        let sessionID: String?
+        let messageID: String?
+        let message: AnyCodable?
     }
 }

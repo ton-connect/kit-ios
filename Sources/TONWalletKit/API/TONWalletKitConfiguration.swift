@@ -34,13 +34,13 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
     let network: TONNetwork
     let deviceInfo: DeviceInfo
     let walletManifest: Manifest
-    let bridge: Bridge
+    let bridge: Bridge?
     let apiClient: APIClient?
     
     public init(
         network: TONNetwork,
         walletManifest: Manifest,
-        bridge: Bridge,
+        bridge: Bridge?,
         apiClient: APIClient? = nil,
         features: [any Feature],
     ) {

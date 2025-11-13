@@ -25,7 +25,6 @@
 //  SOFTWARE.
 
 import Foundation
-import Combine
 
 public class TONWalletKit {
     private static let sharedPool = TONWalletKitReusableContextPool()
@@ -34,7 +33,7 @@ public class TONWalletKit {
     private let context: JSWalletKitContext
     
     private var walletKit: any JSDynamicObject { context.walletKit }
-    private var eventHandlersAdapters: [TONBridgeEventsHandlerAdapter] = []
+    private var eventHandlersAdapters: [TONBridgeEventsHandlerJSAdapter] = []
     
     deinit {
         eventHandlersAdapters.forEach { $0.invalidate() }
@@ -70,48 +69,54 @@ public class TONWalletKit {
         return TONWalletKit(configuration: configuration, context: context)
     }
     
-    private func add(_ walletAdapter: Any, _ version: TONWalletVersion) async throws -> TONWalletProtocol {
-        let wallet = try await walletKit.addWallet(AnyJSValueEncodable(walletAdapter))
-        let address: String = try await wallet.getAddress()
+    public func signer(mnemonic: TONMnemonic) async throws -> any TONWalletSignerProtocol {
+        let signer = try await walletKit.createSignerFromMnemonic(mnemonic.value)
+        
+        return TONWalletSigner(jsWalletSigner: signer)
+    }
+    
+    public func signer(privateKey: Data) async throws -> any TONWalletSignerProtocol {
+        let data = [UInt8](privateKey)
+        let signer = try await walletKit.createSignerFromPrivateKey(data)
+        
+        return TONWalletSigner(jsWalletSigner: signer)
+    }
+    
+    public func walletV4R2Adapter(
+        signer: any TONWalletSignerProtocol,
+        parameters: TONV4R2WalletParameters
+    ) async throws -> any TONWalletAdapterProtocol {
+        let signer = TONEncodableWalletSigner(signer: signer)
+        let adapter = try await walletKit.createV4R2WalletAdapter(signer, parameters)
+        
+        return TONWalletAdapter(jsWalletAdapter: adapter, version: .v4r2)
+    }
+    
+    public func walletV5R1Adapter(
+        signer: any TONWalletSignerProtocol,
+        parameters: TONV5R1WalletParameters
+    ) async throws -> any TONWalletAdapterProtocol {
+        let signer = TONEncodableWalletSigner(signer: signer)
+        let adapter = try await walletKit.createV5R1WalletAdapter(signer, parameters)
+        
+        return TONWalletAdapter(jsWalletAdapter: adapter, version: .v5r1)
+    }
 
-        return TONWallet(wallet: wallet, address: address, version: version)
+    public func add(walletAdapter: any TONWalletAdapterProtocol) async throws -> any TONWalletProtocol {
+        let walletAdapter = TONEncodableWalletAdapter(walletAdapter: walletAdapter)
+        let wallet = try await walletKit.addWallet(walletAdapter)
+        let address: String = try await wallet.getAddress()
+        
+        return TONWallet(jsWallet: wallet, address: address)
     }
     
-    public func addV4R2Wallet(mnemonic: TONMnemonic, parameters: TONV4R2WalletParameters) async throws -> any TONWalletProtocol {
-        try await add(try await walletKit.createV4R2WalletUsingMnemonic(mnemonic.value, parameters), .v4r2)
-    }
-    
-    public func addV4R2Wallet(secretKey: Data, parameters: TONV4R2WalletParameters) async throws -> any TONWalletProtocol {
-        let data = [UInt8](secretKey)
-        let wallet = try await walletKit.createV4R2WalletUsingSecretKey(AnyJSValueEncodable(data), parameters)
-        return try await add(wallet, .v4r2)
-    }
-    
-    public func addV4R2Wallet(signer: any TONWalletSigner, parameters: TONV4R2WalletParameters) async throws -> any TONWalletProtocol {
-        let signer = TONWalletSignerAdapter(context: context, signer: signer)
-        let wallet = try await walletKit.createV4R2WalletUsingSigner(AnyJSValueEncodable(signer), parameters)
-        return try await add(wallet, .v4r2)
-    }
-    
-    public func addV5R1Wallet(mnemonic: TONMnemonic, parameters: TONV5R1WalletParameters) async throws -> any TONWalletProtocol {
-        try await add(try await walletKit.createV5R1WalletUsingMnemonic(mnemonic.value, parameters), .v5r1)
-    }
-    
-    public func addV5R1Wallet(secretKey: Data, parameters: TONV5R1WalletParameters) async throws -> any TONWalletProtocol {
-        let data = [UInt8](secretKey)
-        let wallet = try await walletKit.createV5R1WalletUsingSecretKey(AnyJSValueEncodable(data), parameters)
-        return try await add(try await walletKit.createV5R1WalletUsingSecretKey(wallet, parameters), .v5r1)
-    }
-    
-    public func addV5R1Wallet(signer: any TONWalletSigner, parameters: TONV5R1WalletParameters) async throws -> any TONWalletProtocol {
-        let signer = TONWalletSignerAdapter(context: context, signer: signer)
-        let wallet = try await walletKit.createV5R1WalletUsingSigner(AnyJSValueEncodable(signer), parameters)
-        return try await add(wallet, .v5r1)
-    }
-    
-    public func add(walletAdapter: TONWalletAdapter) async throws -> TONWalletProtocol {
-        let wallet = TONWalletJSAdapter(context: context, wallet: walletAdapter)
-        return try await add(wallet, walletAdapter.version)
+    public func wallet(address: String) throws -> any TONWalletProtocol {
+        let wallet: JSValue = try walletKit.getWallet(address)
+        
+        return TONWallet(
+            jsWallet: wallet,
+            address: address,
+        )
     }
     
     public func wallets() async throws -> [any TONWalletProtocol] {
@@ -122,9 +127,8 @@ public class TONWalletKit {
         
         for jsWallet in jsWallets {
             let wallet = TONWallet(
-                wallet: jsWallet,
-                address: try await jsWallet.getAddress(),
-                version: TONWalletVersion(value: jsWallet.version)
+                jsWallet: jsWallet,
+                address: try await jsWallet.getAddress()
             )
             wallets.append(wallet)
         }
@@ -132,7 +136,7 @@ public class TONWalletKit {
     }
 
     public func send(transaction: TONConnectTransactionParamContent, from wallet: any TONWalletProtocol) async throws {
-        try await walletKit.sendTransaction(AnyJSValueEncodable(wallet), transaction)
+        try await walletKit.sendTransaction(TONEncodableWallet(wallet: wallet), transaction)
     }
         
     public func connect(url: String) async throws {
@@ -148,7 +152,7 @@ public class TONWalletKit {
             return
         }
         
-        let adapter = TONBridgeEventsHandlerAdapter(handler: eventsHandler, context: context)
+        let adapter = TONBridgeEventsHandlerJSAdapter(handler: eventsHandler, context: context)
         
         try await context.add(eventsHandler: adapter)
         
@@ -163,8 +167,8 @@ public class TONWalletKit {
         }
     }
     
-    func injectableBridge() -> TONWalletKit.InjectableBridge {
-        TONWalletKit.InjectableBridge(
+    func injectableBridge() -> TONWalletKitInjectableBridge {
+        TONWalletKitInjectableBridge(
             walletKit: walletKit,
             bridgeTransport: context.bridgeTransport
         )
@@ -189,56 +193,15 @@ private extension TONWalletKitStorageType {
         switch self {
         case .memory: nil
         case .keychain:
-            TONWalletKitStorageAdapter(
+            TONWalletKitStorageJSAdapter(
                 context: context,
                 storage: TONWalletKitKeychainStorage()
             )
         case .custom(let value):
-            TONWalletKitStorageAdapter(
+            TONWalletKitStorageJSAdapter(
                 context: context,
                 storage: value
             )
         }
-    }
-}
-
-extension TONWalletKit {
-    
-    class InjectableBridge {
-        private let walletKit: any JSDynamicObject
-        private let bridgeTransport: JSBridgeTransport
-        
-        init(
-            walletKit: any JSDynamicObject,
-            bridgeTransport: JSBridgeTransport
-        ) {
-            self.walletKit = walletKit
-            self.bridgeTransport = bridgeTransport
-        }
-        
-        func request(message: TONBridgeEventMessage, request: Any) async throws {
-            try await walletKit.processInjectedBridgeRequest(message, AnyJSValueEncodable(request))
-        }
-        
-        func waitForResponse() -> AnyPublisher<Response, Error> {
-            bridgeTransport.waitForResponse()
-                .map { response in
-                    Response(
-                        sessionID: response.sessionID,
-                        messageID: response.messageID,
-                        message: response.message
-                    )
-                }
-                .eraseToAnyPublisher()
-        }
-    }
-}
-
-extension TONWalletKit.InjectableBridge {
-    
-    struct Response {
-        let sessionID: String?
-        let messageID: String?
-        let message: AnyCodable?
     }
 }

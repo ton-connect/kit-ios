@@ -27,4 +27,5 @@
 public enum TONNetwork: String, CaseIterable, Codable {
     case mainnet = "-239"
     case testnet = "-3"
+    case unknown
 }

@@ -1,9 +1,9 @@
 //
-//  JSWalletAdapter.swift
+//  TONWalletSigner.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 17.10.2025.
-//
+//  Created by Nikita Rodionov on 12.11.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,16 +25,25 @@
 //  SOFTWARE.
 
 import Foundation
-import JavaScriptCore
 
-@objc public protocol JSWalletAdapter: JSExport {
-    @objc(getPublicKey) func publicKey() -> JSValue
-    @objc(getNetwork) func network() -> JSValue
+class TONWalletSigner: TONWalletSignerProtocol {
+    let jsWalletSigner: any JSDynamicObject
     
-    @objc(getAddress:) func address(options: JSValue) -> JSValue
-    @objc(getStateInit) func stateInit() -> JSValue
+    init(jsWalletSigner: any JSDynamicObject) {
+        self.jsWalletSigner = jsWalletSigner
+    }
     
-    @objc(getSignedSendTransaction::) func signedSendTransaction(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedSignData::) func signedSignData(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedTonProof::) func signedTonProof(input: JSValue, options: JSValue) -> JSValue
+    func sign(data: Data) async throws -> TONHex {
+        TONHex(hexString: try await jsWalletSigner.sign([UInt8](data)))
+    }
+    
+    func publicKey() -> TONHex {
+        let result: String? = jsWalletSigner.publicKey
+        return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
+    }
+}
+
+extension TONWalletSigner: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any { jsWalletSigner }
 }

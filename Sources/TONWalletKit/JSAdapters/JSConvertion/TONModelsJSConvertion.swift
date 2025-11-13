@@ -70,11 +70,8 @@ extension TONDisconnectEvent: JSValueEncodable {}
 extension TONWalletKitConfiguration: JSValueEncodable {}
 extension TONBridgeEventMessage: JSValueEncodable {}
 extension TONBridgeInjectOptions: JSValueEncodable {}
-
-extension TONWallet: JSValueEncodable {
-    
-    func encode(in context: JSContext) throws -> Any { self.wallet }
-}
+extension TONPrepareSignDataResult: JSValueEncodable {}
+extension TONProofParsedMessage: JSValueEncodable {}
 
 extension TONBalance: JSValueEncodable {
     

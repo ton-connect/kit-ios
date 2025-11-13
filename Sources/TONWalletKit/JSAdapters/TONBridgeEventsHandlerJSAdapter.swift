@@ -1,5 +1,5 @@
 //
-//  JSWalletAdapter.swift
+//  TONBridgeEventsHandlerAdapter.swift
 //  TONWalletKit
 //
 //  Created by Nikita Rodionov on 17.10.2025.
@@ -25,16 +25,39 @@
 //  SOFTWARE.
 
 import Foundation
-import JavaScriptCore
 
-@objc public protocol JSWalletAdapter: JSExport {
-    @objc(getPublicKey) func publicKey() -> JSValue
-    @objc(getNetwork) func network() -> JSValue
+class TONBridgeEventsHandlerJSAdapter: JSBridgeEventsHandler {
+    private weak var handler: TONBridgeEventsHandler?
+    private weak var context: JSContext?
     
-    @objc(getAddress:) func address(options: JSValue) -> JSValue
-    @objc(getStateInit) func stateInit() -> JSValue
+    var isValid: Bool {
+        return handler != nil && context != nil
+    }
     
-    @objc(getSignedSendTransaction::) func signedSendTransaction(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedSignData::) func signedSignData(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedTonProof::) func signedTonProof(input: JSValue, options: JSValue) -> JSValue
+    init(handler: TONBridgeEventsHandler, context: JSContext) {
+        self.handler = handler
+        self.context = context
+    }
+    
+    func handle(event: JSWalletKitSwiftBridgeEvent) throws {
+        guard let handler, let context else {
+            throw "Unable to handle event: \(event.type)"
+        }
+        
+        let event = try TONWalletKitEvent(bridgeEvent: event, context: context)
+        
+        try handler.handle(event: event)
+    }
+    
+    func invalidate() {
+        handler = nil
+        context = nil
+    }
+    
+    static func == (lhs: TONBridgeEventsHandlerJSAdapter, rhs: TONBridgeEventsHandler) -> Bool {
+        guard let lhs = lhs.handler else {
+            return false
+        }
+        return lhs === rhs
+    }
 }
