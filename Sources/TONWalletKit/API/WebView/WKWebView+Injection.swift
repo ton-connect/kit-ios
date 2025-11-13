@@ -50,7 +50,7 @@ public extension WKWebView {
         let options = TONBridgeInjectOptions(
             deviceInfo: walletKit.configuration.deviceInfo,
             walletInfo: walletKit.configuration.walletManifest,
-            jsBridgeKey: key ?? walletKit.configuration.bridge.webViewInjectionKey,
+            jsBridgeKey: key ?? walletKit.configuration.bridge?.webViewInjectionKey,
             injectTonKey: nil,
             isWalletBrowser: true
         )
