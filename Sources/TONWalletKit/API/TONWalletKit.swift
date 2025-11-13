@@ -103,12 +103,11 @@ public class TONWalletKit {
     }
 
     public func add(walletAdapter: any TONWalletAdapterProtocol) async throws -> any TONWalletProtocol {
-        let version = walletAdapter.version
         let walletAdapter = TONEncodableWalletAdapter(walletAdapter: walletAdapter)
         let wallet = try await walletKit.addWallet(walletAdapter)
         let address: String = try await wallet.getAddress()
-
-        return TONWallet(jsWallet: wallet, address: address, version: version)
+        
+        return TONWallet(jsWallet: wallet, address: address)
     }
     
     public func wallet(address: String) throws -> any TONWalletProtocol {
@@ -117,7 +116,6 @@ public class TONWalletKit {
         return TONWallet(
             jsWallet: wallet,
             address: address,
-            version: TONWalletVersion(value: wallet.version)
         )
     }
     
@@ -130,8 +128,7 @@ public class TONWalletKit {
         for jsWallet in jsWallets {
             let wallet = TONWallet(
                 jsWallet: jsWallet,
-                address: try await jsWallet.getAddress(),
-                version: TONWalletVersion(value: jsWallet.version)
+                address: try await jsWallet.getAddress()
             )
             wallets.append(wallet)
         }

@@ -36,9 +36,13 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
         self.walletAdapter = walletAdapter
     }
     
-    @objc(publicKey) var publicKey: JSValue { JSValue(object: walletAdapter.publicKey.value, in: context) }
-    @objc(version) var version: JSValue { JSValue(object: walletAdapter.version.rawValue, in: context) }
-    @objc(getNetwork) var network: JSValue { JSValue(object: walletAdapter.network.rawValue, in: context) }
+    @objc(getPublicKey) func publicKey() -> JSValue {
+        JSValue(object: walletAdapter.publicKey().value, in: context)
+    }
+    
+    @objc(getNetwork) func network() -> JSValue {
+        JSValue(object: walletAdapter.network().rawValue, in: context)
+    }
     
     @objc(getAddress:) func address(options: JSValue) -> JSValue {
         let options: TONGetAddressOptions? = try? options.decode()

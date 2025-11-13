@@ -29,18 +29,15 @@ import BigInt
 
 public class TONWallet: TONWalletProtocol {
     public let address: String
-    public let version: TONWalletVersion
 
     let jsWallet: any JSDynamicObject
 
     init(
         jsWallet: any JSDynamicObject,
-        address: String,
-        version: TONWalletVersion
+        address: String
     ) {
         self.jsWallet = jsWallet
         self.address = address
-        self.version = version
     }
     
     public func balance() async throws -> TONBalance {

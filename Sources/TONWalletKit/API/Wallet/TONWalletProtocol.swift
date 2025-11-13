@@ -27,10 +27,9 @@
 import Foundation
 
 public protocol TONWalletAdapterProtocol: AnyObject {
-    var publicKey: TONHex { get }
-    var version: TONWalletVersion { get }
-    var network: TONNetwork { get }
-    
+
+    func publicKey() -> TONHex
+    func network() -> TONNetwork
     func address(testnet: Bool) throws -> String
     func stateInit() async throws -> TONBase64
     func signedSendTransaction(input: TONConnectTransactionParamContent, fakeSignature: Bool?) async throws -> TONBase64
@@ -40,7 +39,6 @@ public protocol TONWalletAdapterProtocol: AnyObject {
 
 public protocol TONWalletProtocol {
     var address: String { get }
-    var version: TONWalletVersion { get }
     
     func balance() async throws -> TONBalance
     

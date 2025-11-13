@@ -27,25 +27,25 @@
 import Foundation
 
 class TONWalletAdapter: TONWalletAdapterProtocol {
-    var publicKey: TONHex {
-        let result: String? = jsWalletAdapter.publicKey
-        return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
-    }
-    
-    var network: TONNetwork {
-        do {
-            return TONNetwork(rawValue: try jsWalletAdapter.getNetwork()) ?? .unknown
-        } catch {
-            return .unknown
-        }
-    }
-    
     let version: TONWalletVersion
     let jsWalletAdapter: any JSDynamicObject
     
     init(jsWalletAdapter: any JSDynamicObject, version: TONWalletVersion) {
         self.jsWalletAdapter = jsWalletAdapter
         self.version = version
+    }
+    
+    func publicKey() -> TONHex {
+        let result: String? = try? jsWalletAdapter.getPublicKey()
+        return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
+    }
+    
+    func network() -> TONNetwork {
+        do {
+            return TONNetwork(rawValue: try jsWalletAdapter.getNetwork()) ?? .unknown
+        } catch {
+            return .unknown
+        }
     }
     
     func address(testnet: Bool) throws -> String {
