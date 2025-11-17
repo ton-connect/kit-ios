@@ -33,14 +33,11 @@ final class WalletJettonsListViewModel: ObservableObject {
     @Published private(set) var jettons: [WalletJettonsListItem] = []
     @Published private(set) var isLoadingMore = false
     
-    private var pagination: TONPagination?
     private let limit = 10
     
     private let wallet: TONWalletProtocol
     
-    var canLoadMore: Bool {
-        pagination != nil
-    }
+    @Published private(set) var canLoadMore: Bool = false
     
     init(wallet: TONWalletProtocol) {
         self.wallet = wallet
@@ -57,9 +54,9 @@ final class WalletJettonsListViewModel: ObservableObject {
             if jettons.items.isEmpty {
                 state = .empty
             } else {
+                canLoadMore = jettons.items.count == limit
                 self.jettons = jettons.items.map { WalletJettonsListItem(jetton: $0, wallet: wallet) }
                 state = self.jettons.isEmpty ? .empty : .jettons
-                pagination = jettons.pagination
             }
         } catch {
             state = .empty
@@ -68,7 +65,7 @@ final class WalletJettonsListViewModel: ObservableObject {
     }
     
     func loadMoreJettons() {
-        guard let pagination, state == .jettons && !isLoadingMore else { return }
+        guard canLoadMore && state == .jettons && !isLoadingMore else { return }
         
         isLoadingMore = true
         
@@ -76,14 +73,13 @@ final class WalletJettonsListViewModel: ObservableObject {
             guard let self = self else { return }
             
             do {
-                let jettons = try await wallet.jettons(limit: TONLimitRequest(limit: limit, offset: pagination.offset))
+                let jettons = try await wallet.jettons(limit: TONLimitRequest(limit: limit, offset: jettons.count))
                 
                 let newJettonItems = jettons.items.map { jetton in
                     WalletJettonsListItem(jetton: jetton, wallet: self.wallet)
                 }
                 
                 self.jettons.append(contentsOf: newJettonItems)
-                self.pagination = jettons.pagination
             } catch {
                 debugPrint("Failed to load more jettons: \(error)")
             }

@@ -29,11 +29,9 @@ import Foundation
 public struct TONJettons: Codable {
     public var items: [TONJetton]
     public var addressBook: [String: TONEmulationAddressBookEntry]?
-    public var pagination: TONPagination?
     
     enum CodingKeys: String, CodingKey {
         case items = "jettons"
         case addressBook = "address_book"
-        case pagination
     }
 }
