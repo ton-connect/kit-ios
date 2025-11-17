@@ -31,6 +31,7 @@ import TONWalletKit
 class AddWalletViewModel: ObservableObject {
     @Published var isAdding = false
     @Published var mnemonic = TONMnemonic()
+    @Published var walletVersion: TONWalletVersion = .v5r1
     
     var canAdd: Bool { mnemonic.isFilled }
     
@@ -57,12 +58,26 @@ class AddWalletViewModel: ObservableObject {
         do {
             let kit = try await TONWalletKit.mainnet()
             let signer = try await kit.signer(mnemonic: mnemonic)
-            let adapter = try await kit.walletV5R1Adapter(
-                signer: signer,
-                parameters: TONV5R1WalletParameters(
-                    network: .mainnet
+            
+            let adapter: TONWalletAdapterProtocol
+            
+            switch walletVersion {
+            case .v5r1:
+                adapter = try await kit.walletV5R1Adapter(
+                    signer: signer,
+                    parameters: TONV5R1WalletParameters(
+                        network: .mainnet
+                    )
                 )
-            )
+            case .v4r2:
+                adapter = try await kit.walletV4R2Adapter(
+                    signer: signer,
+                    parameters: TONV4R2WalletParameters(
+                        network: .mainnet
+                    )
+                )
+            }
+
             let tonWallet = try await kit.add(walletAdapter: adapter)
             try storage.add(wallet: WalletEntity(address: tonWallet.address, data: data))
             

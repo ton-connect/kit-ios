@@ -35,7 +35,7 @@ struct MnemonicInputView: View {
         VStack(alignment: .center, spacing: 20) {
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 12) {
-                ForEach(0..<TONMnemonicLenght.bits256.rawValue, id: \.self) { index in
+                ForEach(0..<TONMnemonicLength.max.rawValue, id: \.self) { index in
                     HStack(spacing: 8) {
                         
                         TextField(
@@ -60,6 +60,5 @@ struct MnemonicInputView: View {
                 }
             }
         }
-        .padding()
     }
 }
