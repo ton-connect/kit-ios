@@ -52,7 +52,12 @@ class SendableTONViewModel: SendableTokenViewModel {
             return
         }
         
-        let message = TONTransferMessage(toAddress: address, amount: amount)
+        let message = TONTransferMessage(
+            toAddress: try TONUserFriendlyAddress(
+                value: address
+            ),
+            amount: amount
+        )
         let transaction = try await wallet.transferTONTransaction(message: message)
         try await wallet.send(transaction: transaction)
     }

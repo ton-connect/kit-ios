@@ -25,6 +25,7 @@
 //  SOFTWARE.
 
 import SwiftUI
+import TONWalletKit
 
 struct WalletAddressInputView: View {
     @State private var addressInput: String = ""
@@ -113,17 +114,7 @@ struct WalletAddressInputView: View {
         }
     }
     
-    /// Checks if a string is a valid TON wallet address
-    /// TON addresses typically start with EQ/UQ and are 48 characters long (base64url encoded)
     private func isValidTONAddress(_ address: String) -> Bool {
-        // Check basic format requirements
-        guard address.count == 48 else { return false }
-        guard address.hasPrefix("EQ") || address.hasPrefix("UQ") else { return false }
-        
-        // Check if the remaining characters are valid base64url characters
-        let base64urlCharacterSet = CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_")
-        let addressWithoutPrefix = String(address.dropFirst(2))
-        
-        return addressWithoutPrefix.rangeOfCharacter(from: base64urlCharacterSet.inverted) == nil
+        (try? TONUserFriendlyAddress(value: address)) != nil
     }
 }

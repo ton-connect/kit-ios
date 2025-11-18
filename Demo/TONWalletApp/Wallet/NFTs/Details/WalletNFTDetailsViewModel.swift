@@ -56,7 +56,12 @@ class WalletNFTDetailsViewModel: ObservableObject, Identifiable {
         
         Task {
             do {
-                let parameters = TONNFTTransferParamsHuman(nftAddress: nft.address, toAddress: address)
+                let parameters = TONNFTTransferParamsHuman(
+                    nftAddress: try TONUserFriendlyAddress(
+                        value: nft.address
+                    ),
+                    toAddress: try TONUserFriendlyAddress(value: address)
+                )
                 let transaction = try await wallet.transferNFTTransaction(parameters: parameters)
                 try await wallet.send(transaction: transaction)
             } catch {

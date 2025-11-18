@@ -123,6 +123,17 @@ public struct TONUserFriendlyAddress: Codable {
                 
         value = data.base64EncodedString()
     }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        
+        try self.init(value: try container.decode(String.self))
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(value)
+    }
 }
 
 public enum TONUserFriendlyAddressValidationError: Error {

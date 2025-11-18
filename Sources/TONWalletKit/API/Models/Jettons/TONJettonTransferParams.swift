@@ -26,14 +26,14 @@
 import Foundation
 
 public struct TONJettonTransferParams: Codable {
-    public var toAddress: String
-    public var jettonAddress: String
+    public var toAddress: TONUserFriendlyAddress
+    public var jettonAddress: TONUserFriendlyAddress
     public var amount: TONTokenAmount
     public var comment: String?
     
     public init(
-        toAddress: String,
-        jettonAddress: String,
+        toAddress: TONUserFriendlyAddress,
+        jettonAddress: TONUserFriendlyAddress,
         amount: TONTokenAmount,
         comment: String? = nil
     ) {
