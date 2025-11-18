@@ -40,10 +40,10 @@ public struct TONUserFriendlyAddress: Codable {
     public let value: String
     public let raw: TONRawAddress
     
-    var urlSafeValue: String {
+    var nonURLSafeValue: String {
         value
-            .replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
     }
     
     public init(value: String) throws {
@@ -51,10 +51,7 @@ public struct TONUserFriendlyAddress: Codable {
             throw TONUserFriendlyAddressValidationError.invalidCharactersNumber
         }
         
-        guard let data = Data(base64Encoded: value
-            .replacingOccurrences(of: "-", with: "+")
-            .replacingOccurrences(of: "_", with: "/")
-        ) else {
+        guard let data = Data(base64URLEncoded: value) else {
             throw TONUserFriendlyAddressValidationError.invalidBase64URLEncoding
         }
         
@@ -99,7 +96,12 @@ public struct TONUserFriendlyAddress: Codable {
         self.value = value
     }
     
-    init(rawAddress: TONRawAddress, isBounceable: Bool, isTestnetOnly: Bool) {
+    init(
+        rawAddress: TONRawAddress,
+        isBounceable: Bool,
+        isTestnetOnly: Bool,
+        urlSafe: Bool = true
+    ) {
         self.isTestnetOnly = isTestnetOnly
         self.isBounceable = isBounceable
         self.raw = rawAddress
@@ -121,7 +123,11 @@ public struct TONUserFriendlyAddress: Codable {
         data[0...] = address
         data[34...] = addressCRC
                 
-        value = data.base64EncodedString()
+        if urlSafe {
+            value = data.base64URLEncodedString()
+        } else {
+            value = data.base64EncodedString()
+        }
     }
     
     public init(from decoder: Decoder) throws {

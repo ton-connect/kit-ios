@@ -28,6 +28,7 @@ import Foundation
 
 extension Data {
     
+    // CRC16-CCITT
     func crc16() -> Data {
         let poly: UInt32 = 0x1021
         var reg: UInt32 = 0

@@ -1,5 +1,5 @@
 //
-//  TONAddress.swift
+//  TONRawAddress.swift
 //  TONWalletKit
 //
 //  Created by Nikita Rodionov on 18.11.2025.
@@ -64,11 +64,16 @@ public struct TONRawAddress: Codable {
         self.hash = hash
     }
     
-    public func userFriendly(isBounceable: Bool, isTestnetOnly: Bool = false) -> TONUserFriendlyAddress {
+    public func userFriendly(
+        isBounceable: Bool,
+        isTestnetOnly: Bool = false,
+        urlSafe: Bool = true
+    ) -> TONUserFriendlyAddress {
         TONUserFriendlyAddress(
             rawAddress: self,
             isBounceable: isBounceable,
-            isTestnetOnly: isTestnetOnly
+            isTestnetOnly: isTestnetOnly,
+            urlSafe: urlSafe
         )
     }
 }
