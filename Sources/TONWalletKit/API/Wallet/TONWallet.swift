@@ -68,9 +68,8 @@ public class TONWallet: TONWalletProtocol {
         try await jsWallet.createTransferNftRawTransaction(rawParameters)
     }
     
-    public func nfts(limit: TONLimitRequest) async throws -> [TONNFTItem] {
-        let nftItems: TONNFTItems = try await jsWallet.getNfts(limit)
-        return nftItems.items
+    public func nfts(limit: TONLimitRequest) async throws -> TONNFTItems {
+        try await jsWallet.getNfts(limit)
     }
     
     public func nft(address: String) async throws -> TONNFTItem {
