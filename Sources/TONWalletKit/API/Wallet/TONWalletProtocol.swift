@@ -38,7 +38,7 @@ public protocol TONWalletAdapterProtocol: AnyObject {
 }
 
 public protocol TONWalletProtocol {
-    var address: String { get }
+    var address: TONUserFriendlyAddress { get }
     
     func balance() async throws -> TONBalance
     

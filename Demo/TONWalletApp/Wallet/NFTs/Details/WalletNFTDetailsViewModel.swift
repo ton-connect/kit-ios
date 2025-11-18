@@ -50,7 +50,7 @@ class WalletNFTDetailsViewModel: ObservableObject, Identifiable {
     func transfer(to address: String) {
         if isTransferring { return }
         
-        let sameWalletTransfer = address == wallet.address
+        let sameWalletTransfer = address == wallet.address.value
         
         isTransferring = true
         

@@ -64,7 +64,7 @@ class AddWalletViewModel: ObservableObject {
                 )
             )
             let tonWallet = try await kit.add(walletAdapter: adapter)
-            try storage.add(wallet: WalletEntity(address: tonWallet.address, data: data))
+            try storage.add(wallet: WalletEntity(address: tonWallet.address.value, data: data))
             
             return tonWallet
         } catch {

@@ -29,7 +29,11 @@ import Foundation
 extension Data {
     
     var hex: String {
-        return "0x" + self.map { String(format: "%02x", $0) }.joined()
+        return map { String(format: "%02x", $0) }.joined()
+    }
+    
+    var hexWithPrefix: String {
+        return "0x" + hex
     }
     
     init?(hex: String) {

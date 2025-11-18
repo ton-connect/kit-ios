@@ -31,7 +31,7 @@ import TONWalletKit
 @MainActor
 class WalletViewModel: Identifiable, ObservableObject {
     let id = UUID()
-    var address: String { tonWallet.address }
+    var address: String { tonWallet.address.value }
 
     let tonWallet: TONWalletProtocol
     
@@ -73,7 +73,7 @@ class WalletViewModel: Identifiable, ObservableObject {
     
     func remove() {
         do {
-            try storage.remove(walletAddress: tonWallet.address)
+            try storage.remove(walletAddress: tonWallet.address.value)
             
             Task {
                 try await TONWalletKit.mainnet().remove(walletAddress: tonWallet.address)

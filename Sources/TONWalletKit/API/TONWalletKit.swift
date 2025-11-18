@@ -107,11 +107,14 @@ public class TONWalletKit {
         let wallet = try await walletKit.addWallet(walletAdapter)
         let address: String = try await wallet.getAddress()
         
-        return TONWallet(jsWallet: wallet, address: address)
+        return TONWallet(
+            jsWallet: wallet,
+            address: try TONUserFriendlyAddress(value: address)
+        )
     }
     
-    public func wallet(address: String) throws -> any TONWalletProtocol {
-        let wallet: JSValue = try walletKit.getWallet(address)
+    public func wallet(address: TONUserFriendlyAddress) throws -> any TONWalletProtocol {
+        let wallet: JSValue = try walletKit.getWallet(address.value)
         
         return TONWallet(
             jsWallet: wallet,
@@ -126,9 +129,11 @@ public class TONWalletKit {
         var wallets: [TONWallet] = []
         
         for jsWallet in jsWallets {
+            let address: String = try await jsWallet.getAddress()
+            
             let wallet = TONWallet(
                 jsWallet: jsWallet,
-                address: try await jsWallet.getAddress()
+                address: try TONUserFriendlyAddress(value: address)
             )
             wallets.append(wallet)
         }
@@ -143,8 +148,8 @@ public class TONWalletKit {
         try await walletKit.handleTonConnectUrl(url)
     }
       
-    public func remove(walletAddress: String) async throws {
-        try await walletKit.removeWallet(walletAddress)
+    public func remove(walletAddress: TONUserFriendlyAddress) async throws {
+        try await walletKit.removeWallet(walletAddress.value)
     }
     
     public func add(eventsHandler: TONBridgeEventsHandler) async throws {
