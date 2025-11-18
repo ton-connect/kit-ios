@@ -43,7 +43,6 @@ class MainViewModel: ObservableObject {
             
             for wallet in wallets {
                 switch wallet.data.version {
-                case .unknown: continue
                 case .v4r2:
                     let signer = try await kit.signer(mnemonic: TONMnemonic(value: wallet.data.mnemonic))
                     let adapter = try await kit.walletV4R2Adapter(signer: signer, parameters: .init(network: .mainnet))

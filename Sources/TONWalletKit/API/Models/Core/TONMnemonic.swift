@@ -28,22 +28,33 @@ public struct TONMnemonic {
     public private(set) var value: [String]
     
     public var isFilled: Bool {
-        value.prefix(TONMnemonicLenght.bits128.rawValue).allSatisfy { !$0.isEmpty }
+        if value.isEmpty {
+            return false
+        }
+        
+        var count = 0
+        
+        for word in value {
+            if word.isEmpty {
+                break
+            } else {
+                count += 1
+            }
+        }
+        
+        return TONMnemonicLength(rawValue: count) != nil
     }
     
     public init() {
-        value = Array(repeating: "", count: TONMnemonicLenght.bits256.rawValue)
+        value = Array(repeating: "", count: TONMnemonicLength.max.rawValue)
     }
     
     public init(value: [String]) {
-        let count = TONMnemonicLenght.bits256.rawValue
-        let diff = max(0, count - value.count)
-        let normalizedValue = value.prefix(TONMnemonicLenght.bits256.rawValue).map { $0 }
-        self.value = normalizedValue + Array(repeating: "", count: diff)
+        self.value = (0...(TONMnemonicLength.max.rawValue - 1)).map { value[safe: $0] ?? "" }
     }
     
     public init(string: String) {
-        self = Self.init(value: string.components(separatedBy: " "))
+        self.init(value: string.components(separatedBy: " "))
     }
     
     public mutating func update(word: String, at index: Int) {
@@ -53,7 +64,9 @@ public struct TONMnemonic {
     }
 }
 
-public enum TONMnemonicLenght: Int {
+public enum TONMnemonicLength: Int {
     case bits128 = 12
     case bits256 = 24
+    
+    public static var max: TONMnemonicLength { .bits256 }
 }
