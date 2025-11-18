@@ -26,15 +26,15 @@
 import Foundation
 
 public struct TONNFTTransferParamsHuman: Codable {
-    public var nftAddress: String
+    public var nftAddress: TONUserFriendlyAddress
     public var transferAmount: String
-    public var toAddress: String
+    public var toAddress: TONUserFriendlyAddress
     public var comment: String?
     
     public init(
-        nftAddress: String,
+        nftAddress: TONUserFriendlyAddress,
         transferAmount: String = "100000000",
-        toAddress: String,
+        toAddress: TONUserFriendlyAddress,
         comment: String? = nil
     ) {
         self.nftAddress = nftAddress

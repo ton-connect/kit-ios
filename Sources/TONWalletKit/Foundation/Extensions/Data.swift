@@ -29,7 +29,11 @@ import Foundation
 extension Data {
     
     var hex: String {
-        return "0x" + self.map { String(format: "%02x", $0) }.joined()
+        return map { String(format: "%02x", $0) }.joined()
+    }
+    
+    var hexWithPrefix: String {
+        return "0x" + hex
     }
     
     init?(hex: String) {
@@ -54,5 +58,18 @@ extension Data {
         }
         
         self = data
+    }
+    
+    init?(base64URLEncoded: String) {
+        self.init(base64Encoded: base64URLEncoded
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        )
+    }
+    
+    func base64URLEncodedString() -> String {
+        base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
     }
 }

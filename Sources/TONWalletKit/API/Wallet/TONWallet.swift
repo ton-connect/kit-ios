@@ -28,13 +28,13 @@ import Foundation
 import BigInt
 
 public class TONWallet: TONWalletProtocol {
-    public let address: String
+    public let address: TONUserFriendlyAddress
 
     let jsWallet: any JSDynamicObject
 
     init(
         jsWallet: any JSDynamicObject,
-        address: String
+        address: TONUserFriendlyAddress
     ) {
         self.jsWallet = jsWallet
         self.address = address
@@ -72,16 +72,16 @@ public class TONWallet: TONWalletProtocol {
         try await jsWallet.getNfts(limit)
     }
     
-    public func nft(address: String) async throws -> TONNFTItem {
-        try await jsWallet.getNft(address)
+    public func nft(address: TONUserFriendlyAddress) async throws -> TONNFTItem {
+        try await jsWallet.getNft(address.value)
     }
     
-    public func jettonBalance(jettonAddress: String) async throws -> TONBalance {
-        try await jsWallet.getJettonBalance(jettonAddress)
+    public func jettonBalance(jettonAddress: TONUserFriendlyAddress) async throws -> TONBalance {
+        try await jsWallet.getJettonBalance(jettonAddress.value)
     }
     
-    public func jettonWalletAddress(jettonAddress: String) async throws -> String {
-        try await jsWallet.getJettonWalletAddress(jettonAddress)
+    public func jettonWalletAddress(jettonAddress: TONUserFriendlyAddress) async throws -> String {
+        try await jsWallet.getJettonWalletAddress(jettonAddress.value)
     }
     
     public func transferJettonTransaction(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent {
