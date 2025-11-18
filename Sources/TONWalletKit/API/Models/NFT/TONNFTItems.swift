@@ -27,13 +27,8 @@ import Foundation
 
 public struct TONNFTItems: Codable {
     public let items: [TONNFTItem]
-    public let pagination: TONPagination?
     
-    public init(
-        items: [TONNFTItem],
-        pagination: TONPagination?
-    ) {
+    public init(items: [TONNFTItem]) {
         self.items = items
-        self.pagination = pagination
     }
 }

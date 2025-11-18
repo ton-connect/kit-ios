@@ -33,14 +33,11 @@ final class WalletNFTsListViewModel: ObservableObject {
     @Published private(set) var nfts: [WalletNFTsListItem] = []
     @Published private(set) var isLoadingMore = false
     
-    private var pagination: TONPagination?
     private let limit = 10
     
     private let wallet: TONWalletProtocol
     
-    var canLoadMore: Bool {
-        pagination != nil
-    }
+    @Published private(set) var canLoadMore: Bool = false
     
     init(wallet: TONWalletProtocol) {
         self.wallet = wallet
@@ -57,7 +54,7 @@ final class WalletNFTsListViewModel: ObservableObject {
             if nfts.items.isEmpty {
                 state = .empty
             } else {
-                pagination = nfts.pagination
+                canLoadMore = nfts.items.count == limit
                 self.nfts = nfts.items.map { WalletNFTsListItem(nft: $0, wallet: wallet) }
                 state = .nfts
             }
@@ -68,16 +65,16 @@ final class WalletNFTsListViewModel: ObservableObject {
     }
     
     func loadMoreNFTs() {
-        guard let pagination, state == .nfts && !isLoadingMore else { return }
+        guard canLoadMore && state == .nfts && !isLoadingMore else { return }
         
         isLoadingMore = true
         
         Task { [weak self] in
             guard let self = self else { return }
             do {
-                let nfts = try await wallet.nfts(limit: TONLimitRequest(limit: limit, offset: pagination.offset))
+                let nfts = try await wallet.nfts(limit: TONLimitRequest(limit: limit, offset: nfts.count))
                 
-                self.pagination = nfts.pagination
+                self.canLoadMore = nfts.items.count == limit
                 self.nfts.append(contentsOf: nfts.items.map { WalletNFTsListItem(nft: $0, wallet: self.wallet) })
             } catch {
                 debugPrint(error)

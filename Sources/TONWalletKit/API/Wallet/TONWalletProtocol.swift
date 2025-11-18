@@ -66,4 +66,8 @@ public extension TONWalletProtocol {
     func nfts(limit: Int) async throws -> TONNFTItems {
         try await nfts(limit: TONLimitRequest(limit: limit))
     }
+    
+    func jettons(limit: Int) async throws -> TONJettons {
+        try await jettons(limit: TONLimitRequest(limit: limit))
+    }
 }
