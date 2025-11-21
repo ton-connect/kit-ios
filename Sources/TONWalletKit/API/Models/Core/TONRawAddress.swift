@@ -26,10 +26,6 @@
 
 import Foundation
 
-private let bounceableTag: UInt8 = 0x11
-private let nonBounceableTag: UInt8 = 0x51
-private let testFlag: UInt8 = 0x80
-
 public struct TONRawAddress: Codable {
     public let workchain: Int8
     public let hash: Data
