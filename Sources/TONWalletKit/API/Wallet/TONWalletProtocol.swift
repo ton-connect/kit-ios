@@ -38,7 +38,7 @@ public protocol TONWalletAdapterProtocol: AnyObject {
 }
 
 public protocol TONWalletProtocol {
-    var address: String { get }
+    var address: TONUserFriendlyAddress { get }
     
     func balance() async throws -> TONBalance
     
@@ -52,10 +52,10 @@ public protocol TONWalletProtocol {
     func transferNFTTransaction(rawParameters: TONNFTTransferParamsRaw) async throws -> TONConnectTransactionParamContent
     
     func nfts(limit: TONLimitRequest) async throws -> TONNFTItems
-    func nft(address: String) async throws -> TONNFTItem
+    func nft(address: TONUserFriendlyAddress) async throws -> TONNFTItem
     
-    func jettonBalance(jettonAddress: String) async throws -> TONBalance
-    func jettonWalletAddress(jettonAddress: String) async throws -> String
+    func jettonBalance(jettonAddress: TONUserFriendlyAddress) async throws -> TONBalance
+    func jettonWalletAddress(jettonAddress: TONUserFriendlyAddress) async throws -> String
     
     func transferJettonTransaction(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent
     func jettons(limit: TONLimitRequest) async throws -> TONJettons

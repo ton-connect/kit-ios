@@ -59,7 +59,11 @@ final class SendableJettonViewModel: SendableTokenViewModel {
             return
         }
         
-        let parameters = TONJettonTransferParams(toAddress: address, jettonAddress: jettonAddress, amount: amount)
+        let parameters = TONJettonTransferParams(
+            toAddress: try TONUserFriendlyAddress(value: address),
+            jettonAddress: try TONUserFriendlyAddress(value: jettonAddress),
+            amount: amount
+        )
         let transaction = try await wallet.transferJettonTransaction(parameters: parameters)
         try await wallet.send(transaction: transaction)
     }
@@ -69,7 +73,7 @@ final class SendableJettonViewModel: SendableTokenViewModel {
             throw "No jetton address provided"
         }
         
-        self.jettonBalance = try await wallet.jettonBalance(jettonAddress: jettonAddress)
+        self.jettonBalance = try await wallet.jettonBalance(jettonAddress: try TONUserFriendlyAddress(value: jettonAddress))
     }
     
 }

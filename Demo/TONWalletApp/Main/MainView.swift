@@ -38,8 +38,10 @@ struct MainView: View {
                         await viewModel.load()
                     }
             case .addWallet:
-                AddWalletView() {
-                    viewModel.show(wallets: [$0])
+                NavigationStack {
+                    AddWalletView {
+                        viewModel.show(wallets: [$0])
+                    }
                 }
             case .wallets(let viewModel):
                 WalletsListView(viewModel: viewModel)
