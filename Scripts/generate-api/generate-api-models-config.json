@@ -6,10 +6,21 @@
   "readonlyProperties": true,
   "hashableModels": false,
   "swiftUseApiNamespace": false,
-  "typeMappings": {},
-  "schemaMappings": {
-      "Hex": "TONHex",
+  "typeMappings": {
+      "bigInt": "BigInt",
+      "url": "URL",
+      "int": "Int",
       "Address": "TONUserFriendlyAddress",
+      "LogicalTime": "Int",
+      "Hex": "TONHex",
+      "Base64String": "TONBase64",
+      "TokenAmount": "TONTokenAmount"
+  },
+  "importMappings": {},
+  "schemaMappings": {
+      "Address": "TONUserFriendlyAddress",
+      "LogicalTime": "Int",
+      "Hex": "TONHex",
       "Base64String": "TONBase64",
       "TokenAmount": "TONTokenAmount"
   }

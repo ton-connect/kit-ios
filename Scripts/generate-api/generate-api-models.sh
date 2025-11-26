@@ -35,7 +35,9 @@ echo "OpenAPI spec path: $OPENAPI_SPEC"
 
 OUTPUT_DIR="${SCRIPT_DIR}/generated/openapi"
 CONFIG_FILE="${SCRIPT_DIR}/generate-api-models-config.json"
-DEST_DIR="${PROJECT_ROOT}/Sources/TONWalletKit/API/Models"
+DEST_DIR="${PROJECT_ROOT}/Sources/TONWalletKit/API/Models/Generated"
+
+rm -rf "$DEST_DIR"
 
 if [ -z "$OPENAPI_SPEC" ]; then
     echo "❌ Error: OpenAPI specification file is required"
