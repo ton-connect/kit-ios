@@ -30,7 +30,7 @@ fi
 
 pnpm install
 
-OPENAPI_SPEC=$(pnpm generate-openapi-spec 2>&1 | grep -oE '/.*walletkit-openapi\.json' | tail -1)
+OPENAPI_SPEC=$(pnpm generate-openapi-spec 2>&1 | grep 'OPENAPI_SPEC_PATH=' | cut -d'=' -f2- | tr -d ' \n')
 echo "OpenAPI spec path: $OPENAPI_SPEC"
 
 OUTPUT_DIR="${SCRIPT_DIR}/generated/openapi"
