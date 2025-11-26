@@ -7,5 +7,10 @@
   "hashableModels": false,
   "swiftUseApiNamespace": false,
   "typeMappings": {},
-  "schemaMappings": {}
+  "schemaMappings": {
+      "Hex": "TONHex",
+      "Address": "TONUserFriendlyAddress",
+      "Base64String": "TONBase64",
+      "TokenAmount": "TONTokenAmount"
+  }
 }
