@@ -8,50 +8,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Get the project root (parent of Scripts folder)
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Default walletkit folder name (in project root)
-WALLETKIT_FOLDER="$PROJECT_ROOT/walletkit"
-REPO_URL="https://github.com/ton-connect/kit.git"
-BRANCH="main"
+# Resolve walletkit path using the resolver script
+echo "Resolving walletkit path..."
+WALLETKIT_PATH=${1}
 
-# Check if path parameter is provided
-if [ -z "$1" ]; then
-    echo "No path parameter provided. Using default walletkit folder..."
-    
-    # Create walletkit folder if it doesn't exist
-    if [ ! -d "$WALLETKIT_FOLDER" ]; then
-        echo "Creating $WALLETKIT_FOLDER folder..."
-        mkdir -p "$WALLETKIT_FOLDER"
-    fi
-    
-    # Check if repo is already cloned
-    if [ ! -d "$WALLETKIT_FOLDER/.git" ]; then
-        echo "Cloning repository from $REPO_URL..."
-        git clone "$REPO_URL" "$WALLETKIT_FOLDER"
-        cd "$WALLETKIT_FOLDER"
-        git checkout "$BRANCH"
-    else
-        echo "Repository already cloned. Updating..."
-        cd "$WALLETKIT_FOLDER"
-        git checkout "$BRANCH"
-        git pull origin "$BRANCH"
-    fi
-    
-    # Set the path to current directory (walletkit folder)
-    WALLETKIT_PATH="$(pwd)"
-else
-    echo "Using provided path: $1"
-    WALLETKIT_PATH="$1"
-    
-    # Check if provided path exists
-    if [ ! -d "$WALLETKIT_PATH" ]; then
-        echo "Error: Provided path does not exist: $WALLETKIT_PATH"
-        exit 1
-    fi
-    
-    cd "$WALLETKIT_PATH"
+if [ -z "$WALLETKIT_PATH" ]; then
+    echo "Error: Failed to resolve walletkit path"
+    exit 1
 fi
 
-echo "Working directory: $(pwd)"
+echo "Walletkit path: $WALLETKIT_PATH"
+cd "$WALLETKIT_PATH"
 
 # Run pnpm build
 echo "Running pnpm build..."
