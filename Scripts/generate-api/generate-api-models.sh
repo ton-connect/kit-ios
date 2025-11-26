@@ -30,8 +30,7 @@ fi
 
 pnpm install
 
-OPENAPI_SPEC=$(pnpm generate-openapi-spec 2>&1 | grep 'OPENAPI_SPEC_PATH=' | cut -d'=' -f2- | tr -d ' \n')
-echo "OpenAPI spec path: $OPENAPI_SPEC"
+OPENAPI_SPEC=$(pnpm generate-openapi-spec 2>&1 | grep 'OPENAPI_SPEC_PATH=' | cut -d'=' -f2- | tr -d ' \n\r')
 
 OUTPUT_DIR="${SCRIPT_DIR}/generated/openapi"
 CONFIG_FILE="${SCRIPT_DIR}/generate-api-models-config.json"
@@ -44,7 +43,9 @@ if [ -z "$OPENAPI_SPEC" ]; then
     exit 1
 fi
 
-echo "🚀 Generating Swift models from OpenAPI specification..."
+echo ""
+echo "� OpenAPI spec: $OPENAPI_SPEC"
+echo "�🚀 Generating Swift models from OpenAPI specification..."
 echo ""
 
 # Step 1: Validate OpenAPI spec exists
