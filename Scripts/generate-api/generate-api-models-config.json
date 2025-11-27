@@ -11,7 +11,7 @@
       "url": "URL",
       "int": "Int",
       "Address": "TONUserFriendlyAddress",
-      "LogicalTime": "Int",
+      "LogicalTime": "String",
       "Hex": "TONHex",
       "Base64String": "TONBase64",
       "TokenAmount": "TONTokenAmount"
@@ -19,7 +19,7 @@
   "importMappings": {},
   "schemaMappings": {
       "Address": "TONUserFriendlyAddress",
-      "LogicalTime": "Int",
+      "LogicalTime": "String",
       "Hex": "TONHex",
       "Base64String": "TONBase64",
       "TokenAmount": "TONTokenAmount"
