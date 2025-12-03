@@ -6,22 +6,31 @@
   "readonlyProperties": true,
   "hashableModels": false,
   "swiftUseApiNamespace": false,
+  "modelNamePrefix": "TON",
+  "languageSpecificPrimitives": [
+      "BigInt",
+      "TONTransferRequest"
+  ],
   "typeMappings": {
       "bigInt": "BigInt",
       "url": "URL",
       "int": "Int",
-      "Address": "TONUserFriendlyAddress",
+      "int64": "Int",
+      "int16": "Int16",
+      "int8": "Int8",
+      "int32": "Int32",
+      "uint": "UInt",
+      "uint64": "UInt",
+      "uint32": "UInt32",
+      "uint16": "UInt16",
+      "uint8": "UInt8",
+      "Address": "UserFriendlyAddress",
       "LogicalTime": "String",
-      "Hex": "TONHex",
-      "Base64String": "TONBase64",
-      "TokenAmount": "TONTokenAmount"
+      "Base64String": "Base64"
   },
-  "importMappings": {},
   "schemaMappings": {
-      "Address": "TONUserFriendlyAddress",
+      "Address": "UserFriendlyAddress",
       "LogicalTime": "String",
-      "Hex": "TONHex",
-      "Base64String": "TONBase64",
-      "TokenAmount": "TONTokenAmount"
+      "Base64String": "Base64"
   }
 }

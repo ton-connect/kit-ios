@@ -60,7 +60,7 @@ if [ -d "$OUTPUT_DIR" ]; then
     rm -rf "$OUTPUT_DIR"
 fi
 
-# Step 5: Generate Swift models
+# Step 3: Generate Swift models
 echo "🔨 Generating Swift models..."
 openapi-generator generate \
     -i "$OPENAPI_SPEC" \
