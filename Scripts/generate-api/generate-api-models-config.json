@@ -24,12 +24,12 @@
       "uint32": "UInt32",
       "uint16": "UInt16",
       "uint8": "UInt8",
-      "Address": "UserFriendlyAddress",
+      "UserFriendlyAddress": "UserFriendlyAddress",
       "LogicalTime": "String",
       "Base64String": "Base64"
   },
   "schemaMappings": {
-      "Address": "UserFriendlyAddress",
+      "UserFriendlyAddress": "UserFriendlyAddress",
       "LogicalTime": "String",
       "Base64String": "Base64"
   }
