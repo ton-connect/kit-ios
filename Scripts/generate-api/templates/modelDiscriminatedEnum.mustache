@@ -1,0 +1,55 @@
+{{!--
+  Template for discriminated union enums.
+  
+  Vendor extensions used:
+  - x-discriminated-union: boolean indicating this is a discriminated union
+  - x-enum-cases: array of {name, rawValue, hasAssociatedValue} for each case
+  
+  Cases with associated values are generated from vars that have x-enum-case-name extension.
+  Cases without associated values come from x-enum-cases.
+  OpenAPI Generator resolves the dataType for each var automatically.
+  
+  name: camelCase Swift case name
+  rawValue: original JSON value for encoding/decoding
+--}}
+{{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum {{{classname}}}: Codable {
+{{#vars}}{{#vendorExtensions.x-enum-case-name}}
+    case {{{vendorExtensions.x-enum-case-name}}}({{{dataType}}}){{/vendorExtensions.x-enum-case-name}}{{/vars}}{{#vendorExtensions.x-enum-cases}}{{^hasAssociatedValue}}
+    case {{{name}}}{{/hasAssociatedValue}}{{/vendorExtensions.x-enum-cases}}
+
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let type = try container.decode(String.self, forKey: .type)
+        switch type {
+{{#vars}}{{#vendorExtensions.x-enum-case-name}}
+        case "{{{vendorExtensions.x-enum-case-raw-value}}}":
+            let value = try container.decode({{{dataType}}}.self, forKey: .value)
+            self = .{{{vendorExtensions.x-enum-case-name}}}(value){{/vendorExtensions.x-enum-case-name}}{{/vars}}{{#vendorExtensions.x-enum-cases}}{{^hasAssociatedValue}}
+        case "{{{rawValue}}}":
+            self = .{{{name}}}{{/hasAssociatedValue}}{{/vendorExtensions.x-enum-cases}}
+        default:
+            throw DecodingError.dataCorruptedError(
+                forKey: .type,
+                in: container,
+                debugDescription: "Unknown type: \(type)"
+            )
+        }
+    }
+
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+{{#vars}}{{#vendorExtensions.x-enum-case-name}}
+        case .{{{vendorExtensions.x-enum-case-name}}}(let value):
+            try container.encode("{{{vendorExtensions.x-enum-case-raw-value}}}", forKey: .type)
+            try container.encode(value, forKey: .value){{/vendorExtensions.x-enum-case-name}}{{/vars}}{{#vendorExtensions.x-enum-cases}}{{^hasAssociatedValue}}
+        case .{{{name}}}:
+            try container.encode("{{{rawValue}}}", forKey: .type){{/hasAssociatedValue}}{{/vendorExtensions.x-enum-cases}}
+        }
+    }
+
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum CodingKeys: String, CodingKey, CaseIterable {
+        case type
+        case value
+    }
+}

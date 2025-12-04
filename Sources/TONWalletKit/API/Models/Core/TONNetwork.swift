@@ -24,8 +24,15 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-public enum TONNetwork: String, CaseIterable, Codable {
-    case mainnet = "-239"
-    case testnet = "-3"
-    case unknown
+extension TONNetwork {
+    
+    static var mainnet: TONNetwork { TONNetwork(chainId: "-239") }
+    static var testnet: TONNetwork { TONNetwork(chainId: "-3") }
+}
+
+extension TONNetwork: Equatable {
+    
+    public static func == (lhs: TONNetwork, rhs: TONNetwork) -> Bool {
+        lhs.chainId == rhs.chainId
+    }
 }

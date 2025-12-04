@@ -30,19 +30,22 @@ fi
 
 pnpm install
 
-OPENAPI_SPEC=$(pnpm generate-openapi-spec 2>&1 | grep -oE '/.*walletkit-openapi\.json' | tail -1)
-echo "OpenAPI spec path: $OPENAPI_SPEC"
+OPENAPI_SPEC=$(pnpm generate-openapi-spec 2>&1 | grep 'OPENAPI_SPEC_PATH=' | cut -d'=' -f2- | tr -d ' \n\r')
 
 OUTPUT_DIR="${SCRIPT_DIR}/generated/openapi"
 CONFIG_FILE="${SCRIPT_DIR}/generate-api-models-config.json"
-DEST_DIR="${PROJECT_ROOT}/Sources/TONWalletKit/API/Models"
+DEST_DIR="${PROJECT_ROOT}/Sources/TONWalletKit/API/Models/Generated"
+
+rm -rf "$DEST_DIR"
 
 if [ -z "$OPENAPI_SPEC" ]; then
     echo "❌ Error: OpenAPI specification file is required"
     exit 1
 fi
 
-echo "🚀 Generating Swift models from OpenAPI specification..."
+echo ""
+echo "� OpenAPI spec: $OPENAPI_SPEC"
+echo "�🚀 Generating Swift models from OpenAPI specification..."
 echo ""
 
 # Step 1: Validate OpenAPI spec exists
@@ -57,7 +60,7 @@ if [ -d "$OUTPUT_DIR" ]; then
     rm -rf "$OUTPUT_DIR"
 fi
 
-# Step 5: Generate Swift models
+# Step 3: Generate Swift models
 echo "🔨 Generating Swift models..."
 openapi-generator generate \
     -i "$OPENAPI_SPEC" \
