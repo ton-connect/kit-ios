@@ -25,11 +25,13 @@
       "uint16": "UInt16",
       "uint8": "UInt8",
       "UserFriendlyAddress": "UserFriendlyAddress",
+      "Hex": "Hex",
       "LogicalTime": "String",
       "Base64String": "Base64"
   },
   "schemaMappings": {
       "UserFriendlyAddress": "UserFriendlyAddress",
+      "Hex": "Hex",
       "LogicalTime": "String",
       "Base64String": "Base64"
   }
