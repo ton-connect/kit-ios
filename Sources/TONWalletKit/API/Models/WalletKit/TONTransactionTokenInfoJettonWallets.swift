@@ -37,12 +37,11 @@ public struct TONTransactionTokenInfoJettonWallets: Codable {
     public var type: String
     /** Additional metadata for the token, such as image sizes, decimal precision, external links, and marketplaces */
     public var extra: [String: AnyCodable]
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var balance: String
+    public var balance: TONTokenAmount
     public var jetton: TONUserFriendlyAddress
     public var owner: TONUserFriendlyAddress
 
-    public init(isValid: Bool, type: String, extra: [String: AnyCodable], balance: String, jetton: TONUserFriendlyAddress, owner: TONUserFriendlyAddress) {
+    public init(isValid: Bool, type: String, extra: [String: AnyCodable], balance: TONTokenAmount, jetton: TONUserFriendlyAddress, owner: TONUserFriendlyAddress) {
         self.isValid = isValid
         self.type = type
         self.extra = extra

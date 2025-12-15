@@ -32,8 +32,7 @@ public struct TONTransactionTraceActionTONTransferDetails: Codable {
 
     public var source: TONUserFriendlyAddress?
     public var destination: TONUserFriendlyAddress?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var value: String?
+    public var value: TONTokenAmount?
     /** Map of extra currency IDs to their amounts. Extra currencies are additional tokens that can be attached to TON messages. */
     public var valueExtraCurrencies: [String: String]?
     /** Optional comment for the transfer */
@@ -41,7 +40,7 @@ public struct TONTransactionTraceActionTONTransferDetails: Codable {
     /** Indicates if the payload or comment was encrypted. */
     public var isEncrypted: Bool?
 
-    public init(source: TONUserFriendlyAddress? = nil, destination: TONUserFriendlyAddress? = nil, value: String? = nil, valueExtraCurrencies: [String: String]? = nil, comment: String? = nil, isEncrypted: Bool? = nil) {
+    public init(source: TONUserFriendlyAddress? = nil, destination: TONUserFriendlyAddress? = nil, value: TONTokenAmount? = nil, valueExtraCurrencies: [String: String]? = nil, comment: String? = nil, isEncrypted: Bool? = nil) {
         self.source = source
         self.destination = destination
         self.value = value

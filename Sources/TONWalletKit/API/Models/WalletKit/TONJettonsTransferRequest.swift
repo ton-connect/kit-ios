@@ -32,13 +32,12 @@ import BigInt
 public struct TONJettonsTransferRequest: Codable {
 
     public var jettonAddress: TONUserFriendlyAddress
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var transferAmount: String
+    public var transferAmount: TONTokenAmount
     public var recipientAddress: TONUserFriendlyAddress
     /** Human-readable comment attached to the transfer */
     public var comment: String?
 
-    public init(jettonAddress: TONUserFriendlyAddress, transferAmount: String, recipientAddress: TONUserFriendlyAddress, comment: String? = nil) {
+    public init(jettonAddress: TONUserFriendlyAddress, transferAmount: TONTokenAmount, recipientAddress: TONUserFriendlyAddress, comment: String? = nil) {
         self.jettonAddress = jettonAddress
         self.transferAmount = transferAmount
         self.recipientAddress = recipientAddress

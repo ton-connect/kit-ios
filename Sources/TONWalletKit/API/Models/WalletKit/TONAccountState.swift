@@ -33,8 +33,7 @@ public struct TONAccountState: Codable {
 
     /** The state hash of the account */
     public var hash: String
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var balance: String
+    public var balance: TONTokenAmount
     /** Map of extra currency IDs to their amounts. Extra currencies are additional tokens that can be attached to TON messages. */
     public var extraCurrencies: [String: String]?
     public var accountStatus: TONAccountStatus?
@@ -45,7 +44,7 @@ public struct TONAccountState: Codable {
     /** The hash of the smart contract code */
     public var codeHash: String?
 
-    public init(hash: String, balance: String, extraCurrencies: [String: String]? = nil, accountStatus: TONAccountStatus? = nil, frozenHash: String? = nil, dataHash: String? = nil, codeHash: String? = nil) {
+    public init(hash: String, balance: TONTokenAmount, extraCurrencies: [String: String]? = nil, accountStatus: TONAccountStatus? = nil, frozenHash: String? = nil, dataHash: String? = nil, codeHash: String? = nil) {
         self.hash = hash
         self.balance = balance
         self.extraCurrencies = extraCurrencies

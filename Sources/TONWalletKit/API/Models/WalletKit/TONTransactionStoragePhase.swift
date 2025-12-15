@@ -31,12 +31,11 @@ import BigInt
 
 public struct TONTransactionStoragePhase: Codable {
 
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var storageFeesCollected: String
+    public var storageFeesCollected: TONTokenAmount
     /** The status change applied to the account during the storage phase */
     public var statusChange: String?
 
-    public init(storageFeesCollected: String, statusChange: String? = nil) {
+    public init(storageFeesCollected: TONTokenAmount, statusChange: String? = nil) {
         self.storageFeesCollected = storageFeesCollected
         self.statusChange = statusChange
     }

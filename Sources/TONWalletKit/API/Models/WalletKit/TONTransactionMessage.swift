@@ -35,12 +35,10 @@ public struct TONTransactionMessage: Codable {
     public var normalizedHash: TONHex?
     public var source: TONUserFriendlyAddress?
     public var destination: TONUserFriendlyAddress?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var value: String?
+    public var value: TONTokenAmount?
     /** Map of extra currency IDs to their amounts. Extra currencies are additional tokens that can be attached to TON messages. */
     public var valueExtraCurrencies: [String: String]?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var fwdFee: String?
+    public var fwdFee: TONTokenAmount?
     public var creationLogicalTime: String?
     /** The timestamp when the message was created */
     public var createdAt: Double?
@@ -48,17 +46,15 @@ public struct TONTransactionMessage: Codable {
     public var opcode: String?
     /** IHR(Immediate hypercube routing) enabled/disabled IHR is a method of message delivery in the TON Blockchain network, where messages are sent directly to the recipient’s shardchain. */
     public var ihrDisabled: Bool?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var ihrFee: String?
+    public var ihrFee: TONTokenAmount?
     /** The flag indicating if the message requested a bounce on failure */
     public var isBounce: Bool?
     /** The flag indicating if the message was bounced back */
     public var isBounced: Bool?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var importFee: String?
+    public var importFee: TONTokenAmount?
     public var messageContent: TONTransactionMessageContent?
 
-    public init(hash: TONHex, normalizedHash: TONHex? = nil, source: TONUserFriendlyAddress? = nil, destination: TONUserFriendlyAddress? = nil, value: String? = nil, valueExtraCurrencies: [String: String]? = nil, fwdFee: String? = nil, creationLogicalTime: String? = nil, createdAt: Double? = nil, opcode: String? = nil, ihrDisabled: Bool? = nil, ihrFee: String? = nil, isBounce: Bool? = nil, isBounced: Bool? = nil, importFee: String? = nil, messageContent: TONTransactionMessageContent? = nil) {
+    public init(hash: TONHex, normalizedHash: TONHex? = nil, source: TONUserFriendlyAddress? = nil, destination: TONUserFriendlyAddress? = nil, value: TONTokenAmount? = nil, valueExtraCurrencies: [String: String]? = nil, fwdFee: TONTokenAmount? = nil, creationLogicalTime: String? = nil, createdAt: Double? = nil, opcode: String? = nil, ihrDisabled: Bool? = nil, ihrFee: TONTokenAmount? = nil, isBounce: Bool? = nil, isBounced: Bool? = nil, importFee: TONTokenAmount? = nil, messageContent: TONTransactionMessageContent? = nil) {
         self.hash = hash
         self.normalizedHash = normalizedHash
         self.source = source

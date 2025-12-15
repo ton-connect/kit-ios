@@ -40,10 +40,10 @@ struct WalletNFTDetails {
     let ownerAddress: String
     let canTransfer: Bool
     
-    init(from nftItem: TONNFTItem) {
-        self.name = nftItem.metadata?.name ?? "Unknown NFT"
-        self.description = nftItem.metadata?.description ?? "No description available"
-        self.imageURL = nftItem.metadata?.image.flatMap { URL(string: $0) }
+    init(from nftItem: TONNFT) {
+        self.name = nftItem.info?.name ?? "Unknown NFT"
+        self.description = nftItem.info?.description ?? "No description available"
+        self.imageURL = nftItem.info?.image.flatMap { $0.url }
         
         self.collectionName = nftItem.collection?.name ?? "Unknown Collection"
         
@@ -53,11 +53,11 @@ struct WalletNFTDetails {
             self.index = "#0"
         }
         
-        self.status = (nftItem.onSale == true) ? "On Sale" : "Not on Sale"
+        self.status = (nftItem.isOnSale == true) ? "On Sale" : "Not on Sale"
         
-        self.contractAddress = nftItem.address
-        self.ownerAddress = nftItem.ownerAddress ?? nftItem.realOwner ?? "Unknown"
+        self.contractAddress = nftItem.address.value
+        self.ownerAddress = nftItem.ownerAddress?.value ?? nftItem.realOwnerAddress?.value ?? "Unknown"
         
-        self.canTransfer = nftItem.onSale == false && nftItem.ownerAddress != nil
+        self.canTransfer = nftItem.isOnSale == false && nftItem.ownerAddress != nil
     }
 }

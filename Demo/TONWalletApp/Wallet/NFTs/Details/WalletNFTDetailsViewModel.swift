@@ -38,9 +38,9 @@ class WalletNFTDetailsViewModel: ObservableObject, Identifiable {
     let onRemove: () -> Void
     
     private let wallet: TONWalletProtocol
-    private let nft: TONNFTItem
+    private let nft: TONNFT
     
-    init(wallet: TONWalletProtocol, nft: TONNFTItem, onRemove: @escaping () -> Void) {
+    init(wallet: TONWalletProtocol, nft: TONNFT, onRemove: @escaping () -> Void) {
         self.wallet = wallet
         self.nft = nft
         self.details = .init(from: nft)
@@ -56,14 +56,14 @@ class WalletNFTDetailsViewModel: ObservableObject, Identifiable {
         
         Task {
             do {
-                let parameters = TONNFTTransferParamsHuman(
-                    nftAddress: try TONUserFriendlyAddress(
-                        value: nft.address
-                    ),
-                    toAddress: try TONUserFriendlyAddress(value: address)
+                let request = TONNFTTransferRequest(
+                    nftAddress: nft.address,
+                    transferAmount: TONTokenAmount(nanoUnits: 100000000),
+                    recipientAddress: try TONUserFriendlyAddress(value: address)
                 )
-                let transaction = try await wallet.transferNFTTransaction(parameters: parameters)
-                try await wallet.send(transaction: transaction)
+
+                let transactionRequest = try await wallet.transferNFTTransaction(request: request)
+                try await wallet.send(transactionRequest: transactionRequest)
             } catch {
                 debugPrint("Failed to transfer NFT: \(error.localizedDescription)")
             }

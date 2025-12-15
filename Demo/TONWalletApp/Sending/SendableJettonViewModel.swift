@@ -28,9 +28,9 @@ import Foundation
 import TONWalletKit
 
 final class SendableJettonViewModel: SendableTokenViewModel {
-    var name: String { jetton.name ?? "Unknown Jetton" }
-    var symbol: String {  jetton.symbol ?? "UNKNOWN" }
-    var decimals: Int { jetton.decimals ?? 9 }
+    var name: String { jetton.info.name ?? "Unknown Jetton" }
+    var symbol: String {  jetton.info.symbol ?? "UNKNOWN" }
+    var decimals: Int { jetton.decimalsNumber ?? 9 }
     var requiredAmountInfo: String { "Enter amount in \(symbol) units" }
     var balance: String { jettonBalance.flatMap { formatter.string(from: $0) } ?? "Unknown Balance" }
     
@@ -51,29 +51,22 @@ final class SendableJettonViewModel: SendableTokenViewModel {
     }
     
     func send(amount: String, address: String) async throws {
-        guard let jettonAddress = jetton.address else {
-            throw "No jetton address provided"
-        }
-        
         guard let amount = formatter.amount(from: amount) else {
             return
         }
         
-        let parameters = TONJettonTransferParams(
-            toAddress: try TONUserFriendlyAddress(value: address),
-            jettonAddress: try TONUserFriendlyAddress(value: jettonAddress),
-            amount: amount
+        let request = TONJettonsTransferRequest(
+            jettonAddress: jetton.address,
+            transferAmount: amount,
+            recipientAddress: try TONUserFriendlyAddress(value: address),
         )
-        let transaction = try await wallet.transferJettonTransaction(parameters: parameters)
-        try await wallet.send(transaction: transaction)
+
+        let transactionRequest = try await wallet.transferJettonTransaction(request: request)
+        try await wallet.send(transactionRequest: transactionRequest)
     }
     
     func updateBalance() async throws {
-        guard let jettonAddress = jetton.address else {
-            throw "No jetton address provided"
-        }
-        
-        self.jettonBalance = try await wallet.jettonBalance(jettonAddress: try TONUserFriendlyAddress(value: jettonAddress))
+        self.jettonBalance = try await wallet.jettonBalance(jettonAddress: jetton.address)
     }
     
 }

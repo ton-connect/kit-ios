@@ -34,12 +34,11 @@ public struct TONTransactionTraceActionCallContractDetails: Codable {
     public var opcode: String
     public var source: TONUserFriendlyAddress?
     public var destination: TONUserFriendlyAddress?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var value: String?
+    public var value: TONTokenAmount?
     /** Map of extra currency IDs to their amounts. Extra currencies are additional tokens that can be attached to TON messages. */
     public var valueExtraCurrencies: [String: String]?
 
-    public init(opcode: String, source: TONUserFriendlyAddress? = nil, destination: TONUserFriendlyAddress? = nil, value: String? = nil, valueExtraCurrencies: [String: String]? = nil) {
+    public init(opcode: String, source: TONUserFriendlyAddress? = nil, destination: TONUserFriendlyAddress? = nil, value: TONTokenAmount? = nil, valueExtraCurrencies: [String: String]? = nil) {
         self.opcode = opcode
         self.source = source
         self.destination = destination

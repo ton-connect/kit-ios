@@ -26,12 +26,14 @@
       "UserFriendlyAddress": "UserFriendlyAddress",
       "Hex": "Hex",
       "LogicalTime": "String",
-      "Base64String": "Base64"
+      "Base64String": "Base64",
+      "TokenAmount": "TokenAmount"
   },
   "schemaMappings": {
       "UserFriendlyAddress": "UserFriendlyAddress",
       "Hex": "Hex",
       "LogicalTime": "String",
-      "Base64String": "Base64"
+      "Base64String": "Base64",
+      "TokenAmount": "TokenAmount"
   }
 }

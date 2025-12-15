@@ -39,14 +39,10 @@ public struct TONTransactionComputePhase: Codable {
     public var isMessageStateUsed: Bool?
     /** The flag indicating if the account was activated during compute */
     public var isAccountActivated: Bool?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var gasFees: String?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var gasUsed: String?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var gasLimit: String?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var gasCredit: String?
+    public var gasFees: TONTokenAmount?
+    public var gasUsed: TONTokenAmount?
+    public var gasLimit: TONTokenAmount?
+    public var gasCredit: TONTokenAmount?
     /** The compute execution mode */
     public var mode: Int?
     /** The exit code returned from the VM */
@@ -56,7 +52,7 @@ public struct TONTransactionComputePhase: Codable {
     public var vmInitStateHash: TONHex?
     public var vmFinalStateHash: TONHex?
 
-    public init(isSkipped: Bool? = nil, isSuccess: Bool? = nil, isMessageStateUsed: Bool? = nil, isAccountActivated: Bool? = nil, gasFees: String? = nil, gasUsed: String? = nil, gasLimit: String? = nil, gasCredit: String? = nil, mode: Int? = nil, exitCode: Int? = nil, vmStepsNumber: Int? = nil, vmInitStateHash: TONHex? = nil, vmFinalStateHash: TONHex? = nil) {
+    public init(isSkipped: Bool? = nil, isSuccess: Bool? = nil, isMessageStateUsed: Bool? = nil, isAccountActivated: Bool? = nil, gasFees: TONTokenAmount? = nil, gasUsed: TONTokenAmount? = nil, gasLimit: TONTokenAmount? = nil, gasCredit: TONTokenAmount? = nil, mode: Int? = nil, exitCode: Int? = nil, vmStepsNumber: Int? = nil, vmInitStateHash: TONHex? = nil, vmFinalStateHash: TONHex? = nil) {
         self.isSkipped = isSkipped
         self.isSuccess = isSuccess
         self.isMessageStateUsed = isMessageStateUsed

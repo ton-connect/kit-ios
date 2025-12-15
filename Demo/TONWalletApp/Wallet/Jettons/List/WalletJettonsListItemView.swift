@@ -99,12 +99,6 @@ struct WalletJettonsListItemView: View {
                         .textBase(weight: .medium)
                         .foregroundColor(Color.TON.gray900)
                         .lineLimit(1)
-                    
-                    // Estimated Value
-                    Text(jettonItem.estimatedValue)
-                        .textSM()
-                        .foregroundColor(Color.TON.gray500)
-                        .lineLimit(1)
                 }
             }
         }

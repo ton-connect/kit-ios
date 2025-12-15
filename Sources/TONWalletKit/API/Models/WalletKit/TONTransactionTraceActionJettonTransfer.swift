@@ -35,10 +35,9 @@ public struct TONTransactionTraceActionJettonTransfer: Codable {
     public var destination: TONUserFriendlyAddress?
     public var sourceJettonWallet: TONUserFriendlyAddress?
     public var destinationJettonWallet: TONUserFriendlyAddress?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var amount: String?
+    public var amount: TONTokenAmount?
 
-    public init(asset: TONUserFriendlyAddress? = nil, source: TONUserFriendlyAddress? = nil, destination: TONUserFriendlyAddress? = nil, sourceJettonWallet: TONUserFriendlyAddress? = nil, destinationJettonWallet: TONUserFriendlyAddress? = nil, amount: String? = nil) {
+    public init(asset: TONUserFriendlyAddress? = nil, source: TONUserFriendlyAddress? = nil, destination: TONUserFriendlyAddress? = nil, sourceJettonWallet: TONUserFriendlyAddress? = nil, destinationJettonWallet: TONUserFriendlyAddress? = nil, amount: TONTokenAmount? = nil) {
         self.asset = asset
         self.source = source
         self.destination = destination

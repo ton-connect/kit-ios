@@ -49,13 +49,13 @@ final class WalletNFTsListViewModel: ObservableObject {
         state = .loading
         
         do {
-            let nfts = try await wallet.nfts(limit: limit)
+            let reponse = try await wallet.nfts(limit: limit)
             
-            if nfts.items.isEmpty {
+            if reponse.nfts.isEmpty {
                 state = .empty
             } else {
-                canLoadMore = nfts.items.count == limit
-                self.nfts = nfts.items.map { WalletNFTsListItem(nft: $0, wallet: wallet) }
+                canLoadMore = reponse.nfts.count == limit
+                self.nfts = reponse.nfts.map { WalletNFTsListItem(nft: $0, wallet: wallet) }
                 state = .nfts
             }
         } catch {
@@ -72,10 +72,11 @@ final class WalletNFTsListViewModel: ObservableObject {
         Task { [weak self] in
             guard let self = self else { return }
             do {
-                let nfts = try await wallet.nfts(limit: TONLimitRequest(limit: limit, offset: nfts.count))
+                let request = TONNFTsRequest(pagination: TONPagination(limit: limit, offset: nfts.count))
+                let response = try await wallet.nfts(request: request)
                 
-                self.canLoadMore = nfts.items.count == limit
-                self.nfts.append(contentsOf: nfts.items.map { WalletNFTsListItem(nft: $0, wallet: self.wallet) })
+                self.canLoadMore = response.nfts.count == limit
+                self.nfts.append(contentsOf: response.nfts.map { WalletNFTsListItem(nft: $0, wallet: self.wallet) })
             } catch {
                 debugPrint(error)
             }

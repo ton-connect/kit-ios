@@ -32,7 +32,7 @@ import TONWalletKit
 class WalletTransactionRequestViewModel: ObservableObject {
     private let request: TONWalletTransactionRequest
     
-    var dAppInfo: TONDAppInfo? { request.dAppInfo }
+    var dAppInfo: TONDAppInfo? { request.event.preview.dAppInfo }
     
     let dismiss = PassthroughSubject<Void, Never>()
     

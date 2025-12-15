@@ -35,8 +35,8 @@ class WalletConnectionRequestViewModel: ObservableObject {
     let wallets: [SelectableWallet]
     private let request: TONWalletConnectionRequest
     
-    var dAppInfo: TONDAppInfo? { request.dAppInfo }
-    var permissions: [TONConnectRequestEvent.Preview.ConnectPermission] { request.permissions }
+    var dAppInfo: TONDAppInfo? { request.event.preview.dAppInfo }
+    var permissions: [TONConnectionRequestEventPreviewPermission] { request.event.preview.permissions }
     
     let dismiss = PassthroughSubject<Void, Never>()
     
@@ -56,7 +56,7 @@ class WalletConnectionRequestViewModel: ObservableObject {
         
         Task {
             do {
-                try await request.approve(walletAddress: address)
+                try await request.approve(walletAddress: try TONUserFriendlyAddress(value: address))
                 dismiss.send()
             } catch {
                 debugPrint(error.localizedDescription)

@@ -31,10 +31,9 @@ import BigInt
 
 public struct TONTransactionCreditPhase: Codable {
 
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var credit: String?
+    public var credit: TONTokenAmount?
 
-    public init(credit: String? = nil) {
+    public init(credit: TONTokenAmount? = nil) {
         self.credit = credit
     }
 

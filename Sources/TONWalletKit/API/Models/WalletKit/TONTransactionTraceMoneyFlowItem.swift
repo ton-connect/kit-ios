@@ -32,13 +32,12 @@ import BigInt
 public struct TONTransactionTraceMoneyFlowItem: Codable {
 
     public var assetType: TONAssetType
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var amount: String
+    public var amount: TONTokenAmount
     public var tokenAddress: TONUserFriendlyAddress?
     public var fromAddress: TONUserFriendlyAddress?
     public var toAddress: TONUserFriendlyAddress?
 
-    public init(assetType: TONAssetType, amount: String, tokenAddress: TONUserFriendlyAddress? = nil, fromAddress: TONUserFriendlyAddress? = nil, toAddress: TONUserFriendlyAddress? = nil) {
+    public init(assetType: TONAssetType, amount: TONTokenAmount, tokenAddress: TONUserFriendlyAddress? = nil, fromAddress: TONUserFriendlyAddress? = nil, toAddress: TONUserFriendlyAddress? = nil) {
         self.assetType = assetType
         self.amount = amount
         self.tokenAddress = tokenAddress

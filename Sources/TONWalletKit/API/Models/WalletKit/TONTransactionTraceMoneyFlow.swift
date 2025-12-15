@@ -31,17 +31,15 @@ import BigInt
 
 public struct TONTransactionTraceMoneyFlow: Codable {
 
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var outputs: String
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var inputs: String
+    public var outputs: TONTokenAmount
+    public var inputs: TONTokenAmount
     /** List of all token transfers involved in the transaction */
     public var allJettonTransfers: [TONTransactionTraceMoneyFlowItem]
     /** List of token transfers involving our address */
     public var ourTransfers: [TONTransactionTraceMoneyFlowItem]
     public var ourAddress: TONUserFriendlyAddress?
 
-    public init(outputs: String, inputs: String, allJettonTransfers: [TONTransactionTraceMoneyFlowItem], ourTransfers: [TONTransactionTraceMoneyFlowItem], ourAddress: TONUserFriendlyAddress? = nil) {
+    public init(outputs: TONTokenAmount, inputs: TONTokenAmount, allJettonTransfers: [TONTransactionTraceMoneyFlowItem], ourTransfers: [TONTransactionTraceMoneyFlowItem], ourAddress: TONUserFriendlyAddress? = nil) {
         self.outputs = outputs
         self.inputs = inputs
         self.allJettonTransfers = allJettonTransfers

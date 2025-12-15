@@ -33,15 +33,14 @@ public struct TONJetton: Codable {
 
     public var address: TONUserFriendlyAddress
     public var walletAddress: TONUserFriendlyAddress
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var balance: String
+    public var balance: TONTokenAmount
     public var info: TONTokenInfo
     /** The number of decimal places used by the token */
     public var decimalsNumber: Int?
     /** Additional arbitrary data related to the jetton */
     public var extra: [String: AnyCodable]?
 
-    public init(address: TONUserFriendlyAddress, walletAddress: TONUserFriendlyAddress, balance: String, info: TONTokenInfo, decimalsNumber: Int? = nil, extra: [String: AnyCodable]? = nil) {
+    public init(address: TONUserFriendlyAddress, walletAddress: TONUserFriendlyAddress, balance: TONTokenAmount, info: TONTokenInfo, decimalsNumber: Int? = nil, extra: [String: AnyCodable]? = nil) {
         self.address = address
         self.walletAddress = walletAddress
         self.balance = balance

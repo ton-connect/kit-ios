@@ -49,8 +49,7 @@ public struct TONTransaction: Codable {
     public var previousTransactionLogicalTime: String?
     public var origStatus: TONAccountStatus?
     public var endStatus: TONAccountStatus?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var totalFees: String?
+    public var totalFees: TONTokenAmount?
     /** Map of extra currency IDs to their amounts. Extra currencies are additional tokens that can be attached to TON messages. */
     public var totalFeesExtraCurrencies: [String: String]?
     public var blockRef: TONTransactionBlockRef?
@@ -60,7 +59,7 @@ public struct TONTransaction: Codable {
     /** Emulated state of the transaction */
     public var isEmulated: Bool
 
-    public init(account: TONUserFriendlyAddress, accountStateBefore: TONAccountState? = nil, accountStateAfter: TONAccountState? = nil, description: TONTransactionDescription? = nil, hash: TONHex, logicalTime: String, now: Double, mcBlockSeqno: Int, traceExternalHash: TONHex, traceId: String? = nil, previousTransactionHash: String? = nil, previousTransactionLogicalTime: String? = nil, origStatus: TONAccountStatus? = nil, endStatus: TONAccountStatus? = nil, totalFees: String? = nil, totalFeesExtraCurrencies: [String: String]? = nil, blockRef: TONTransactionBlockRef? = nil, inMessage: TONTransactionMessage? = nil, outMessages: [TONTransactionMessage], isEmulated: Bool) {
+    public init(account: TONUserFriendlyAddress, accountStateBefore: TONAccountState? = nil, accountStateAfter: TONAccountState? = nil, description: TONTransactionDescription? = nil, hash: TONHex, logicalTime: String, now: Double, mcBlockSeqno: Int, traceExternalHash: TONHex, traceId: String? = nil, previousTransactionHash: String? = nil, previousTransactionLogicalTime: String? = nil, origStatus: TONAccountStatus? = nil, endStatus: TONAccountStatus? = nil, totalFees: TONTokenAmount? = nil, totalFeesExtraCurrencies: [String: String]? = nil, blockRef: TONTransactionBlockRef? = nil, inMessage: TONTransactionMessage? = nil, outMessages: [TONTransactionMessage], isEmulated: Bool) {
         self.account = account
         self.accountStateBefore = accountStateBefore
         self.accountStateAfter = accountStateAfter

@@ -32,11 +32,10 @@ import BigInt
 public struct TONNFTRawTransferRequest: Codable {
 
     public var nftAddress: TONUserFriendlyAddress
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var transferAmount: String
+    public var transferAmount: TONTokenAmount
     public var message: TONNFTRawTransferRequestMessage
 
-    public init(nftAddress: TONUserFriendlyAddress, transferAmount: String, message: TONNFTRawTransferRequestMessage) {
+    public init(nftAddress: TONUserFriendlyAddress, transferAmount: TONTokenAmount, message: TONNFTRawTransferRequestMessage) {
         self.nftAddress = nftAddress
         self.transferAmount = transferAmount
         self.message = message

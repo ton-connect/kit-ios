@@ -31,8 +31,7 @@ import BigInt
 
 public struct TONTransferRequest: Codable {
 
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var transferAmount: String
+    public var transferAmount: TONTokenAmount
     public var recipientAddress: TONUserFriendlyAddress
     public var mode: TONSendMode?
     /** Map of extra currency IDs to their amounts. Extra currencies are additional tokens that can be attached to TON messages. */
@@ -42,7 +41,7 @@ public struct TONTransferRequest: Codable {
     /** Human-readable text comment attached to the transfer */
     public var comment: String?
 
-    public init(transferAmount: String, recipientAddress: TONUserFriendlyAddress, mode: TONSendMode? = nil, extraCurrency: [String: String]? = nil, stateInit: TONBase64? = nil, payload: TONBase64? = nil, comment: String? = nil) {
+    public init(transferAmount: TONTokenAmount, recipientAddress: TONUserFriendlyAddress, mode: TONSendMode? = nil, extraCurrency: [String: String]? = nil, stateInit: TONBase64? = nil, payload: TONBase64? = nil, comment: String? = nil) {
         self.transferAmount = transferAmount
         self.recipientAddress = recipientAddress
         self.mode = mode

@@ -39,10 +39,8 @@ public struct TONTransactionAction: Codable {
     public var hasNoFunds: Bool?
     /** The status change applied to the account during the action phase */
     public var statusChange: String?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var totalForwardingFees: String?
-    /** Token amount represented as a string to preserve precision. For TON, this is typically in nanotons (1 TON = 10^9 nanotons). */
-    public var totalActionFees: String?
+    public var totalForwardingFees: TONTokenAmount?
+    public var totalActionFees: TONTokenAmount?
     /** The result code returned from the action phase */
     public var resultCode: Int?
     /** The total number of actions processed */
@@ -56,7 +54,7 @@ public struct TONTransactionAction: Codable {
     public var actionListHash: TONHex?
     public var totalMessagesSize: TONTransactionActionMessageSize?
 
-    public init(isSuccess: Bool? = nil, isValid: Bool? = nil, hasNoFunds: Bool? = nil, statusChange: String? = nil, totalForwardingFees: String? = nil, totalActionFees: String? = nil, resultCode: Int? = nil, totalActionsNumber: Int, specActionsNumber: Int, skippedActionsNumber: Int, messagesCreatedNumber: Int, actionListHash: TONHex? = nil, totalMessagesSize: TONTransactionActionMessageSize? = nil) {
+    public init(isSuccess: Bool? = nil, isValid: Bool? = nil, hasNoFunds: Bool? = nil, statusChange: String? = nil, totalForwardingFees: TONTokenAmount? = nil, totalActionFees: TONTokenAmount? = nil, resultCode: Int? = nil, totalActionsNumber: Int, specActionsNumber: Int, skippedActionsNumber: Int, messagesCreatedNumber: Int, actionListHash: TONHex? = nil, totalMessagesSize: TONTransactionActionMessageSize? = nil) {
         self.isSuccess = isSuccess
         self.isValid = isValid
         self.hasNoFunds = hasNoFunds

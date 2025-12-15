@@ -29,5 +29,12 @@ import TONWalletKit
 
 struct WalletEntity: Codable {
     let address: String?
-    let data: TONWalletData
+    let data: WalletData
+}
+
+struct WalletData: Codable {
+    let name: String?
+    let mnemonic: [String]
+    let network: String
+    let version: TONWalletVersion
 }

@@ -1,9 +1,9 @@
 //
-//  TONNetwork.swift
+//  TONUserFriendlyAddress+Equatable.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 07.10.2025.
-//
+//  Created by Nikita Rodionov on 15.12.2025.
+//  
 //  Copyright (c) 2025 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,19 +24,12 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-extension TONNetwork {
-    
-    public static var mainnet: TONNetwork { TONNetwork(chainId: "-239") }
-    public static var testnet: TONNetwork { TONNetwork(chainId: "-3") }
-}
+import Foundation
+import TONWalletKit
 
-extension TONNetwork: Hashable {
+extension TONUserFriendlyAddress: Equatable {
     
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(chainId)
-    }
-    
-    public static func == (lhs: TONNetwork, rhs: TONNetwork) -> Bool {
-        lhs.chainId == rhs.chainId
+    public static func == (lhs: TONUserFriendlyAddress, rhs: TONUserFriendlyAddress) -> Bool {
+        return lhs.value == rhs.value
     }
 }
