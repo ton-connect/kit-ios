@@ -28,20 +28,18 @@ import Foundation
 
 public class TONWalletConnectionRequest {
     let context: any JSDynamicObject
-    let event: TONConnectRequestEvent
     
-    public var dAppInfo: TONDAppInfo? { event.dAppInfo }
-    public var permissions: [TONConnectRequestEvent.Preview.ConnectPermission] { event.preview?.permissions ?? [] }
-    
+    public let event: TONConnectionRequestEvent
+
     init(
         context: any JSDynamicObject,
-        event: TONConnectRequestEvent
+        event: TONConnectionRequestEvent
     ) {
         self.context = context
         self.event = event
     }
     
-    public func approve(walletAddress: String) async throws {
+    public func approve(walletAddress: TONUserFriendlyAddress) async throws {
         var event = self.event
         event.walletAddress = walletAddress
         try await context.walletKit.approveConnectRequest(event)

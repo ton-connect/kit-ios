@@ -28,10 +28,8 @@ import Foundation
 
 public class TONWalletSignDataRequest {
     let context: any JSDynamicObject
-    let event: TONSignDataRequestEvent
     
-    public var dAppInfo: TONDAppInfo? { event.dAppInfo }
-    public var walletAddress: String? { event.walletAddress }
+    public let event: TONSignDataRequestEvent
     
     init(
         context: any JSDynamicObject,
@@ -41,7 +39,7 @@ public class TONWalletSignDataRequest {
         self.event = event
     }
     
-    public func approve() async throws -> TONWalletSignDataResponse {
+    public func approve() async throws -> TONSignDataApprovalResponse {
         try await context.walletKit.approveSignDataRequest(event)
     }
     

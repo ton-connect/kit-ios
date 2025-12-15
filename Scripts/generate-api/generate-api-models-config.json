@@ -3,7 +3,6 @@
   "useJsonEncodable": false,
   "useCustomDateWithoutTime": true,
   "useBacktickEscapes": true,
-  "readonlyProperties": true,
   "hashableModels": false,
   "swiftUseApiNamespace": false,
   "modelNamePrefix": "TON",

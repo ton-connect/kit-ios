@@ -30,12 +30,12 @@ public enum TONWalletKitEvent {
     case connectRequest(TONWalletConnectionRequest)
     case transactionRequest(TONWalletTransactionRequest)
     case signDataRequest(TONWalletSignDataRequest)
-    case disconnect(TONDisconnectEvent)
+    case disconnect(TONDisconnectionEvent)
     
     init(bridgeEvent: JSWalletKitSwiftBridgeEvent, context: any JSDynamicObject) throws {
         switch bridgeEvent.type {
         case .connectRequest:
-            let event: TONConnectRequestEvent = try bridgeEvent.value.decode()
+            let event: TONConnectionRequestEvent = try bridgeEvent.value.decode()
             self = .connectRequest(TONWalletConnectionRequest(context: context, event: event))
         case .transactionRequest:
             let event: TONTransactionRequestEvent = try bridgeEvent.value.decode()
@@ -44,7 +44,7 @@ public enum TONWalletKitEvent {
             let event: TONSignDataRequestEvent = try bridgeEvent.value.decode()
             self = .signDataRequest(TONWalletSignDataRequest(context: context, event: event))
         case .disconnect:
-            let event: TONDisconnectEvent = try bridgeEvent.value.decode()
+            let event: TONDisconnectionEvent = try bridgeEvent.value.decode()
             self = .disconnect(event)
         }
     }

@@ -28,9 +28,8 @@ import Foundation
 
 public class TONWalletTransactionRequest {
     let context: any JSDynamicObject
-    let event: TONTransactionRequestEvent
     
-    public var dAppInfo: TONDAppInfo? { event.dAppInfo }
+    public let event: TONTransactionRequestEvent
     
     init(
         context: any JSDynamicObject,
@@ -40,7 +39,7 @@ public class TONWalletTransactionRequest {
         self.event = event
     }
     
-    public func approve() async throws -> TONWalletTransactionResponse {
+    public func approve() async throws -> TONTransactionApprovalResponse {
         try await context.walletKit.approveTransactionRequest(event)
     }
     

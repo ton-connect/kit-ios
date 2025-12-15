@@ -41,7 +41,14 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     }
     
     @objc(getNetwork) func network() -> JSValue {
-        JSValue(object: walletAdapter.network().rawValue, in: context)
+        do {
+            guard let context else {
+                throw "Unable to resolve JS context"
+            }
+            return JSValue(object: try walletAdapter.network().encode(in: context), in: context)
+        } catch {
+            return JSValue(undefinedIn: context)
+        }
     }
     
     @objc(getAddress:) func address(options: JSValue) -> JSValue {
@@ -49,7 +56,7 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
         
         do {
             let address = try walletAdapter.address(testnet: options?.testnet == true)
-            return JSValue(object: address, in: context)
+            return JSValue(object: address.value, in: context)
         } catch {
             return JSValue(undefinedIn: context)
         }
@@ -75,7 +82,7 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
         let options: TONSignedSendTransactionAllOptions? = try? options.decode()
         
         do {
-            let input: TONConnectTransactionParamContent = try input.decode()
+            let input: TONTransactionRequest = try input.decode()
             
             return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
                 Task {
@@ -102,7 +109,7 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
         let options: TONSignedSendTransactionAllOptions? = try? options.decode()
         
         do {
-            let input: TONPrepareSignDataResult = try input.decode()
+            let input: TONPreparedSignData = try input.decode()
             
             return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
                 Task {
@@ -129,7 +136,7 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
         let options: TONSignedSendTransactionAllOptions? = try? options.decode()
         
         do {
-            let input: TONProofParsedMessage = try input.decode()
+            let input: TONProofMessage = try input.decode()
             
             return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
                 Task {

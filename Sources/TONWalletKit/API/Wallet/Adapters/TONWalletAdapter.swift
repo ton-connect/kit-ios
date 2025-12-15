@@ -40,15 +40,11 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
         return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
     }
     
-    func network() -> TONNetwork {
-        do {
-            return TONNetwork(rawValue: try jsWalletAdapter.getNetwork()) ?? .unknown
-        } catch {
-            return .unknown
-        }
+    func network() throws -> TONNetwork {
+        return try jsWalletAdapter.getNetwork()
     }
     
-    func address(testnet: Bool) throws -> String {
+    func address(testnet: Bool) throws -> TONUserFriendlyAddress {
         try jsWalletAdapter.getAddress(TONGetAddressOptions(testnet: testnet))
     }
     
@@ -56,7 +52,7 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
         TONBase64(base64Encoded: try await jsWalletAdapter.getStateInit())
     }
     
-    func signedSendTransaction(input: TONConnectTransactionParamContent, fakeSignature: Bool?) async throws -> TONBase64 {
+    func signedSendTransaction(input: TONTransactionRequest, fakeSignature: Bool?) async throws -> TONBase64 {
         TONBase64(
             base64Encoded: try await jsWalletAdapter.getSignedSendTransaction(
                 input,
@@ -65,7 +61,7 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
         )
     }
     
-    func signedSignData(input: TONPrepareSignDataResult, fakeSignature: Bool?) async throws -> TONHex {
+    func signedSignData(input: TONPreparedSignData, fakeSignature: Bool?) async throws -> TONHex {
         TONHex(
             hexString: try await jsWalletAdapter.getSignedSignData(
                 input,
@@ -74,7 +70,7 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
         )
     }
     
-    func signedTonProof(input: TONProofParsedMessage, fakeSignature: Bool?) async throws -> TONHex {
+    func signedTonProof(input: TONProofMessage, fakeSignature: Bool?) async throws -> TONHex {
         TONHex(
             hexString: try await jsWalletAdapter.getSignedTonProof(
                 input,

@@ -140,7 +140,7 @@ public class TONWalletKit {
         return wallets
     }
 
-    public func send(transaction: TONConnectTransactionParamContent, from wallet: any TONWalletProtocol) async throws {
+    public func send(transaction: TONTransactionRequest, from wallet: any TONWalletProtocol) async throws {
         try await walletKit.sendTransaction(TONEncodableWallet(wallet: wallet), transaction)
     }
         

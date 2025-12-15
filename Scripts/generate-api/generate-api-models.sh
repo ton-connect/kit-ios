@@ -34,7 +34,7 @@ OPENAPI_SPEC=$(pnpm generate-openapi-spec 2>&1 | grep 'OPENAPI_SPEC_PATH=' | cut
 
 OUTPUT_DIR="${SCRIPT_DIR}/generated/openapi"
 CONFIG_FILE="${SCRIPT_DIR}/generate-api-models-config.json"
-DEST_DIR="${PROJECT_ROOT}/Sources/TONWalletKit/API/Models/Generated"
+DEST_DIR="${PROJECT_ROOT}/Sources/TONWalletKit/API/Models/WalletKit"
 
 rm -rf "$DEST_DIR"
 
