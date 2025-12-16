@@ -78634,8 +78634,8 @@ class ApiClientToncenter {
     const userJettons = rawResponse.jetton_wallets.map((wallet) => {
       const jettonInfo = this.extractJettonInfoFromMetadata(wallet.jetton, rawResponse.metadata);
       const jetton = {
-        address: wallet.jetton,
-        walletAddress: wallet.address,
+        address: asAddressFriendly(wallet.jetton),
+        walletAddress: asAddressFriendly(wallet.address),
         balance: wallet.balance,
         info: {
           name: jettonInfo.name,
