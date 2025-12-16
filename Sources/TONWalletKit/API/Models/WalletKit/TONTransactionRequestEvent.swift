@@ -42,7 +42,7 @@ public struct TONTransactionRequestEvent: Codable {
     /** Whether the event originated from JS Bridge (injected provider) */
     public var isJsBridge: Bool?
     /** Browser tab ID for JS Bridge events */
-    public var tabId: Double?
+    public var tabId: String?
     /** Session identifier for the connection */
     public var sessionId: String?
     public var isLocal: Bool?
@@ -52,7 +52,7 @@ public struct TONTransactionRequestEvent: Codable {
     public var preview: TONTransactionRequestEventPreview
     public var request: TONTransactionRequest
 
-    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: Double? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil, preview: TONTransactionRequestEventPreview, request: TONTransactionRequest) {
+    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: String? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil, preview: TONTransactionRequestEventPreview, request: TONTransactionRequest) {
         self.id = id
         self.from = from
         self.walletAddress = walletAddress

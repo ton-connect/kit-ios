@@ -31525,7 +31525,7 @@ function toTransactionRequest(params) {
     messages: params.messages.map(toTransactionRequestMessage),
     network: params.network ? { chainId: params.network } : void 0,
     validUntil: params.valid_until,
-    fromAddress: params.from
+    fromAddress: asMaybeAddressFriendly(params.from) || void 0
   };
 }
 function toConnectTransactionParamContent(request) {
@@ -36953,7 +36953,7 @@ function processToncenterMoneyFlow(emulation) {
     inputs,
     allJettonTransfers: jettonTransfers,
     ourTransfers: selfTransfers,
-    ourAddress: ourAddress.toRawString().toUpperCase()
+    ourAddress: ourAddress.toString()
   };
 }
 async function createTransactionPreview(request, wallet) {
@@ -55148,7 +55148,7 @@ class SignDataHandler extends BasicHandler {
       }
       return {
         network: parsed.network ? Network.custom(parsed.network) : void 0,
-        fromAddress: parsed.from,
+        fromAddress: asMaybeAddressFriendly(parsed.from) ?? void 0,
         data: signData
       };
     } catch (error2) {
@@ -56298,7 +56298,7 @@ class StorageEventStore {
   /**
    * Attempt to acquire exclusive lock on an event for processing
    */
-  async acquireLock(eventId, walletAddress) {
+  async acquireLock(eventId, walletId) {
     return this.withLock("storage", async () => {
       const allEvents = await this.getAllEventsFromStorage();
       const event = allEvents[eventId];
@@ -56318,11 +56318,11 @@ class StorageEventStore {
         ...event,
         status: "processing",
         processingStartedAt: Date.now(),
-        lockedBy: walletAddress
+        lockedBy: walletId
       };
       allEvents[eventId] = updatedEvent;
       await this.storage.set(this.storageKey, allEvents);
-      log$b.debug("Event lock acquired", { eventId, walletAddress });
+      log$b.debug("Event lock acquired", { eventId, walletAddress: walletId });
       return updatedEvent;
     });
   }
@@ -81913,7 +81913,7 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
         console.log("✅ Bridge: Approving sign data request:", request);
         try {
-          const result = yield walletKit.signDataRequest(request);
+          const result = yield walletKit.approveSignDataRequest(request);
           console.log("✅ Sign data request approved:", result);
           return result;
         } catch (error2) {
