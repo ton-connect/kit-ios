@@ -109,6 +109,7 @@ public class TONWalletKit {
         
         return TONWallet(
             jsWallet: wallet,
+            id: try await wallet.getWalletId(),
             address: try TONUserFriendlyAddress(value: address)
         )
     }
@@ -118,6 +119,7 @@ public class TONWalletKit {
         
         return TONWallet(
             jsWallet: wallet,
+            id: try wallet.getWalletId(),
             address: address,
         )
     }
@@ -130,9 +132,11 @@ public class TONWalletKit {
         
         for jsWallet in jsWallets {
             let address: String = try await jsWallet.getAddress()
+            let id: String = try await jsWallet.getWalletId()
             
             let wallet = TONWallet(
                 jsWallet: jsWallet,
+                id: id,
                 address: try TONUserFriendlyAddress(value: address)
             )
             wallets.append(wallet)

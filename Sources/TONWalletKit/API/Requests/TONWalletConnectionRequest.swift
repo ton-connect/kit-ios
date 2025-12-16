@@ -39,9 +39,10 @@ public class TONWalletConnectionRequest {
         self.event = event
     }
     
-    public func approve(walletAddress: TONUserFriendlyAddress) async throws {
+    public func approve(wallet: any TONWalletProtocol) async throws {
         var event = self.event
-        event.walletAddress = walletAddress
+        event.walletId = wallet.id
+        event.walletAddress = wallet.address
         try await context.walletKit.approveConnectRequest(event)
     }
     

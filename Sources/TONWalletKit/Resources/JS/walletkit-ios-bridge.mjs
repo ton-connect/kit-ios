@@ -29016,7 +29016,7 @@ function parseWalletId(walletId) {
     return void 0;
   }
   const networkStr = walletId.substring(0, colonIndex);
-  const address = walletId.substring(colonIndex + 1);
+  const address = asMaybeAddressFriendly(walletId.substring(colonIndex + 1));
   if (networkStr !== CHAIN.MAINNET && networkStr !== CHAIN.TESTNET) {
     return void 0;
   }
@@ -29030,7 +29030,7 @@ function parseWalletId(walletId) {
 }
 function getAddressFromWalletId(walletId) {
   const parsed = parseWalletId(walletId);
-  return parsed?.address ?? walletId;
+  return parsed?.address;
 }
 globalLogger.createChild("WalletManager");
 class WalletManager {

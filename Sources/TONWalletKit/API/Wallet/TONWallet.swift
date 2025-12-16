@@ -28,15 +28,18 @@ import Foundation
 import BigInt
 
 public class TONWallet: TONWalletProtocol {
+    public let id: String
     public let address: TONUserFriendlyAddress
 
     let jsWallet: any JSDynamicObject
 
     init(
         jsWallet: any JSDynamicObject,
+        id: String,
         address: TONUserFriendlyAddress
     ) {
         self.jsWallet = jsWallet
+        self.id = id
         self.address = address
     }
     

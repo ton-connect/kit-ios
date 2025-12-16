@@ -124,7 +124,7 @@ struct WalletsListView: View {
                     rootView: WalletConnectionRequestView(
                         viewModel: .init(
                             request: connectRequest,
-                            walletsAddresses: viewModel.wallets.map { $0.address}
+                            wallets: viewModel.wallets.map { $0.tonWallet}
                         )
                     )
                     .presentationDragIndicator(.visible)
