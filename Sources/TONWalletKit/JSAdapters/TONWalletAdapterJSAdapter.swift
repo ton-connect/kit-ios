@@ -40,6 +40,14 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
         JSValue(object: walletAdapter.publicKey().value, in: context)
     }
     
+    @objc(getWalletId) func identifier() -> JSValue {
+        do {
+            return JSValue(object: try walletAdapter.identifier(), in: context)
+        } catch {
+            return JSValue(undefinedIn: context)
+        }
+    }
+    
     @objc(getNetwork) func network() -> JSValue {
         do {
             guard let context else {

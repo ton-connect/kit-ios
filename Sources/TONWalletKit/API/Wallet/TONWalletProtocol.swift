@@ -28,6 +28,7 @@ import Foundation
 
 public protocol TONWalletAdapterProtocol: AnyObject {
 
+    func identifier() throws -> String
     func publicKey() -> TONHex
     func network() throws -> TONNetwork
     func address(testnet: Bool) throws -> TONUserFriendlyAddress

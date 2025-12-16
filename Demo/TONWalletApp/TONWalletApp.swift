@@ -62,9 +62,13 @@ extension TONWalletKit {
             return _mainnet
         }
         let bridgeURL = "https://bridge.tonapi.io/bridge"
-        
-        let configuration = TONWalletKitConfiguration(
+        let apiClient = TONWalletKitConfiguration.APIClient(key: "25a9b2326a34b39a5fa4b264fb78fb4709e1bd576fc5e6b176639f5b71e94b0d")
+        let mainNetworkConfiguration = TONWalletKitConfiguration.NetworkConfiguration(
             network: .mainnet,
+            apiClient: apiClient
+        )
+        let configuration = TONWalletKitConfiguration(
+            networkConfigurations: [mainNetworkConfiguration],
             walletManifest: TONWalletKitConfiguration.Manifest(
                 name: "WalletKitDemoWallet",
                 appName: "wallet_kit_demo_wallet",
@@ -74,7 +78,6 @@ extension TONWalletKit {
                 bridgeUrl: bridgeURL
             ),
             bridge: TONWalletKitConfiguration.Bridge(bridgeUrl: bridgeURL, webViewInjectionKey: "walletKitDemoWallet"),
-            apiClient: TONWalletKitConfiguration.APIClient(key: "25a9b2326a34b39a5fa4b264fb78fb4709e1bd576fc5e6b176639f5b71e94b0d"),
             features: [
                 TONWalletKitConfiguration.SendTransactionFeature(maxMessages: 1),
                 TONWalletKitConfiguration.SignDataFeature(types: [.text, .binary, .cell]),
