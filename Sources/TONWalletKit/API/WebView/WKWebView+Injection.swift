@@ -95,7 +95,11 @@ private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHan
     ) {
         let domain = message.frameInfo.request.url.flatMap {
             let components = URLComponents(url: $0, resolvingAgainstBaseURL: false)
-            return components?.host
+            var normalizedComponents = URLComponents()
+            normalizedComponents.scheme = components?.scheme
+            normalizedComponents.host = components?.host
+            normalizedComponents.port = components?.port
+            return normalizedComponents.url?.absoluteString
         }
         
         let messageID = UUID().uuidString

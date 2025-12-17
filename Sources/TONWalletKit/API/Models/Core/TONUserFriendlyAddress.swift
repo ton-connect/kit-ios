@@ -142,7 +142,11 @@ public struct TONUserFriendlyAddress: Codable, Hashable {
     }
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(value)
+        hasher.combine(raw.hash)
+    }
+    
+    public static func == (lhs: TONUserFriendlyAddress, rhs: TONUserFriendlyAddress) -> Bool {
+        return lhs.raw == rhs.raw
     }
 }
 
