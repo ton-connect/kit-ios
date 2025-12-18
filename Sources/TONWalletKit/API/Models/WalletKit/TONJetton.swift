@@ -37,15 +37,21 @@ public struct TONJetton: Codable {
     public var info: TONTokenInfo
     /** The number of decimal places used by the token */
     public var decimalsNumber: Int?
+    /** Indicates if the jetton is verified */
+    public var isVerified: Bool
+    /** Current prices of the jetton in various currencies */
+    public var prices: [TONJettonPrice]
     /** Additional arbitrary data related to the jetton */
     public var extra: [String: AnyCodable]?
 
-    public init(address: TONUserFriendlyAddress, walletAddress: TONUserFriendlyAddress, balance: TONTokenAmount, info: TONTokenInfo, decimalsNumber: Int? = nil, extra: [String: AnyCodable]? = nil) {
+    public init(address: TONUserFriendlyAddress, walletAddress: TONUserFriendlyAddress, balance: TONTokenAmount, info: TONTokenInfo, decimalsNumber: Int? = nil, isVerified: Bool, prices: [TONJettonPrice], extra: [String: AnyCodable]? = nil) {
         self.address = address
         self.walletAddress = walletAddress
         self.balance = balance
         self.info = info
         self.decimalsNumber = decimalsNumber
+        self.isVerified = isVerified
+        self.prices = prices
         self.extra = extra
     }
 
@@ -55,6 +61,8 @@ public struct TONJetton: Codable {
         case balance
         case info
         case decimalsNumber
+        case isVerified
+        case prices
         case extra
     }
 
@@ -67,6 +75,8 @@ public struct TONJetton: Codable {
         try container.encode(balance, forKey: .balance)
         try container.encode(info, forKey: .info)
         try container.encodeIfPresent(decimalsNumber, forKey: .decimalsNumber)
+        try container.encode(isVerified, forKey: .isVerified)
+        try container.encode(prices, forKey: .prices)
         try container.encodeIfPresent(extra, forKey: .extra)
     }
 }

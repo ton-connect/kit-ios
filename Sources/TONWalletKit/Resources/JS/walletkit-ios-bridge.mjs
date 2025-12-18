@@ -27194,12 +27194,8 @@ function asAddressFriendly(data) {
     return data.toString();
   }
   try {
-    if (data) {
-      if (distExports$3.Address.isFriendly(data)) {
-        return distExports$3.Address.parseFriendly(data).address.toString();
-      }
+    if (data)
       return distExports$3.Address.parse(data).toString();
-    }
   } catch {
   }
   throw new Error(`Can not convert to AddressFriendly from "${data}"`);
@@ -75958,7 +75954,8 @@ class WalletNftClass {
     })).endCell();
     const message = {
       address: nftTransferMessage.nftAddress,
-      amount: nftTransferMessage.transferAmount.toString(),
+      amount: nftTransferMessage.transferAmount?.toString() ?? "100000000",
+      // Default 0.1 TON
       payload: nftPayload.toBoc().toString("base64"),
       stateInit: void 0,
       extraCurrency: void 0,
@@ -80133,6 +80130,9 @@ class ApiClientToncenter {
     return this.mapToResponseUserJettons(rawResponse);
   }
   mapToResponseUserJettons(rawResponse) {
+    const verifiedJettonsMasters = /* @__PURE__ */ new Set([
+      "0:B113A994B5024A16719F69139328EB759596C38A25F59028B146FECDC3621DFE"
+    ]);
     const userJettons = rawResponse.jetton_wallets.map((wallet) => {
       const jettonInfo = this.extractJettonInfoFromMetadata(wallet.jetton, rawResponse.metadata);
       const jetton = {
@@ -80148,7 +80148,15 @@ class ApiClientToncenter {
           },
           symbol: jettonInfo.symbol
         },
-        decimalsNumber: jettonInfo.decimals
+        decimalsNumber: jettonInfo.decimals,
+        // For future use, currently prices are not provided by toncenter
+        prices: [
+          {
+            value: "0",
+            currency: "USD"
+          }
+        ],
+        isVerified: verifiedJettonsMasters.has(wallet.jetton)
         // ????
         // extra: rawResponse.metadata[wallet.jetton]?.token_info,
       };
