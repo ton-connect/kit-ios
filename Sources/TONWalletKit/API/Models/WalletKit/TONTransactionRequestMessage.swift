@@ -31,7 +31,8 @@ import BigInt
 
 public struct TONTransactionRequestMessage: Codable {
 
-    public var address: TONUserFriendlyAddress
+    /** Recipient wallet address in format received from caller (raw, user friendly) */
+    public var address: String
     public var amount: TONTokenAmount
     public var mode: TONSendMode?
     /** Map of extra currency IDs to their amounts. Extra currencies are additional tokens that can be attached to TON messages. */
@@ -39,7 +40,7 @@ public struct TONTransactionRequestMessage: Codable {
     public var stateInit: TONBase64?
     public var payload: TONBase64?
 
-    public init(address: TONUserFriendlyAddress, amount: TONTokenAmount, mode: TONSendMode? = nil, extraCurrency: [String: String]? = nil, stateInit: TONBase64? = nil, payload: TONBase64? = nil) {
+    public init(address: String, amount: TONTokenAmount, mode: TONSendMode? = nil, extraCurrency: [String: String]? = nil, stateInit: TONBase64? = nil, payload: TONBase64? = nil) {
         self.address = address
         self.amount = amount
         self.mode = mode

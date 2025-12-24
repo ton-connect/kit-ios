@@ -36,9 +36,10 @@ public struct TONTransactionRequest: Codable {
     public var network: TONNetwork?
     /** Unix timestamp after which the transaction becomes invalid */
     public var validUntil: Double?
-    public var fromAddress: TONUserFriendlyAddress?
+    /** Sender wallet address in received format(raw, user friendly) */
+    public var fromAddress: String?
 
-    public init(messages: [TONTransactionRequestMessage], network: TONNetwork? = nil, validUntil: Double? = nil, fromAddress: TONUserFriendlyAddress? = nil) {
+    public init(messages: [TONTransactionRequestMessage], network: TONNetwork? = nil, validUntil: Double? = nil, fromAddress: String? = nil) {
         self.messages = messages
         self.network = network
         self.validUntil = validUntil

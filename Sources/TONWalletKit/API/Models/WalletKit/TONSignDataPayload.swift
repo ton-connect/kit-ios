@@ -32,10 +32,11 @@ import BigInt
 public struct TONSignDataPayload: Codable {
 
     public var network: TONNetwork?
-    public var fromAddress: TONUserFriendlyAddress?
+    /** Optional sender address in received format (raw, user friendly) */
+    public var fromAddress: String?
     public var data: TONSignData
 
-    public init(network: TONNetwork? = nil, fromAddress: TONUserFriendlyAddress? = nil, data: TONSignData) {
+    public init(network: TONNetwork? = nil, fromAddress: String? = nil, data: TONSignData) {
         self.network = network
         self.fromAddress = fromAddress
         self.data = data
