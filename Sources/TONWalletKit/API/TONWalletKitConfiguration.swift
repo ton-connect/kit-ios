@@ -31,20 +31,18 @@ import UIKit
 #endif
 
 public struct TONWalletKitConfiguration: Encodable, Hashable {
-    let network: TONNetwork
+    let networkConfigurations: [NetworkConfiguration]
     let deviceInfo: DeviceInfo
     let walletManifest: Manifest
     let bridge: Bridge?
-    let apiClient: APIClient?
     
     public init(
-        network: TONNetwork,
+        networkConfigurations: Set<NetworkConfiguration>,
         walletManifest: Manifest,
         bridge: Bridge?,
-        apiClient: APIClient? = nil,
         features: [any Feature],
     ) {
-        self.network = network
+        self.networkConfigurations = Array(networkConfigurations)
         
         let rawFeatures = features.compactMap(\.raw)
         
@@ -58,27 +56,38 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
         
         self.walletManifest = manifest
         self.bridge = bridge
-        self.apiClient = apiClient
     }
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(network)
+        hasher.combine(networkConfigurations)
         hasher.combine(deviceInfo)
         hasher.combine(walletManifest)
         hasher.combine(bridge)
-        hasher.combine(apiClient)
     }
     
     enum CodingKeys: CodingKey {
-        case network
+        case networkConfigurations
         case deviceInfo
         case walletManifest
         case bridge
-        case apiClient
     }
 }
 
 extension TONWalletKitConfiguration {
+    
+    public struct NetworkConfiguration: Codable, Hashable {
+        let network: TONNetwork
+        let apiClient: APIClient?
+        
+        public init(network: TONNetwork, apiClient: APIClient?) {
+            self.network = network
+            self.apiClient = apiClient
+        }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(network)
+        }
+    }
     
     struct DeviceInfo: Codable, Hashable {
         let platform: String
@@ -159,7 +168,7 @@ extension TONWalletKitConfiguration {
         }
     }
     
-    public struct APIClient: Encodable, Hashable {
+    public struct APIClient: Codable, Hashable {
         let url: URL?
         let key: String
         

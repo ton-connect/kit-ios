@@ -33,15 +33,15 @@ struct WalletNFTsListItem: Identifiable {
     let address: String
     let imageURL: URL?
     
-    let tonNFT: TONNFTItem
+    let tonNFT: TONNFT
     let wallet: TONWalletProtocol
     
-    init(nft: TONNFTItem, wallet: TONWalletProtocol) {
+    init(nft: TONNFT, wallet: TONWalletProtocol) {
         self.tonNFT = nft
         
-        self.name = nft.metadata?.name ?? "Unknown NFT"
-        self.address = nft.address
-        self.imageURL = nft.metadata?.image.flatMap { URL(string: $0) }
+        self.name = nft.info?.name ?? "Unknown NFT"
+        self.address = nft.address.value
+        self.imageURL = nft.info?.image.flatMap { $0.url }
         self.wallet = wallet
     }
 }

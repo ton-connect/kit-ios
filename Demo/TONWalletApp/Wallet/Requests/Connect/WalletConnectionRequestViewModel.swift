@@ -35,16 +35,16 @@ class WalletConnectionRequestViewModel: ObservableObject {
     let wallets: [SelectableWallet]
     private let request: TONWalletConnectionRequest
     
-    var dAppInfo: TONDAppInfo? { request.dAppInfo }
-    var permissions: [TONConnectRequestEvent.Preview.ConnectPermission] { request.permissions }
+    var dAppInfo: TONDAppInfo? { request.event.preview.dAppInfo }
+    var permissions: [TONConnectionRequestEventPreviewPermission] { request.event.preview.permissions }
     
     let dismiss = PassthroughSubject<Void, Never>()
     
-    init(request: TONWalletConnectionRequest, walletsAddresses: [String]) {
+    init(request: TONWalletConnectionRequest, wallets: [any TONWalletProtocol]) {
         self.request = request
-        self.wallets = walletsAddresses.map { SelectableWallet(address: $0) }
+        self.wallets = wallets.map { SelectableWallet(wallet: $0) }
         
-        self.selectedWallet = wallets.first
+        self.selectedWallet = self.wallets.first
     }
 
     func approve() {
@@ -52,11 +52,9 @@ class WalletConnectionRequestViewModel: ObservableObject {
             return
         }
         
-        let address = selectedWallet.address
-        
         Task {
             do {
-                try await request.approve(walletAddress: address)
+                try await request.approve(wallet: selectedWallet.wallet)
                 dismiss.send()
             } catch {
                 debugPrint(error.localizedDescription)
@@ -80,10 +78,11 @@ extension WalletConnectionRequestViewModel {
     
     struct SelectableWallet: Identifiable {
         let id = UUID()
-        let address: String
+        let wallet: any TONWalletProtocol
+        var address: String { wallet.address.value }
         
-        init(address: String) {
-            self.address = address
+        init(wallet: any TONWalletProtocol) {
+            self.wallet = wallet
         }
     }
 }

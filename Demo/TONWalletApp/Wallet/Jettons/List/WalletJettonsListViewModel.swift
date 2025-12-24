@@ -49,13 +49,14 @@ final class WalletJettonsListViewModel: ObservableObject {
         state = .loading
         
         do {
-            let jettons = try await wallet.jettons(limit: TONLimitRequest(limit: limit))
+            let request = TONJettonsRequest(pagination: TONPagination(limit: limit))
+            let response = try await wallet.jettons(request: request)
             
-            if jettons.items.isEmpty {
+            if response.jettons.isEmpty {
                 state = .empty
             } else {
-                canLoadMore = jettons.items.count == limit
-                self.jettons = jettons.items.map { WalletJettonsListItem(jetton: $0, wallet: wallet) }
+                canLoadMore = response.jettons.count == limit
+                self.jettons = response.jettons.map { WalletJettonsListItem(jetton: $0, wallet: wallet) }
                 state = self.jettons.isEmpty ? .empty : .jettons
             }
         } catch {
@@ -73,9 +74,10 @@ final class WalletJettonsListViewModel: ObservableObject {
             guard let self = self else { return }
             
             do {
-                let jettons = try await wallet.jettons(limit: TONLimitRequest(limit: limit, offset: jettons.count))
+                let request = TONJettonsRequest(pagination: TONPagination(limit: limit, offset: jettons.count))
+                let response = try await wallet.jettons(request: request)
                 
-                let newJettonItems = jettons.items.map { jetton in
+                let newJettonItems = response.jettons.map { jetton in
                     WalletJettonsListItem(jetton: jetton, wallet: self.wallet)
                 }
                 

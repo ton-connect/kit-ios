@@ -26,7 +26,7 @@
 
 import Foundation
 
-public struct TONRawAddress: Codable {
+public struct TONRawAddress: Codable, Hashable {
     public let workchain: Int8
     public let hash: Data
 

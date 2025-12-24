@@ -27,20 +27,22 @@
 import Foundation
 import BigInt
 
-extension TONConnectTransactionParamContent: JSValueDecodable {}
-extension TONTransactionPreview: JSValueDecodable {}
-extension TONNFTItems: JSValueDecodable {}
-extension TONNFTItem: JSValueDecodable {}
-extension TONPrepareSignDataResult: JSValueDecodable {}
-extension TONProofParsedMessage: JSValueDecodable {}
-extension TONWalletTransactionResponse: JSValueDecodable {}
-extension TONWalletSignDataResponse: JSValueDecodable {}
-extension TONConnectRequestEvent: JSValueDecodable {}
+extension TONTransactionRequest: JSValueDecodable {}
+extension TONTransactionTrace: JSValueDecodable {}
+extension TONNFTsResponse: JSValueDecodable {}
+extension TONNFT: JSValueDecodable {}
+extension TONPreparedSignData: JSValueDecodable {}
+extension TONProofMessage: JSValueDecodable {}
+extension TONTransactionApprovalResponse: JSValueDecodable {}
+extension TONSignDataApprovalResponse: JSValueDecodable {}
+extension TONConnectionRequestEvent: JSValueDecodable {}
 extension TONSignDataRequestEvent: JSValueDecodable {}
 extension TONTransactionRequestEvent: JSValueDecodable {}
-extension TONDisconnectEvent: JSValueDecodable {}
+extension TONDisconnectionEvent: JSValueDecodable {}
 extension TONJetton: JSValueDecodable {}
-extension TONJettons: JSValueDecodable {}
+extension TONJettonsResponse: JSValueDecodable {}
+extension TONNetwork: JSValueDecodable {}
+extension TONTransactionEmulatedPreview: JSValueDecodable {}
 
 extension TONBalance: JSValueDecodable {
     
@@ -54,24 +56,35 @@ extension TONBalance: JSValueDecodable {
     }
 }
 
-extension TONTransferMessage: JSValueEncodable {}
-extension TONTransferManyParams: JSValueEncodable {}
-extension TONConnectTransactionParamContent: JSValueEncodable {}
-extension TONNFTTransferParamsHuman: JSValueEncodable {}
-extension TONNFTTransferParamsRaw: JSValueEncodable {}
-extension TONLimitRequest: JSValueEncodable {}
-extension TONJettonTransferParams: JSValueEncodable {}
+extension TONUserFriendlyAddress: JSValueDecodable {
+    
+    static func from(_ value: JSValue) throws -> Self? {
+        let stringValue: String = try value.decode()
+        
+        return try TONUserFriendlyAddress(value: stringValue)
+    }
+}
+
+extension TONNetwork: JSValueEncodable {}
+extension TONNFTsRequest: JSValueEncodable {}
+extension TONJettonsTransferRequest: JSValueEncodable {}
+extension TONTransferRequest: JSValueEncodable {}
+extension TONTransactionRequest: JSValueEncodable {}
+extension TONNFTTransferRequest: JSValueEncodable {}
+extension TONNFTRawTransferRequest: JSValueEncodable {}
+extension TONPagination: JSValueEncodable {}
+extension TONJettonsRequest: JSValueEncodable {}
 extension TONV4R2WalletParameters: JSValueEncodable {}
 extension TONV5R1WalletParameters: JSValueEncodable {}
-extension TONConnectRequestEvent: JSValueEncodable {}
+extension TONConnectionRequestEvent: JSValueEncodable {}
 extension TONSignDataRequestEvent: JSValueEncodable {}
 extension TONTransactionRequestEvent: JSValueEncodable {}
-extension TONDisconnectEvent: JSValueEncodable {}
+extension TONDisconnectionEvent: JSValueEncodable {}
 extension TONWalletKitConfiguration: JSValueEncodable {}
 extension TONBridgeEventMessage: JSValueEncodable {}
 extension TONBridgeInjectOptions: JSValueEncodable {}
-extension TONPrepareSignDataResult: JSValueEncodable {}
-extension TONProofParsedMessage: JSValueEncodable {}
+extension TONPreparedSignData: JSValueEncodable {}
+extension TONProofMessage: JSValueEncodable {}
 
 extension TONBalance: JSValueEncodable {
     

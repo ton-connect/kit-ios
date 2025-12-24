@@ -46,7 +46,7 @@ struct WalletDAppDisconnectionView: View {
 }
 
 private struct DisconnectEventView: View {
-    let event: TONDisconnectEvent
+    let event: TONDisconnectionEvent
     
     let onDismiss: (() -> Void)?
     
@@ -58,7 +58,7 @@ private struct DisconnectEventView: View {
                     .textSM()
                     .foregroundColor(Color.TON.yellow800)
                 
-                Text(event.walletAddress ?? "")
+                Text(event.walletAddress?.value ?? "")
                     .textXS()
                     .foregroundColor(Color.TON.yellow700)
             }

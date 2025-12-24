@@ -48,10 +48,10 @@ class AddWalletViewModel: ObservableObject {
     func add() async -> TONWalletProtocol? {
         isAdding = true
         
-        let data = TONWalletData(
-            mnemonic: mnemonic,
+        let data = WalletData(
             name: "Test",
-            network: .mainnet,
+            mnemonic: mnemonic.value,
+            network: TONNetwork.mainnet.chainId,
             version: .v5r1
         )
         

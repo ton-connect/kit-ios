@@ -30,7 +30,7 @@ private let bounceableTag: UInt8 = 0x11
 private let nonBounceableTag: UInt8 = 0x51
 private let testFlag: UInt8 = 0x80
 
-public struct TONUserFriendlyAddress: Codable {
+public struct TONUserFriendlyAddress: Codable, Hashable {
     public let isTestnetOnly: Bool
     public let isBounceable: Bool
     
@@ -139,6 +139,14 @@ public struct TONUserFriendlyAddress: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(value)
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(raw.hash)
+    }
+    
+    public static func == (lhs: TONUserFriendlyAddress, rhs: TONUserFriendlyAddress) -> Bool {
+        return lhs.raw == rhs.raw
     }
 }
 
