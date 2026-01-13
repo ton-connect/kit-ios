@@ -114,13 +114,14 @@ public class TONWalletKit {
         )
     }
     
-    public func wallet(address: TONUserFriendlyAddress) throws -> any TONWalletProtocol {
-        let wallet: JSValue = try walletKit.getWallet(address.value)
+    public func wallet(id: String) throws -> any TONWalletProtocol {
+        let wallet: JSValue = try walletKit.getWallet(id)
+        let address: String = try wallet.getAddress()
         
         return TONWallet(
             jsWallet: wallet,
-            id: try wallet.getWalletId(),
-            address: address,
+            id: id,
+            address: try TONUserFriendlyAddress(value: address),
         )
     }
     
