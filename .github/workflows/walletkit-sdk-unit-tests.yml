@@ -18,8 +18,5 @@ jobs:
       with:
         swift-version: "5.10.1"
 
-    - name: Build
-      run: swift build -v
-
     - name: Run tests
       run: swift test -v
