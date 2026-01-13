@@ -16,7 +16,7 @@ jobs:
     - name: Setup Swift
       uses: swift-actions/setup-swift@v3
       with:
-        swift-version: "5.10"
+        swift-version: "5.10.1"
 
     - name: Build
       run: swift build -v
