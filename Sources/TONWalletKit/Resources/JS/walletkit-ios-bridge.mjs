@@ -31451,6 +31451,7 @@ class ConnectHandler extends BasicHandler {
       manifestFetchErrorCode: manifestFetchErrorCode ?? void 0
     };
   }
+  static MANIFEST_PROXY_URL = "https://walletbot.me/tonconnect-proxy/";
   /**
    * Fetch manifest from URL
    */
@@ -31469,8 +31470,17 @@ class ConnectHandler extends BasicHandler {
         manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_NOT_FOUND_ERROR
       };
     }
+    const directResult = await this.tryFetchManifest(manifestUrl);
+    if (directResult.manifest) {
+      return directResult;
+    }
+    log$g.info("Direct manifest fetch failed, trying proxy", { manifestUrl });
+    const proxyUrl = `${ConnectHandler.MANIFEST_PROXY_URL}${manifestUrl}`;
+    return this.tryFetchManifest(proxyUrl);
+  }
+  async tryFetchManifest(url) {
     try {
-      const response = await fetch(manifestUrl);
+      const response = await fetch(url);
       if (!response.ok) {
         return {
           manifest: null,
@@ -36798,63 +36808,9 @@ function toTransactionTraceActionTONTransferDetails(details) {
   };
 }
 const TON_PROXY_ADDRESSES = [
-  "0:8CDC1D7640AD5EE326527FC1AD0514F468B30DC84B0173F0E155F451B4E11F7C",
-  "0:671963027F7F85659AB55B821671688601CDCF1EE674FC7FBBB1A776A18D34A3"
+  "EQCM3B12QK1e4yZSf8GtBRT0aLMNyEsBc_DhVfRRtOEffLez",
+  "EQBnGWMCf3-FZZq1W4IWcWiGAc3PHuZ0_H-7sad2oY00o83S"
 ];
-function createToncenterMessage(walletAddress, messages) {
-  return {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from: walletAddress,
-      valid_until: Math.floor(Date.now() / 1e3) + 60,
-      include_code_data: true,
-      include_address_book: true,
-      include_metadata: true,
-      with_actions: true,
-      messages: messages.map((m2) => ({
-        address: m2.address,
-        amount: m2.amount,
-        payload: m2.payload,
-        stateInit: m2.stateInit,
-        extraCurrency: m2.extraCurrency,
-        mode: m2.mode ? SendModeToValue(m2.mode) : void 0
-      }))
-    })
-  };
-}
-class FetchToncenterEmulationError extends Error {
-  response;
-  constructor(message, response) {
-    super(message);
-    this.name = "fetchToncenterEmulationError";
-    this.response = response;
-  }
-}
-async function fetchToncenterEmulation(message) {
-  const response = await fetch("https://toncenter.com/api/emulate/v1/emulateTonConnect", message);
-  if (!response.ok) {
-    try {
-      const errorMessage = await response.json();
-      if (errorMessage.error === "Failed to fetch account state: Account not found in accounts_dict") {
-        return {
-          result: "error",
-          emulationError: {
-            code: ERROR_CODES.ACCOUNT_NOT_FOUND,
-            message: "Account not found"
-          }
-        };
-      }
-    } catch (_) {
-      throw new FetchToncenterEmulationError("Failed to fetch toncenter emulation result", response);
-    }
-    throw new FetchToncenterEmulationError("Failed to fetch toncenter emulation result", response);
-  }
-  const result = await response.json();
-  return { result: "success", emulationResult: result };
-}
 function processToncenterMoneyFlow(emulation) {
   if (!emulation || !emulation.transactions) {
     return {
@@ -36953,11 +36909,20 @@ function processToncenterMoneyFlow(emulation) {
     ourAddress: asAddressFriendly(ourAddress)
   };
 }
-async function createTransactionPreview(request, wallet) {
-  const message = createToncenterMessage(wallet?.getAddress(), request.messages);
+async function createTransactionPreview(client, request, wallet) {
+  const txData = await wallet?.getSignedSendTransaction(request, { fakeSignature: true });
+  if (!txData) {
+    return {
+      result: Result$1.failure,
+      error: {
+        code: ERROR_CODES.UNKNOWN_EMULATION_ERROR,
+        message: "Unknown emulation error"
+      }
+    };
+  }
   let emulationResult;
   try {
-    const emulatedResult = await CallForSuccess(() => fetchToncenterEmulation(message));
+    const emulatedResult = await CallForSuccess(() => client.fetchEmulation(txData, true));
     if (emulatedResult.result === "success") {
       emulationResult = emulatedResult.emulationResult;
     } else {
@@ -37040,7 +37005,7 @@ class TransactionHandler extends BasicHandler {
     const request = requestValidation.result;
     let preview;
     try {
-      preview = await CallForSuccess(() => createTransactionPreview(request, wallet));
+      preview = await CallForSuccess(() => createTransactionPreview(wallet.client, request, wallet));
       if (preview.result === Result$1.success && preview.trace) {
         try {
           this.eventEmitter.emit("emulation:result", preview.trace);
@@ -56828,10 +56793,6 @@ class StorageEventProcessor {
 }
 const log$9 = globalLogger.createChild("WalletTonClass");
 class WalletTonClass {
-  client;
-  constructor(client) {
-    this.client = client;
-  }
   async createTransferTonTransaction(param) {
     if (!isValidAddress(param.recipientAddress)) {
       throw new Error(`Invalid to address: ${param.recipientAddress}`);
@@ -56896,7 +56857,7 @@ class WalletTonClass {
   }
   async getTransactionPreview(param) {
     const transaction = await param;
-    const preview = await CallForSuccess(() => createTransactionPreview(transaction, this));
+    const preview = await CallForSuccess(() => createTransactionPreview(this.client, transaction, this));
     return preview;
   }
   async sendTransaction(request) {
@@ -61020,20 +60981,20 @@ class ApiClientToncenter {
     const formattedResponse = toNftItemsResponse(response);
     return formattedResponse;
   }
-  async fetchEmulation(address, messages, seqno) {
+  async fetchEmulation(messageBoc, ignoreSignature) {
     const props = {
-      from: address,
-      valid_until: Math.floor(Date.now() / 1e3) + 60,
+      boc: messageBoc,
+      ignore_chksig: ignoreSignature === true,
       include_code_data: true,
       include_address_book: true,
       include_metadata: true,
-      with_actions: true,
-      messages: messages.map(toConnectTransactionParamMessage)
+      with_actions: true
     };
-    if (typeof seqno === "number")
-      props.mc_block_seqno = seqno;
-    const response = await this.postJson("/api/v3/emulation", props);
-    return toTransactionEmulatedTrace(response);
+    const response = await this.postJson("/api/emulate/v1/emulateTrace", props);
+    return {
+      result: "success",
+      emulationResult: response
+    };
   }
   async sendBoc(boc) {
     if (this.disableNetworkSend) {
