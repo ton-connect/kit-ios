@@ -10,7 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Default walletkit folder name (in project root)
-WALLETKIT_FOLDER="$PROJECT_ROOT/walletkit"
+WALLETKIT_FOLDER="$PROJECT_ROOT/walletkit-git"
 REPO_URL="https://github.com/ton-connect/kit.git"
 BRANCH="main"
 

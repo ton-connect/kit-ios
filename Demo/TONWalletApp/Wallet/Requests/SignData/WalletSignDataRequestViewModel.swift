@@ -32,8 +32,8 @@ import TONWalletKit
 class WalletSignDataRequestViewModel: ObservableObject {
     private let request: TONWalletSignDataRequest
     
-    var dAppInfo: TONDAppInfo? { request.dAppInfo }
-    var walletAddress: String? { request.walletAddress }
+    var dAppInfo: TONDAppInfo? { request.event.preview.dAppInfo }
+    var walletAddress: String? { request.event.walletAddress?.value }
     
     let dismiss = PassthroughSubject<Void, Never>()
     

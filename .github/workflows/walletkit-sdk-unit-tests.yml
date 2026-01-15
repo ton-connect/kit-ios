@@ -13,13 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Swift
-      uses: swift-actions/setup-swift@v3
-      with:
-        swift-version: "5.10"
-
-    - name: Build
-      run: swift build -v
+    - name: Show Swift version
+      run: swift --version
 
     - name: Run tests
       run: swift test -v

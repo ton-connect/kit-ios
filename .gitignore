@@ -42,5 +42,5 @@ playground.xcworkspace
 .build/
 .swiftpm/
 
-# WalletKit
-walletkit
+# WalletKit from git
+walletkit-git

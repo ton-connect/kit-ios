@@ -30,7 +30,7 @@ import TONWalletKit
 
 @MainActor
 class WalletDAppDisconnectionViewModel: ObservableObject {
-    @Published private(set) var events: [TONDisconnectEvent] = []
+    @Published private(set) var events: [TONDisconnectionEvent] = []
     
     let wallet: TONWalletProtocol
     
@@ -52,7 +52,7 @@ class WalletDAppDisconnectionViewModel: ObservableObject {
             .sink { [weak self] event in
                 switch event {
                 case .disconnect(let event):
-                    if event.walletAddress == self?.wallet.address.value {
+                    if event.walletId == self?.wallet.id {
                         self?.events.append(event)
                     }
                 default: ()
@@ -62,4 +62,4 @@ class WalletDAppDisconnectionViewModel: ObservableObject {
     }
 }
 
-extension TONDisconnectEvent: @retroactive Identifiable {}
+extension TONDisconnectionEvent: @retroactive Identifiable {}

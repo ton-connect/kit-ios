@@ -28,46 +28,50 @@ import Foundation
 
 public protocol TONWalletAdapterProtocol: AnyObject {
 
+    func identifier() throws -> String
     func publicKey() -> TONHex
-    func network() -> TONNetwork
-    func address(testnet: Bool) throws -> String
+    func network() throws -> TONNetwork
+    func address(testnet: Bool) throws -> TONUserFriendlyAddress
     func stateInit() async throws -> TONBase64
-    func signedSendTransaction(input: TONConnectTransactionParamContent, fakeSignature: Bool?) async throws -> TONBase64
-    func signedSignData(input: TONPrepareSignDataResult, fakeSignature: Bool?) async throws -> TONHex
-    func signedTonProof(input: TONProofParsedMessage, fakeSignature: Bool?) async throws -> TONHex
+    func signedSendTransaction(input: TONTransactionRequest, fakeSignature: Bool?) async throws -> TONBase64
+    func signedSignData(input: TONPreparedSignData, fakeSignature: Bool?) async throws -> TONHex
+    func signedTonProof(input: TONProofMessage, fakeSignature: Bool?) async throws -> TONHex
 }
 
 public protocol TONWalletProtocol {
+    var id: String { get }
     var address: TONUserFriendlyAddress { get }
     
     func balance() async throws -> TONBalance
     
-    func transferTONTransaction(message: TONTransferMessage) async throws -> TONConnectTransactionParamContent
-    func transferTONTransaction(messages: [TONTransferMessage]) async throws -> TONConnectTransactionParamContent
+    func transferTONTransaction(request: TONTransferRequest) async throws -> TONTransactionRequest
+    func transferTONTransaction(requests: [TONTransferRequest]) async throws -> TONTransactionRequest
     
-    func send(transaction: TONConnectTransactionParamContent) async throws
-    func preview(transaction: TONConnectTransactionParamContent) async throws -> TONTransactionPreview
+    func send(transactionRequest: TONTransactionRequest) async throws
+    func preview(transactionRequest: TONTransactionRequest) async throws -> TONTransactionEmulatedPreview
     
-    func transferNFTTransaction(parameters: TONNFTTransferParamsHuman) async throws -> TONConnectTransactionParamContent
-    func transferNFTTransaction(rawParameters: TONNFTTransferParamsRaw) async throws -> TONConnectTransactionParamContent
+    func transferNFTTransaction(request: TONNFTTransferRequest) async throws -> TONTransactionRequest
+    func transferNFTTransaction(request: TONNFTRawTransferRequest) async throws -> TONTransactionRequest
     
-    func nfts(limit: TONLimitRequest) async throws -> TONNFTItems
-    func nft(address: TONUserFriendlyAddress) async throws -> TONNFTItem
+    func nfts(request: TONNFTsRequest) async throws -> TONNFTsResponse
+    func nft(address: TONUserFriendlyAddress) async throws -> TONNFT
     
     func jettonBalance(jettonAddress: TONUserFriendlyAddress) async throws -> TONBalance
-    func jettonWalletAddress(jettonAddress: TONUserFriendlyAddress) async throws -> String
+    func jettonWalletAddress(jettonAddress: TONUserFriendlyAddress) async throws -> TONUserFriendlyAddress
     
-    func transferJettonTransaction(parameters: TONJettonTransferParams) async throws -> TONConnectTransactionParamContent
-    func jettons(limit: TONLimitRequest) async throws -> TONJettons
+    func transferJettonTransaction(request: TONJettonsTransferRequest) async throws -> TONTransactionRequest
+    func jettons(request: TONJettonsRequest) async throws -> TONJettonsResponse
 }
 
 public extension TONWalletProtocol {
     
-    func nfts(limit: Int) async throws -> TONNFTItems {
-        try await nfts(limit: TONLimitRequest(limit: limit))
+    func nfts(limit: Int) async throws -> TONNFTsResponse {
+        let request = TONNFTsRequest(pagination: TONPagination(limit: limit))
+        return try await nfts(request: request)
     }
     
-    func jettons(limit: Int) async throws -> TONJettons {
-        try await jettons(limit: TONLimitRequest(limit: limit))
+    func jettons(limit: Int) async throws -> TONJettonsResponse {
+        let request = TONJettonsRequest(pagination: TONPagination(limit: limit))
+        return try await jettons(request: request)
     }
 }
