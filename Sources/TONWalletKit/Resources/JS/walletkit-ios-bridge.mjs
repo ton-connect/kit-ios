@@ -62852,6 +62852,12 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
   console.log("🚀 WalletKit iOS Bridge starting...");
   let initialized = false;
   console.log("🔄 Initializing WalletKit Bridge");
+  try {
+    yield walletKit.ensureInitialized();
+  } catch (error2) {
+    console.error("Failed to initialize WalletKit:", error2);
+    throw error2;
+  }
   console.log("✅ WalletKit instance ready");
   initialized = true;
   console.log("✅ WalletKit Bridge initialized successfully");
