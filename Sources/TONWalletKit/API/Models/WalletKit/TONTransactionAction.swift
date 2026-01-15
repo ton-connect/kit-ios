@@ -44,17 +44,17 @@ public struct TONTransactionAction: Codable {
     /** The result code returned from the action phase */
     public var resultCode: Int?
     /** The total number of actions processed */
-    public var totalActionsNumber: Int
+    public var totalActionsNumber: Int?
     /** The number of special actions executed */
-    public var specActionsNumber: Int
+    public var specActionsNumber: Int?
     /** The number of skipped actions during execution */
-    public var skippedActionsNumber: Int
+    public var skippedActionsNumber: Int?
     /** The number of messages created in the action phase */
-    public var messagesCreatedNumber: Int
+    public var messagesCreatedNumber: Int?
     public var actionListHash: TONHex?
     public var totalMessagesSize: TONTransactionActionMessageSize?
 
-    public init(isSuccess: Bool? = nil, isValid: Bool? = nil, hasNoFunds: Bool? = nil, statusChange: String? = nil, totalForwardingFees: TONTokenAmount? = nil, totalActionFees: TONTokenAmount? = nil, resultCode: Int? = nil, totalActionsNumber: Int, specActionsNumber: Int, skippedActionsNumber: Int, messagesCreatedNumber: Int, actionListHash: TONHex? = nil, totalMessagesSize: TONTransactionActionMessageSize? = nil) {
+    public init(isSuccess: Bool? = nil, isValid: Bool? = nil, hasNoFunds: Bool? = nil, statusChange: String? = nil, totalForwardingFees: TONTokenAmount? = nil, totalActionFees: TONTokenAmount? = nil, resultCode: Int? = nil, totalActionsNumber: Int? = nil, specActionsNumber: Int? = nil, skippedActionsNumber: Int? = nil, messagesCreatedNumber: Int? = nil, actionListHash: TONHex? = nil, totalMessagesSize: TONTransactionActionMessageSize? = nil) {
         self.isSuccess = isSuccess
         self.isValid = isValid
         self.hasNoFunds = hasNoFunds
@@ -97,10 +97,10 @@ public struct TONTransactionAction: Codable {
         try container.encodeIfPresent(totalForwardingFees, forKey: .totalForwardingFees)
         try container.encodeIfPresent(totalActionFees, forKey: .totalActionFees)
         try container.encodeIfPresent(resultCode, forKey: .resultCode)
-        try container.encode(totalActionsNumber, forKey: .totalActionsNumber)
-        try container.encode(specActionsNumber, forKey: .specActionsNumber)
-        try container.encode(skippedActionsNumber, forKey: .skippedActionsNumber)
-        try container.encode(messagesCreatedNumber, forKey: .messagesCreatedNumber)
+        try container.encodeIfPresent(totalActionsNumber, forKey: .totalActionsNumber)
+        try container.encodeIfPresent(specActionsNumber, forKey: .specActionsNumber)
+        try container.encodeIfPresent(skippedActionsNumber, forKey: .skippedActionsNumber)
+        try container.encodeIfPresent(messagesCreatedNumber, forKey: .messagesCreatedNumber)
         try container.encodeIfPresent(actionListHash, forKey: .actionListHash)
         try container.encodeIfPresent(totalMessagesSize, forKey: .totalMessagesSize)
     }

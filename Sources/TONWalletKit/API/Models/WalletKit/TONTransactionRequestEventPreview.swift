@@ -31,16 +31,13 @@ import BigInt
 
 public struct TONTransactionRequestEventPreview: Codable {
 
-    public var dAppInfo: TONDAppInfo?
-    public var data: TONTransactionEmulatedPreview
+    public var data: TONTransactionEmulatedPreview?
 
-    public init(dAppInfo: TONDAppInfo? = nil, data: TONTransactionEmulatedPreview) {
-        self.dAppInfo = dAppInfo
+    public init(data: TONTransactionEmulatedPreview? = nil) {
         self.data = data
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case dAppInfo
         case data
     }
 
@@ -48,8 +45,7 @@ public struct TONTransactionRequestEventPreview: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(dAppInfo, forKey: .dAppInfo)
-        try container.encode(data, forKey: .data)
+        try container.encodeIfPresent(data, forKey: .data)
     }
 }
 

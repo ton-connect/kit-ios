@@ -35,11 +35,13 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
     let deviceInfo: DeviceInfo
     let walletManifest: Manifest
     let bridge: Bridge?
+    let eventsConfiguration: EventsConfiguration?
     
     public init(
         networkConfigurations: Set<NetworkConfiguration>,
         walletManifest: Manifest,
         bridge: Bridge?,
+        eventsConfiguration: EventsConfiguration? = nil,
         features: [any Feature],
     ) {
         self.networkConfigurations = Array(networkConfigurations)
@@ -56,6 +58,7 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
         
         self.walletManifest = manifest
         self.bridge = bridge
+        self.eventsConfiguration = eventsConfiguration
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -74,6 +77,16 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
 }
 
 extension TONWalletKitConfiguration {
+    
+    public struct EventsConfiguration: Codable, Hashable {
+        let disableEvents: Bool
+        let disableTranscationEmulation: Bool
+        
+        public init(disableEvents: Bool = false, disableTranscationEmulation: Bool = false) {
+            self.disableEvents = disableEvents
+            self.disableTranscationEmulation = disableTranscationEmulation
+        }
+    }
     
     public struct NetworkConfiguration: Codable, Hashable {
         let network: TONNetwork

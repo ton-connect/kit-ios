@@ -146,7 +146,7 @@ function getDeviceInfoWithDefaults(options) {
     ...DEFAULT_DEVICE_INFO,
     ...options
   };
-  return deviceInfo;
+  return addLegacySendTransactionFeature(deviceInfo);
 }
 function getWalletInfoWithDefaults(options) {
   const walletInfo = {
@@ -154,6 +154,16 @@ function getWalletInfoWithDefaults(options) {
     ...options
   };
   return walletInfo;
+}
+function addLegacySendTransactionFeature(options) {
+  const features = options.features;
+  const hasSendTransactionString = features.some((feature) => feature === "SendTransaction");
+  const hasSendTransactionObject = features.some((feature) => typeof feature === "object" && feature.name === "SendTransaction");
+  const shouldAddString = !hasSendTransactionString && hasSendTransactionObject;
+  return {
+    ...options,
+    features: shouldAddString ? ["SendTransaction", ...features] : features
+  };
 }
 function validateBridgeConfig(config) {
   if (!config.deviceInfo) {

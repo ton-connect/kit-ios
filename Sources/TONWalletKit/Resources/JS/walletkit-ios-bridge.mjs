@@ -29003,30 +29003,9 @@ function isValidBOC(bocString) {
     return false;
   }
 }
+var distExports$1 = requireDist$4();
 function createWalletId(network, address) {
-  return `${network.chainId}:${address}`;
-}
-function parseWalletId(walletId) {
-  const colonIndex = walletId.indexOf(":");
-  if (colonIndex === -1) {
-    return void 0;
-  }
-  const networkStr = walletId.substring(0, colonIndex);
-  const address = asMaybeAddressFriendly(walletId.substring(colonIndex + 1));
-  if (networkStr !== CHAIN.MAINNET && networkStr !== CHAIN.TESTNET) {
-    return void 0;
-  }
-  if (!address) {
-    return void 0;
-  }
-  return {
-    network: { chainId: networkStr },
-    address
-  };
-}
-function getAddressFromWalletId(walletId) {
-  const parsed = parseWalletId(walletId);
-  return parsed?.address;
+  return distExports$1.sha256_sync(`${network.chainId}:${address}`).toString("base64");
 }
 globalLogger.createChild("WalletManager");
 class WalletManager {
@@ -29156,6 +29135,7 @@ class SessionManager {
       dAppName,
       domain,
       walletId,
+      walletAddress: wallet?.getAddress() ?? "",
       createdAt: now.toISOString(),
       lastActivityAt: now.toISOString(),
       privateKey: randomKeyPair.secretKey,
@@ -29176,6 +29156,7 @@ class SessionManager {
       sessionId: session.sessionId,
       dAppName: session.dAppName,
       walletId: session.walletId,
+      walletAddress: session.walletAddress,
       privateKey: session.privateKey,
       publicKey: session.publicKey,
       createdAt: session.createdAt,
@@ -29197,6 +29178,7 @@ class SessionManager {
         sessionId: session.sessionId,
         dAppName: session.dAppName,
         walletId: session.walletId,
+        walletAddress: session.walletAddress,
         privateKey: session.privateKey,
         publicKey: session.publicKey,
         createdAt: session.createdAt,
@@ -29319,6 +29301,7 @@ class SessionManager {
       sessionId: session.sessionId,
       dAppName: session.dAppName,
       walletId: session.walletId,
+      walletAddress: session.walletAddress,
       dAppUrl: session.domain,
       dAppIconUrl: session.dAppIconUrl
     }));
@@ -29331,6 +29314,15 @@ class SessionManager {
       const sessionData = await this.storage.get(this.storageKey);
       if (sessionData && Array.isArray(sessionData)) {
         for (const session of sessionData) {
+          if (session.walletId && !session.walletAddress) {
+            const wallet = this.walletManager.getWallet(session.walletId);
+            if (wallet) {
+              session.walletAddress = wallet.getAddress();
+            } else {
+              log$i.warn("Session Wallet not found for session", { sessionId: session.sessionId });
+              continue;
+            }
+          }
           this.sessions.set(session.sessionId, {
             ...session
           });
@@ -29351,6 +29343,7 @@ class SessionManager {
         dAppName: session.dAppName,
         domain: session.domain,
         walletId: session.walletId,
+        walletAddress: session.walletAddress,
         createdAt: session.createdAt,
         lastActivityAt: session.lastActivityAt,
         privateKey: session.privateKey,
@@ -30735,16 +30728,6 @@ function v7Bytes(rnds, msecs, seq, buf2, offset = 0) {
   buf2[offset++] = rnds[15];
   return buf2;
 }
-function getUnixtime() {
-  return Math.floor(Date.now() / 1e3);
-}
-const VERSION = "0.0.1";
-function getVersion() {
-  return VERSION;
-}
-function getEventsSubsystem() {
-  return "wallet";
-}
 const DEFAULT_DEVICE_INFO = {
   platform: "browser",
   appName: "Wallet",
@@ -30763,7 +30746,29 @@ function getDeviceInfoWithDefaults(options) {
     ...DEFAULT_DEVICE_INFO,
     ...options
   };
-  return deviceInfo;
+  return addLegacySendTransactionFeature(deviceInfo);
+}
+function getDeviceInfoForWallet(walletAdapter, deviceInfoOptions) {
+  const baseDeviceInfo = getDeviceInfoWithDefaults(deviceInfoOptions);
+  if (walletAdapter?.getSupportedFeatures) {
+    const adapterFeatures = walletAdapter.getSupportedFeatures();
+    const deviceInfo = {
+      ...baseDeviceInfo,
+      features: adapterFeatures
+    };
+    return addLegacySendTransactionFeature(deviceInfo);
+  }
+  return baseDeviceInfo;
+}
+function addLegacySendTransactionFeature(options) {
+  const features = options.features;
+  const hasSendTransactionString = features.some((feature) => feature === "SendTransaction");
+  const hasSendTransactionObject = features.some((feature) => typeof feature === "object" && feature.name === "SendTransaction");
+  const shouldAddString = !hasSendTransactionString && hasSendTransactionObject;
+  return {
+    ...options,
+    features: shouldAddString ? ["SendTransaction", ...features] : features
+  };
 }
 const TONCONNECT_BRIDGE_RESPONSE = "TONCONNECT_BRIDGE_RESPONSE";
 globalLogger.createChild("ExtensionTransport");
@@ -30787,9 +30792,9 @@ class BridgeManager {
   eventStore;
   eventRouter;
   eventEmitter;
-  analyticsApi;
+  analytics;
   requestProcessingTimeoutId;
-  constructor(walletManifest, config, sessionManager, storage, eventStore, eventRouter, walletKitConfig, eventEmitter, analyticsApi) {
+  constructor(walletManifest, config, sessionManager, storage, eventStore, eventRouter, walletKitConfig, eventEmitter, analyticsManager) {
     const isManifestJsBridge = walletManifest && "jsBridgeKey" in walletManifest ? true : false;
     const manifestJsBridgeKey = walletManifest && "jsBridgeKey" in walletManifest ? walletManifest.jsBridgeKey : void 0;
     const manifestBridgeUrl = walletManifest && "bridgeUrl" in walletManifest ? walletManifest.bridgeUrl : void 0;
@@ -30809,7 +30814,9 @@ class BridgeManager {
     this.eventStore = eventStore;
     this.eventEmitter = eventEmitter;
     this.eventRouter = eventRouter;
-    this.analyticsApi = analyticsApi;
+    this.analytics = analyticsManager?.scoped({
+      bridge_url: this.config.bridgeUrl
+    });
     this.walletKitConfig = walletKitConfig;
     this.jsBridgeTransport = config?.jsBridgeTransport;
     if (!this.jsBridgeTransport && config?.enableJsBridge) {
@@ -30847,7 +30854,7 @@ class BridgeManager {
    */
   async createSession(appSessionId) {
     log$h.info("[BRIDGE] Creating session", { appSessionId });
-    const session = this.sessionManager.getSession(appSessionId);
+    const session = await this.sessionManager.getSession(appSessionId);
     if (!session) {
       throw new WalletKitError(ERROR_CODES.SESSION_NOT_FOUND, `Session not found`, void 0, {
         appSessionId
@@ -30985,18 +30992,13 @@ class BridgeManager {
           session: new SessionCrypto()
         });
       }
-      this.analyticsApi?.sendEvents([
-        {
-          event_name: "bridge-connect-started",
-          client_environment: "wallet",
-          subsystem: getEventsSubsystem(),
-          bridge_url: this.config.bridgeUrl,
-          client_timestamp: getUnixtime(),
-          event_id: v7(),
+      if (this.analytics) {
+        const client = clients[0];
+        this.analytics.emitBridgeClientConnectStarted({
           trace_id: connectTraceId,
-          version: getVersion()
-        }
-      ]);
+          client_id: client?.clientId
+        });
+      }
       this.bridgeProvider = await C$1.open({
         bridgeUrl: this.config.bridgeUrl,
         clients,
@@ -31004,21 +31006,11 @@ class BridgeManager {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         errorListener: (error2) => {
           log$h.error("Bridge listener error", { error: error2.toString() });
-          this.analyticsApi?.sendEvents([
-            {
-              event_name: "bridge-connect-error",
-              client_environment: "wallet",
-              subsystem: getEventsSubsystem(),
-              bridge_url: this.config.bridgeUrl,
-              error_message: error2?.toString() || "Unknown error",
-              event_id: v7(),
-              trace_id: error2?.traceId ?? connectTraceId,
-              version: getVersion(),
-              client_id: error2?.clientId,
-              client_timestamp: getUnixtime(),
-              error_code: error2?.errorCode
-            }
-          ]);
+          this.analytics?.emitBridgeClientConnectError({
+            error_message: `${error2?.toString() || "Unknown error"}${error2?.errorCode ? ` (Code: ${error2?.errorCode})` : ""}`,
+            trace_id: error2?.traceId ?? connectTraceId,
+            client_id: error2?.clientId
+          });
         },
         options: {
           lastEventId: this.lastEventId
@@ -31028,35 +31020,20 @@ class BridgeManager {
       this.isConnected = true;
       this.reconnectAttempts = 0;
       log$h.info("Bridge connected successfully");
-      this.analyticsApi?.sendEvents([
-        {
-          event_name: "bridge-connect-established",
-          client_environment: "wallet",
-          subsystem: getEventsSubsystem(),
-          bridge_url: this.config.bridgeUrl,
-          client_timestamp: getUnixtime(),
-          event_id: v7(),
+      if (this.analytics) {
+        const client = clients[0];
+        this.analytics.emitBridgeClientConnectEstablished({
           trace_id: connectTraceId,
-          version: getVersion()
-        }
-      ]);
+          client_id: client?.clientId
+        });
+      }
     } catch (error2) {
       log$h.error("Bridge connection failed", { error: error2?.toString() });
-      this.analyticsApi?.sendEvents([
-        {
-          event_name: "bridge-connect-error",
-          client_environment: "wallet",
-          subsystem: getEventsSubsystem(),
-          bridge_url: this.config.bridgeUrl,
-          error_message: error2?.toString() || "Unknown error",
-          event_id: v7(),
-          trace_id: error2?.traceId ?? connectTraceId,
-          version: getVersion(),
-          client_id: error2?.clientId,
-          client_timestamp: getUnixtime(),
-          error_code: error2?.errorCode
-        }
-      ]);
+      this.analytics?.emitBridgeClientConnectError({
+        error_message: `${error2?.toString() || "Unknown error"}${error2?.errorCode ? ` (Code: ${error2?.errorCode})` : ""}`,
+        trace_id: error2?.traceId ?? connectTraceId,
+        client_id: error2?.clientId
+      });
       if (!this.config.disableHttpConnection) {
         if (this.reconnectAttempts < (this.config.maxReconnectAttempts || 5)) {
           this.reconnectAttempts++;
@@ -31201,7 +31178,9 @@ class BridgeManager {
         if (session) {
           if (session?.walletId) {
             rawEvent.walletId = session.walletId;
-            rawEvent.walletAddress = getAddressFromWalletId(session.walletId);
+          }
+          if (session?.walletAddress) {
+            rawEvent.walletAddress = session.walletAddress;
           }
           rawEvent.dAppInfo = {
             name: session.dAppName,
@@ -31214,7 +31193,9 @@ class BridgeManager {
         const session = await this.sessionManager.getSessionByDomain(rawEvent.domain);
         if (session?.walletId) {
           rawEvent.walletId = session.walletId;
-          rawEvent.walletAddress = getAddressFromWalletId(session.walletId);
+        }
+        if (session?.walletAddress) {
+          rawEvent.walletAddress = session.walletAddress;
         }
         if (session?.sessionId) {
           rawEvent.from = session.sessionId;
@@ -31308,12 +31289,10 @@ function isValidHost(host) {
 }
 const log$g = globalLogger.createChild("ConnectHandler");
 class ConnectHandler extends BasicHandler {
-  analyticsApi;
-  walletKitConfig;
-  constructor(notify, walletKitConfig, analyticsApi) {
+  analytics;
+  constructor(notify, analyticsManager) {
     super(notify);
-    this.analyticsApi = analyticsApi;
-    this.walletKitConfig = walletKitConfig;
+    this.analytics = analyticsManager?.scoped();
   }
   canHandle(event) {
     return event.method === "connect";
@@ -31341,24 +31320,14 @@ class ConnectHandler extends BasicHandler {
       isJsBridge: event.isJsBridge,
       tabId: event.tabId
     };
-    this.analyticsApi?.sendEvents([
-      {
-        event_name: "wallet-connect-request-received",
-        trace_id: event.traceId ?? v7(),
-        client_environment: "wallet",
-        subsystem: getEventsSubsystem(),
-        client_id: event.from,
-        manifest_json_url: manifestUrl || preview?.dAppInfo?.manifestUrl,
-        is_ton_addr: event.params?.items?.some((item) => item.name === "ton_addr") || false,
-        is_ton_proof: event.params?.items?.some((item) => item.name === "ton_proof") || false,
-        client_timestamp: getUnixtime(),
-        event_id: v7(),
-        version: getVersion(),
-        proof_payload_size: event.params?.items?.some((item) => item.name === "ton_proof") ? event.params?.items?.find((item) => item.name === "ton_proof")?.payload?.length : 0,
-        wallet_app_name: this.walletKitConfig.deviceInfo?.appName,
-        wallet_app_version: this.walletKitConfig.deviceInfo?.appVersion
-      }
-    ]);
+    this.analytics?.emitWalletConnectRequestReceived({
+      trace_id: event.traceId,
+      client_id: event.from,
+      manifest_json_url: manifestUrl || preview?.dAppInfo?.manifestUrl,
+      is_ton_addr: event.params?.items?.some((item) => item.name === "ton_addr") || false,
+      is_ton_proof: event.params?.items?.some((item) => item.name === "ton_proof") || false,
+      proof_payload_size: event.params?.items?.some((item) => item.name === "ton_proof") ? event.params?.items?.find((item) => item.name === "ton_proof")?.payload?.length : 0
+    });
     return connectEvent;
   }
   toConnectionRequestEventRequestedItems(items) {
@@ -31448,7 +31417,7 @@ class ConnectHandler extends BasicHandler {
         iconUrl: sanitizedManifest?.iconUrl,
         manifestUrl
       },
-      manifestFetchErrorCode: manifestFetchErrorCode ?? void 0
+      manifestFetchErrorCode: finalManifestFetchErrorCode ?? void 0
     };
   }
   static MANIFEST_PROXY_URL = "https://walletbot.me/tonconnect-proxy/";
@@ -36952,23 +36921,26 @@ async function createTransactionPreview(client, request, wallet) {
 }
 const log$f = globalLogger.createChild("TransactionHandler");
 class TransactionHandler extends BasicHandler {
+  config;
   walletManager;
+  sessionManager;
   eventEmitter;
-  analyticsApi;
-  walletKitConfig;
-  constructor(notify, eventEmitter, walletKitConfig, walletManager, analyticsApi) {
+  analytics;
+  constructor(notify, config, eventEmitter, walletManager, sessionManager, analyticsManager) {
     super(notify);
+    this.config = config;
     this.walletManager = walletManager;
+    this.sessionManager = sessionManager;
     this.eventEmitter = eventEmitter;
-    this.analyticsApi = analyticsApi;
-    this.walletKitConfig = walletKitConfig;
+    this.sessionManager = sessionManager;
+    this.analytics = analyticsManager?.scoped();
   }
   canHandle(event) {
     return event.method === "sendTransaction";
   }
   async handle(event) {
     const walletId = event.walletId;
-    const walletAddress = event.walletAddress ?? (walletId ? getAddressFromWalletId(walletId) : void 0);
+    const walletAddress = event.walletAddress;
     if (!walletId && !walletAddress) {
       log$f.error("Wallet ID not found", { event });
       return {
@@ -37004,55 +36976,49 @@ class TransactionHandler extends BasicHandler {
     }
     const request = requestValidation.result;
     let preview;
-    try {
-      preview = await CallForSuccess(() => createTransactionPreview(wallet.client, request, wallet));
-      if (preview.result === Result$1.success && preview.trace) {
-        try {
-          this.eventEmitter.emit("emulation:result", preview.trace);
-        } catch (error2) {
-          log$f.warn("Error emitting emulation result event", { error: error2 });
+    if (!this.config.eventProcessor?.disableTranscationEmulation) {
+      try {
+        preview = await CallForSuccess(() => createTransactionPreview(wallet.client, request, wallet));
+        if (preview.result === Result$1.success && preview.trace) {
+          try {
+            this.eventEmitter.emit("emulation:result", preview.trace);
+          } catch (error2) {
+            log$f.warn("Error emitting emulation result event", { error: error2 });
+          }
         }
+      } catch (error2) {
+        log$f.error("Failed to create transaction preview", { error: error2 });
+        preview = {
+          error: {
+            code: ERROR_CODES.UNKNOWN_EMULATION_ERROR,
+            message: "Unknown emulation error"
+          },
+          result: Result$1.failure
+        };
       }
-    } catch (error2) {
-      log$f.error("Failed to create transaction preview", { error: error2 });
-      preview = {
-        error: {
-          code: ERROR_CODES.UNKNOWN_EMULATION_ERROR,
-          message: "Unknown emulation error"
-        },
-        result: Result$1.failure
-      };
     }
     const txEvent = {
       ...event,
       request,
       preview: {
-        dAppInfo: event.dAppInfo ?? {},
         data: preview
       },
       dAppInfo: event.dAppInfo ?? {},
       walletId: walletId ?? this.walletManager.getWalletId(wallet),
       walletAddress: walletAddress ?? wallet.getAddress()
     };
-    this.analyticsApi?.sendEvents([
-      {
-        event_name: "wallet-transaction-request-received",
-        trace_id: event.traceId ?? v7(),
-        client_environment: "wallet",
-        subsystem: getEventsSubsystem(),
+    if (this.analytics) {
+      const sessionData = event.from ? await this.sessionManager.getSession(event.from) : void 0;
+      this.analytics?.emitWalletTransactionRequestReceived({
+        trace_id: event.traceId,
         client_id: event.from,
-        client_timestamp: getUnixtime(),
+        wallet_id: sessionData?.publicKey,
         dapp_name: event.dAppInfo?.name,
-        version: getVersion(),
         network_id: wallet.getNetwork().chainId,
-        wallet_app_name: this.walletKitConfig.deviceInfo?.appName,
-        wallet_app_version: this.walletKitConfig.deviceInfo?.appVersion,
-        event_id: v7(),
         // manifest_json_url: event.dAppInfo?.url, // todo
-        origin_url: event.dAppInfo?.url,
-        wallet_id: Base64Normalize(walletAddress ?? wallet.getAddress())
-      }
-    ]);
+        origin_url: event.dAppInfo?.url
+      });
+    }
     return txEvent;
   }
   /**
@@ -54908,7 +54874,7 @@ function requireDist() {
   })(dist$2);
   return dist$2;
 }
-var distExports$1 = requireDist();
+var distExports = requireDist();
 const BASE64_REGEX = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 const BOC_PREFIX = "te6cc";
 function isValidObject(data) {
@@ -55003,21 +54969,21 @@ function validateSignDataPayloadCell(data) {
 }
 const log$e = globalLogger.createChild("SignDataHandler");
 class SignDataHandler extends BasicHandler {
-  analyticsApi;
-  walletKitConfig;
+  analytics;
   walletManager;
-  constructor(notify, walletKitConfig, walletManager, analyticsApi) {
+  sessionManager;
+  constructor(notify, walletManager, sessionManager, analyticsManager) {
     super(notify);
-    this.walletKitConfig = walletKitConfig;
     this.walletManager = walletManager;
-    this.analyticsApi = analyticsApi;
+    this.sessionManager = sessionManager;
+    this.analytics = analyticsManager?.scoped();
   }
   canHandle(event) {
     return event.method === "signData";
   }
   async handle(event) {
     const walletId = event.walletId;
-    const walletAddress = event.walletAddress ?? (walletId ? getAddressFromWalletId(walletId) : void 0);
+    const walletAddress = event.walletAddress;
     if (!walletId && !walletAddress) {
       throw new WalletKitError(ERROR_CODES.WALLET_REQUIRED, "No wallet ID found in sign data event", void 0, {
         eventId: event.id
@@ -55047,25 +55013,18 @@ class SignDataHandler extends BasicHandler {
       walletId: walletId ?? (wallet ? this.walletManager.getWalletId(wallet) : ""),
       walletAddress: walletAddress ?? wallet?.getAddress() ?? void 0
     };
-    this.analyticsApi?.sendEvents([
-      {
-        event_name: "wallet-sign-data-request-received",
-        trace_id: event.traceId ?? v7(),
-        client_environment: "wallet",
-        subsystem: getEventsSubsystem(),
+    if (this.analytics) {
+      const sessionData = event.from ? await this.sessionManager.getSession(event.from) : void 0;
+      this.analytics?.emitWalletSignDataRequestReceived({
+        trace_id: event.traceId,
         client_id: event.from,
-        wallet_id: walletAddress ? Base64Normalize(walletAddress) : void 0,
-        client_timestamp: getUnixtime(),
+        wallet_id: sessionData?.publicKey,
         dapp_name: event.dAppInfo?.name,
-        version: getVersion(),
         network_id: wallet?.getNetwork().chainId,
-        wallet_app_name: this.walletKitConfig.deviceInfo?.appName,
-        wallet_app_version: this.walletKitConfig.deviceInfo?.appVersion,
-        event_id: v7(),
         // manifest_json_url: event.dAppInfo?.url, // todo
         origin_url: event.dAppInfo?.url
-      }
-    ]);
+      });
+    }
     return signEvent;
   }
   /**
@@ -55140,7 +55099,7 @@ class SignDataHandler extends BasicHandler {
     }
     if (data.type === "cell") {
       try {
-        const parsed = distExports$1.parseTLB(data.value.schema).deserialize(data.value.content);
+        const parsed = distExports.parseTLB(data.value.schema).deserialize(data.value.content);
         return {
           type: "cell",
           value: {
@@ -55174,7 +55133,7 @@ class DisconnectHandler extends BasicHandler {
   }
   async handle(event) {
     const walletId = event.walletId;
-    const walletAddress = event.walletAddress ?? (walletId ? getAddressFromWalletId(walletId) : void 0);
+    const walletAddress = event.walletAddress;
     if (!walletId && !walletAddress) {
       throw new WalletKitError(ERROR_CODES.WALLET_REQUIRED, "No wallet ID found in disconnect event", void 0, {
         eventId: event.id
@@ -55208,11 +55167,11 @@ class DisconnectHandler extends BasicHandler {
 }
 const log$d = globalLogger.createChild("EventRouter");
 class EventRouter {
+  config;
   eventEmitter;
   sessionManager;
   walletManager;
-  config;
-  analyticsApi;
+  analyticsManager;
   handlers = [];
   bridgeManager;
   // Event callbacks
@@ -55221,13 +55180,12 @@ class EventRouter {
   signDataRequestCallback = void 0;
   disconnectCallback = void 0;
   errorCallback = void 0;
-  constructor(eventEmitter, sessionManager, walletManager, config, analyticsApi) {
+  constructor(config, eventEmitter, sessionManager, walletManager, analyticsManager) {
+    this.config = config;
     this.eventEmitter = eventEmitter;
     this.sessionManager = sessionManager;
     this.walletManager = walletManager;
-    this.config = config;
-    this.analyticsApi = analyticsApi;
-    this.config = config;
+    this.analyticsManager = analyticsManager;
     this.setupHandlers();
   }
   setBridgeManager(bridgeManager) {
@@ -55315,9 +55273,9 @@ class EventRouter {
    */
   setupHandlers() {
     this.handlers = [
-      new ConnectHandler(this.notifyConnectRequestCallbacks.bind(this), this.config, this.analyticsApi),
-      new TransactionHandler(this.notifyTransactionRequestCallbacks.bind(this), this.eventEmitter, this.config, this.walletManager, this.analyticsApi),
-      new SignDataHandler(this.notifySignDataRequestCallbacks.bind(this), this.config, this.walletManager, this.analyticsApi),
+      new ConnectHandler(this.notifyConnectRequestCallbacks.bind(this), this.analyticsManager),
+      new TransactionHandler(this.notifyTransactionRequestCallbacks.bind(this), this.config, this.eventEmitter, this.walletManager, this.sessionManager, this.analyticsManager),
+      new SignDataHandler(this.notifySignDataRequestCallbacks.bind(this), this.walletManager, this.sessionManager, this.analyticsManager),
       new DisconnectHandler(this.notifyDisconnectCallbacks.bind(this), this.sessionManager)
     ];
   }
@@ -55371,7 +55329,6 @@ class EventRouter {
     return enabledTypes;
   }
 }
-var distExports = requireDist$4();
 const tonProofPrefix = "ton-proof-item-v2/";
 const tonConnectPrefix = "ton-connect";
 async function CreateTonProofMessageBytes(message) {
@@ -55390,9 +55347,9 @@ async function CreateTonProofMessageBytes(message) {
     ts,
     Buffer.from(message.payload)
   ]);
-  const messageHash = distExports.sha256_sync(m2);
+  const messageHash = distExports$1.sha256_sync(m2);
   const fullMes = Buffer.concat([Buffer.from([255, 255]), Buffer.from(tonConnectPrefix), Buffer.from(messageHash)]);
-  const res = distExports.sha256_sync(fullMes);
+  const res = distExports$1.sha256_sync(fullMes);
   return Buffer.from(res);
 }
 function CreateTonProofMessage({ address, domain, payload, stateInit, timestamp }) {
@@ -55481,7 +55438,7 @@ function createTextBinaryHash(data, parsedAddr, domain, timestamp) {
     payloadLenBuffer,
     payloadBuffer
   ]);
-  return distExports.sha256_sync(message);
+  return distExports$1.sha256_sync(message);
 }
 function createCellHash(payload, parsedAddr, domain, timestamp) {
   const cell = distExports$2.Cell.fromBase64(payload.content);
@@ -55509,13 +55466,13 @@ class RequestProcessor {
   sessionManager;
   bridgeManager;
   walletManager;
-  analyticsApi;
-  constructor(walletKitOptions, sessionManager, bridgeManager, walletManager, analyticsApi) {
+  analytics;
+  constructor(walletKitOptions, sessionManager, bridgeManager, walletManager, analyticsManager) {
     this.walletKitOptions = walletKitOptions;
     this.sessionManager = sessionManager;
     this.bridgeManager = bridgeManager;
     this.walletManager = walletManager;
-    this.analyticsApi = analyticsApi;
+    this.analytics = analyticsManager?.scoped();
   }
   /**
    * Helper to get wallet from event, supporting both walletId and walletAddress
@@ -55534,7 +55491,7 @@ class RequestProcessor {
       return event.walletAddress;
     }
     if (event.walletId) {
-      return getAddressFromWalletId(event.walletId);
+      return this.walletManager.getWallet(event.walletId)?.getAddress();
     }
     return void 0;
   }
@@ -55556,52 +55513,39 @@ class RequestProcessor {
         }
         const url = new URL(event.preview.dAppInfo?.url || "");
         const domain = url.host;
-        const newSession = await this.sessionManager.createSession(event.from || (await distExports.getSecureRandomBytes(32)).toString("hex"), event.preview.dAppInfo?.name || "", domain, event.preview.dAppInfo?.iconUrl || "", event.preview.dAppInfo?.description || "", wallet, {
+        const newSession = await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), event.preview.dAppInfo?.name || "", domain, event.preview.dAppInfo?.iconUrl || "", event.preview.dAppInfo?.description || "", wallet, {
           isJsBridge: event.isJsBridge
         });
         await this.bridgeManager.createSession(newSession.sessionId);
         const response = await this.createConnectApprovalResponse(event);
         await this.bridgeManager.sendResponse(event, response.result);
-        this.analyticsApi?.sendEvents([
-          {
-            event_name: "wallet-connect-accepted",
+        if (this.analytics) {
+          const sessionData = event.from ? await this.sessionManager.getSession(newSession.sessionId) : void 0;
+          this.analytics.emitWalletConnectAccepted({
+            client_id: event.from,
+            wallet_id: sessionData?.publicKey,
             trace_id: event.traceId,
-            client_environment: "wallet",
-            subsystem: getEventsSubsystem(),
             network_id: wallet.getNetwork().chainId,
-            wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-            wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-            event_id: v7(),
             origin_url: event.dAppInfo?.url,
             dapp_name: event.dAppInfo?.name,
-            client_id: event.from,
             is_ton_addr: event.requestedItems.some((item) => item.type === "ton_addr"),
             is_ton_proof: event.requestedItems.some((item) => item.type === "ton_proof"),
             manifest_json_url: event.dAppInfo?.manifestUrl,
-            proof_payload_size: event.requestedItems.find((item) => item.type === "ton_proof")?.value?.payload?.length,
-            client_timestamp: getUnixtime(),
-            version: getVersion()
-          },
-          {
-            event_name: "wallet-connect-response-sent",
-            trace_id: event.traceId,
-            client_environment: "wallet",
-            subsystem: getEventsSubsystem(),
+            proof_payload_size: event.requestedItems.find((item) => item.type === "ton_proof")?.value?.payload?.length
+          });
+          this.analytics.emitWalletConnectResponseSent({
             client_id: event.from,
-            client_timestamp: getUnixtime(),
-            version: getVersion(),
+            wallet_id: sessionData?.publicKey,
+            trace_id: event.traceId,
             dapp_name: event.dAppInfo?.name,
             origin_url: event.dAppInfo?.url,
             is_ton_addr: event.requestedItems.some((item) => item.type === "ton_addr"),
             is_ton_proof: event.requestedItems.some((item) => item.type === "ton_proof"),
             manifest_json_url: event.preview.dAppInfo?.manifestUrl,
             proof_payload_size: event.requestedItems.find((item) => item.type === "ton_proof")?.value.payload?.length,
-            event_id: v7(),
-            network_id: wallet.getNetwork().chainId,
-            wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-            wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion
-          }
-        ]);
+            network_id: wallet.getNetwork().chainId
+          });
+        }
       } else if ("result" in event) {
         const walletId = event.walletId;
         if (!walletId) {
@@ -55615,48 +55559,35 @@ class RequestProcessor {
         }
         const url = new URL(event.result.dAppUrl);
         const domain = url.host;
-        await this.sessionManager.createSession(event.from || (await distExports.getSecureRandomBytes(32)).toString("hex"), event.result.dAppName, domain, event.result.dAppIconUrl, event.result.dAppDescription, wallet);
+        await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), event.result.dAppName, domain, event.result.dAppIconUrl, event.result.dAppDescription, wallet);
         await this.bridgeManager.sendResponse(event, event.result.response);
-        this.analyticsApi?.sendEvents([
-          {
-            event_name: "wallet-connect-accepted",
-            trace_id: event.traceId,
-            client_environment: "wallet",
-            subsystem: getEventsSubsystem(),
-            network_id: wallet.getNetwork().chainId,
-            wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-            wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-            event_id: v7(),
+        if (this.analytics) {
+          const sessionData = event.from ? await this.sessionManager.getSession(event.from) : void 0;
+          this.analytics.emitWalletConnectAccepted({
             client_id: event.from,
+            wallet_id: sessionData?.publicKey,
+            trace_id: event.traceId,
+            network_id: wallet.getNetwork().chainId,
             is_ton_addr: event.result.response.payload.items.some((item) => item.name === "ton_addr"),
             is_ton_proof: event.result.response.payload.items.some((item) => item.name === "ton_proof"),
             manifest_json_url: event.result.dAppUrl,
             proof_payload_size: event.result.response.payload.items.find((item) => item.name === "ton_proof")?.proof?.payload?.length,
-            client_timestamp: getUnixtime(),
-            version: getVersion(),
             dapp_name: event.result.dAppName,
             origin_url: event.result.dAppUrl
-          },
-          {
-            event_name: "wallet-connect-response-sent",
-            trace_id: event.traceId,
-            client_environment: "wallet",
-            subsystem: getEventsSubsystem(),
+          });
+          this.analytics.emitWalletConnectResponseSent({
             client_id: event.from,
-            client_timestamp: getUnixtime(),
-            version: getVersion(),
+            wallet_id: sessionData?.publicKey,
+            trace_id: event.traceId,
             dapp_name: event.result.dAppName,
             origin_url: event.result.dAppUrl,
             is_ton_addr: event.result.response.payload.items.some((item) => item.name === "ton_addr"),
             is_ton_proof: event.result.response.payload.items.some((item) => item.name === "ton_proof"),
             manifest_json_url: event.result.dAppUrl,
             proof_payload_size: event.result.response.payload.items.find((item) => item.name === "ton_proof")?.proof?.payload?.length,
-            event_id: v7(),
-            network_id: wallet.getNetwork().chainId,
-            wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-            wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion
-          }
-        ]);
+            network_id: wallet.getNetwork().chainId
+          });
+        }
       } else {
         log$c.error("Invalid event", { event });
         const error2 = new WalletKitError(ERROR_CODES.INVALID_REQUEST_EVENT, "Invalid connect request event", void 0, { event });
@@ -55695,44 +55626,31 @@ class RequestProcessor {
       } catch (error2) {
         log$c.error("Failed to send connect request rejection response", { error: error2 });
       }
-      this.analyticsApi?.sendEvents([
-        {
-          event_name: "wallet-connect-rejected",
+      if (this.analytics) {
+        const sessionData = event.from ? await this.sessionManager.getSession(newSession.sessionId) : void 0;
+        this.analytics.emitWalletConnectRejected({
+          client_id: event.from,
+          wallet_id: sessionData?.publicKey,
           trace_id: event.traceId,
-          client_environment: "wallet",
-          subsystem: getEventsSubsystem(),
           dapp_name: event.preview.dAppInfo?.name || "",
           origin_url: event.preview.dAppInfo?.url || "",
           manifest_json_url: event.preview.dAppInfo?.manifestUrl || "",
-          event_id: v7(),
-          client_timestamp: getUnixtime(),
-          version: getVersion(),
-          wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-          wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
+          is_ton_addr: event.requestedItems.some((item) => item.type === "ton_addr"),
+          is_ton_proof: event.requestedItems.some((item) => item.type === "ton_proof"),
+          proof_payload_size: event.requestedItems.find((item) => item.type === "ton_proof")?.value.payload?.length
+        });
+        this.analytics.emitWalletConnectResponseSent({
+          wallet_id: sessionData?.publicKey,
+          trace_id: event.traceId,
+          dapp_name: event.preview.dAppInfo?.name || "",
+          origin_url: event.preview.dAppInfo?.url || "",
+          manifest_json_url: event.preview.dAppInfo?.manifestUrl || "",
           is_ton_addr: event.requestedItems.some((item) => item.type === "ton_addr"),
           is_ton_proof: event.requestedItems.some((item) => item.type === "ton_proof"),
           proof_payload_size: event.requestedItems.find((item) => item.type === "ton_proof")?.value.payload?.length,
           client_id: event.from
-        },
-        {
-          event_name: "wallet-connect-response-sent",
-          trace_id: event.traceId,
-          client_environment: "wallet",
-          subsystem: getEventsSubsystem(),
-          dapp_name: event.preview.dAppInfo?.name || "",
-          origin_url: event.preview.dAppInfo?.url || "",
-          manifest_json_url: event.preview.dAppInfo?.manifestUrl || "",
-          event_id: v7(),
-          client_timestamp: getUnixtime(),
-          version: getVersion(),
-          wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-          wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-          is_ton_addr: event.requestedItems.some((item) => item.type === "ton_addr"),
-          is_ton_proof: event.requestedItems.some((item) => item.type === "ton_proof"),
-          proof_payload_size: event.requestedItems.find((item) => item.type === "ton_proof")?.value.payload?.length,
-          client_id: event.from
-        }
-      ]);
+        });
+      }
       return;
     } catch (error2) {
       log$c.error("Failed to reject connect request", { error: error2 });
@@ -55785,40 +55703,15 @@ class RequestProcessor {
    * Send transaction analytics events
    */
   sendTransactionAnalytics(event, signedBoc) {
+    if (!this.analytics)
+      return;
     const wallet = this.getWalletFromEvent(event);
-    const walletAddress = this.getWalletAddressFromEvent(event);
-    this.analyticsApi?.sendEvents([
-      {
-        event_name: "wallet-transaction-accepted",
-        trace_id: event.traceId,
-        client_environment: "wallet",
-        subsystem: getEventsSubsystem(),
-        event_id: v7(),
-        client_timestamp: getUnixtime(),
-        version: getVersion(),
-        network_id: wallet?.getNetwork().chainId,
-        wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-        wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-        client_id: event.from,
-        wallet_id: walletAddress ? Base64Normalize(walletAddress) : void 0,
-        dapp_name: "preview" in event ? event.preview.dAppInfo?.name : void 0,
-        origin_url: "preview" in event ? event.preview.dAppInfo?.url : void 0
-      },
-      {
-        event_name: "wallet-transaction-sent",
-        trace_id: event.traceId,
-        client_environment: "wallet",
-        subsystem: getEventsSubsystem(),
-        event_id: v7(),
-        network_id: wallet?.getNetwork().chainId,
-        wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-        wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-        version: getVersion(),
-        client_timestamp: getUnixtime(),
-        client_id: event.from,
-        signed_boc: signedBoc
-      }
-    ]);
+    this.analytics.emitWalletTransactionSent({
+      trace_id: event.traceId,
+      network_id: wallet?.getNetwork().chainId,
+      client_id: event.from,
+      signed_boc: signedBoc
+    });
   }
   /**
    * Process transaction request rejection
@@ -55837,25 +55730,18 @@ class RequestProcessor {
       };
       await this.bridgeManager.sendResponse(event, response);
       const wallet = this.getWalletFromEvent(event);
-      const walletAddress = this.getWalletAddressFromEvent(event);
-      this.analyticsApi?.sendEvents([
-        {
-          event_name: "wallet-transaction-declined",
+      if (this.analytics) {
+        const sessionData = event.from ? await this.sessionManager.getSession(event.from) : void 0;
+        this.analytics.emitWalletTransactionDeclined({
+          wallet_id: sessionData?.publicKey,
           trace_id: event.traceId,
-          client_environment: "wallet",
-          subsystem: getEventsSubsystem(),
-          dapp_name: event.preview.dAppInfo?.name,
-          origin_url: event.preview.dAppInfo?.url,
-          event_id: v7(),
+          dapp_name: event.dAppInfo?.name,
+          origin_url: event.dAppInfo?.url,
           network_id: wallet?.getNetwork().chainId,
-          wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-          wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-          wallet_id: walletAddress ? Base64Normalize(walletAddress) : void 0,
-          version: getVersion(),
-          client_timestamp: getUnixtime(),
-          client_id: event.from
-        }
-      ]);
+          client_id: event.from,
+          decline_reason: typeof reason === "string" ? reason : reason?.message
+        });
+      }
       return;
     } catch (error2) {
       log$c.error("Failed to reject transaction request", { error: error2 });
@@ -55880,37 +55766,21 @@ class RequestProcessor {
         };
         await this.bridgeManager.sendResponse(event, response);
         const wallet = this.getWalletFromEvent(event);
-        const walletAddress = this.getWalletAddressFromEvent(event);
-        this.analyticsApi?.sendEvents([
-          {
-            event_name: "wallet-sign-data-accepted",
+        if (this.analytics) {
+          const sessionData = event.from ? await this.sessionManager.getSession(event.from) : void 0;
+          this.analytics.emitWalletSignDataAccepted({
+            wallet_id: sessionData?.publicKey,
             trace_id: event.traceId,
-            client_environment: "wallet",
-            subsystem: getEventsSubsystem(),
-            event_id: v7(),
             network_id: wallet?.getNetwork().chainId,
-            wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-            wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-            wallet_id: walletAddress ? Base64Normalize(walletAddress) : void 0,
-            version: getVersion(),
-            client_timestamp: getUnixtime(),
             client_id: event.from
-          },
-          {
-            event_name: "wallet-sign-data-sent",
+          });
+          this.analytics.emitWalletSignDataSent({
+            wallet_id: sessionData?.publicKey,
             trace_id: event.traceId,
-            client_environment: "wallet",
-            subsystem: getEventsSubsystem(),
-            event_id: v7(),
             network_id: wallet?.getNetwork().chainId,
-            wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-            wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-            wallet_id: walletAddress ? Base64Normalize(walletAddress) : void 0,
-            version: getVersion(),
-            client_timestamp: getUnixtime(),
             client_id: event.from
-          }
-        ]);
+          });
+        }
         return { signature: Base64ToHex(event.result.signature) };
       } else {
         if (!event.domain) {
@@ -55951,40 +55821,25 @@ class RequestProcessor {
           }
         };
         await this.bridgeManager.sendResponse(event, response);
-        this.analyticsApi?.sendEvents([
-          {
-            event_name: "wallet-sign-data-accepted",
+        if (this.analytics) {
+          const sessionData = event.from ? await this.sessionManager.getSession(event.from) : void 0;
+          this.analytics.emitWalletSignDataAccepted({
+            wallet_id: sessionData?.publicKey,
             trace_id: event.traceId,
-            client_environment: "wallet",
-            subsystem: getEventsSubsystem(),
             dapp_name: event.dAppInfo?.name,
             origin_url: event.dAppInfo?.url,
-            event_id: v7(),
             network_id: wallet.getNetwork().chainId,
-            wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-            wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-            wallet_id: walletAddress ? Base64Normalize(walletAddress) : void 0,
-            version: getVersion(),
-            client_timestamp: getUnixtime(),
             client_id: event.from
-          },
-          {
-            event_name: "wallet-sign-data-sent",
+          });
+          this.analytics.emitWalletSignDataSent({
+            wallet_id: sessionData?.publicKey,
             trace_id: event.traceId,
-            client_environment: "wallet",
-            subsystem: getEventsSubsystem(),
             dapp_name: event.dAppInfo?.name,
             origin_url: event.dAppInfo?.url,
-            event_id: v7(),
             network_id: wallet.getNetwork().chainId,
-            wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-            wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-            wallet_id: walletAddress ? Base64Normalize(walletAddress) : void 0,
-            version: getVersion(),
-            client_timestamp: getUnixtime(),
             client_id: event.from
-          }
-        ]);
+          });
+        }
         return { signature };
       }
     } catch (error2) {
@@ -56014,25 +55869,17 @@ class RequestProcessor {
       };
       await this.bridgeManager.sendResponse(event, response);
       const wallet = this.getWalletFromEvent(event);
-      const walletAddress = this.getWalletAddressFromEvent(event);
-      this.analyticsApi?.sendEvents([
-        {
-          event_name: "wallet-sign-data-declined",
+      if (this.analytics) {
+        const sessionData = event.from ? await this.sessionManager.getSession(event.from) : void 0;
+        this.analytics.emitWalletSignDataDeclined({
+          wallet_id: sessionData?.publicKey,
           trace_id: event.traceId,
-          client_environment: "wallet",
-          subsystem: getEventsSubsystem(),
           dapp_name: event.dAppInfo?.name,
           origin_url: event.dAppInfo?.url,
-          event_id: v7(),
           network_id: wallet?.getNetwork().chainId,
-          wallet_app_name: this.walletKitOptions.deviceInfo?.appName,
-          wallet_app_version: this.walletKitOptions.deviceInfo?.appVersion,
-          wallet_id: walletAddress ? Base64Normalize(walletAddress) : void 0,
-          version: getVersion(),
-          client_timestamp: getUnixtime(),
           client_id: event.from
-        }
-      ]);
+        });
+      }
       return;
     } catch (error2) {
       log$c.error("Failed to reject sign data request", { error: error2 });
@@ -56056,11 +55903,12 @@ class RequestProcessor {
     const publicKey = wallet.getPublicKey().replace("0x", "");
     const address = wallet.getAddress();
     const walletNetwork = wallet.getNetwork();
+    const deviceInfo = getDeviceInfoForWallet(wallet, this.walletKitOptions.deviceInfo);
     const connectResponse = {
       event: "connect",
       id: Date.now(),
       payload: {
-        device: getDeviceInfoWithDefaults(this.walletKitOptions.deviceInfo),
+        device: deviceInfo,
         items: [
           {
             name: "ton_addr",
@@ -56499,6 +56347,7 @@ class StorageEventProcessor {
   sessionManager;
   eventRouter;
   eventEmitter;
+  walletManager;
   // Single global processing loop state
   isProcessing = false;
   wakeUpResolver;
@@ -56508,13 +56357,14 @@ class StorageEventProcessor {
   recoveryTimeoutId;
   cleanupTimeoutId;
   processorConfig;
-  constructor(processorConfig = {}, eventStore, config, _walletManager, sessionManager, eventRouter, eventEmitter) {
+  constructor(processorConfig = {}, eventStore, config, walletManager, sessionManager, eventRouter, eventEmitter) {
     this.processorConfig = processorConfig;
     this.eventStore = eventStore;
     this.config = config;
     this.sessionManager = sessionManager;
     this.eventRouter = eventRouter;
     this.eventEmitter = eventEmitter;
+    this.walletManager = walletManager;
     if (this.processorConfig.disableEvents) {
       return;
     }
@@ -56706,9 +56556,16 @@ class StorageEventProcessor {
       retryCount
     });
     try {
+      let wallet;
+      let walletAddress;
+      if (walletId) {
+        wallet = this.walletManager.getWallet(walletId);
+        walletAddress = wallet?.getAddress();
+      }
       await this.eventRouter.routeEvent({
         ...event.rawEvent,
-        ...walletId ? { walletId, walletAddress: getAddressFromWalletId(walletId) } : {}
+        ...walletId ? { walletId } : {},
+        ...walletAddress ? { walletAddress } : {}
       });
       await this.eventStore.updateEventStatus(event.id, "completed", "processing");
       log$a.info("Event processing completed", { eventId: event.id });
@@ -58357,8 +58214,8 @@ var srcExports = requireSrc();
 async function bip39ToPrivateKey(mnemonic2) {
   const seed = await srcExports.mnemonicToSeed(mnemonic2.join(" "));
   const TON_DERIVATION_PATH = [44, 607, 0];
-  const seedContainer = await distExports.deriveEd25519Path(seed, TON_DERIVATION_PATH);
-  return distExports.keyPairFromSeed(seedContainer.subarray(0, 32));
+  const seedContainer = await distExports$1.deriveEd25519Path(seed, TON_DERIVATION_PATH);
+  return distExports$1.keyPairFromSeed(seedContainer.subarray(0, 32));
 }
 async function MnemonicToKeyPair(mnemonic2, mnemonicType = "ton") {
   const mnemonicArray = Array.isArray(mnemonic2) ? mnemonic2 : mnemonic2.split(" ");
@@ -58366,7 +58223,7 @@ async function MnemonicToKeyPair(mnemonic2, mnemonicType = "ton") {
     throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, `Invalid mnemonic length: expected 12 or 24 words, got ${mnemonicArray.length}`);
   }
   if (mnemonicType === "ton") {
-    const key = await distExports.mnemonicToWalletKey(mnemonicArray);
+    const key = await distExports$1.mnemonicToWalletKey(mnemonicArray);
     return {
       publicKey: new Uint8Array(key.publicKey),
       secretKey: new Uint8Array(key.secretKey)
@@ -58384,19 +58241,19 @@ async function MnemonicToKeyPair(mnemonic2, mnemonicType = "ton") {
 function DefaultSignature(data, privateKey) {
   let fullKey = privateKey;
   if (fullKey.length === 32) {
-    const keyPair = distExports.keyPairFromSeed(Buffer.from(fullKey));
+    const keyPair = distExports$1.keyPairFromSeed(Buffer.from(fullKey));
     fullKey = keyPair.secretKey;
   }
-  return Uint8ArrayToHex(distExports.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fullKey)));
+  return Uint8ArrayToHex(distExports$1.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fullKey)));
 }
 function createWalletSigner(privateKey) {
   return async (data) => {
     return DefaultSignature(Uint8Array.from(data), privateKey);
   };
 }
-const fakeKeyPair = distExports.keyPairFromSeed(Buffer.alloc(32, 0));
+const fakeKeyPair = distExports$1.keyPairFromSeed(Buffer.alloc(32, 0));
 function FakeSignature(data) {
-  return Uint8ArrayToHex([...distExports.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fakeKeyPair.secretKey))]);
+  return Uint8ArrayToHex([...distExports$1.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fakeKeyPair.secretKey))]);
 }
 class Signer {
   /**
@@ -58420,7 +58277,7 @@ class Signer {
    */
   static async fromPrivateKey(privateKey) {
     const privateKeyBytes = typeof privateKey === "string" ? Uint8Array.from(Buffer.from(privateKey.replace("0x", ""), "hex")) : privateKey;
-    const keyPair = distExports.keyPairFromSeed(Buffer.from(privateKeyBytes));
+    const keyPair = distExports$1.keyPairFromSeed(Buffer.from(privateKeyBytes));
     const signer = createWalletSigner(keyPair.secretKey);
     return {
       sign: signer,
@@ -58433,6 +58290,16 @@ function limitString(data, limit) {
 }
 function toStringTail(data) {
   return distExports$2.beginCell().storeStringTail(limitString(data, 127)).endCell();
+}
+function getUnixtime() {
+  return Math.floor(Date.now() / 1e3);
+}
+const VERSION = "0.0.3";
+function getVersion() {
+  return VERSION;
+}
+function getEventsSubsystem() {
+  return "wallet";
 }
 function storeJettonTransferMessage(src2) {
   return (builder2) => {
@@ -58616,11 +58483,11 @@ class Initializer {
   config;
   networkManager;
   eventEmitter;
-  analyticsApi;
-  constructor(config, eventEmitter, analyticsApi) {
+  analyticsManager;
+  constructor(config, eventEmitter, analyticsManager) {
     this.config = config;
     this.eventEmitter = eventEmitter;
-    this.analyticsApi = analyticsApi;
+    this.analyticsManager = analyticsManager;
   }
   /**
    * Initialize all components
@@ -58674,8 +58541,8 @@ class Initializer {
     const sessionManager = new SessionManager(storage, walletManager);
     await sessionManager.initialize();
     const eventStore = new StorageEventStore(storage);
-    const eventRouter = new EventRouter(this.eventEmitter, sessionManager, walletManager, this.config, this.analyticsApi);
-    const bridgeManager = new BridgeManager(options?.walletManifest, options?.bridge, sessionManager, storage, eventStore, eventRouter, options, this.eventEmitter, this.analyticsApi);
+    const eventRouter = new EventRouter(options, this.eventEmitter, sessionManager, walletManager, this.analyticsManager);
+    const bridgeManager = new BridgeManager(options?.walletManifest, options?.bridge, sessionManager, storage, eventStore, eventRouter, options, this.eventEmitter, this.analyticsManager);
     eventRouter.setBridgeManager(bridgeManager);
     await bridgeManager.start();
     const eventProcessor = new StorageEventProcessor(options?.eventProcessor, eventStore, DEFAULT_DURABLE_EVENTS_CONFIG, walletManager, sessionManager, eventRouter, this.eventEmitter);
@@ -58691,7 +58558,7 @@ class Initializer {
    * Initialize processors
    */
   initializeProcessors(sessionManager, bridgeManager, walletManager) {
-    const requestProcessor = new RequestProcessor(this.config, sessionManager, bridgeManager, walletManager, this.analyticsApi);
+    const requestProcessor = new RequestProcessor(this.config, sessionManager, bridgeManager, walletManager, this.analyticsManager);
     return {
       requestProcessor
     };
@@ -60556,10 +60423,8 @@ class HttpClient {
     return this.customFetch(`${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`, {
       ...requestParams,
       headers: {
-        ...requestParams.headers || {}
-        // ...(type && type !== ContentType.FormData
-        //   ? { "Content-Type": type }
-        //   : {}),
+        ...requestParams.headers || {},
+        ...type && type !== ContentType.FormData ? { "Content-Type": type } : {}
       },
       signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
       body: typeof body === "undefined" || body === null ? null : payloadFormatter(body)
@@ -60601,29 +60466,199 @@ class Api extends HttpClient {
       method: "POST",
       body: events,
       type: ContentType.Json,
-      ...params,
-      credentials: "include"
+      ...params
     })
   };
 }
-const log$5 = globalLogger.createChild("AnalyticsApi");
-class AnalyticsApi {
+function pascalToKebab(value) {
+  return value.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+}
+const log$5 = globalLogger.createChild("AnalyticsManager");
+class AnalyticsManager {
   api;
-  constructor(config) {
-    if (config?.enabled) {
-      this.api = new Api({
-        baseUrl: config?.endpoint ?? "https://analytics.ton.org"
-      });
+  baseEvent;
+  appInfo;
+  events = [];
+  timeoutId = null;
+  isProcessing = false;
+  backoff = 1;
+  currentBatchTimeoutMs;
+  batchTimeoutMs;
+  maxBatchSize;
+  maxQueueSize;
+  static HTTP_STATUS = {
+    TOO_MANY_REQUESTS: 429,
+    CLIENT_ERROR_START: 400,
+    SERVER_ERROR_START: 500
+  };
+  static MAX_BACKOFF_ATTEMPTS = 5;
+  static BACKOFF_MULTIPLIER = 2;
+  constructor(options) {
+    this.batchTimeoutMs = options.batchTimeoutMs ?? 5e3;
+    this.currentBatchTimeoutMs = this.batchTimeoutMs;
+    this.maxBatchSize = options.maxBatchSize ?? 100;
+    this.maxQueueSize = options.maxQueueSize ?? 1e3;
+    this.appInfo = options.appInfo;
+    this.api = new Api({
+      baseUrl: options.endpoint ?? "https://analytics.ton.org"
+    });
+    this.baseEvent = {
+      version: getVersion(),
+      subsystem: getEventsSubsystem(),
+      client_environment: options.appInfo?.env ?? "wallet",
+      platform: options.appInfo?.platform,
+      browser: options.appInfo?.browser,
+      wallet_app_name: options.appInfo?.appName,
+      wallet_app_version: options.appInfo?.appVersion
+    };
+  }
+  scoped(sharedData) {
+    return new Proxy(this, {
+      get(target, prop) {
+        const propName = prop.toString();
+        if (propName.startsWith("emit")) {
+          const eventNamePascal = propName.replace("emit", "");
+          const eventNameKebab = pascalToKebab(eventNamePascal);
+          return function(event) {
+            const executedData = Object.fromEntries(Object.entries(sharedData ?? {}).map(([key, value]) => [
+              key,
+              typeof value === "function" ? value() : value
+            ]));
+            return target.emit({
+              event_name: eventNameKebab,
+              ...executedData,
+              ...event
+            });
+          };
+        }
+        return Reflect.get(target, prop);
+      }
+    });
+  }
+  emit(event) {
+    const enhancedEvent = {
+      ...this.baseEvent,
+      ...event,
+      event_id: v7(),
+      trace_id: event.trace_id ?? v7(),
+      client_timestamp: getUnixtime()
+    };
+    if (this.appInfo?.getLocale) {
+      enhancedEvent.locale = this.appInfo.getLocale();
+    }
+    if (this.appInfo?.getCurrentUserId) {
+      enhancedEvent.user_id = this.appInfo.getCurrentUserId();
+    }
+    log$5.debug("Analytics event emitted", { event: enhancedEvent });
+    this.events.push(enhancedEvent);
+    if (this.events.length > this.maxQueueSize) {
+      const removed = this.events.length - this.maxQueueSize;
+      this.events = this.events.slice(removed);
+      log$5.warn("Analytics queue overflow, dropped oldest events", { count: removed });
+    }
+    if (this.events.length >= this.maxBatchSize) {
+      void this.flush();
+      return;
+    }
+    this.startTimeout();
+  }
+  startTimeout() {
+    if (this.timeoutId || this.isProcessing) {
+      return;
+    }
+    this.timeoutId = setTimeout(() => {
+      void this.flush();
+    }, this.currentBatchTimeoutMs);
+  }
+  async flush() {
+    if (this.isProcessing || this.events.length === 0) {
+      return;
+    }
+    this.clearTimeout();
+    this.isProcessing = true;
+    const eventsToSend = this.extractEventsToSend();
+    try {
+      await this.processEventsBatch(eventsToSend);
+      log$5.debug("Analytics events sent successfully");
+    } catch (error2) {
+      this.restoreEvents(eventsToSend);
+      log$5.error("Failed to send analytics events", { error: error2 });
+    } finally {
+      this.isProcessing = false;
+      this.scheduleNextFlushIfNeeded();
+    }
+  }
+  clearTimeout() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
+  }
+  extractEventsToSend() {
+    const eventsToSend = this.events.slice(0, this.maxBatchSize);
+    this.events = this.events.slice(this.maxBatchSize);
+    return eventsToSend;
+  }
+  async processEventsBatch(eventsToSend) {
+    log$5.debug("Sending analytics events", { count: eventsToSend.length });
+    try {
+      const response = await this.sendEvents(eventsToSend);
+      this.handleResponse(response);
+    } catch (err) {
+      this.handleUnknownError(err);
+    }
+  }
+  handleResponse(response) {
+    const { status, statusText } = response;
+    if (this.isTooManyRequests(status)) {
+      this.handleTooManyRequests(status, statusText);
+    } else if (this.isClientError(status)) {
+      this.handleClientError(status, statusText);
+    } else if (this.isServerError(status)) {
+      this.handleUnknownError({ status, statusText });
+    }
+  }
+  restoreEvents(eventsToSend) {
+    this.events.unshift(...eventsToSend);
+    if (this.events.length > this.maxQueueSize) {
+      const removed = this.events.length - this.maxQueueSize;
+      this.events = this.events.slice(0, this.maxQueueSize);
+      log$5.warn("Analytics queue overflow after restore, dropped oldest events", { count: removed });
+    }
+  }
+  scheduleNextFlushIfNeeded() {
+    if (this.events.length > 0) {
+      this.startTimeout();
     }
   }
   async sendEvents(events) {
-    await this.api?.events.eventsCreate(events).catch(() => {
-    });
+    return await this.api.events.eventsCreate(events);
   }
-  async sendEventsWithErrors(events) {
-    await this.api?.events.eventsCreate(events).catch((error2) => {
-      log$5.info("Failed to send events", { error: error2 });
-    });
+  isClientError(status) {
+    return status >= AnalyticsManager.HTTP_STATUS.CLIENT_ERROR_START && status < AnalyticsManager.HTTP_STATUS.SERVER_ERROR_START;
+  }
+  isServerError(status) {
+    return status >= AnalyticsManager.HTTP_STATUS.SERVER_ERROR_START;
+  }
+  isTooManyRequests(status) {
+    return status === AnalyticsManager.HTTP_STATUS.TOO_MANY_REQUESTS;
+  }
+  handleClientError(status, statusText) {
+    log$5.error("Analytics API client error", { status, statusText });
+  }
+  handleUnknownError(error2) {
+    if (this.backoff < AnalyticsManager.MAX_BACKOFF_ATTEMPTS) {
+      this.backoff++;
+      this.currentBatchTimeoutMs *= AnalyticsManager.BACKOFF_MULTIPLIER;
+      throw new Error(`Unknown analytics API error: ${error2}`);
+    } else {
+      this.currentBatchTimeoutMs = this.batchTimeoutMs;
+      this.backoff = 1;
+      return;
+    }
+  }
+  handleTooManyRequests(status, statusText) {
+    throw new Error(`Analytics API error: ${status} ${statusText}`);
   }
 }
 function toNftCollection(address, data) {
@@ -60848,7 +60883,7 @@ function toTonDnsCategory(category) {
   if (typeof category === "number") {
     return BigInt(category);
   }
-  return BigInt("0x" + distExports.sha256_sync(category).toString("hex"));
+  return BigInt("0x" + distExports$1.sha256_sync(category).toString("hex"));
 }
 async function dnsResolve(client, domain, category, resolver) {
   let currentResolver = resolver ?? ROOT_DNS_RESOLVER_MAINNET;
@@ -61444,15 +61479,22 @@ class TonWalletKit {
   // State
   isInitialized = false;
   initializationPromise;
-  analyticsApi;
+  analyticsManager;
   constructor(options) {
     this.config = options;
     if (options?.analytics?.enabled) {
-      this.analyticsApi = new AnalyticsApi(options?.analytics);
+      this.analyticsManager = new AnalyticsManager({
+        ...options?.analytics,
+        appInfo: {
+          appName: options?.deviceInfo?.appName,
+          appVersion: options?.deviceInfo?.appVersion,
+          ...options?.analytics?.appInfo
+        }
+      });
     }
     this.networkManager = new NetworkManager(options);
     this.eventEmitter = new EventEmitter();
-    this.initializer = new Initializer(options, this.eventEmitter, this.analyticsApi);
+    this.initializer = new Initializer(options, this.eventEmitter, this.analyticsManager);
     this.initializationPromise = this.initialize();
     this.jettonsManager = new JettonsManager(1e4, this.eventEmitter, this.networkManager);
     this.eventEmitter.on("restoreConnection", async (event) => {
@@ -61471,7 +61513,7 @@ class TonWalletKit {
         return;
       }
       const walletAddress = wallet.getAddress();
-      const deviceInfo = getDeviceInfoWithDefaults(this.config.deviceInfo);
+      const deviceInfo = getDeviceInfoForWallet(wallet, this.config.deviceInfo);
       const connectResponse = {
         event: "connect",
         id: Date.now(),
@@ -62242,6 +62284,18 @@ class WalletV5R1Adapter {
     const signature = await this.sign(message);
     return signature;
   }
+  getSupportedFeatures() {
+    return [
+      {
+        name: "SendTransaction",
+        maxMessages: 255
+      },
+      {
+        name: "SignData",
+        types: ["binary", "cell", "text"]
+      }
+    ];
+  }
 }
 function walletV5ConfigToCell(config) {
   return distExports$2.beginCell().storeBit(config.signatureAllowed).storeUint(config.seqno, 32).storeUint(config.walletId, 32).storeUint(config.publicKey, 256).storeDict(config.extensions, distExports$2.Dictionary.Keys.BigUint(256), distExports$2.Dictionary.Values.BigInt(1)).endCell();
@@ -62659,6 +62713,18 @@ class WalletV4R2Adapter {
     const signature = await this.sign(message);
     return signature;
   }
+  getSupportedFeatures() {
+    return [
+      {
+        name: "SendTransaction",
+        maxMessages: 4
+      },
+      {
+        name: "SignData",
+        types: ["binary", "cell", "text"]
+      }
+    ];
+  }
 }
 var __async$1 = (__this, __arguments, generator2) => {
   return new Promise((resolve, reject) => {
@@ -62780,7 +62846,7 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
     walletManifest: configuration.walletManifest,
     deviceInfo: configuration.deviceInfo,
     bridge: configuration.bridge,
-    eventProcessor: {},
+    eventProcessor: configuration.eventsConfiguration,
     storage: storage ? new SwiftStorageAdapter(storage) : new MemoryStorageAdapter({})
   });
   console.log("🚀 WalletKit iOS Bridge starting...");
