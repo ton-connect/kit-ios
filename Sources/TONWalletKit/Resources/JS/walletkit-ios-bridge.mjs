@@ -29033,13 +29033,6 @@ class WalletManager {
     return this.wallets.get(walletId) || void 0;
   }
   /**
-   * Get wallet by address and network (convenience method)
-   */
-  getWalletByAddressAndNetwork(address, network) {
-    const walletId = createWalletId(network, address);
-    return this.getWallet(walletId);
-  }
-  /**
    * Add a wallet with validation
    */
   async addWallet(wallet) {
@@ -36976,7 +36969,7 @@ class TransactionHandler extends BasicHandler {
     }
     const request = requestValidation.result;
     let preview;
-    if (!this.config.eventProcessor?.disableTranscationEmulation) {
+    if (!this.config.eventProcessor?.disableTransactionEmulation) {
       try {
         preview = await CallForSuccess(() => createTransactionPreview(wallet.client, request, wallet));
         if (preview.result === Result$1.success && preview.trace) {
@@ -58544,7 +58537,11 @@ class Initializer {
     const eventRouter = new EventRouter(options, this.eventEmitter, sessionManager, walletManager, this.analyticsManager);
     const bridgeManager = new BridgeManager(options?.walletManifest, options?.bridge, sessionManager, storage, eventStore, eventRouter, options, this.eventEmitter, this.analyticsManager);
     eventRouter.setBridgeManager(bridgeManager);
-    await bridgeManager.start();
+    bridgeManager.start().then(() => {
+      log$8.info("Bridge manager started successfully");
+    }).catch((e) => {
+      log$8.error("Could not start bridge manager", { error: e?.toString?.() });
+    });
     const eventProcessor = new StorageEventProcessor(options?.eventProcessor, eventStore, DEFAULT_DURABLE_EVENTS_CONFIG, walletManager, sessionManager, eventRouter, this.eventEmitter);
     return {
       walletManager,
@@ -61618,16 +61615,6 @@ class TonWalletKit {
       return void 0;
     }
     return this.walletManager.getWallet(walletId);
-  }
-  /**
-   * Get wallet by address and network
-   */
-  getWalletByAddressAndNetwork(address, network) {
-    if (!this.isInitialized) {
-      log$2.warn("TonWalletKit not yet initialized, returning undefined");
-      return void 0;
-    }
-    return this.walletManager.getWalletByAddressAndNetwork(address, network);
   }
   async addWallet(adapter) {
     await this.ensureInitialized();

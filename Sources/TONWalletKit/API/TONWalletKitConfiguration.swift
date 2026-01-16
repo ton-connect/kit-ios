@@ -80,11 +80,11 @@ extension TONWalletKitConfiguration {
     
     public struct EventsConfiguration: Codable, Hashable {
         let disableEvents: Bool
-        let disableTranscationEmulation: Bool
+        let disableTransactionEmulation: Bool
         
-        public init(disableEvents: Bool = false, disableTranscationEmulation: Bool = false) {
+        public init(disableEvents: Bool = false, disableTransactionEmulation: Bool = false) {
             self.disableEvents = disableEvents
-            self.disableTranscationEmulation = disableTranscationEmulation
+            self.disableTransactionEmulation = disableTransactionEmulation
         }
     }
     
