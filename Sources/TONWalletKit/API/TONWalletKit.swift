@@ -129,20 +129,10 @@ public class TONWalletKit {
         let value: JSValue = try await walletKit.getWallets()
         let jsWallets = value.toObjectsArray()
         
-        var wallets: [TONWallet] = []
-        
-        for jsWallet in jsWallets {
-            let address: String = try await jsWallet.getAddress()
-            let id: String = try await jsWallet.getWalletId()
-            
-            let wallet = TONWallet(
-                jsWallet: jsWallet,
-                id: id,
-                address: try TONUserFriendlyAddress(value: address)
-            )
-            wallets.append(wallet)
+        return try jsWallets.map {
+            let wallet: TONWallet = try $0.decode()
+            return wallet
         }
-        return wallets
     }
 
     public func send(transaction: TONTransactionRequest, from wallet: any TONWalletProtocol) async throws {

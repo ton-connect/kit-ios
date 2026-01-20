@@ -28,7 +28,7 @@ import Foundation
 
 public protocol TONWalletAdapterProtocol: AnyObject {
 
-    func identifier() throws -> String
+    func identifier() throws -> TONWalletID
     func publicKey() -> TONHex
     func network() throws -> TONNetwork
     func address(testnet: Bool) throws -> TONUserFriendlyAddress
@@ -39,7 +39,7 @@ public protocol TONWalletAdapterProtocol: AnyObject {
 }
 
 public protocol TONWalletProtocol {
-    var id: String { get }
+    var id: TONWalletID { get }
     var address: TONUserFriendlyAddress { get }
     
     func balance() async throws -> TONBalance

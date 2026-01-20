@@ -8,7 +8,8 @@
   "modelNamePrefix": "TON",
   "languageSpecificPrimitives": [
       "BigInt",
-      "TONTransferRequest"
+      "TONTransferRequest",
+      "TONConnectSession"
   ],
   "typeMappings": {
       "bigInt": "BigInt",

@@ -272,7 +272,7 @@ var hasRequiredLib;
 function requireLib() {
   if (hasRequiredLib) return lib;
   hasRequiredLib = 1;
-  (function(exports) {
+  (function(exports$1) {
     function makeException(ErrorType, message, options) {
       if (options.globals) {
         ErrorType = options.globals[ErrorType.name];
@@ -391,35 +391,35 @@ function requireLib() {
         return Number(xBigInt);
       };
     }
-    exports.any = (value) => {
+    exports$1.any = (value) => {
       return value;
     };
-    exports.undefined = () => {
+    exports$1.undefined = () => {
       return void 0;
     };
-    exports.boolean = (value) => {
+    exports$1.boolean = (value) => {
       return Boolean(value);
     };
-    exports.byte = createIntegerConversion(8, { unsigned: false });
-    exports.octet = createIntegerConversion(8, { unsigned: true });
-    exports.short = createIntegerConversion(16, { unsigned: false });
-    exports["unsigned short"] = createIntegerConversion(16, { unsigned: true });
-    exports.long = createIntegerConversion(32, { unsigned: false });
-    exports["unsigned long"] = createIntegerConversion(32, { unsigned: true });
-    exports["long long"] = createLongLongConversion(64, { unsigned: false });
-    exports["unsigned long long"] = createLongLongConversion(64, { unsigned: true });
-    exports.double = (value, options = {}) => {
+    exports$1.byte = createIntegerConversion(8, { unsigned: false });
+    exports$1.octet = createIntegerConversion(8, { unsigned: true });
+    exports$1.short = createIntegerConversion(16, { unsigned: false });
+    exports$1["unsigned short"] = createIntegerConversion(16, { unsigned: true });
+    exports$1.long = createIntegerConversion(32, { unsigned: false });
+    exports$1["unsigned long"] = createIntegerConversion(32, { unsigned: true });
+    exports$1["long long"] = createLongLongConversion(64, { unsigned: false });
+    exports$1["unsigned long long"] = createLongLongConversion(64, { unsigned: true });
+    exports$1.double = (value, options = {}) => {
       const x2 = toNumber(value, options);
       if (!Number.isFinite(x2)) {
         throw makeException(TypeError, "is not a finite floating-point value", options);
       }
       return x2;
     };
-    exports["unrestricted double"] = (value, options = {}) => {
+    exports$1["unrestricted double"] = (value, options = {}) => {
       const x2 = toNumber(value, options);
       return x2;
     };
-    exports.float = (value, options = {}) => {
+    exports$1.float = (value, options = {}) => {
       const x2 = toNumber(value, options);
       if (!Number.isFinite(x2)) {
         throw makeException(TypeError, "is not a finite floating-point value", options);
@@ -433,7 +433,7 @@ function requireLib() {
       }
       return y2;
     };
-    exports["unrestricted float"] = (value, options = {}) => {
+    exports$1["unrestricted float"] = (value, options = {}) => {
       const x2 = toNumber(value, options);
       if (isNaN(x2)) {
         return x2;
@@ -443,7 +443,7 @@ function requireLib() {
       }
       return Math.fround(x2);
     };
-    exports.DOMString = (value, options = {}) => {
+    exports$1.DOMString = (value, options = {}) => {
       if (options.treatNullAsEmptyString && value === null) {
         return "";
       }
@@ -453,8 +453,8 @@ function requireLib() {
       const StringCtor = options.globals ? options.globals.String : String;
       return StringCtor(value);
     };
-    exports.ByteString = (value, options = {}) => {
-      const x2 = exports.DOMString(value, options);
+    exports$1.ByteString = (value, options = {}) => {
+      const x2 = exports$1.DOMString(value, options);
       let c;
       for (let i = 0; (c = x2.codePointAt(i)) !== void 0; ++i) {
         if (c > 255) {
@@ -463,8 +463,8 @@ function requireLib() {
       }
       return x2;
     };
-    exports.USVString = (value, options = {}) => {
-      const S2 = exports.DOMString(value, options);
+    exports$1.USVString = (value, options = {}) => {
+      const S2 = exports$1.DOMString(value, options);
       const n = S2.length;
       const U2 = [];
       for (let i = 0; i < n; ++i) {
@@ -489,7 +489,7 @@ function requireLib() {
       }
       return U2.join("");
     };
-    exports.object = (value, options = {}) => {
+    exports$1.object = (value, options = {}) => {
       if (value === null || typeof value !== "object" && typeof value !== "function") {
         throw makeException(TypeError, "is not an object", options);
       }
@@ -521,7 +521,7 @@ function requireLib() {
         return true;
       }
     }
-    exports.ArrayBuffer = (value, options = {}) => {
+    exports$1.ArrayBuffer = (value, options = {}) => {
       if (!isNonSharedArrayBuffer(value)) {
         if (options.allowShared && !isSharedArrayBuffer(value)) {
           throw makeException(TypeError, "is not an ArrayBuffer or SharedArrayBuffer", options);
@@ -534,7 +534,7 @@ function requireLib() {
       return value;
     };
     const dvByteLengthGetter = Object.getOwnPropertyDescriptor(DataView.prototype, "byteLength").get;
-    exports.DataView = (value, options = {}) => {
+    exports$1.DataView = (value, options = {}) => {
       try {
         dvByteLengthGetter.call(value);
       } catch (e) {
@@ -565,7 +565,7 @@ function requireLib() {
     ].forEach((func) => {
       const { name } = func;
       const article = /^[AEIOU]/u.test(name) ? "an" : "a";
-      exports[name] = (value, options = {}) => {
+      exports$1[name] = (value, options = {}) => {
         if (!ArrayBuffer.isView(value) || typedArrayNameGetter.call(value) !== name) {
           throw makeException(TypeError, `is not ${article} ${name} object`, options);
         }
@@ -578,7 +578,7 @@ function requireLib() {
         return value;
       };
     });
-    exports.ArrayBufferView = (value, options = {}) => {
+    exports$1.ArrayBufferView = (value, options = {}) => {
       if (!ArrayBuffer.isView(value)) {
         throw makeException(TypeError, "is not a view on an ArrayBuffer or SharedArrayBuffer", options);
       }
@@ -590,7 +590,7 @@ function requireLib() {
       }
       return value;
     };
-    exports.BufferSource = (value, options = {}) => {
+    exports$1.BufferSource = (value, options = {}) => {
       if (ArrayBuffer.isView(value)) {
         if (!options.allowShared && isSharedArrayBuffer(value.buffer)) {
           throw makeException(TypeError, "is a view on a SharedArrayBuffer, which is not allowed", options);
@@ -611,7 +611,7 @@ function requireLib() {
       }
       return value;
     };
-    exports.DOMTimeStamp = exports["unsigned long long"];
+    exports$1.DOMTimeStamp = exports$1["unsigned long long"];
   })(lib);
   return lib;
 }
@@ -620,7 +620,7 @@ var hasRequiredUtils$4;
 function requireUtils$4() {
   if (hasRequiredUtils$4) return utils$4.exports;
   hasRequiredUtils$4 = 1;
-  (function(module, exports) {
+  (function(module, exports$1) {
     function isObject(value) {
       return typeof value === "object" && value !== null || typeof value === "function";
     }
@@ -640,10 +640,10 @@ function requireUtils$4() {
         Object.getOwnPropertyDescriptors(object)
       );
     }
-    const wrapperSymbol = Symbol("wrapper");
-    const implSymbol = Symbol("impl");
-    const sameObjectCaches = Symbol("SameObject caches");
-    const ctorRegistrySymbol = Symbol.for("[webidl2js] constructor registry");
+    const wrapperSymbol = /* @__PURE__ */ Symbol("wrapper");
+    const implSymbol = /* @__PURE__ */ Symbol("impl");
+    const sameObjectCaches = /* @__PURE__ */ Symbol("SameObject caches");
+    const ctorRegistrySymbol = /* @__PURE__ */ Symbol.for("[webidl2js] constructor registry");
     const AsyncIteratorPrototype = Object.getPrototypeOf(Object.getPrototypeOf(async function* () {
     }).prototype);
     function initCtorRegistry(globalObject) {
@@ -691,7 +691,7 @@ function requireUtils$4() {
       const impl = implForWrapper(wrapper);
       return impl ? impl : wrapper;
     }
-    const iterInternalSymbol = Symbol("internal");
+    const iterInternalSymbol = /* @__PURE__ */ Symbol("internal");
     function isArrayIndexPropName(P2) {
       if (typeof P2 !== "string") {
         return false;
@@ -730,21 +730,21 @@ function requireUtils$4() {
       }
       return { value: result, done: false };
     }
-    const supportsPropertyIndex = Symbol("supports property index");
-    const supportedPropertyIndices = Symbol("supported property indices");
-    const supportsPropertyName = Symbol("supports property name");
-    const supportedPropertyNames = Symbol("supported property names");
-    const indexedGet = Symbol("indexed property get");
-    const indexedSetNew = Symbol("indexed property set new");
-    const indexedSetExisting = Symbol("indexed property set existing");
-    const namedGet = Symbol("named property get");
-    const namedSetNew = Symbol("named property set new");
-    const namedSetExisting = Symbol("named property set existing");
-    const namedDelete = Symbol("named property delete");
-    const asyncIteratorNext = Symbol("async iterator get the next iteration result");
-    const asyncIteratorReturn = Symbol("async iterator return steps");
-    const asyncIteratorInit = Symbol("async iterator initialization steps");
-    const asyncIteratorEOI = Symbol("async iterator end of iteration");
+    const supportsPropertyIndex = /* @__PURE__ */ Symbol("supports property index");
+    const supportedPropertyIndices = /* @__PURE__ */ Symbol("supported property indices");
+    const supportsPropertyName = /* @__PURE__ */ Symbol("supports property name");
+    const supportedPropertyNames = /* @__PURE__ */ Symbol("supported property names");
+    const indexedGet = /* @__PURE__ */ Symbol("indexed property get");
+    const indexedSetNew = /* @__PURE__ */ Symbol("indexed property set new");
+    const indexedSetExisting = /* @__PURE__ */ Symbol("indexed property set existing");
+    const namedGet = /* @__PURE__ */ Symbol("named property get");
+    const namedSetNew = /* @__PURE__ */ Symbol("named property set new");
+    const namedSetExisting = /* @__PURE__ */ Symbol("named property set existing");
+    const namedDelete = /* @__PURE__ */ Symbol("named property delete");
+    const asyncIteratorNext = /* @__PURE__ */ Symbol("async iterator get the next iteration result");
+    const asyncIteratorReturn = /* @__PURE__ */ Symbol("async iterator return steps");
+    const asyncIteratorInit = /* @__PURE__ */ Symbol("async iterator initialization steps");
+    const asyncIteratorEOI = /* @__PURE__ */ Symbol("async iterator end of iteration");
     module.exports = {
       isObject,
       hasOwn,
@@ -1535,7 +1535,7 @@ function requireUrlStateMachine() {
       ws: 80,
       wss: 443
     };
-    const failure = Symbol("failure");
+    const failure = /* @__PURE__ */ Symbol("failure");
     function countSymbols(str) {
       return [...str].length;
     }
@@ -2798,7 +2798,7 @@ var hasRequiredURLSearchParams;
 function requireURLSearchParams() {
   if (hasRequiredURLSearchParams) return URLSearchParams;
   hasRequiredURLSearchParams = 1;
-  (function(exports) {
+  (function(exports$1) {
     const conversions = requireLib();
     const utils2 = requireUtils$4();
     const Function2 = require_Function();
@@ -2806,19 +2806,19 @@ function requireURLSearchParams() {
     const implSymbol = utils2.implSymbol;
     const ctorRegistrySymbol = utils2.ctorRegistrySymbol;
     const interfaceName = "URLSearchParams";
-    exports.is = (value) => {
+    exports$1.is = (value) => {
       return utils2.isObject(value) && utils2.hasOwn(value, implSymbol) && value[implSymbol] instanceof Impl.implementation;
     };
-    exports.isImpl = (value) => {
+    exports$1.isImpl = (value) => {
       return utils2.isObject(value) && value instanceof Impl.implementation;
     };
-    exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
-      if (exports.is(value)) {
+    exports$1.convert = (globalObject, value, { context = "The provided value" } = {}) => {
+      if (exports$1.is(value)) {
         return utils2.implForWrapper(value);
       }
       throw new globalObject.TypeError(`${context} is not of type 'URLSearchParams'.`);
     };
-    exports.createDefaultIterator = (globalObject, target, kind) => {
+    exports$1.createDefaultIterator = (globalObject, target, kind) => {
       const ctorRegistry = globalObject[ctorRegistrySymbol];
       const iteratorPrototype = ctorRegistry["URLSearchParams Iterator"];
       const iterator = Object.create(iteratorPrototype);
@@ -2838,19 +2838,19 @@ function requireURLSearchParams() {
       }
       return Object.create(proto);
     }
-    exports.create = (globalObject, constructorArgs, privateData) => {
+    exports$1.create = (globalObject, constructorArgs, privateData) => {
       const wrapper = makeWrapper(globalObject);
-      return exports.setup(wrapper, globalObject, constructorArgs, privateData);
+      return exports$1.setup(wrapper, globalObject, constructorArgs, privateData);
     };
-    exports.createImpl = (globalObject, constructorArgs, privateData) => {
-      const wrapper = exports.create(globalObject, constructorArgs, privateData);
+    exports$1.createImpl = (globalObject, constructorArgs, privateData) => {
+      const wrapper = exports$1.create(globalObject, constructorArgs, privateData);
       return utils2.implForWrapper(wrapper);
     };
-    exports._internalSetup = (wrapper, globalObject) => {
+    exports$1._internalSetup = (wrapper, globalObject) => {
     };
-    exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) => {
+    exports$1.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) => {
       privateData.wrapper = wrapper;
-      exports._internalSetup(wrapper, globalObject);
+      exports$1._internalSetup(wrapper, globalObject);
       Object.defineProperty(wrapper, implSymbol, {
         value: new Impl.implementation(globalObject, constructorArgs, privateData),
         configurable: true
@@ -2861,9 +2861,9 @@ function requireURLSearchParams() {
       }
       return wrapper;
     };
-    exports.new = (globalObject, newTarget) => {
+    exports$1.new = (globalObject, newTarget) => {
       const wrapper = makeWrapper(globalObject, newTarget);
-      exports._internalSetup(wrapper, globalObject);
+      exports$1._internalSetup(wrapper, globalObject);
       Object.defineProperty(wrapper, implSymbol, {
         value: Object.create(Impl.implementation.prototype),
         configurable: true
@@ -2875,7 +2875,7 @@ function requireURLSearchParams() {
       return wrapper[implSymbol];
     };
     const exposed = /* @__PURE__ */ new Set(["Window", "Worker"]);
-    exports.install = (globalObject, globalNames) => {
+    exports$1.install = (globalObject, globalNames) => {
       if (!globalNames.some((globalName) => exposed.has(globalName))) {
         return;
       }
@@ -2953,11 +2953,11 @@ function requireURLSearchParams() {
             }
             args.push(curArg);
           }
-          return exports.setup(Object.create(new.target.prototype), globalObject, args);
+          return exports$1.setup(Object.create(new.target.prototype), globalObject, args);
         }
         append(name, value) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError(
               "'append' called on an object that is not a valid instance of URLSearchParams."
             );
@@ -2988,7 +2988,7 @@ function requireURLSearchParams() {
         }
         delete(name) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError(
               "'delete' called on an object that is not a valid instance of URLSearchParams."
             );
@@ -3021,7 +3021,7 @@ function requireURLSearchParams() {
         }
         get(name) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get' called on an object that is not a valid instance of URLSearchParams.");
           }
           if (arguments.length < 1) {
@@ -3042,7 +3042,7 @@ function requireURLSearchParams() {
         }
         getAll(name) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError(
               "'getAll' called on an object that is not a valid instance of URLSearchParams."
             );
@@ -3065,7 +3065,7 @@ function requireURLSearchParams() {
         }
         has(name) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'has' called on an object that is not a valid instance of URLSearchParams.");
           }
           if (arguments.length < 1) {
@@ -3096,7 +3096,7 @@ function requireURLSearchParams() {
         }
         set(name, value) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set' called on an object that is not a valid instance of URLSearchParams.");
           }
           if (arguments.length < 2) {
@@ -3125,14 +3125,14 @@ function requireURLSearchParams() {
         }
         sort() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'sort' called on an object that is not a valid instance of URLSearchParams.");
           }
           return utils2.tryWrapperForImpl(esValue[implSymbol].sort());
         }
         toString() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError(
               "'toString' called on an object that is not a valid instance of URLSearchParams."
             );
@@ -3140,29 +3140,29 @@ function requireURLSearchParams() {
           return esValue[implSymbol].toString();
         }
         keys() {
-          if (!exports.is(this)) {
+          if (!exports$1.is(this)) {
             throw new globalObject.TypeError("'keys' called on an object that is not a valid instance of URLSearchParams.");
           }
-          return exports.createDefaultIterator(globalObject, this, "key");
+          return exports$1.createDefaultIterator(globalObject, this, "key");
         }
         values() {
-          if (!exports.is(this)) {
+          if (!exports$1.is(this)) {
             throw new globalObject.TypeError(
               "'values' called on an object that is not a valid instance of URLSearchParams."
             );
           }
-          return exports.createDefaultIterator(globalObject, this, "value");
+          return exports$1.createDefaultIterator(globalObject, this, "value");
         }
         entries() {
-          if (!exports.is(this)) {
+          if (!exports$1.is(this)) {
             throw new globalObject.TypeError(
               "'entries' called on an object that is not a valid instance of URLSearchParams."
             );
           }
-          return exports.createDefaultIterator(globalObject, this, "key+value");
+          return exports$1.createDefaultIterator(globalObject, this, "key+value");
         }
         forEach(callback) {
-          if (!exports.is(this)) {
+          if (!exports$1.is(this)) {
             throw new globalObject.TypeError(
               "'forEach' called on an object that is not a valid instance of URLSearchParams."
             );
@@ -3187,7 +3187,7 @@ function requireURLSearchParams() {
         }
         get size() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError(
               "'get size' called on an object that is not a valid instance of URLSearchParams."
             );
@@ -3436,20 +3436,20 @@ var hasRequiredURL;
 function requireURL() {
   if (hasRequiredURL) return URL$1;
   hasRequiredURL = 1;
-  (function(exports) {
+  (function(exports$1) {
     const conversions = requireLib();
     const utils2 = requireUtils$4();
     const implSymbol = utils2.implSymbol;
     const ctorRegistrySymbol = utils2.ctorRegistrySymbol;
     const interfaceName = "URL";
-    exports.is = (value) => {
+    exports$1.is = (value) => {
       return utils2.isObject(value) && utils2.hasOwn(value, implSymbol) && value[implSymbol] instanceof Impl.implementation;
     };
-    exports.isImpl = (value) => {
+    exports$1.isImpl = (value) => {
       return utils2.isObject(value) && value instanceof Impl.implementation;
     };
-    exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
-      if (exports.is(value)) {
+    exports$1.convert = (globalObject, value, { context = "The provided value" } = {}) => {
+      if (exports$1.is(value)) {
         return utils2.implForWrapper(value);
       }
       throw new globalObject.TypeError(`${context} is not of type 'URL'.`);
@@ -3464,19 +3464,19 @@ function requireURL() {
       }
       return Object.create(proto);
     }
-    exports.create = (globalObject, constructorArgs, privateData) => {
+    exports$1.create = (globalObject, constructorArgs, privateData) => {
       const wrapper = makeWrapper(globalObject);
-      return exports.setup(wrapper, globalObject, constructorArgs, privateData);
+      return exports$1.setup(wrapper, globalObject, constructorArgs, privateData);
     };
-    exports.createImpl = (globalObject, constructorArgs, privateData) => {
-      const wrapper = exports.create(globalObject, constructorArgs, privateData);
+    exports$1.createImpl = (globalObject, constructorArgs, privateData) => {
+      const wrapper = exports$1.create(globalObject, constructorArgs, privateData);
       return utils2.implForWrapper(wrapper);
     };
-    exports._internalSetup = (wrapper, globalObject) => {
+    exports$1._internalSetup = (wrapper, globalObject) => {
     };
-    exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) => {
+    exports$1.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) => {
       privateData.wrapper = wrapper;
-      exports._internalSetup(wrapper, globalObject);
+      exports$1._internalSetup(wrapper, globalObject);
       Object.defineProperty(wrapper, implSymbol, {
         value: new Impl.implementation(globalObject, constructorArgs, privateData),
         configurable: true
@@ -3487,9 +3487,9 @@ function requireURL() {
       }
       return wrapper;
     };
-    exports.new = (globalObject, newTarget) => {
+    exports$1.new = (globalObject, newTarget) => {
       const wrapper = makeWrapper(globalObject, newTarget);
-      exports._internalSetup(wrapper, globalObject);
+      exports$1._internalSetup(wrapper, globalObject);
       Object.defineProperty(wrapper, implSymbol, {
         value: Object.create(Impl.implementation.prototype),
         configurable: true
@@ -3501,7 +3501,7 @@ function requireURL() {
       return wrapper[implSymbol];
     };
     const exposed = /* @__PURE__ */ new Set(["Window", "Worker"]);
-    exports.install = (globalObject, globalNames) => {
+    exports$1.install = (globalObject, globalNames) => {
       if (!globalNames.some((globalName) => exposed.has(globalName))) {
         return;
       }
@@ -3532,25 +3532,25 @@ function requireURL() {
             }
             args.push(curArg);
           }
-          return exports.setup(Object.create(new.target.prototype), globalObject, args);
+          return exports$1.setup(Object.create(new.target.prototype), globalObject, args);
         }
         toJSON() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'toJSON' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol].toJSON();
         }
         get href() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get href' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["href"];
         }
         set href(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set href' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -3561,28 +3561,28 @@ function requireURL() {
         }
         toString() {
           const esValue = this;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'toString' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["href"];
         }
         get origin() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get origin' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["origin"];
         }
         get protocol() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get protocol' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["protocol"];
         }
         set protocol(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set protocol' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -3593,14 +3593,14 @@ function requireURL() {
         }
         get username() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get username' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["username"];
         }
         set username(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set username' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -3611,14 +3611,14 @@ function requireURL() {
         }
         get password() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get password' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["password"];
         }
         set password(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set password' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -3629,14 +3629,14 @@ function requireURL() {
         }
         get host() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get host' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["host"];
         }
         set host(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set host' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -3647,14 +3647,14 @@ function requireURL() {
         }
         get hostname() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get hostname' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["hostname"];
         }
         set hostname(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set hostname' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -3665,14 +3665,14 @@ function requireURL() {
         }
         get port() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get port' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["port"];
         }
         set port(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set port' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -3683,14 +3683,14 @@ function requireURL() {
         }
         get pathname() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get pathname' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["pathname"];
         }
         set pathname(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set pathname' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -3701,14 +3701,14 @@ function requireURL() {
         }
         get search() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get search' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["search"];
         }
         set search(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set search' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -3719,7 +3719,7 @@ function requireURL() {
         }
         get searchParams() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get searchParams' called on an object that is not a valid instance of URL.");
           }
           return utils2.getSameObject(this, "searchParams", () => {
@@ -3728,14 +3728,14 @@ function requireURL() {
         }
         get hash() {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'get hash' called on an object that is not a valid instance of URL.");
           }
           return esValue[implSymbol]["hash"];
         }
         set hash(V2) {
           const esValue = this !== null && this !== void 0 ? this : globalObject;
-          if (!exports.is(esValue)) {
+          if (!exports$1.is(esValue)) {
             throw new globalObject.TypeError("'set hash' called on an object that is not a valid instance of URL.");
           }
           V2 = conversions["USVString"](V2, {
@@ -4061,15 +4061,15 @@ var hasRequiredBuffer;
 function requireBuffer() {
   if (hasRequiredBuffer) return buffer;
   hasRequiredBuffer = 1;
-  (function(exports) {
+  (function(exports$1) {
     const base64 = requireBase64Js();
     const ieee7542 = requireIeee754();
     const customInspectSymbol = typeof Symbol === "function" && typeof Symbol["for"] === "function" ? Symbol["for"]("nodejs.util.inspect.custom") : null;
-    exports.Buffer = Buffer2;
-    exports.SlowBuffer = SlowBuffer;
-    exports.INSPECT_MAX_BYTES = 50;
+    exports$1.Buffer = Buffer2;
+    exports$1.SlowBuffer = SlowBuffer;
+    exports$1.INSPECT_MAX_BYTES = 50;
     const K_MAX_LENGTH = 2147483647;
-    exports.kMaxLength = K_MAX_LENGTH;
+    exports$1.kMaxLength = K_MAX_LENGTH;
     Buffer2.TYPED_ARRAY_SUPPORT = typedArraySupport();
     if (!Buffer2.TYPED_ARRAY_SUPPORT && typeof console !== "undefined" && typeof console.error === "function") {
       console.error(
@@ -4497,9 +4497,9 @@ function requireBuffer() {
       if (this === b2) return true;
       return Buffer2.compare(this, b2) === 0;
     };
-    Buffer2.prototype.inspect = function inspect() {
+    Buffer2.prototype.inspect = function inspect2() {
       let str = "";
-      const max = exports.INSPECT_MAX_BYTES;
+      const max = exports$1.INSPECT_MAX_BYTES;
       str = this.toString("hex", 0, max).replace(/(.{2})/g, "$1 ").trim();
       if (this.length > max) str += " ... ";
       return "<Buffer " + str + ">";
@@ -8365,14 +8365,15 @@ class SessionCrypto {
 }
 var dist$4 = {};
 var Address$1 = {};
-var symbol_inspect;
-var hasRequiredSymbol_inspect;
-function requireSymbol_inspect() {
-  if (hasRequiredSymbol_inspect) return symbol_inspect;
-  hasRequiredSymbol_inspect = 1;
-  const SymbolInspect = Symbol.for("nodejs.util.inspect.custom");
-  symbol_inspect = SymbolInspect;
-  return symbol_inspect;
+var inspect = {};
+var hasRequiredInspect;
+function requireInspect() {
+  if (hasRequiredInspect) return inspect;
+  hasRequiredInspect = 1;
+  Object.defineProperty(inspect, "__esModule", { value: true });
+  inspect.inspectSymbol = void 0;
+  inspect.inspectSymbol = /* @__PURE__ */ Symbol.for("nodejs.util.inspect.custom");
+  return inspect;
 }
 var crc16$1 = {};
 var hasRequiredCrc16$1;
@@ -8409,13 +8410,10 @@ var hasRequiredAddress$1;
 function requireAddress$1() {
   if (hasRequiredAddress$1) return Address$1;
   hasRequiredAddress$1 = 1;
-  var __importDefault = Address$1 && Address$1.__importDefault || function(mod) {
-    return mod && mod.__esModule ? mod : { "default": mod };
-  };
   var _a2;
   Object.defineProperty(Address$1, "__esModule", { value: true });
   Address$1.address = Address$1.Address = void 0;
-  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const inspect_1 = requireInspect();
   const crc16_1 = requireCrc16$1();
   const bounceable_tag = 17;
   const non_bounceable_tag = 81;
@@ -8572,7 +8570,7 @@ function requireAddress$1() {
     }
   }
   Address$1.Address = Address2;
-  _a2 = symbol_inspect_1.default;
+  _a2 = inspect_1.inspectSymbol;
   function address(src2) {
     return Address2.parse(src2);
   }
@@ -8584,13 +8582,10 @@ var hasRequiredExternalAddress$1;
 function requireExternalAddress$1() {
   if (hasRequiredExternalAddress$1) return ExternalAddress$1;
   hasRequiredExternalAddress$1 = 1;
-  var __importDefault = ExternalAddress$1 && ExternalAddress$1.__importDefault || function(mod) {
-    return mod && mod.__esModule ? mod : { "default": mod };
-  };
   var _a2;
   Object.defineProperty(ExternalAddress$1, "__esModule", { value: true });
   ExternalAddress$1.ExternalAddress = void 0;
-  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const inspect_1 = requireInspect();
   class ExternalAddress2 {
     static isAddress(src2) {
       return src2 instanceof ExternalAddress2;
@@ -8605,7 +8600,7 @@ function requireExternalAddress$1() {
     }
   }
   ExternalAddress$1.ExternalAddress = ExternalAddress2;
-  _a2 = symbol_inspect_1.default;
+  _a2 = inspect_1.inspectSymbol;
   return ExternalAddress$1;
 }
 var ADNLAddress$1 = {};
@@ -8668,13 +8663,10 @@ var hasRequiredADNLAddress$1;
 function requireADNLAddress$1() {
   if (hasRequiredADNLAddress$1) return ADNLAddress$1;
   hasRequiredADNLAddress$1 = 1;
-  var __importDefault = ADNLAddress$1 && ADNLAddress$1.__importDefault || function(mod) {
-    return mod && mod.__esModule ? mod : { "default": mod };
-  };
   var _a2;
   Object.defineProperty(ADNLAddress$1, "__esModule", { value: true });
   ADNLAddress$1.ADNLAddress = void 0;
-  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const inspect_1 = requireInspect();
   const base32_1 = requireBase32$1();
   const crc16_1 = requireCrc16$1();
   class ADNLAddress2 {
@@ -8719,7 +8711,7 @@ function requireADNLAddress$1() {
     }
   }
   ADNLAddress$1.ADNLAddress = ADNLAddress2;
-  _a2 = symbol_inspect_1.default;
+  _a2 = inspect_1.inspectSymbol;
   return ADNLAddress$1;
 }
 var contractAddress$1 = {};
@@ -8774,14 +8766,11 @@ var hasRequiredBitString$1;
 function requireBitString$1() {
   if (hasRequiredBitString$1) return BitString$1;
   hasRequiredBitString$1 = 1;
-  var __importDefault = BitString$1 && BitString$1.__importDefault || function(mod) {
-    return mod && mod.__esModule ? mod : { "default": mod };
-  };
   var _a2;
   Object.defineProperty(BitString$1, "__esModule", { value: true });
   BitString$1.BitString = void 0;
   const paddedBits_1 = requirePaddedBits$1();
-  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const inspect_1 = requireInspect();
   class BitString2 {
     /**
      * Checks if supplied object is BitString
@@ -8830,7 +8819,7 @@ function requireBitString$1() {
       return (this._data[byteIndex] & 1 << bitIndex) !== 0;
     }
     /**
-     * Get a subscring of the bitstring
+     * Get a substring of the bitstring
      * @param offset
      * @param length
      * @returns
@@ -8864,7 +8853,7 @@ function requireBitString$1() {
         throw new Error(`Offset ${offset} is out of bounds`);
       }
       if (offset + length > this._length) {
-        throw new Error(`Offset + Lenght = ${offset + length} is out of bounds`);
+        throw new Error(`Offset + Length = ${offset + length} is out of bounds`);
       }
       if (length % 8 !== 0) {
         return null;
@@ -8916,7 +8905,7 @@ function requireBitString$1() {
     }
   }
   BitString$1.BitString = BitString2;
-  _a2 = symbol_inspect_1.default;
+  _a2 = inspect_1.inspectSymbol;
   BitString2.EMPTY = new BitString2(Buffer.alloc(0), 0, 0);
   return BitString$1;
 }
@@ -9068,7 +9057,7 @@ function requireBitBuilder$1() {
       this.writeUint(v2, bits - 1);
     }
     /**
-     * Wrtie var uint value, used for serializing coins
+     * Write var uint value, used for serializing coins
      * @param value value to write as bigint or number
      * @param bits header bits to write size
      */
@@ -9090,7 +9079,7 @@ function requireBitBuilder$1() {
       this.writeUint(v2, sizeBits);
     }
     /**
-     * Wrtie var int value, used for serializing coins
+     * Write var int value, used for serializing coins
      * @param value value to write as bigint or number
      * @param bits header bits to write size
      */
@@ -9536,7 +9525,7 @@ function requireBitReader$1() {
     }
     /**
      * Load bit string that was padded to make it byte alligned. Used in BOC serialization
-     * @param bytes number of bytes to read
+     * @param bits number of bytes to read
      */
     loadPaddedBits(bits) {
       if (bits % 8 !== 0) {
@@ -10157,7 +10146,7 @@ function requireDictionary$1() {
      * Load dictionary from slice
      * @param key key description
      * @param value value description
-     * @param src slice
+     * @param sc slice
      * @returns Dictionary<K, V>
      */
     static load(key, value, sc) {
@@ -10391,7 +10380,7 @@ function requireDictionary$1() {
     },
     /**
      * Create big var int
-     * @param bits nubmer of header bits
+     * @param bits number of header bits
      * @returns DictionaryValue<bigint>
      */
     BigVarInt: (bits) => {
@@ -10415,7 +10404,7 @@ function requireDictionary$1() {
     },
     /**
      * Create big var int
-     * @param bits nubmer of header bits
+     * @param bits number of header bits
      * @returns DictionaryValue<bigint>
      */
     BigVarUint: (bits) => {
@@ -10452,7 +10441,7 @@ function requireDictionary$1() {
     },
     /**
      * Create BitString value
-     * @param requested bit length
+     * @param bits bit length
      * @returns DictionaryValue<BitString>
      * Point is that Buffer is not applicable
      * when length is not 8 bit alligned.
@@ -10791,13 +10780,10 @@ var hasRequiredSlice$1;
 function requireSlice$1() {
   if (hasRequiredSlice$1) return Slice$1;
   hasRequiredSlice$1 = 1;
-  var __importDefault = Slice$1 && Slice$1.__importDefault || function(mod) {
-    return mod && mod.__esModule ? mod : { "default": mod };
-  };
   var _a2;
   Object.defineProperty(Slice$1, "__esModule", { value: true });
   Slice$1.Slice = void 0;
-  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const inspect_1 = requireInspect();
   const Dictionary_1 = requireDictionary$1();
   const Builder_12 = requireBuilder$3();
   const strings_1 = requireStrings$1();
@@ -11281,7 +11267,7 @@ function requireSlice$1() {
     }
   }
   Slice$1.Slice = Slice2;
-  _a2 = symbol_inspect_1.default;
+  _a2 = inspect_1.inspectSymbol;
   return Slice$1;
 }
 var resolveExotic$1 = {};
@@ -11596,7 +11582,7 @@ var hasRequiredSha;
 function requireSha() {
   if (hasRequiredSha) return sha$1.exports;
   hasRequiredSha = 1;
-  (function(module, exports) {
+  (function(module, exports$1) {
     !(function(n, r) {
       module.exports = r();
     })(sha, (function() {
@@ -12278,30 +12264,30 @@ var hasRequiredNative;
 function requireNative() {
   if (hasRequiredNative) return native;
   hasRequiredNative = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.sha512 = exports.sha256 = exports.pbkdf2_sha512 = exports.hmac_sha512 = exports.getSecureRandomWords = exports.getSecureRandomBytes = void 0;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.sha512 = exports$1.sha256 = exports$1.pbkdf2_sha512 = exports$1.hmac_sha512 = exports$1.getSecureRandomWords = exports$1.getSecureRandomBytes = void 0;
     var getSecureRandom_1 = requireGetSecureRandom$1();
-    Object.defineProperty(exports, "getSecureRandomBytes", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getSecureRandomBytes", { enumerable: true, get: function() {
       return getSecureRandom_1.getSecureRandomBytes;
     } });
-    Object.defineProperty(exports, "getSecureRandomWords", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getSecureRandomWords", { enumerable: true, get: function() {
       return getSecureRandom_1.getSecureRandomWords;
     } });
     var hmac_sha512_1 = requireHmac_sha512$1();
-    Object.defineProperty(exports, "hmac_sha512", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "hmac_sha512", { enumerable: true, get: function() {
       return hmac_sha512_1.hmac_sha512;
     } });
     var pbkdf2_sha512_1 = requirePbkdf2_sha512$1();
-    Object.defineProperty(exports, "pbkdf2_sha512", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "pbkdf2_sha512", { enumerable: true, get: function() {
       return pbkdf2_sha512_1.pbkdf2_sha512;
     } });
     var sha256_1 = requireSha256$2();
-    Object.defineProperty(exports, "sha256", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "sha256", { enumerable: true, get: function() {
       return sha256_1.sha256;
     } });
     var sha512_1 = requireSha512$2();
-    Object.defineProperty(exports, "sha512", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "sha512", { enumerable: true, get: function() {
       return sha512_1.sha512;
     } });
   })(native);
@@ -22726,120 +22712,120 @@ var hasRequiredDist$4;
 function requireDist$4() {
   if (hasRequiredDist$4) return dist$3;
   hasRequiredDist$4 = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getMnemonicsMasterKeyFromSeed = exports.deriveMnemonicHardenedKey = exports.deriveMnemonicsPath = exports.deriveSymmetricPath = exports.deriveSymmetricHardenedKey = exports.getSymmetricMasterKeyFromSeed = exports.deriveEd25519Path = exports.deriveED25519HardenedKey = exports.getED25519MasterKeyFromSeed = exports.signVerify = exports.sign = exports.keyPairFromSecretKey = exports.keyPairFromSeed = exports.openBox = exports.sealBox = exports.mnemonicWordList = exports.mnemonicToHDSeed = exports.mnemonicToSeed = exports.mnemonicToWalletKey = exports.mnemonicToPrivateKey = exports.mnemonicValidate = exports.mnemonicNew = exports.newSecurePassphrase = exports.newSecureWords = exports.getSecureRandomNumber = exports.getSecureRandomWords = exports.getSecureRandomBytes = exports.hmac_sha512 = exports.pbkdf2_sha512 = exports.sha512_sync = exports.sha512 = exports.sha256_sync = exports.sha256 = void 0;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.getMnemonicsMasterKeyFromSeed = exports$1.deriveMnemonicHardenedKey = exports$1.deriveMnemonicsPath = exports$1.deriveSymmetricPath = exports$1.deriveSymmetricHardenedKey = exports$1.getSymmetricMasterKeyFromSeed = exports$1.deriveEd25519Path = exports$1.deriveED25519HardenedKey = exports$1.getED25519MasterKeyFromSeed = exports$1.signVerify = exports$1.sign = exports$1.keyPairFromSecretKey = exports$1.keyPairFromSeed = exports$1.openBox = exports$1.sealBox = exports$1.mnemonicWordList = exports$1.mnemonicToHDSeed = exports$1.mnemonicToSeed = exports$1.mnemonicToWalletKey = exports$1.mnemonicToPrivateKey = exports$1.mnemonicValidate = exports$1.mnemonicNew = exports$1.newSecurePassphrase = exports$1.newSecureWords = exports$1.getSecureRandomNumber = exports$1.getSecureRandomWords = exports$1.getSecureRandomBytes = exports$1.hmac_sha512 = exports$1.pbkdf2_sha512 = exports$1.sha512_sync = exports$1.sha512 = exports$1.sha256_sync = exports$1.sha256 = void 0;
     var sha256_1 = requireSha256$1();
-    Object.defineProperty(exports, "sha256", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "sha256", { enumerable: true, get: function() {
       return sha256_1.sha256;
     } });
-    Object.defineProperty(exports, "sha256_sync", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "sha256_sync", { enumerable: true, get: function() {
       return sha256_1.sha256_sync;
     } });
     var sha512_1 = requireSha512$1();
-    Object.defineProperty(exports, "sha512", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "sha512", { enumerable: true, get: function() {
       return sha512_1.sha512;
     } });
-    Object.defineProperty(exports, "sha512_sync", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "sha512_sync", { enumerable: true, get: function() {
       return sha512_1.sha512_sync;
     } });
     var pbkdf2_sha512_1 = requirePbkdf2_sha512();
-    Object.defineProperty(exports, "pbkdf2_sha512", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "pbkdf2_sha512", { enumerable: true, get: function() {
       return pbkdf2_sha512_1.pbkdf2_sha512;
     } });
     var hmac_sha512_1 = requireHmac_sha512();
-    Object.defineProperty(exports, "hmac_sha512", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "hmac_sha512", { enumerable: true, get: function() {
       return hmac_sha512_1.hmac_sha512;
     } });
     var getSecureRandom_1 = requireGetSecureRandom();
-    Object.defineProperty(exports, "getSecureRandomBytes", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getSecureRandomBytes", { enumerable: true, get: function() {
       return getSecureRandom_1.getSecureRandomBytes;
     } });
-    Object.defineProperty(exports, "getSecureRandomWords", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getSecureRandomWords", { enumerable: true, get: function() {
       return getSecureRandom_1.getSecureRandomWords;
     } });
-    Object.defineProperty(exports, "getSecureRandomNumber", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getSecureRandomNumber", { enumerable: true, get: function() {
       return getSecureRandom_1.getSecureRandomNumber;
     } });
     var newSecureWords_1 = requireNewSecureWords();
-    Object.defineProperty(exports, "newSecureWords", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "newSecureWords", { enumerable: true, get: function() {
       return newSecureWords_1.newSecureWords;
     } });
     var newSecurePassphrase_1 = requireNewSecurePassphrase();
-    Object.defineProperty(exports, "newSecurePassphrase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "newSecurePassphrase", { enumerable: true, get: function() {
       return newSecurePassphrase_1.newSecurePassphrase;
     } });
     var mnemonic_1 = requireMnemonic();
-    Object.defineProperty(exports, "mnemonicNew", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "mnemonicNew", { enumerable: true, get: function() {
       return mnemonic_1.mnemonicNew;
     } });
-    Object.defineProperty(exports, "mnemonicValidate", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "mnemonicValidate", { enumerable: true, get: function() {
       return mnemonic_1.mnemonicValidate;
     } });
-    Object.defineProperty(exports, "mnemonicToPrivateKey", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "mnemonicToPrivateKey", { enumerable: true, get: function() {
       return mnemonic_1.mnemonicToPrivateKey;
     } });
-    Object.defineProperty(exports, "mnemonicToWalletKey", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "mnemonicToWalletKey", { enumerable: true, get: function() {
       return mnemonic_1.mnemonicToWalletKey;
     } });
-    Object.defineProperty(exports, "mnemonicToSeed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "mnemonicToSeed", { enumerable: true, get: function() {
       return mnemonic_1.mnemonicToSeed;
     } });
-    Object.defineProperty(exports, "mnemonicToHDSeed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "mnemonicToHDSeed", { enumerable: true, get: function() {
       return mnemonic_1.mnemonicToHDSeed;
     } });
     var wordlist_1 = requireWordlist();
-    Object.defineProperty(exports, "mnemonicWordList", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "mnemonicWordList", { enumerable: true, get: function() {
       return wordlist_1.wordlist;
     } });
     var nacl_1 = requireNacl();
-    Object.defineProperty(exports, "sealBox", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "sealBox", { enumerable: true, get: function() {
       return nacl_1.sealBox;
     } });
-    Object.defineProperty(exports, "openBox", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "openBox", { enumerable: true, get: function() {
       return nacl_1.openBox;
     } });
     var nacl_2 = requireNacl();
-    Object.defineProperty(exports, "keyPairFromSeed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "keyPairFromSeed", { enumerable: true, get: function() {
       return nacl_2.keyPairFromSeed;
     } });
-    Object.defineProperty(exports, "keyPairFromSecretKey", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "keyPairFromSecretKey", { enumerable: true, get: function() {
       return nacl_2.keyPairFromSecretKey;
     } });
-    Object.defineProperty(exports, "sign", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "sign", { enumerable: true, get: function() {
       return nacl_2.sign;
     } });
-    Object.defineProperty(exports, "signVerify", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "signVerify", { enumerable: true, get: function() {
       return nacl_2.signVerify;
     } });
     var ed25519_1 = requireEd25519();
-    Object.defineProperty(exports, "getED25519MasterKeyFromSeed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getED25519MasterKeyFromSeed", { enumerable: true, get: function() {
       return ed25519_1.getED25519MasterKeyFromSeed;
     } });
-    Object.defineProperty(exports, "deriveED25519HardenedKey", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "deriveED25519HardenedKey", { enumerable: true, get: function() {
       return ed25519_1.deriveED25519HardenedKey;
     } });
-    Object.defineProperty(exports, "deriveEd25519Path", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "deriveEd25519Path", { enumerable: true, get: function() {
       return ed25519_1.deriveEd25519Path;
     } });
     var symmetric_1 = requireSymmetric();
-    Object.defineProperty(exports, "getSymmetricMasterKeyFromSeed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getSymmetricMasterKeyFromSeed", { enumerable: true, get: function() {
       return symmetric_1.getSymmetricMasterKeyFromSeed;
     } });
-    Object.defineProperty(exports, "deriveSymmetricHardenedKey", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "deriveSymmetricHardenedKey", { enumerable: true, get: function() {
       return symmetric_1.deriveSymmetricHardenedKey;
     } });
-    Object.defineProperty(exports, "deriveSymmetricPath", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "deriveSymmetricPath", { enumerable: true, get: function() {
       return symmetric_1.deriveSymmetricPath;
     } });
     var mnemonics_1 = requireMnemonics();
-    Object.defineProperty(exports, "deriveMnemonicsPath", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "deriveMnemonicsPath", { enumerable: true, get: function() {
       return mnemonics_1.deriveMnemonicsPath;
     } });
-    Object.defineProperty(exports, "deriveMnemonicHardenedKey", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "deriveMnemonicHardenedKey", { enumerable: true, get: function() {
       return mnemonics_1.deriveMnemonicHardenedKey;
     } });
-    Object.defineProperty(exports, "getMnemonicsMasterKeyFromSeed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getMnemonicsMasterKeyFromSeed", { enumerable: true, get: function() {
       return mnemonics_1.getMnemonicsMasterKeyFromSeed;
     } });
   })(dist$3);
@@ -22980,7 +22966,10 @@ function requireTopologicalSort$1() {
           continue;
         }
         notPermCells.add(hash);
-        allCells.set(hash, { cell, refs: cell.refs.map((v2) => v2.hash().toString("hex")) });
+        allCells.set(hash, {
+          cell,
+          refs: cell.refs.map((v2) => v2.hash().toString("hex"))
+        });
         for (let r of cell.refs) {
           pending.push(r);
         }
@@ -23015,7 +23004,10 @@ function requireTopologicalSort$1() {
     for (let i = sorted.length - 1; i >= 0; i--) {
       let ent = sorted[i];
       const rrr = allCells.get(ent);
-      result.push({ cell: rrr.cell, refs: rrr.refs.map((v2) => indexes.get(v2)) });
+      result.push({
+        cell: rrr.cell,
+        refs: rrr.refs.map((v2) => indexes.get(v2))
+      });
     }
     return result;
   }
@@ -23247,7 +23239,11 @@ function requireSerialization$1() {
         }
         refs.push(cells[r].result);
       }
-      cells[i].result = new Cell_1.Cell({ bits: cells[i].bits, refs, exotic: cells[i].exotic });
+      cells[i].result = new Cell_1.Cell({
+        bits: cells[i].bits,
+        refs,
+        exotic: cells[i].exotic
+      });
     }
     let roots = [];
     for (let i = 0; i < boc.root.length; i++) {
@@ -23327,13 +23323,10 @@ var hasRequiredCell$1;
 function requireCell$1() {
   if (hasRequiredCell$1) return Cell$1;
   hasRequiredCell$1 = 1;
-  var __importDefault = Cell$1 && Cell$1.__importDefault || function(mod) {
-    return mod && mod.__esModule ? mod : { "default": mod };
-  };
   var _a2;
   Object.defineProperty(Cell$1, "__esModule", { value: true });
   Cell$1.Cell = void 0;
-  const symbol_inspect_1 = __importDefault(requireSymbol_inspect());
+  const inspect_1 = requireInspect();
   const BitString_1 = requireBitString$1();
   const CellType_1 = requireCellType$1();
   const Slice_1 = requireSlice$1();
@@ -23495,7 +23488,7 @@ function requireCell$1() {
     }
   }
   Cell$1.Cell = Cell2;
-  _a2 = symbol_inspect_1.default;
+  _a2 = inspect_1.inspectSymbol;
   Cell2.EMPTY = new Cell2();
   return Cell$1;
 }
@@ -23714,7 +23707,7 @@ function requireBuilder$3() {
     }
     /**
      * Store address
-     * @param addres address to store
+     * @param address address to store
      * @returns this builder
      */
     storeAddress(address) {
@@ -23886,6 +23879,8 @@ function requireBuilder$3() {
     /**
      * Store dictionary in this builder
      * @param dict dictionary to store
+     * @param key key description
+     * @param value value description
      * @returns this builder
      */
     storeDict(dict, key, value) {
@@ -23899,6 +23894,8 @@ function requireBuilder$3() {
     /**
      * Store dictionary in this builder directly
      * @param dict dictionary to store
+     * @param key key description
+     * @param value value description
      * @returns this builder
      */
     storeDictDirect(dict, key, value) {
@@ -24429,14 +24426,20 @@ function requireBuilder$2() {
       if (v2 === null || v2 === void 0) {
         this._tuple.push({ type: "null" });
       } else {
-        this._tuple.push({ type: "slice", cell: (0, Builder_12.beginCell)().storeBuffer(v2).endCell() });
+        this._tuple.push({
+          type: "slice",
+          cell: (0, Builder_12.beginCell)().storeBuffer(v2).endCell()
+        });
       }
     }
     writeString(v2) {
       if (v2 === null || v2 === void 0) {
         this._tuple.push({ type: "null" });
       } else {
-        this._tuple.push({ type: "slice", cell: (0, Builder_12.beginCell)().storeStringTail(v2).endCell() });
+        this._tuple.push({
+          type: "slice",
+          cell: (0, Builder_12.beginCell)().storeStringTail(v2).endCell()
+        });
       }
     }
     writeCell(v2) {
@@ -24483,7 +24486,10 @@ function requireBuilder$2() {
       if (v2 === null || v2 === void 0) {
         this._tuple.push({ type: "null" });
       } else {
-        this._tuple.push({ type: "slice", cell: (0, Builder_12.beginCell)().storeAddress(v2).endCell() });
+        this._tuple.push({
+          type: "slice",
+          cell: (0, Builder_12.beginCell)().storeAddress(v2).endCell()
+        });
       }
     }
     build() {
@@ -24511,9 +24517,15 @@ function requireConvert$1() {
           throw Error("Invalid number");
         }
         if (Math.log10(src2) <= 6) {
-          src2 = src2.toLocaleString("en", { minimumFractionDigits: 9, useGrouping: false });
+          src2 = src2.toLocaleString("en", {
+            minimumFractionDigits: 9,
+            useGrouping: false
+          });
         } else if (src2 - Math.trunc(src2) === 0) {
-          src2 = src2.toLocaleString("en", { maximumFractionDigits: 0, useGrouping: false });
+          src2 = src2.toLocaleString("en", {
+            maximumFractionDigits: 0,
+            useGrouping: false
+          });
         } else {
           throw Error("Not enough precision for a number value. Use string value instead");
         }
@@ -25653,13 +25665,13 @@ var hasRequiredShardAccounts$1;
 function requireShardAccounts$1() {
   if (hasRequiredShardAccounts$1) return ShardAccounts$1;
   hasRequiredShardAccounts$1 = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.storeShardAccounts = exports.loadShardAccounts = exports.ShardAccountRefValue = void 0;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.storeShardAccounts = exports$1.loadShardAccounts = exports$1.ShardAccountRefValue = void 0;
     const Dictionary_1 = requireDictionary$1();
     const DepthBalanceInfo_1 = requireDepthBalanceInfo$1();
     const ShardAccount_1 = requireShardAccount$1();
-    exports.ShardAccountRefValue = {
+    exports$1.ShardAccountRefValue = {
       parse: (cs) => {
         let depthBalanceInfo = (0, DepthBalanceInfo_1.loadDepthBalanceInfo)(cs);
         let shardAccount = (0, ShardAccount_1.loadShardAccount)(cs);
@@ -25674,15 +25686,15 @@ function requireShardAccounts$1() {
       }
     };
     function loadShardAccounts(cs) {
-      return Dictionary_1.Dictionary.load(Dictionary_1.Dictionary.Keys.BigUint(256), exports.ShardAccountRefValue, cs);
+      return Dictionary_1.Dictionary.load(Dictionary_1.Dictionary.Keys.BigUint(256), exports$1.ShardAccountRefValue, cs);
     }
-    exports.loadShardAccounts = loadShardAccounts;
+    exports$1.loadShardAccounts = loadShardAccounts;
     function storeShardAccounts(src2) {
       return (Builder2) => {
         Builder2.storeDict(src2);
       };
     }
-    exports.storeShardAccounts = storeShardAccounts;
+    exports$1.storeShardAccounts = storeShardAccounts;
   })(ShardAccounts$1);
   return ShardAccounts$1;
 }
@@ -26331,276 +26343,276 @@ var hasRequired_export$1;
 function require_export$1() {
   if (hasRequired_export$1) return _export$1;
   hasRequired_export$1 = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.loadSimpleLibrary = exports.loadShardStateUnsplit = exports.storeShardIdent = exports.loadShardIdent = exports.storeShardAccounts = exports.loadShardAccounts = exports.ShardAccountRefValue = exports.storeShardAccount = exports.loadShardAccount = exports.ReserveMode = exports.SendMode = exports.storeMessageRelaxed = exports.loadMessageRelaxed = exports.storeMessage = exports.loadMessage = exports.loadMasterchainStateExtra = exports.storeHashUpdate = exports.loadHashUpdate = exports.storeExtraCurrency = exports.loadMaybeExtraCurrency = exports.loadExtraCurrency = exports.packExtraCurrencyDict = exports.packExtraCurrencyCell = exports.storeDepthBalanceInfo = exports.loadDepthBalanceInfo = exports.storeCurrencyCollection = exports.loadCurrencyCollection = exports.storeComputeSkipReason = exports.loadComputeSkipReason = exports.storeCommonMessageInfoRelaxed = exports.loadCommonMessageInfoRelaxed = exports.storeCommonMessageInfo = exports.loadCommonMessageInfo = exports.storeOutList = exports.loadOutList = exports.storeOutAction = exports.loadOutAction = exports.storeAccountStorage = exports.loadAccountStorage = exports.storeAccountStatusChange = exports.loadAccountStatusChange = exports.storeAccountStatus = exports.loadAccountStatus = exports.storeAccountState = exports.loadAccountState = exports.storeAccount = exports.loadAccount = exports.comment = exports.external = exports.internal = void 0;
-    exports.storeTransactionsStoragePhase = exports.loadTransactionStoragePhase = exports.storeTransactionDescription = exports.loadTransactionDescription = exports.storeTransactionCreditPhase = exports.loadTransactionCreditPhase = exports.storeTransactionComputePhase = exports.loadTransactionComputePhase = exports.storeTransactionBouncePhase = exports.loadTransactionBouncePhase = exports.storeTransactionActionPhase = exports.loadTransactionActionPhase = exports.storeTransaction = exports.loadTransaction = exports.storeTickTock = exports.loadTickTock = exports.storeStorageUsed = exports.loadStorageUsed = exports.storeStorageInfo = exports.loadStorageInfo = exports.storeStateInit = exports.loadStateInit = exports.storeSplitMergeInfo = exports.loadSplitMergeInfo = exports.storeLibRef = exports.loadLibRef = exports.storeSimpleLibrary = void 0;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.loadSimpleLibrary = exports$1.loadShardStateUnsplit = exports$1.storeShardIdent = exports$1.loadShardIdent = exports$1.storeShardAccounts = exports$1.loadShardAccounts = exports$1.ShardAccountRefValue = exports$1.storeShardAccount = exports$1.loadShardAccount = exports$1.ReserveMode = exports$1.SendMode = exports$1.storeMessageRelaxed = exports$1.loadMessageRelaxed = exports$1.storeMessage = exports$1.loadMessage = exports$1.loadMasterchainStateExtra = exports$1.storeHashUpdate = exports$1.loadHashUpdate = exports$1.storeExtraCurrency = exports$1.loadMaybeExtraCurrency = exports$1.loadExtraCurrency = exports$1.packExtraCurrencyDict = exports$1.packExtraCurrencyCell = exports$1.storeDepthBalanceInfo = exports$1.loadDepthBalanceInfo = exports$1.storeCurrencyCollection = exports$1.loadCurrencyCollection = exports$1.storeComputeSkipReason = exports$1.loadComputeSkipReason = exports$1.storeCommonMessageInfoRelaxed = exports$1.loadCommonMessageInfoRelaxed = exports$1.storeCommonMessageInfo = exports$1.loadCommonMessageInfo = exports$1.storeOutList = exports$1.loadOutList = exports$1.storeOutAction = exports$1.loadOutAction = exports$1.storeAccountStorage = exports$1.loadAccountStorage = exports$1.storeAccountStatusChange = exports$1.loadAccountStatusChange = exports$1.storeAccountStatus = exports$1.loadAccountStatus = exports$1.storeAccountState = exports$1.loadAccountState = exports$1.storeAccount = exports$1.loadAccount = exports$1.comment = exports$1.external = exports$1.internal = void 0;
+    exports$1.storeTransactionsStoragePhase = exports$1.loadTransactionStoragePhase = exports$1.storeTransactionDescription = exports$1.loadTransactionDescription = exports$1.storeTransactionCreditPhase = exports$1.loadTransactionCreditPhase = exports$1.storeTransactionComputePhase = exports$1.loadTransactionComputePhase = exports$1.storeTransactionBouncePhase = exports$1.loadTransactionBouncePhase = exports$1.storeTransactionActionPhase = exports$1.loadTransactionActionPhase = exports$1.storeTransaction = exports$1.loadTransaction = exports$1.storeTickTock = exports$1.loadTickTock = exports$1.storeStorageUsed = exports$1.loadStorageUsed = exports$1.storeStorageInfo = exports$1.loadStorageInfo = exports$1.storeStateInit = exports$1.loadStateInit = exports$1.storeSplitMergeInfo = exports$1.loadSplitMergeInfo = exports$1.storeLibRef = exports$1.loadLibRef = exports$1.storeSimpleLibrary = void 0;
     var _helpers_1 = require_helpers$1();
-    Object.defineProperty(exports, "internal", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "internal", { enumerable: true, get: function() {
       return _helpers_1.internal;
     } });
-    Object.defineProperty(exports, "external", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "external", { enumerable: true, get: function() {
       return _helpers_1.external;
     } });
-    Object.defineProperty(exports, "comment", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "comment", { enumerable: true, get: function() {
       return _helpers_1.comment;
     } });
     var Account_1 = requireAccount$1();
-    Object.defineProperty(exports, "loadAccount", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccount", { enumerable: true, get: function() {
       return Account_1.loadAccount;
     } });
-    Object.defineProperty(exports, "storeAccount", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccount", { enumerable: true, get: function() {
       return Account_1.storeAccount;
     } });
     var AccountState_1 = requireAccountState$1();
-    Object.defineProperty(exports, "loadAccountState", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccountState", { enumerable: true, get: function() {
       return AccountState_1.loadAccountState;
     } });
-    Object.defineProperty(exports, "storeAccountState", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccountState", { enumerable: true, get: function() {
       return AccountState_1.storeAccountState;
     } });
     var AccountStatus_1 = requireAccountStatus$1();
-    Object.defineProperty(exports, "loadAccountStatus", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccountStatus", { enumerable: true, get: function() {
       return AccountStatus_1.loadAccountStatus;
     } });
-    Object.defineProperty(exports, "storeAccountStatus", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccountStatus", { enumerable: true, get: function() {
       return AccountStatus_1.storeAccountStatus;
     } });
     var AccountStatusChange_1 = requireAccountStatusChange$1();
-    Object.defineProperty(exports, "loadAccountStatusChange", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccountStatusChange", { enumerable: true, get: function() {
       return AccountStatusChange_1.loadAccountStatusChange;
     } });
-    Object.defineProperty(exports, "storeAccountStatusChange", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccountStatusChange", { enumerable: true, get: function() {
       return AccountStatusChange_1.storeAccountStatusChange;
     } });
     var AccountStorage_1 = requireAccountStorage$1();
-    Object.defineProperty(exports, "loadAccountStorage", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccountStorage", { enumerable: true, get: function() {
       return AccountStorage_1.loadAccountStorage;
     } });
-    Object.defineProperty(exports, "storeAccountStorage", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccountStorage", { enumerable: true, get: function() {
       return AccountStorage_1.storeAccountStorage;
     } });
     var OutList_1 = requireOutList$1();
-    Object.defineProperty(exports, "loadOutAction", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadOutAction", { enumerable: true, get: function() {
       return OutList_1.loadOutAction;
     } });
-    Object.defineProperty(exports, "storeOutAction", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeOutAction", { enumerable: true, get: function() {
       return OutList_1.storeOutAction;
     } });
-    Object.defineProperty(exports, "loadOutList", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadOutList", { enumerable: true, get: function() {
       return OutList_1.loadOutList;
     } });
-    Object.defineProperty(exports, "storeOutList", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeOutList", { enumerable: true, get: function() {
       return OutList_1.storeOutList;
     } });
     var CommonMessageInfo_1 = requireCommonMessageInfo$1();
-    Object.defineProperty(exports, "loadCommonMessageInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadCommonMessageInfo", { enumerable: true, get: function() {
       return CommonMessageInfo_1.loadCommonMessageInfo;
     } });
-    Object.defineProperty(exports, "storeCommonMessageInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeCommonMessageInfo", { enumerable: true, get: function() {
       return CommonMessageInfo_1.storeCommonMessageInfo;
     } });
     var CommonMessageInfoRelaxed_1 = requireCommonMessageInfoRelaxed$1();
-    Object.defineProperty(exports, "loadCommonMessageInfoRelaxed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadCommonMessageInfoRelaxed", { enumerable: true, get: function() {
       return CommonMessageInfoRelaxed_1.loadCommonMessageInfoRelaxed;
     } });
-    Object.defineProperty(exports, "storeCommonMessageInfoRelaxed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeCommonMessageInfoRelaxed", { enumerable: true, get: function() {
       return CommonMessageInfoRelaxed_1.storeCommonMessageInfoRelaxed;
     } });
     var ComputeSkipReason_1 = requireComputeSkipReason$1();
-    Object.defineProperty(exports, "loadComputeSkipReason", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadComputeSkipReason", { enumerable: true, get: function() {
       return ComputeSkipReason_1.loadComputeSkipReason;
     } });
-    Object.defineProperty(exports, "storeComputeSkipReason", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeComputeSkipReason", { enumerable: true, get: function() {
       return ComputeSkipReason_1.storeComputeSkipReason;
     } });
     var CurrencyCollection_1 = requireCurrencyCollection$1();
-    Object.defineProperty(exports, "loadCurrencyCollection", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadCurrencyCollection", { enumerable: true, get: function() {
       return CurrencyCollection_1.loadCurrencyCollection;
     } });
-    Object.defineProperty(exports, "storeCurrencyCollection", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeCurrencyCollection", { enumerable: true, get: function() {
       return CurrencyCollection_1.storeCurrencyCollection;
     } });
     var DepthBalanceInfo_1 = requireDepthBalanceInfo$1();
-    Object.defineProperty(exports, "loadDepthBalanceInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadDepthBalanceInfo", { enumerable: true, get: function() {
       return DepthBalanceInfo_1.loadDepthBalanceInfo;
     } });
-    Object.defineProperty(exports, "storeDepthBalanceInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeDepthBalanceInfo", { enumerable: true, get: function() {
       return DepthBalanceInfo_1.storeDepthBalanceInfo;
     } });
     var ExtraCurrency_1 = requireExtraCurrency$1();
-    Object.defineProperty(exports, "packExtraCurrencyCell", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "packExtraCurrencyCell", { enumerable: true, get: function() {
       return ExtraCurrency_1.packExtraCurrencyCell;
     } });
-    Object.defineProperty(exports, "packExtraCurrencyDict", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "packExtraCurrencyDict", { enumerable: true, get: function() {
       return ExtraCurrency_1.packExtraCurrencyDict;
     } });
-    Object.defineProperty(exports, "loadExtraCurrency", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadExtraCurrency", { enumerable: true, get: function() {
       return ExtraCurrency_1.loadExtraCurrency;
     } });
-    Object.defineProperty(exports, "loadMaybeExtraCurrency", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadMaybeExtraCurrency", { enumerable: true, get: function() {
       return ExtraCurrency_1.loadMaybeExtraCurrency;
     } });
-    Object.defineProperty(exports, "storeExtraCurrency", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeExtraCurrency", { enumerable: true, get: function() {
       return ExtraCurrency_1.storeExtraCurrency;
     } });
     var HashUpdate_1 = requireHashUpdate$1();
-    Object.defineProperty(exports, "loadHashUpdate", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadHashUpdate", { enumerable: true, get: function() {
       return HashUpdate_1.loadHashUpdate;
     } });
-    Object.defineProperty(exports, "storeHashUpdate", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeHashUpdate", { enumerable: true, get: function() {
       return HashUpdate_1.storeHashUpdate;
     } });
     var MasterchainStateExtra_1 = requireMasterchainStateExtra$1();
-    Object.defineProperty(exports, "loadMasterchainStateExtra", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadMasterchainStateExtra", { enumerable: true, get: function() {
       return MasterchainStateExtra_1.loadMasterchainStateExtra;
     } });
     var Message_1 = requireMessage$1();
-    Object.defineProperty(exports, "loadMessage", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadMessage", { enumerable: true, get: function() {
       return Message_1.loadMessage;
     } });
-    Object.defineProperty(exports, "storeMessage", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeMessage", { enumerable: true, get: function() {
       return Message_1.storeMessage;
     } });
     var MessageRelaxed_1 = requireMessageRelaxed$1();
-    Object.defineProperty(exports, "loadMessageRelaxed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadMessageRelaxed", { enumerable: true, get: function() {
       return MessageRelaxed_1.loadMessageRelaxed;
     } });
-    Object.defineProperty(exports, "storeMessageRelaxed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeMessageRelaxed", { enumerable: true, get: function() {
       return MessageRelaxed_1.storeMessageRelaxed;
     } });
     var SendMode_1 = requireSendMode$1();
-    Object.defineProperty(exports, "SendMode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "SendMode", { enumerable: true, get: function() {
       return SendMode_1.SendMode;
     } });
     var ReserveMode_1 = requireReserveMode$1();
-    Object.defineProperty(exports, "ReserveMode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ReserveMode", { enumerable: true, get: function() {
       return ReserveMode_1.ReserveMode;
     } });
     var ShardAccount_1 = requireShardAccount$1();
-    Object.defineProperty(exports, "loadShardAccount", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadShardAccount", { enumerable: true, get: function() {
       return ShardAccount_1.loadShardAccount;
     } });
-    Object.defineProperty(exports, "storeShardAccount", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeShardAccount", { enumerable: true, get: function() {
       return ShardAccount_1.storeShardAccount;
     } });
     var ShardAccounts_1 = requireShardAccounts$1();
-    Object.defineProperty(exports, "ShardAccountRefValue", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ShardAccountRefValue", { enumerable: true, get: function() {
       return ShardAccounts_1.ShardAccountRefValue;
     } });
-    Object.defineProperty(exports, "loadShardAccounts", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadShardAccounts", { enumerable: true, get: function() {
       return ShardAccounts_1.loadShardAccounts;
     } });
-    Object.defineProperty(exports, "storeShardAccounts", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeShardAccounts", { enumerable: true, get: function() {
       return ShardAccounts_1.storeShardAccounts;
     } });
     var ShardIdent_1 = requireShardIdent$1();
-    Object.defineProperty(exports, "loadShardIdent", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadShardIdent", { enumerable: true, get: function() {
       return ShardIdent_1.loadShardIdent;
     } });
-    Object.defineProperty(exports, "storeShardIdent", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeShardIdent", { enumerable: true, get: function() {
       return ShardIdent_1.storeShardIdent;
     } });
     var ShardStateUnsplit_1 = requireShardStateUnsplit$1();
-    Object.defineProperty(exports, "loadShardStateUnsplit", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadShardStateUnsplit", { enumerable: true, get: function() {
       return ShardStateUnsplit_1.loadShardStateUnsplit;
     } });
     var SimpleLibrary_1 = requireSimpleLibrary$1();
-    Object.defineProperty(exports, "loadSimpleLibrary", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadSimpleLibrary", { enumerable: true, get: function() {
       return SimpleLibrary_1.loadSimpleLibrary;
     } });
-    Object.defineProperty(exports, "storeSimpleLibrary", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeSimpleLibrary", { enumerable: true, get: function() {
       return SimpleLibrary_1.storeSimpleLibrary;
     } });
     var LibRef_1 = requireLibRef$1();
-    Object.defineProperty(exports, "loadLibRef", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadLibRef", { enumerable: true, get: function() {
       return LibRef_1.loadLibRef;
     } });
-    Object.defineProperty(exports, "storeLibRef", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeLibRef", { enumerable: true, get: function() {
       return LibRef_1.storeLibRef;
     } });
     var SplitMergeInfo_1 = requireSplitMergeInfo$1();
-    Object.defineProperty(exports, "loadSplitMergeInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadSplitMergeInfo", { enumerable: true, get: function() {
       return SplitMergeInfo_1.loadSplitMergeInfo;
     } });
-    Object.defineProperty(exports, "storeSplitMergeInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeSplitMergeInfo", { enumerable: true, get: function() {
       return SplitMergeInfo_1.storeSplitMergeInfo;
     } });
     var StateInit_1 = requireStateInit$1();
-    Object.defineProperty(exports, "loadStateInit", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadStateInit", { enumerable: true, get: function() {
       return StateInit_1.loadStateInit;
     } });
-    Object.defineProperty(exports, "storeStateInit", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeStateInit", { enumerable: true, get: function() {
       return StateInit_1.storeStateInit;
     } });
     var StorageInfo_1 = requireStorageInfo$1();
-    Object.defineProperty(exports, "loadStorageInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadStorageInfo", { enumerable: true, get: function() {
       return StorageInfo_1.loadStorageInfo;
     } });
-    Object.defineProperty(exports, "storeStorageInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeStorageInfo", { enumerable: true, get: function() {
       return StorageInfo_1.storeStorageInfo;
     } });
     var StorageUsed_1 = requireStorageUsed$1();
-    Object.defineProperty(exports, "loadStorageUsed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadStorageUsed", { enumerable: true, get: function() {
       return StorageUsed_1.loadStorageUsed;
     } });
-    Object.defineProperty(exports, "storeStorageUsed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeStorageUsed", { enumerable: true, get: function() {
       return StorageUsed_1.storeStorageUsed;
     } });
     var TickTock_1 = requireTickTock$1();
-    Object.defineProperty(exports, "loadTickTock", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTickTock", { enumerable: true, get: function() {
       return TickTock_1.loadTickTock;
     } });
-    Object.defineProperty(exports, "storeTickTock", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTickTock", { enumerable: true, get: function() {
       return TickTock_1.storeTickTock;
     } });
     var Transaction_1 = requireTransaction$1();
-    Object.defineProperty(exports, "loadTransaction", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransaction", { enumerable: true, get: function() {
       return Transaction_1.loadTransaction;
     } });
-    Object.defineProperty(exports, "storeTransaction", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransaction", { enumerable: true, get: function() {
       return Transaction_1.storeTransaction;
     } });
     var TransactionActionPhase_1 = requireTransactionActionPhase$1();
-    Object.defineProperty(exports, "loadTransactionActionPhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionActionPhase", { enumerable: true, get: function() {
       return TransactionActionPhase_1.loadTransactionActionPhase;
     } });
-    Object.defineProperty(exports, "storeTransactionActionPhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionActionPhase", { enumerable: true, get: function() {
       return TransactionActionPhase_1.storeTransactionActionPhase;
     } });
     var TransactionBouncePhase_1 = requireTransactionBouncePhase$1();
-    Object.defineProperty(exports, "loadTransactionBouncePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionBouncePhase", { enumerable: true, get: function() {
       return TransactionBouncePhase_1.loadTransactionBouncePhase;
     } });
-    Object.defineProperty(exports, "storeTransactionBouncePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionBouncePhase", { enumerable: true, get: function() {
       return TransactionBouncePhase_1.storeTransactionBouncePhase;
     } });
     var TransactionComputePhase_1 = requireTransactionComputePhase$1();
-    Object.defineProperty(exports, "loadTransactionComputePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionComputePhase", { enumerable: true, get: function() {
       return TransactionComputePhase_1.loadTransactionComputePhase;
     } });
-    Object.defineProperty(exports, "storeTransactionComputePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionComputePhase", { enumerable: true, get: function() {
       return TransactionComputePhase_1.storeTransactionComputePhase;
     } });
     var TransactionCreditPhase_1 = requireTransactionCreditPhase$1();
-    Object.defineProperty(exports, "loadTransactionCreditPhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionCreditPhase", { enumerable: true, get: function() {
       return TransactionCreditPhase_1.loadTransactionCreditPhase;
     } });
-    Object.defineProperty(exports, "storeTransactionCreditPhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionCreditPhase", { enumerable: true, get: function() {
       return TransactionCreditPhase_1.storeTransactionCreditPhase;
     } });
     var TransactionDescription_1 = requireTransactionDescription$1();
-    Object.defineProperty(exports, "loadTransactionDescription", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionDescription", { enumerable: true, get: function() {
       return TransactionDescription_1.loadTransactionDescription;
     } });
-    Object.defineProperty(exports, "storeTransactionDescription", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionDescription", { enumerable: true, get: function() {
       return TransactionDescription_1.storeTransactionDescription;
     } });
     var TransactionStoragePhase_1 = requireTransactionStoragePhase$1();
-    Object.defineProperty(exports, "loadTransactionStoragePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionStoragePhase", { enumerable: true, get: function() {
       return TransactionStoragePhase_1.loadTransactionStoragePhase;
     } });
-    Object.defineProperty(exports, "storeTransactionsStoragePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionsStoragePhase", { enumerable: true, get: function() {
       return TransactionStoragePhase_1.storeTransactionsStoragePhase;
     } });
   })(_export$1);
@@ -26982,7 +26994,7 @@ var hasRequiredDist$3;
 function requireDist$3() {
   if (hasRequiredDist$3) return dist$4;
   hasRequiredDist$3 = 1;
-  (function(exports) {
+  (function(exports$1) {
     var __createBinding = dist$4 && dist$4.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
       if (k22 === void 0) k22 = k2;
       var desc = Object.getOwnPropertyDescriptor(m2, k2);
@@ -26996,152 +27008,152 @@ function requireDist$3() {
       if (k22 === void 0) k22 = k2;
       o4[k22] = m2[k2];
     }));
-    var __exportStar = dist$4 && dist$4.__exportStar || function(m2, exports2) {
-      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
+    var __exportStar = dist$4 && dist$4.__exportStar || function(m2, exports$12) {
+      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports$12, p2)) __createBinding(exports$12, m2, p2);
     };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.safeSignVerify = exports.safeSign = exports.getMethodId = exports.base32Encode = exports.base32Decode = exports.crc32c = exports.crc16 = exports.fromNano = exports.toNano = exports.ComputeError = exports.openContract = exports.TupleBuilder = exports.TupleReader = exports.serializeTupleItem = exports.parseTupleItem = exports.serializeTuple = exports.parseTuple = exports.generateMerkleUpdate = exports.generateMerkleProofDirect = exports.generateMerkleProof = exports.exoticPruned = exports.exoticMerkleUpdate = exports.convertToMerkleProof = exports.exoticMerkleProof = exports.Dictionary = exports.Cell = exports.CellType = exports.Slice = exports.beginCell = exports.Builder = exports.BitBuilder = exports.BitReader = exports.BitString = exports.contractAddress = exports.ADNLAddress = exports.ExternalAddress = exports.address = exports.Address = void 0;
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.safeSignVerify = exports$1.safeSign = exports$1.getMethodId = exports$1.base32Encode = exports$1.base32Decode = exports$1.crc32c = exports$1.crc16 = exports$1.fromNano = exports$1.toNano = exports$1.ComputeError = exports$1.openContract = exports$1.TupleBuilder = exports$1.TupleReader = exports$1.serializeTupleItem = exports$1.parseTupleItem = exports$1.serializeTuple = exports$1.parseTuple = exports$1.generateMerkleUpdate = exports$1.generateMerkleProofDirect = exports$1.generateMerkleProof = exports$1.exoticPruned = exports$1.exoticMerkleUpdate = exports$1.convertToMerkleProof = exports$1.exoticMerkleProof = exports$1.Dictionary = exports$1.Cell = exports$1.CellType = exports$1.Slice = exports$1.beginCell = exports$1.Builder = exports$1.BitBuilder = exports$1.BitReader = exports$1.BitString = exports$1.contractAddress = exports$1.ADNLAddress = exports$1.ExternalAddress = exports$1.address = exports$1.Address = void 0;
     var Address_1 = requireAddress$1();
-    Object.defineProperty(exports, "Address", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Address", { enumerable: true, get: function() {
       return Address_1.Address;
     } });
-    Object.defineProperty(exports, "address", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "address", { enumerable: true, get: function() {
       return Address_1.address;
     } });
     var ExternalAddress_1 = requireExternalAddress$1();
-    Object.defineProperty(exports, "ExternalAddress", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ExternalAddress", { enumerable: true, get: function() {
       return ExternalAddress_1.ExternalAddress;
     } });
     var ADNLAddress_1 = requireADNLAddress$1();
-    Object.defineProperty(exports, "ADNLAddress", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ADNLAddress", { enumerable: true, get: function() {
       return ADNLAddress_1.ADNLAddress;
     } });
     var contractAddress_1 = requireContractAddress$1();
-    Object.defineProperty(exports, "contractAddress", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "contractAddress", { enumerable: true, get: function() {
       return contractAddress_1.contractAddress;
     } });
     var BitString_1 = requireBitString$1();
-    Object.defineProperty(exports, "BitString", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BitString", { enumerable: true, get: function() {
       return BitString_1.BitString;
     } });
     var BitReader_1 = requireBitReader$1();
-    Object.defineProperty(exports, "BitReader", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BitReader", { enumerable: true, get: function() {
       return BitReader_1.BitReader;
     } });
     var BitBuilder_1 = requireBitBuilder$1();
-    Object.defineProperty(exports, "BitBuilder", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BitBuilder", { enumerable: true, get: function() {
       return BitBuilder_1.BitBuilder;
     } });
     var Builder_12 = requireBuilder$3();
-    Object.defineProperty(exports, "Builder", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Builder", { enumerable: true, get: function() {
       return Builder_12.Builder;
     } });
-    Object.defineProperty(exports, "beginCell", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "beginCell", { enumerable: true, get: function() {
       return Builder_12.beginCell;
     } });
     var Slice_1 = requireSlice$1();
-    Object.defineProperty(exports, "Slice", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Slice", { enumerable: true, get: function() {
       return Slice_1.Slice;
     } });
     var CellType_1 = requireCellType$1();
-    Object.defineProperty(exports, "CellType", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "CellType", { enumerable: true, get: function() {
       return CellType_1.CellType;
     } });
     var Cell_1 = requireCell$1();
-    Object.defineProperty(exports, "Cell", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Cell", { enumerable: true, get: function() {
       return Cell_1.Cell;
     } });
     var Dictionary_1 = requireDictionary$1();
-    Object.defineProperty(exports, "Dictionary", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Dictionary", { enumerable: true, get: function() {
       return Dictionary_1.Dictionary;
     } });
     var exoticMerkleProof_1 = requireExoticMerkleProof$1();
-    Object.defineProperty(exports, "exoticMerkleProof", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "exoticMerkleProof", { enumerable: true, get: function() {
       return exoticMerkleProof_1.exoticMerkleProof;
     } });
-    Object.defineProperty(exports, "convertToMerkleProof", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "convertToMerkleProof", { enumerable: true, get: function() {
       return exoticMerkleProof_1.convertToMerkleProof;
     } });
     var exoticMerkleUpdate_1 = requireExoticMerkleUpdate$1();
-    Object.defineProperty(exports, "exoticMerkleUpdate", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "exoticMerkleUpdate", { enumerable: true, get: function() {
       return exoticMerkleUpdate_1.exoticMerkleUpdate;
     } });
     var exoticPruned_1 = requireExoticPruned$1();
-    Object.defineProperty(exports, "exoticPruned", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "exoticPruned", { enumerable: true, get: function() {
       return exoticPruned_1.exoticPruned;
     } });
     var generateMerkleProof_1 = requireGenerateMerkleProof$1();
-    Object.defineProperty(exports, "generateMerkleProof", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "generateMerkleProof", { enumerable: true, get: function() {
       return generateMerkleProof_1.generateMerkleProof;
     } });
-    Object.defineProperty(exports, "generateMerkleProofDirect", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "generateMerkleProofDirect", { enumerable: true, get: function() {
       return generateMerkleProof_1.generateMerkleProofDirect;
     } });
     var generateMerkleUpdate_1 = requireGenerateMerkleUpdate$1();
-    Object.defineProperty(exports, "generateMerkleUpdate", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "generateMerkleUpdate", { enumerable: true, get: function() {
       return generateMerkleUpdate_1.generateMerkleUpdate;
     } });
     var tuple_1 = requireTuple$1();
-    Object.defineProperty(exports, "parseTuple", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "parseTuple", { enumerable: true, get: function() {
       return tuple_1.parseTuple;
     } });
-    Object.defineProperty(exports, "serializeTuple", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "serializeTuple", { enumerable: true, get: function() {
       return tuple_1.serializeTuple;
     } });
-    Object.defineProperty(exports, "parseTupleItem", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "parseTupleItem", { enumerable: true, get: function() {
       return tuple_1.parseTupleItem;
     } });
-    Object.defineProperty(exports, "serializeTupleItem", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "serializeTupleItem", { enumerable: true, get: function() {
       return tuple_1.serializeTupleItem;
     } });
     var reader_1 = requireReader$1();
-    Object.defineProperty(exports, "TupleReader", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "TupleReader", { enumerable: true, get: function() {
       return reader_1.TupleReader;
     } });
     var builder_1 = requireBuilder$2();
-    Object.defineProperty(exports, "TupleBuilder", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "TupleBuilder", { enumerable: true, get: function() {
       return builder_1.TupleBuilder;
     } });
-    __exportStar(require_export$1(), exports);
+    __exportStar(require_export$1(), exports$1);
     var openContract_1 = requireOpenContract$1();
-    Object.defineProperty(exports, "openContract", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "openContract", { enumerable: true, get: function() {
       return openContract_1.openContract;
     } });
     var ComputeError_1 = requireComputeError$1();
-    Object.defineProperty(exports, "ComputeError", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ComputeError", { enumerable: true, get: function() {
       return ComputeError_1.ComputeError;
     } });
     var convert_1 = requireConvert$1();
-    Object.defineProperty(exports, "toNano", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "toNano", { enumerable: true, get: function() {
       return convert_1.toNano;
     } });
-    Object.defineProperty(exports, "fromNano", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "fromNano", { enumerable: true, get: function() {
       return convert_1.fromNano;
     } });
     var crc16_1 = requireCrc16$1();
-    Object.defineProperty(exports, "crc16", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "crc16", { enumerable: true, get: function() {
       return crc16_1.crc16;
     } });
     var crc32c_1 = requireCrc32c$1();
-    Object.defineProperty(exports, "crc32c", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "crc32c", { enumerable: true, get: function() {
       return crc32c_1.crc32c;
     } });
     var base32_1 = requireBase32$1();
-    Object.defineProperty(exports, "base32Decode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "base32Decode", { enumerable: true, get: function() {
       return base32_1.base32Decode;
     } });
-    Object.defineProperty(exports, "base32Encode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "base32Encode", { enumerable: true, get: function() {
       return base32_1.base32Encode;
     } });
     var getMethodId_1 = requireGetMethodId$1();
-    Object.defineProperty(exports, "getMethodId", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getMethodId", { enumerable: true, get: function() {
       return getMethodId_1.getMethodId;
     } });
     var safeSign_1 = requireSafeSign$1();
-    Object.defineProperty(exports, "safeSign", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "safeSign", { enumerable: true, get: function() {
       return safeSign_1.safeSign;
     } });
-    Object.defineProperty(exports, "safeSignVerify", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "safeSignVerify", { enumerable: true, get: function() {
       return safeSign_1.safeSignVerify;
     } });
   })(dist$4);
@@ -27224,80 +27236,11 @@ function isFriendlyTonAddress(address) {
   }
   return true;
 }
-var AssetType;
-(function(AssetType2) {
-  AssetType2["ton"] = "ton";
-  AssetType2["jetton"] = "jetton";
-  AssetType2["nft"] = "nft";
-})(AssetType || (AssetType = {}));
-const Network = {
-  /**
-   * TON Mainnet (chain ID: -239)
-   */
-  mainnet: () => ({ chainId: "-239" }),
-  /**
-   * TON Testnet (chain ID: -3)
-   */
-  testnet: () => ({ chainId: "-3" }),
-  /**
-   * Custom network with specified chain ID
-   */
-  custom: (chainId) => ({ chainId })
-};
-var Result$1;
-(function(Result2) {
-  Result2["success"] = "success";
-  Result2["failure"] = "failure";
-})(Result$1 || (Result$1 = {}));
 function asHex(data) {
   if (!/^0x[0-9a-fA-F]+$/.test(data) || data.length % 2 !== 0) {
     throw new Error("Not a valid hex");
   }
   return data;
-}
-var SendModeBase;
-(function(SendModeBase2) {
-  SendModeBase2[SendModeBase2["ORDINARY"] = 0] = "ORDINARY";
-  SendModeBase2[SendModeBase2["CARRY_ALL_REMAINING_INCOMING_VALUE"] = 64] = "CARRY_ALL_REMAINING_INCOMING_VALUE";
-  SendModeBase2[SendModeBase2["CARRY_ALL_REMAINING_BALANCE"] = 128] = "CARRY_ALL_REMAINING_BALANCE";
-})(SendModeBase || (SendModeBase = {}));
-var SendModeFlag;
-(function(SendModeFlag2) {
-  SendModeFlag2[SendModeFlag2["DESTROY_ACCOUNT_IF_ZERO"] = 32] = "DESTROY_ACCOUNT_IF_ZERO";
-  SendModeFlag2[SendModeFlag2["BOUNCE_IF_FAILURE"] = 16] = "BOUNCE_IF_FAILURE";
-  SendModeFlag2[SendModeFlag2["IGNORE_ERRORS"] = 2] = "IGNORE_ERRORS";
-  SendModeFlag2[SendModeFlag2["PAY_GAS_SEPARATELY"] = 1] = "PAY_GAS_SEPARATELY";
-})(SendModeFlag || (SendModeFlag = {}));
-function SendModeFromValue(value) {
-  let base2;
-  if (value & SendModeBase.CARRY_ALL_REMAINING_BALANCE) {
-    base2 = SendModeBase.CARRY_ALL_REMAINING_BALANCE;
-  } else if (value & SendModeBase.CARRY_ALL_REMAINING_INCOMING_VALUE) {
-    base2 = SendModeBase.CARRY_ALL_REMAINING_INCOMING_VALUE;
-  } else {
-    base2 = SendModeBase.ORDINARY;
-  }
-  const flags = [];
-  if (value & SendModeFlag.DESTROY_ACCOUNT_IF_ZERO) {
-    flags.push(SendModeFlag.DESTROY_ACCOUNT_IF_ZERO);
-  }
-  if (value & SendModeFlag.BOUNCE_IF_FAILURE) {
-    flags.push(SendModeFlag.BOUNCE_IF_FAILURE);
-  }
-  if (value & SendModeFlag.IGNORE_ERRORS) {
-    flags.push(SendModeFlag.IGNORE_ERRORS);
-  }
-  if (value & SendModeFlag.PAY_GAS_SEPARATELY) {
-    flags.push(SendModeFlag.PAY_GAS_SEPARATELY);
-  }
-  return { base: base2, flags };
-}
-function SendModeToValue(sendMode) {
-  let value = sendMode.base ?? SendModeBase.ORDINARY;
-  for (const flag of sendMode.flags) {
-    value |= flag;
-  }
-  return value;
 }
 const ERROR_CODES = {
   // Bridge Manager Errors (7000-7099)
@@ -29099,8 +29042,8 @@ class WalletManager {
     return createWalletId(wallet.getNetwork(), wallet.getAddress());
   }
 }
-const log$i = globalLogger.createChild("SessionManager");
-class SessionManager {
+const log$i = globalLogger.createChild("TONConnectStoredSessionManager");
+class TONConnectStoredSessionManager {
   sessions = /* @__PURE__ */ new Map();
   storage;
   walletManager;
@@ -29117,72 +29060,38 @@ class SessionManager {
   }
   /**
    * Create new session
+   * @param sessionId - Unique session identifier
+   * @param dAppInfo - Information about the dApp
    * @param wallet - The wallet to associate with this session (optional for connect requests before wallet selection)
+   * @param options - Additional options for session creation
    */
-  async createSession(sessionId, dAppName, domain, dAppIconUrl, dAppDescription, wallet, { disablePersist = false, isJsBridge = false } = {}) {
+  async createSession(sessionId, dAppInfo, wallet, isJsBridge) {
     const now = /* @__PURE__ */ new Date();
     const randomKeyPair = new SessionCrypto().stringifyKeypair();
-    const walletId = wallet ? createWalletId(wallet.getNetwork(), wallet.getAddress()) : "";
-    const sessionData = {
+    const walletId = wallet.getWalletId();
+    const url = new URL(dAppInfo.url || "");
+    const domain = url.host;
+    const session = {
       sessionId,
-      dAppName,
-      domain,
       walletId,
       walletAddress: wallet?.getAddress() ?? "",
       createdAt: now.toISOString(),
       lastActivityAt: now.toISOString(),
       privateKey: randomKeyPair.secretKey,
       publicKey: randomKeyPair.publicKey,
-      dAppIconUrl,
-      dAppDescription,
+      domain,
+      dAppInfo,
       isJsBridge
     };
-    if (disablePersist) {
-      return SessionManager.toSessionData(sessionData);
-    }
-    this.sessions.set(sessionId, sessionData);
+    this.sessions.set(sessionId, session);
     await this.persistSessions();
     return await this.getSession(sessionId);
   }
-  static toSessionData(session) {
-    return {
-      sessionId: session.sessionId,
-      dAppName: session.dAppName,
-      walletId: session.walletId,
-      walletAddress: session.walletAddress,
-      privateKey: session.privateKey,
-      publicKey: session.publicKey,
-      createdAt: session.createdAt,
-      lastActivityAt: session.lastActivityAt,
-      domain: session.domain,
-      dAppIconUrl: session.dAppIconUrl,
-      dAppDescription: session.dAppDescription,
-      isJsBridge: session.isJsBridge
-    };
-  }
-  // async getSessionData(sessionId: string): Promise<SessionData | undefined> {}
   /**
    * Get session by ID
    */
   async getSession(sessionId) {
-    const session = this.sessions.get(sessionId);
-    if (session) {
-      return {
-        sessionId: session.sessionId,
-        dAppName: session.dAppName,
-        walletId: session.walletId,
-        walletAddress: session.walletAddress,
-        privateKey: session.privateKey,
-        publicKey: session.publicKey,
-        createdAt: session.createdAt,
-        lastActivityAt: session.lastActivityAt,
-        domain: session.domain,
-        dAppIconUrl: session.dAppIconUrl,
-        dAppDescription: session.dAppDescription,
-        isJsBridge: session.isJsBridge
-      };
-    }
-    return void 0;
+    return this.sessions.get(sessionId);
   }
   async getSessionByDomain(domain) {
     let host;
@@ -29233,8 +29142,7 @@ class SessionManager {
   /**
    * Remove all sessions for a wallet by wallet ID or wallet adapter
    */
-  async removeSessionsForWallet(walletOrId) {
-    const walletId = typeof walletOrId === "string" ? walletOrId : createWalletId(walletOrId.getNetwork(), walletOrId.getAddress());
+  async removeSessionsForWallet(walletId) {
     const sessionsToRemove = this.getSessionsForWallet(walletId);
     let removedCount = 0;
     for (const session of sessionsToRemove) {
@@ -29245,7 +29153,6 @@ class SessionManager {
     if (removedCount > 0) {
       await this.persistSessions();
     }
-    return removedCount;
   }
   /**
    * Clear all sessions
@@ -29287,26 +29194,13 @@ class SessionManager {
     return sessionsToRemove.length;
   }
   /**
-   * Get sessions as the format expected by the main API
-   */
-  getSessionsForAPI() {
-    return this.getSessions().map((session) => ({
-      sessionId: session.sessionId,
-      dAppName: session.dAppName,
-      walletId: session.walletId,
-      walletAddress: session.walletAddress,
-      dAppUrl: session.domain,
-      dAppIconUrl: session.dAppIconUrl
-    }));
-  }
-  /**
    * Load sessions from storage
    */
   async loadSessions() {
     try {
-      const sessionData = await this.storage.get(this.storageKey);
-      if (sessionData && Array.isArray(sessionData)) {
-        for (const session of sessionData) {
+      const storedSessions = await this.storage.get(this.storageKey);
+      if (storedSessions && Array.isArray(storedSessions)) {
+        for (const session of storedSessions) {
           if (session.walletId && !session.walletAddress) {
             const wallet = this.walletManager.getWallet(session.walletId);
             if (wallet) {
@@ -29316,11 +29210,9 @@ class SessionManager {
               continue;
             }
           }
-          this.sessions.set(session.sessionId, {
-            ...session
-          });
+          this.sessions.set(session.sessionId, session);
         }
-        log$i.debug("Loaded session metadata", { count: sessionData.length });
+        log$i.debug("Loaded session metadata", { count: storedSessions.length });
       }
     } catch (error2) {
       log$i.warn("Failed to load sessions from storage", { error: error2 });
@@ -29331,21 +29223,8 @@ class SessionManager {
    */
   async persistSessions() {
     try {
-      const sessionMetadata = this.getSessions().map((session) => ({
-        sessionId: session.sessionId,
-        dAppName: session.dAppName,
-        domain: session.domain,
-        walletId: session.walletId,
-        walletAddress: session.walletAddress,
-        createdAt: session.createdAt,
-        lastActivityAt: session.lastActivityAt,
-        privateKey: session.privateKey,
-        publicKey: session.publicKey,
-        dAppIconUrl: session.dAppIconUrl,
-        dAppDescription: session.dAppDescription,
-        isJsBridge: session.isJsBridge
-      }));
-      await this.storage.set(this.storageKey, sessionMetadata);
+      const sessionsToStore = Array.from(this.sessions.values());
+      await this.storage.set(this.storageKey, sessionsToStore);
     } catch (error2) {
       log$i.warn("Failed to persist sessions to storage", { error: error2 });
     }
@@ -30870,7 +30749,7 @@ class BridgeManager {
   /**
    * Send response to dApp
    */
-  async sendResponse(event, response, _session) {
+  async sendResponse(event, response, sessionCrypto) {
     if (event.isLocal) {
       return;
     }
@@ -30886,19 +30765,25 @@ class BridgeManager {
     if (!sessionId) {
       throw new WalletKitError(ERROR_CODES.SESSION_ID_REQUIRED, "Session ID is required for sending response", void 0, { event: { id: event.id } });
     }
-    const session = _session ?? await this.sessionManager.getSession(sessionId);
-    if (!session) {
-      throw new WalletKitError(ERROR_CODES.SESSION_NOT_FOUND, `Session not found for response`, void 0, {
-        sessionId,
-        eventId: event.id
-      });
+    let _sessionCrypto;
+    if (sessionCrypto) {
+      _sessionCrypto = sessionCrypto;
+    } else {
+      const session = await this.sessionManager.getSession(sessionId);
+      if (session) {
+        _sessionCrypto = new SessionCrypto({
+          publicKey: session.publicKey,
+          secretKey: session.privateKey
+        });
+      } else {
+        throw new WalletKitError(ERROR_CODES.SESSION_NOT_FOUND, `Session not found for response`, void 0, {
+          sessionId,
+          eventId: event.id
+        });
+      }
     }
     try {
-      const sessionCrypto = new SessionCrypto({
-        publicKey: session.publicKey,
-        secretKey: session.privateKey
-      });
-      await this.bridgeProvider.send(response, sessionCrypto, sessionId, {
+      await this.bridgeProvider.send(response, _sessionCrypto, sessionId, {
         traceId: event?.traceId
       });
       log$h.debug("Response sent successfully", { sessionId, requestId: event.id });
@@ -31164,10 +31049,9 @@ class BridgeManager {
       if (!rawEvent.traceId) {
         rawEvent.traceId = v7();
       }
-      await this.sessionManager.initialize();
       if (rawEvent.from) {
         const session = await this.sessionManager.getSession(rawEvent.from);
-        rawEvent.domain = session?.domain || "";
+        rawEvent.domain = session?.dAppInfo?.url || "";
         if (session) {
           if (session?.walletId) {
             rawEvent.walletId = session.walletId;
@@ -31176,10 +31060,10 @@ class BridgeManager {
             rawEvent.walletAddress = session.walletAddress;
           }
           rawEvent.dAppInfo = {
-            name: session.dAppName,
-            description: session.dAppDescription,
-            url: session.dAppIconUrl,
-            iconUrl: session.dAppIconUrl
+            name: session.dAppInfo?.name,
+            description: session.dAppInfo?.description,
+            url: session.dAppInfo?.url,
+            iconUrl: session.dAppInfo?.iconUrl
           };
         }
       } else if (rawEvent.domain) {
@@ -31195,10 +31079,10 @@ class BridgeManager {
         }
         if (session) {
           rawEvent.dAppInfo = {
-            name: session.dAppName,
-            description: session.dAppDescription,
-            url: session.dAppIconUrl,
-            iconUrl: session.dAppIconUrl
+            name: session.dAppInfo?.name,
+            description: session.dAppInfo?.description,
+            url: session.dAppInfo?.url,
+            iconUrl: session.dAppInfo?.iconUrl
           };
           if (!rawEvent.from) {
             rawEvent.from = session.sessionId;
@@ -31461,6 +31345,50 @@ class ConnectHandler extends BasicHandler {
       };
     }
   }
+}
+var SendModeBase;
+(function(SendModeBase2) {
+  SendModeBase2[SendModeBase2["ORDINARY"] = 0] = "ORDINARY";
+  SendModeBase2[SendModeBase2["CARRY_ALL_REMAINING_INCOMING_VALUE"] = 64] = "CARRY_ALL_REMAINING_INCOMING_VALUE";
+  SendModeBase2[SendModeBase2["CARRY_ALL_REMAINING_BALANCE"] = 128] = "CARRY_ALL_REMAINING_BALANCE";
+})(SendModeBase || (SendModeBase = {}));
+var SendModeFlag;
+(function(SendModeFlag2) {
+  SendModeFlag2[SendModeFlag2["DESTROY_ACCOUNT_IF_ZERO"] = 32] = "DESTROY_ACCOUNT_IF_ZERO";
+  SendModeFlag2[SendModeFlag2["BOUNCE_IF_FAILURE"] = 16] = "BOUNCE_IF_FAILURE";
+  SendModeFlag2[SendModeFlag2["IGNORE_ERRORS"] = 2] = "IGNORE_ERRORS";
+  SendModeFlag2[SendModeFlag2["PAY_GAS_SEPARATELY"] = 1] = "PAY_GAS_SEPARATELY";
+})(SendModeFlag || (SendModeFlag = {}));
+function SendModeFromValue(value) {
+  let base2;
+  if (value & SendModeBase.CARRY_ALL_REMAINING_BALANCE) {
+    base2 = SendModeBase.CARRY_ALL_REMAINING_BALANCE;
+  } else if (value & SendModeBase.CARRY_ALL_REMAINING_INCOMING_VALUE) {
+    base2 = SendModeBase.CARRY_ALL_REMAINING_INCOMING_VALUE;
+  } else {
+    base2 = SendModeBase.ORDINARY;
+  }
+  const flags = [];
+  if (value & SendModeFlag.DESTROY_ACCOUNT_IF_ZERO) {
+    flags.push(SendModeFlag.DESTROY_ACCOUNT_IF_ZERO);
+  }
+  if (value & SendModeFlag.BOUNCE_IF_FAILURE) {
+    flags.push(SendModeFlag.BOUNCE_IF_FAILURE);
+  }
+  if (value & SendModeFlag.IGNORE_ERRORS) {
+    flags.push(SendModeFlag.IGNORE_ERRORS);
+  }
+  if (value & SendModeFlag.PAY_GAS_SEPARATELY) {
+    flags.push(SendModeFlag.PAY_GAS_SEPARATELY);
+  }
+  return { base: base2, flags };
+}
+function SendModeToValue(sendMode) {
+  let value = sendMode.base ?? SendModeBase.ORDINARY;
+  for (const flag of sendMode.flags) {
+    value |= flag;
+  }
+  return value;
 }
 function toExtraCurrencies(extraCurrency) {
   if (!extraCurrency) {
@@ -36769,6 +36697,31 @@ function toTransactionTraceActionTONTransferDetails(details) {
     isEncrypted: details.encrypted
   };
 }
+var AssetType;
+(function(AssetType2) {
+  AssetType2["ton"] = "ton";
+  AssetType2["jetton"] = "jetton";
+  AssetType2["nft"] = "nft";
+})(AssetType || (AssetType = {}));
+const Network = {
+  /**
+   * TON Mainnet (chain ID: -239)
+   */
+  mainnet: () => ({ chainId: "-239" }),
+  /**
+   * TON Testnet (chain ID: -3)
+   */
+  testnet: () => ({ chainId: "-3" }),
+  /**
+   * Custom network with specified chain ID
+   */
+  custom: (chainId) => ({ chainId })
+};
+var Result$1;
+(function(Result2) {
+  Result2["success"] = "success";
+  Result2["failure"] = "failure";
+})(Result$1 || (Result$1 = {}));
 const TON_PROXY_ADDRESSES = [
   "EQCM3B12QK1e4yZSf8GtBRT0aLMNyEsBc_DhVfRRtOEffLez",
   "EQBnGWMCf3-FZZq1W4IWcWiGAc3PHuZ0_H-7sad2oY00o83S"
@@ -37126,6 +37079,15 @@ var dist$2 = {};
 var parser = {};
 var dist$1 = {};
 var Address = {};
+var symbol_inspect;
+var hasRequiredSymbol_inspect;
+function requireSymbol_inspect() {
+  if (hasRequiredSymbol_inspect) return symbol_inspect;
+  hasRequiredSymbol_inspect = 1;
+  const SymbolInspect = /* @__PURE__ */ Symbol.for("nodejs.util.inspect.custom");
+  symbol_inspect = SymbolInspect;
+  return symbol_inspect;
+}
 var crc16 = {};
 var hasRequiredCrc16;
 function requireCrc16() {
@@ -43146,13 +43108,13 @@ var hasRequiredShardAccounts;
 function requireShardAccounts() {
   if (hasRequiredShardAccounts) return ShardAccounts;
   hasRequiredShardAccounts = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.storeShardAccounts = exports.loadShardAccounts = exports.ShardAccountRefValue = void 0;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.storeShardAccounts = exports$1.loadShardAccounts = exports$1.ShardAccountRefValue = void 0;
     const Dictionary_1 = requireDictionary();
     const DepthBalanceInfo_1 = requireDepthBalanceInfo();
     const ShardAccount_1 = requireShardAccount();
-    exports.ShardAccountRefValue = {
+    exports$1.ShardAccountRefValue = {
       parse: (cs) => {
         let depthBalanceInfo = (0, DepthBalanceInfo_1.loadDepthBalanceInfo)(cs);
         let shardAccount = (0, ShardAccount_1.loadShardAccount)(cs);
@@ -43167,15 +43129,15 @@ function requireShardAccounts() {
       }
     };
     function loadShardAccounts(cs) {
-      return Dictionary_1.Dictionary.load(Dictionary_1.Dictionary.Keys.BigUint(256), exports.ShardAccountRefValue, cs);
+      return Dictionary_1.Dictionary.load(Dictionary_1.Dictionary.Keys.BigUint(256), exports$1.ShardAccountRefValue, cs);
     }
-    exports.loadShardAccounts = loadShardAccounts;
+    exports$1.loadShardAccounts = loadShardAccounts;
     function storeShardAccounts(src2) {
       return (Builder2) => {
         Builder2.storeDict(src2);
       };
     }
-    exports.storeShardAccounts = storeShardAccounts;
+    exports$1.storeShardAccounts = storeShardAccounts;
   })(ShardAccounts);
   return ShardAccounts;
 }
@@ -43824,276 +43786,276 @@ var hasRequired_export;
 function require_export() {
   if (hasRequired_export) return _export;
   hasRequired_export = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.loadSimpleLibrary = exports.loadShardStateUnsplit = exports.storeShardIdent = exports.loadShardIdent = exports.storeShardAccounts = exports.loadShardAccounts = exports.ShardAccountRefValue = exports.storeShardAccount = exports.loadShardAccount = exports.ReserveMode = exports.SendMode = exports.storeMessageRelaxed = exports.loadMessageRelaxed = exports.storeMessage = exports.loadMessage = exports.loadMasterchainStateExtra = exports.storeHashUpdate = exports.loadHashUpdate = exports.storeExtraCurrency = exports.loadMaybeExtraCurrency = exports.loadExtraCurrency = exports.packExtraCurrencyDict = exports.packExtraCurrencyCell = exports.storeDepthBalanceInfo = exports.loadDepthBalanceInfo = exports.storeCurrencyCollection = exports.loadCurrencyCollection = exports.storeComputeSkipReason = exports.loadComputeSkipReason = exports.storeCommonMessageInfoRelaxed = exports.loadCommonMessageInfoRelaxed = exports.storeCommonMessageInfo = exports.loadCommonMessageInfo = exports.storeOutList = exports.loadOutList = exports.storeOutAction = exports.loadOutAction = exports.storeAccountStorage = exports.loadAccountStorage = exports.storeAccountStatusChange = exports.loadAccountStatusChange = exports.storeAccountStatus = exports.loadAccountStatus = exports.storeAccountState = exports.loadAccountState = exports.storeAccount = exports.loadAccount = exports.comment = exports.external = exports.internal = void 0;
-    exports.storeTransactionsStoragePhase = exports.loadTransactionStoragePhase = exports.storeTransactionDescription = exports.loadTransactionDescription = exports.storeTransactionCreditPhase = exports.loadTransactionCreditPhase = exports.storeTransactionComputePhase = exports.loadTransactionComputePhase = exports.storeTransactionBouncePhase = exports.loadTransactionBouncePhase = exports.storeTransactionActionPhase = exports.loadTransactionActionPhase = exports.storeTransaction = exports.loadTransaction = exports.storeTickTock = exports.loadTickTock = exports.storeStorageUsed = exports.loadStorageUsed = exports.storeStorageInfo = exports.loadStorageInfo = exports.storeStateInit = exports.loadStateInit = exports.storeSplitMergeInfo = exports.loadSplitMergeInfo = exports.storeLibRef = exports.loadLibRef = exports.storeSimpleLibrary = void 0;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.loadSimpleLibrary = exports$1.loadShardStateUnsplit = exports$1.storeShardIdent = exports$1.loadShardIdent = exports$1.storeShardAccounts = exports$1.loadShardAccounts = exports$1.ShardAccountRefValue = exports$1.storeShardAccount = exports$1.loadShardAccount = exports$1.ReserveMode = exports$1.SendMode = exports$1.storeMessageRelaxed = exports$1.loadMessageRelaxed = exports$1.storeMessage = exports$1.loadMessage = exports$1.loadMasterchainStateExtra = exports$1.storeHashUpdate = exports$1.loadHashUpdate = exports$1.storeExtraCurrency = exports$1.loadMaybeExtraCurrency = exports$1.loadExtraCurrency = exports$1.packExtraCurrencyDict = exports$1.packExtraCurrencyCell = exports$1.storeDepthBalanceInfo = exports$1.loadDepthBalanceInfo = exports$1.storeCurrencyCollection = exports$1.loadCurrencyCollection = exports$1.storeComputeSkipReason = exports$1.loadComputeSkipReason = exports$1.storeCommonMessageInfoRelaxed = exports$1.loadCommonMessageInfoRelaxed = exports$1.storeCommonMessageInfo = exports$1.loadCommonMessageInfo = exports$1.storeOutList = exports$1.loadOutList = exports$1.storeOutAction = exports$1.loadOutAction = exports$1.storeAccountStorage = exports$1.loadAccountStorage = exports$1.storeAccountStatusChange = exports$1.loadAccountStatusChange = exports$1.storeAccountStatus = exports$1.loadAccountStatus = exports$1.storeAccountState = exports$1.loadAccountState = exports$1.storeAccount = exports$1.loadAccount = exports$1.comment = exports$1.external = exports$1.internal = void 0;
+    exports$1.storeTransactionsStoragePhase = exports$1.loadTransactionStoragePhase = exports$1.storeTransactionDescription = exports$1.loadTransactionDescription = exports$1.storeTransactionCreditPhase = exports$1.loadTransactionCreditPhase = exports$1.storeTransactionComputePhase = exports$1.loadTransactionComputePhase = exports$1.storeTransactionBouncePhase = exports$1.loadTransactionBouncePhase = exports$1.storeTransactionActionPhase = exports$1.loadTransactionActionPhase = exports$1.storeTransaction = exports$1.loadTransaction = exports$1.storeTickTock = exports$1.loadTickTock = exports$1.storeStorageUsed = exports$1.loadStorageUsed = exports$1.storeStorageInfo = exports$1.loadStorageInfo = exports$1.storeStateInit = exports$1.loadStateInit = exports$1.storeSplitMergeInfo = exports$1.loadSplitMergeInfo = exports$1.storeLibRef = exports$1.loadLibRef = exports$1.storeSimpleLibrary = void 0;
     var _helpers_1 = require_helpers();
-    Object.defineProperty(exports, "internal", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "internal", { enumerable: true, get: function() {
       return _helpers_1.internal;
     } });
-    Object.defineProperty(exports, "external", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "external", { enumerable: true, get: function() {
       return _helpers_1.external;
     } });
-    Object.defineProperty(exports, "comment", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "comment", { enumerable: true, get: function() {
       return _helpers_1.comment;
     } });
     var Account_1 = requireAccount();
-    Object.defineProperty(exports, "loadAccount", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccount", { enumerable: true, get: function() {
       return Account_1.loadAccount;
     } });
-    Object.defineProperty(exports, "storeAccount", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccount", { enumerable: true, get: function() {
       return Account_1.storeAccount;
     } });
     var AccountState_1 = requireAccountState();
-    Object.defineProperty(exports, "loadAccountState", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccountState", { enumerable: true, get: function() {
       return AccountState_1.loadAccountState;
     } });
-    Object.defineProperty(exports, "storeAccountState", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccountState", { enumerable: true, get: function() {
       return AccountState_1.storeAccountState;
     } });
     var AccountStatus_1 = requireAccountStatus();
-    Object.defineProperty(exports, "loadAccountStatus", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccountStatus", { enumerable: true, get: function() {
       return AccountStatus_1.loadAccountStatus;
     } });
-    Object.defineProperty(exports, "storeAccountStatus", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccountStatus", { enumerable: true, get: function() {
       return AccountStatus_1.storeAccountStatus;
     } });
     var AccountStatusChange_1 = requireAccountStatusChange();
-    Object.defineProperty(exports, "loadAccountStatusChange", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccountStatusChange", { enumerable: true, get: function() {
       return AccountStatusChange_1.loadAccountStatusChange;
     } });
-    Object.defineProperty(exports, "storeAccountStatusChange", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccountStatusChange", { enumerable: true, get: function() {
       return AccountStatusChange_1.storeAccountStatusChange;
     } });
     var AccountStorage_1 = requireAccountStorage();
-    Object.defineProperty(exports, "loadAccountStorage", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadAccountStorage", { enumerable: true, get: function() {
       return AccountStorage_1.loadAccountStorage;
     } });
-    Object.defineProperty(exports, "storeAccountStorage", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeAccountStorage", { enumerable: true, get: function() {
       return AccountStorage_1.storeAccountStorage;
     } });
     var OutList_1 = requireOutList();
-    Object.defineProperty(exports, "loadOutAction", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadOutAction", { enumerable: true, get: function() {
       return OutList_1.loadOutAction;
     } });
-    Object.defineProperty(exports, "storeOutAction", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeOutAction", { enumerable: true, get: function() {
       return OutList_1.storeOutAction;
     } });
-    Object.defineProperty(exports, "loadOutList", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadOutList", { enumerable: true, get: function() {
       return OutList_1.loadOutList;
     } });
-    Object.defineProperty(exports, "storeOutList", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeOutList", { enumerable: true, get: function() {
       return OutList_1.storeOutList;
     } });
     var CommonMessageInfo_1 = requireCommonMessageInfo();
-    Object.defineProperty(exports, "loadCommonMessageInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadCommonMessageInfo", { enumerable: true, get: function() {
       return CommonMessageInfo_1.loadCommonMessageInfo;
     } });
-    Object.defineProperty(exports, "storeCommonMessageInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeCommonMessageInfo", { enumerable: true, get: function() {
       return CommonMessageInfo_1.storeCommonMessageInfo;
     } });
     var CommonMessageInfoRelaxed_1 = requireCommonMessageInfoRelaxed();
-    Object.defineProperty(exports, "loadCommonMessageInfoRelaxed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadCommonMessageInfoRelaxed", { enumerable: true, get: function() {
       return CommonMessageInfoRelaxed_1.loadCommonMessageInfoRelaxed;
     } });
-    Object.defineProperty(exports, "storeCommonMessageInfoRelaxed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeCommonMessageInfoRelaxed", { enumerable: true, get: function() {
       return CommonMessageInfoRelaxed_1.storeCommonMessageInfoRelaxed;
     } });
     var ComputeSkipReason_1 = requireComputeSkipReason();
-    Object.defineProperty(exports, "loadComputeSkipReason", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadComputeSkipReason", { enumerable: true, get: function() {
       return ComputeSkipReason_1.loadComputeSkipReason;
     } });
-    Object.defineProperty(exports, "storeComputeSkipReason", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeComputeSkipReason", { enumerable: true, get: function() {
       return ComputeSkipReason_1.storeComputeSkipReason;
     } });
     var CurrencyCollection_1 = requireCurrencyCollection();
-    Object.defineProperty(exports, "loadCurrencyCollection", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadCurrencyCollection", { enumerable: true, get: function() {
       return CurrencyCollection_1.loadCurrencyCollection;
     } });
-    Object.defineProperty(exports, "storeCurrencyCollection", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeCurrencyCollection", { enumerable: true, get: function() {
       return CurrencyCollection_1.storeCurrencyCollection;
     } });
     var DepthBalanceInfo_1 = requireDepthBalanceInfo();
-    Object.defineProperty(exports, "loadDepthBalanceInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadDepthBalanceInfo", { enumerable: true, get: function() {
       return DepthBalanceInfo_1.loadDepthBalanceInfo;
     } });
-    Object.defineProperty(exports, "storeDepthBalanceInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeDepthBalanceInfo", { enumerable: true, get: function() {
       return DepthBalanceInfo_1.storeDepthBalanceInfo;
     } });
     var ExtraCurrency_1 = requireExtraCurrency();
-    Object.defineProperty(exports, "packExtraCurrencyCell", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "packExtraCurrencyCell", { enumerable: true, get: function() {
       return ExtraCurrency_1.packExtraCurrencyCell;
     } });
-    Object.defineProperty(exports, "packExtraCurrencyDict", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "packExtraCurrencyDict", { enumerable: true, get: function() {
       return ExtraCurrency_1.packExtraCurrencyDict;
     } });
-    Object.defineProperty(exports, "loadExtraCurrency", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadExtraCurrency", { enumerable: true, get: function() {
       return ExtraCurrency_1.loadExtraCurrency;
     } });
-    Object.defineProperty(exports, "loadMaybeExtraCurrency", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadMaybeExtraCurrency", { enumerable: true, get: function() {
       return ExtraCurrency_1.loadMaybeExtraCurrency;
     } });
-    Object.defineProperty(exports, "storeExtraCurrency", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeExtraCurrency", { enumerable: true, get: function() {
       return ExtraCurrency_1.storeExtraCurrency;
     } });
     var HashUpdate_1 = requireHashUpdate();
-    Object.defineProperty(exports, "loadHashUpdate", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadHashUpdate", { enumerable: true, get: function() {
       return HashUpdate_1.loadHashUpdate;
     } });
-    Object.defineProperty(exports, "storeHashUpdate", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeHashUpdate", { enumerable: true, get: function() {
       return HashUpdate_1.storeHashUpdate;
     } });
     var MasterchainStateExtra_1 = requireMasterchainStateExtra();
-    Object.defineProperty(exports, "loadMasterchainStateExtra", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadMasterchainStateExtra", { enumerable: true, get: function() {
       return MasterchainStateExtra_1.loadMasterchainStateExtra;
     } });
     var Message_1 = requireMessage();
-    Object.defineProperty(exports, "loadMessage", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadMessage", { enumerable: true, get: function() {
       return Message_1.loadMessage;
     } });
-    Object.defineProperty(exports, "storeMessage", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeMessage", { enumerable: true, get: function() {
       return Message_1.storeMessage;
     } });
     var MessageRelaxed_1 = requireMessageRelaxed();
-    Object.defineProperty(exports, "loadMessageRelaxed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadMessageRelaxed", { enumerable: true, get: function() {
       return MessageRelaxed_1.loadMessageRelaxed;
     } });
-    Object.defineProperty(exports, "storeMessageRelaxed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeMessageRelaxed", { enumerable: true, get: function() {
       return MessageRelaxed_1.storeMessageRelaxed;
     } });
     var SendMode_1 = requireSendMode();
-    Object.defineProperty(exports, "SendMode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "SendMode", { enumerable: true, get: function() {
       return SendMode_1.SendMode;
     } });
     var ReserveMode_1 = requireReserveMode();
-    Object.defineProperty(exports, "ReserveMode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ReserveMode", { enumerable: true, get: function() {
       return ReserveMode_1.ReserveMode;
     } });
     var ShardAccount_1 = requireShardAccount();
-    Object.defineProperty(exports, "loadShardAccount", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadShardAccount", { enumerable: true, get: function() {
       return ShardAccount_1.loadShardAccount;
     } });
-    Object.defineProperty(exports, "storeShardAccount", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeShardAccount", { enumerable: true, get: function() {
       return ShardAccount_1.storeShardAccount;
     } });
     var ShardAccounts_1 = requireShardAccounts();
-    Object.defineProperty(exports, "ShardAccountRefValue", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ShardAccountRefValue", { enumerable: true, get: function() {
       return ShardAccounts_1.ShardAccountRefValue;
     } });
-    Object.defineProperty(exports, "loadShardAccounts", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadShardAccounts", { enumerable: true, get: function() {
       return ShardAccounts_1.loadShardAccounts;
     } });
-    Object.defineProperty(exports, "storeShardAccounts", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeShardAccounts", { enumerable: true, get: function() {
       return ShardAccounts_1.storeShardAccounts;
     } });
     var ShardIdent_1 = requireShardIdent();
-    Object.defineProperty(exports, "loadShardIdent", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadShardIdent", { enumerable: true, get: function() {
       return ShardIdent_1.loadShardIdent;
     } });
-    Object.defineProperty(exports, "storeShardIdent", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeShardIdent", { enumerable: true, get: function() {
       return ShardIdent_1.storeShardIdent;
     } });
     var ShardStateUnsplit_1 = requireShardStateUnsplit();
-    Object.defineProperty(exports, "loadShardStateUnsplit", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadShardStateUnsplit", { enumerable: true, get: function() {
       return ShardStateUnsplit_1.loadShardStateUnsplit;
     } });
     var SimpleLibrary_1 = requireSimpleLibrary();
-    Object.defineProperty(exports, "loadSimpleLibrary", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadSimpleLibrary", { enumerable: true, get: function() {
       return SimpleLibrary_1.loadSimpleLibrary;
     } });
-    Object.defineProperty(exports, "storeSimpleLibrary", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeSimpleLibrary", { enumerable: true, get: function() {
       return SimpleLibrary_1.storeSimpleLibrary;
     } });
     var LibRef_1 = requireLibRef();
-    Object.defineProperty(exports, "loadLibRef", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadLibRef", { enumerable: true, get: function() {
       return LibRef_1.loadLibRef;
     } });
-    Object.defineProperty(exports, "storeLibRef", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeLibRef", { enumerable: true, get: function() {
       return LibRef_1.storeLibRef;
     } });
     var SplitMergeInfo_1 = requireSplitMergeInfo();
-    Object.defineProperty(exports, "loadSplitMergeInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadSplitMergeInfo", { enumerable: true, get: function() {
       return SplitMergeInfo_1.loadSplitMergeInfo;
     } });
-    Object.defineProperty(exports, "storeSplitMergeInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeSplitMergeInfo", { enumerable: true, get: function() {
       return SplitMergeInfo_1.storeSplitMergeInfo;
     } });
     var StateInit_1 = requireStateInit();
-    Object.defineProperty(exports, "loadStateInit", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadStateInit", { enumerable: true, get: function() {
       return StateInit_1.loadStateInit;
     } });
-    Object.defineProperty(exports, "storeStateInit", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeStateInit", { enumerable: true, get: function() {
       return StateInit_1.storeStateInit;
     } });
     var StorageInfo_1 = requireStorageInfo();
-    Object.defineProperty(exports, "loadStorageInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadStorageInfo", { enumerable: true, get: function() {
       return StorageInfo_1.loadStorageInfo;
     } });
-    Object.defineProperty(exports, "storeStorageInfo", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeStorageInfo", { enumerable: true, get: function() {
       return StorageInfo_1.storeStorageInfo;
     } });
     var StorageUsed_1 = requireStorageUsed();
-    Object.defineProperty(exports, "loadStorageUsed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadStorageUsed", { enumerable: true, get: function() {
       return StorageUsed_1.loadStorageUsed;
     } });
-    Object.defineProperty(exports, "storeStorageUsed", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeStorageUsed", { enumerable: true, get: function() {
       return StorageUsed_1.storeStorageUsed;
     } });
     var TickTock_1 = requireTickTock();
-    Object.defineProperty(exports, "loadTickTock", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTickTock", { enumerable: true, get: function() {
       return TickTock_1.loadTickTock;
     } });
-    Object.defineProperty(exports, "storeTickTock", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTickTock", { enumerable: true, get: function() {
       return TickTock_1.storeTickTock;
     } });
     var Transaction_1 = requireTransaction();
-    Object.defineProperty(exports, "loadTransaction", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransaction", { enumerable: true, get: function() {
       return Transaction_1.loadTransaction;
     } });
-    Object.defineProperty(exports, "storeTransaction", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransaction", { enumerable: true, get: function() {
       return Transaction_1.storeTransaction;
     } });
     var TransactionActionPhase_1 = requireTransactionActionPhase();
-    Object.defineProperty(exports, "loadTransactionActionPhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionActionPhase", { enumerable: true, get: function() {
       return TransactionActionPhase_1.loadTransactionActionPhase;
     } });
-    Object.defineProperty(exports, "storeTransactionActionPhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionActionPhase", { enumerable: true, get: function() {
       return TransactionActionPhase_1.storeTransactionActionPhase;
     } });
     var TransactionBouncePhase_1 = requireTransactionBouncePhase();
-    Object.defineProperty(exports, "loadTransactionBouncePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionBouncePhase", { enumerable: true, get: function() {
       return TransactionBouncePhase_1.loadTransactionBouncePhase;
     } });
-    Object.defineProperty(exports, "storeTransactionBouncePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionBouncePhase", { enumerable: true, get: function() {
       return TransactionBouncePhase_1.storeTransactionBouncePhase;
     } });
     var TransactionComputePhase_1 = requireTransactionComputePhase();
-    Object.defineProperty(exports, "loadTransactionComputePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionComputePhase", { enumerable: true, get: function() {
       return TransactionComputePhase_1.loadTransactionComputePhase;
     } });
-    Object.defineProperty(exports, "storeTransactionComputePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionComputePhase", { enumerable: true, get: function() {
       return TransactionComputePhase_1.storeTransactionComputePhase;
     } });
     var TransactionCreditPhase_1 = requireTransactionCreditPhase();
-    Object.defineProperty(exports, "loadTransactionCreditPhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionCreditPhase", { enumerable: true, get: function() {
       return TransactionCreditPhase_1.loadTransactionCreditPhase;
     } });
-    Object.defineProperty(exports, "storeTransactionCreditPhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionCreditPhase", { enumerable: true, get: function() {
       return TransactionCreditPhase_1.storeTransactionCreditPhase;
     } });
     var TransactionDescription_1 = requireTransactionDescription();
-    Object.defineProperty(exports, "loadTransactionDescription", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionDescription", { enumerable: true, get: function() {
       return TransactionDescription_1.loadTransactionDescription;
     } });
-    Object.defineProperty(exports, "storeTransactionDescription", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionDescription", { enumerable: true, get: function() {
       return TransactionDescription_1.storeTransactionDescription;
     } });
     var TransactionStoragePhase_1 = requireTransactionStoragePhase();
-    Object.defineProperty(exports, "loadTransactionStoragePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "loadTransactionStoragePhase", { enumerable: true, get: function() {
       return TransactionStoragePhase_1.loadTransactionStoragePhase;
     } });
-    Object.defineProperty(exports, "storeTransactionsStoragePhase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "storeTransactionsStoragePhase", { enumerable: true, get: function() {
       return TransactionStoragePhase_1.storeTransactionsStoragePhase;
     } });
   })(_export);
@@ -44475,7 +44437,7 @@ var hasRequiredDist$2;
 function requireDist$2() {
   if (hasRequiredDist$2) return dist$1;
   hasRequiredDist$2 = 1;
-  (function(exports) {
+  (function(exports$1) {
     var __createBinding = dist$1 && dist$1.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
       if (k22 === void 0) k22 = k2;
       var desc = Object.getOwnPropertyDescriptor(m2, k2);
@@ -44489,146 +44451,146 @@ function requireDist$2() {
       if (k22 === void 0) k22 = k2;
       o4[k22] = m2[k2];
     }));
-    var __exportStar = dist$1 && dist$1.__exportStar || function(m2, exports2) {
-      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
+    var __exportStar = dist$1 && dist$1.__exportStar || function(m2, exports$12) {
+      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports$12, p2)) __createBinding(exports$12, m2, p2);
     };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.safeSignVerify = exports.safeSign = exports.getMethodId = exports.base32Encode = exports.base32Decode = exports.crc32c = exports.crc16 = exports.fromNano = exports.toNano = exports.ComputeError = exports.openContract = exports.TupleBuilder = exports.TupleReader = exports.serializeTuple = exports.parseTuple = exports.generateMerkleUpdate = exports.generateMerkleProofDirect = exports.generateMerkleProof = exports.exoticPruned = exports.exoticMerkleUpdate = exports.convertToMerkleProof = exports.exoticMerkleProof = exports.Dictionary = exports.Cell = exports.CellType = exports.Slice = exports.beginCell = exports.Builder = exports.BitBuilder = exports.BitReader = exports.BitString = exports.contractAddress = exports.ADNLAddress = exports.ExternalAddress = exports.address = exports.Address = void 0;
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.safeSignVerify = exports$1.safeSign = exports$1.getMethodId = exports$1.base32Encode = exports$1.base32Decode = exports$1.crc32c = exports$1.crc16 = exports$1.fromNano = exports$1.toNano = exports$1.ComputeError = exports$1.openContract = exports$1.TupleBuilder = exports$1.TupleReader = exports$1.serializeTuple = exports$1.parseTuple = exports$1.generateMerkleUpdate = exports$1.generateMerkleProofDirect = exports$1.generateMerkleProof = exports$1.exoticPruned = exports$1.exoticMerkleUpdate = exports$1.convertToMerkleProof = exports$1.exoticMerkleProof = exports$1.Dictionary = exports$1.Cell = exports$1.CellType = exports$1.Slice = exports$1.beginCell = exports$1.Builder = exports$1.BitBuilder = exports$1.BitReader = exports$1.BitString = exports$1.contractAddress = exports$1.ADNLAddress = exports$1.ExternalAddress = exports$1.address = exports$1.Address = void 0;
     var Address_1 = requireAddress();
-    Object.defineProperty(exports, "Address", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Address", { enumerable: true, get: function() {
       return Address_1.Address;
     } });
-    Object.defineProperty(exports, "address", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "address", { enumerable: true, get: function() {
       return Address_1.address;
     } });
     var ExternalAddress_1 = requireExternalAddress();
-    Object.defineProperty(exports, "ExternalAddress", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ExternalAddress", { enumerable: true, get: function() {
       return ExternalAddress_1.ExternalAddress;
     } });
     var ADNLAddress_1 = requireADNLAddress();
-    Object.defineProperty(exports, "ADNLAddress", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ADNLAddress", { enumerable: true, get: function() {
       return ADNLAddress_1.ADNLAddress;
     } });
     var contractAddress_1 = requireContractAddress();
-    Object.defineProperty(exports, "contractAddress", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "contractAddress", { enumerable: true, get: function() {
       return contractAddress_1.contractAddress;
     } });
     var BitString_1 = requireBitString();
-    Object.defineProperty(exports, "BitString", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BitString", { enumerable: true, get: function() {
       return BitString_1.BitString;
     } });
     var BitReader_1 = requireBitReader();
-    Object.defineProperty(exports, "BitReader", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BitReader", { enumerable: true, get: function() {
       return BitReader_1.BitReader;
     } });
     var BitBuilder_1 = requireBitBuilder();
-    Object.defineProperty(exports, "BitBuilder", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BitBuilder", { enumerable: true, get: function() {
       return BitBuilder_1.BitBuilder;
     } });
     var Builder_12 = requireBuilder$1();
-    Object.defineProperty(exports, "Builder", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Builder", { enumerable: true, get: function() {
       return Builder_12.Builder;
     } });
-    Object.defineProperty(exports, "beginCell", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "beginCell", { enumerable: true, get: function() {
       return Builder_12.beginCell;
     } });
     var Slice_1 = requireSlice();
-    Object.defineProperty(exports, "Slice", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Slice", { enumerable: true, get: function() {
       return Slice_1.Slice;
     } });
     var CellType_1 = requireCellType();
-    Object.defineProperty(exports, "CellType", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "CellType", { enumerable: true, get: function() {
       return CellType_1.CellType;
     } });
     var Cell_1 = requireCell();
-    Object.defineProperty(exports, "Cell", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Cell", { enumerable: true, get: function() {
       return Cell_1.Cell;
     } });
     var Dictionary_1 = requireDictionary();
-    Object.defineProperty(exports, "Dictionary", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Dictionary", { enumerable: true, get: function() {
       return Dictionary_1.Dictionary;
     } });
     var exoticMerkleProof_1 = requireExoticMerkleProof();
-    Object.defineProperty(exports, "exoticMerkleProof", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "exoticMerkleProof", { enumerable: true, get: function() {
       return exoticMerkleProof_1.exoticMerkleProof;
     } });
-    Object.defineProperty(exports, "convertToMerkleProof", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "convertToMerkleProof", { enumerable: true, get: function() {
       return exoticMerkleProof_1.convertToMerkleProof;
     } });
     var exoticMerkleUpdate_1 = requireExoticMerkleUpdate();
-    Object.defineProperty(exports, "exoticMerkleUpdate", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "exoticMerkleUpdate", { enumerable: true, get: function() {
       return exoticMerkleUpdate_1.exoticMerkleUpdate;
     } });
     var exoticPruned_1 = requireExoticPruned();
-    Object.defineProperty(exports, "exoticPruned", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "exoticPruned", { enumerable: true, get: function() {
       return exoticPruned_1.exoticPruned;
     } });
     var generateMerkleProof_1 = requireGenerateMerkleProof();
-    Object.defineProperty(exports, "generateMerkleProof", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "generateMerkleProof", { enumerable: true, get: function() {
       return generateMerkleProof_1.generateMerkleProof;
     } });
-    Object.defineProperty(exports, "generateMerkleProofDirect", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "generateMerkleProofDirect", { enumerable: true, get: function() {
       return generateMerkleProof_1.generateMerkleProofDirect;
     } });
     var generateMerkleUpdate_1 = requireGenerateMerkleUpdate();
-    Object.defineProperty(exports, "generateMerkleUpdate", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "generateMerkleUpdate", { enumerable: true, get: function() {
       return generateMerkleUpdate_1.generateMerkleUpdate;
     } });
     var tuple_1 = requireTuple();
-    Object.defineProperty(exports, "parseTuple", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "parseTuple", { enumerable: true, get: function() {
       return tuple_1.parseTuple;
     } });
-    Object.defineProperty(exports, "serializeTuple", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "serializeTuple", { enumerable: true, get: function() {
       return tuple_1.serializeTuple;
     } });
     var reader_1 = requireReader();
-    Object.defineProperty(exports, "TupleReader", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "TupleReader", { enumerable: true, get: function() {
       return reader_1.TupleReader;
     } });
     var builder_1 = requireBuilder();
-    Object.defineProperty(exports, "TupleBuilder", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "TupleBuilder", { enumerable: true, get: function() {
       return builder_1.TupleBuilder;
     } });
-    __exportStar(require_export(), exports);
+    __exportStar(require_export(), exports$1);
     var openContract_1 = requireOpenContract();
-    Object.defineProperty(exports, "openContract", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "openContract", { enumerable: true, get: function() {
       return openContract_1.openContract;
     } });
     var ComputeError_1 = requireComputeError();
-    Object.defineProperty(exports, "ComputeError", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ComputeError", { enumerable: true, get: function() {
       return ComputeError_1.ComputeError;
     } });
     var convert_1 = requireConvert();
-    Object.defineProperty(exports, "toNano", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "toNano", { enumerable: true, get: function() {
       return convert_1.toNano;
     } });
-    Object.defineProperty(exports, "fromNano", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "fromNano", { enumerable: true, get: function() {
       return convert_1.fromNano;
     } });
     var crc16_1 = requireCrc16();
-    Object.defineProperty(exports, "crc16", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "crc16", { enumerable: true, get: function() {
       return crc16_1.crc16;
     } });
     var crc32c_1 = requireCrc32c();
-    Object.defineProperty(exports, "crc32c", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "crc32c", { enumerable: true, get: function() {
       return crc32c_1.crc32c;
     } });
     var base32_1 = requireBase32();
-    Object.defineProperty(exports, "base32Decode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "base32Decode", { enumerable: true, get: function() {
       return base32_1.base32Decode;
     } });
-    Object.defineProperty(exports, "base32Encode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "base32Encode", { enumerable: true, get: function() {
       return base32_1.base32Encode;
     } });
     var getMethodId_1 = requireGetMethodId();
-    Object.defineProperty(exports, "getMethodId", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getMethodId", { enumerable: true, get: function() {
       return getMethodId_1.getMethodId;
     } });
     var safeSign_1 = requireSafeSign();
-    Object.defineProperty(exports, "safeSign", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "safeSign", { enumerable: true, get: function() {
       return safeSign_1.safeSign;
     } });
-    Object.defineProperty(exports, "safeSignVerify", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "safeSignVerify", { enumerable: true, get: function() {
       return safeSign_1.safeSignVerify;
     } });
   })(dist$1);
@@ -44792,8 +44754,8 @@ Failure$2.prototype.toKey = function() {
 };
 var Failure_1 = Failure$2;
 var common$l = {};
-(function(exports) {
-  exports.abstract = function(optMethodName) {
+(function(exports$1) {
+  exports$1.abstract = function(optMethodName) {
     const methodName = optMethodName || "";
     return function() {
       throw new Error(
@@ -44801,12 +44763,12 @@ var common$l = {};
       );
     };
   };
-  exports.assert = function(cond, message) {
+  exports$1.assert = function(cond, message) {
     if (!cond) {
       throw new Error(message || "Assertion failed");
     }
   };
-  exports.defineLazyProperty = function(obj, propName, getterFn) {
+  exports$1.defineLazyProperty = function(obj, propName, getterFn) {
     let memo;
     Object.defineProperty(obj, propName, {
       get() {
@@ -44817,26 +44779,26 @@ var common$l = {};
       }
     });
   };
-  exports.clone = function(obj) {
+  exports$1.clone = function(obj) {
     if (obj) {
       return Object.assign({}, obj);
     }
     return obj;
   };
-  exports.repeatFn = function(fn2, n) {
+  exports$1.repeatFn = function(fn2, n) {
     const arr = [];
     while (n-- > 0) {
       arr.push(fn2());
     }
     return arr;
   };
-  exports.repeatStr = function(str, n) {
+  exports$1.repeatStr = function(str, n) {
     return new Array(n + 1).join(str);
   };
-  exports.repeat = function(x2, n) {
-    return exports.repeatFn(() => x2, n);
+  exports$1.repeat = function(x2, n) {
+    return exports$1.repeatFn(() => x2, n);
   };
-  exports.getDuplicates = function(array) {
+  exports$1.getDuplicates = function(array) {
     const duplicates = [];
     for (let idx = 0; idx < array.length; idx++) {
       const x2 = array[idx];
@@ -44846,7 +44808,7 @@ var common$l = {};
     }
     return duplicates;
   };
-  exports.copyWithoutDuplicates = function(array) {
+  exports$1.copyWithoutDuplicates = function(array) {
     const noDuplicates = [];
     array.forEach((entry) => {
       if (noDuplicates.indexOf(entry) < 0) {
@@ -44855,31 +44817,31 @@ var common$l = {};
     });
     return noDuplicates;
   };
-  exports.isSyntactic = function(ruleName) {
+  exports$1.isSyntactic = function(ruleName) {
     const firstChar = ruleName[0];
     return firstChar === firstChar.toUpperCase();
   };
-  exports.isLexical = function(ruleName) {
-    return !exports.isSyntactic(ruleName);
+  exports$1.isLexical = function(ruleName) {
+    return !exports$1.isSyntactic(ruleName);
   };
-  exports.padLeft = function(str, len, optChar) {
+  exports$1.padLeft = function(str, len, optChar) {
     const ch = optChar || " ";
     if (str.length < len) {
-      return exports.repeatStr(ch, len - str.length) + str;
+      return exports$1.repeatStr(ch, len - str.length) + str;
     }
     return str;
   };
-  exports.StringBuffer = function() {
+  exports$1.StringBuffer = function() {
     this.strings = [];
   };
-  exports.StringBuffer.prototype.append = function(str) {
+  exports$1.StringBuffer.prototype.append = function(str) {
     this.strings.push(str);
   };
-  exports.StringBuffer.prototype.contents = function() {
+  exports$1.StringBuffer.prototype.contents = function() {
     return this.strings.join("");
   };
   const escapeUnicode = (str) => String.fromCodePoint(parseInt(str, 16));
-  exports.unescapeCodePoint = function(s2) {
+  exports$1.unescapeCodePoint = function(s2) {
     if (s2.charAt(0) === "\\") {
       switch (s2.charAt(1)) {
         case "b":
@@ -44905,7 +44867,7 @@ var common$l = {};
       return s2;
     }
   };
-  exports.unexpectedObjToString = function(obj) {
+  exports$1.unexpectedObjToString = function(obj) {
     if (obj == null) {
       return String(obj);
     }
@@ -45488,7 +45450,7 @@ var errors$9 = {
   }
 };
 var util$7 = {};
-(function(exports) {
+(function(exports$1) {
   const common2 = common$l;
   function padNumbersToEqualLength(arr) {
     let maxLen = 0;
@@ -45544,16 +45506,16 @@ var util$7 = {};
     return sb.contents();
   }
   let builtInRulesCallbacks = [];
-  exports.awaitBuiltInRules = (cb) => {
+  exports$1.awaitBuiltInRules = (cb) => {
     builtInRulesCallbacks.push(cb);
   };
-  exports.announceBuiltInRules = (grammar2) => {
+  exports$1.announceBuiltInRules = (grammar2) => {
     builtInRulesCallbacks.forEach((cb) => {
       cb(grammar2);
     });
     builtInRulesCallbacks = null;
   };
-  exports.getLineAndColumn = (str, offset) => {
+  exports$1.getLineAndColumn = (str, offset) => {
     let lineNum = 1;
     let colNum = 1;
     let currOffset = 0;
@@ -45594,10 +45556,10 @@ var util$7 = {};
       toString: lineAndColumnToMessage
     };
   };
-  exports.getLineAndColumnMessage = function(str, offset, ...ranges) {
-    return exports.getLineAndColumn(str, offset).toString(...ranges);
+  exports$1.getLineAndColumnMessage = function(str, offset, ...ranges) {
+    return exports$1.getLineAndColumn(str, offset).toString(...ranges);
   };
-  exports.uniqueId = /* @__PURE__ */ (() => {
+  exports$1.uniqueId = /* @__PURE__ */ (() => {
     let idCounter = 0;
     return (prefix) => "" + prefix + idCounter++;
   })();
@@ -49828,11 +49790,11 @@ var hasRequiredDist$1;
 function requireDist$1() {
   if (hasRequiredDist$1) return dist;
   hasRequiredDist$1 = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.MathOperator = exports.BuiltinZeroArgsOperators = exports.BuiltinOneArgOperators = exports.CompareOperator = exports.FieldBuiltinType = exports.NumberExpr = exports.NameExpr = exports.RefExpr = exports.NegateExpr = exports.MathExpr = exports.CombinatorExpr = exports.BuiltinZeroArgs = exports.BuiltinOneArgExpr = exports.BuiltinExpr = exports.CellRefExpr = exports.CompareExpr = exports.CondExpr = exports.Expression = exports.Combinator = exports.FieldExprDef = exports.FieldNamedDef = exports.FieldAnonymousDef = exports.FieldCurlyExprDef = exports.FieldBuiltinDef = exports.Field = exports.Constructor = exports.Declaration = exports.Program = exports.ASTBase = exports.ASTRootBase = exports.NodeVisitor = void 0;
-    exports.parse = parse;
-    exports.ast = ast2;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.MathOperator = exports$1.BuiltinZeroArgsOperators = exports$1.BuiltinOneArgOperators = exports$1.CompareOperator = exports$1.FieldBuiltinType = exports$1.NumberExpr = exports$1.NameExpr = exports$1.RefExpr = exports$1.NegateExpr = exports$1.MathExpr = exports$1.CombinatorExpr = exports$1.BuiltinZeroArgs = exports$1.BuiltinOneArgExpr = exports$1.BuiltinExpr = exports$1.CellRefExpr = exports$1.CompareExpr = exports$1.CondExpr = exports$1.Expression = exports$1.Combinator = exports$1.FieldExprDef = exports$1.FieldNamedDef = exports$1.FieldAnonymousDef = exports$1.FieldCurlyExprDef = exports$1.FieldBuiltinDef = exports$1.Field = exports$1.Constructor = exports$1.Declaration = exports$1.Program = exports$1.ASTBase = exports$1.ASTRootBase = exports$1.NodeVisitor = void 0;
+    exports$1.parse = parse;
+    exports$1.ast = ast2;
     const intermediate_1 = requireIntermediate();
     function parse(input, grammar2 = void 0) {
       if (grammar2 === void 0) {
@@ -49844,98 +49806,98 @@ function requireDist$1() {
       return (0, intermediate_1.buildAST)(input, (0, intermediate_1.buildGrammar)());
     }
     var visit_1 = requireVisit();
-    Object.defineProperty(exports, "NodeVisitor", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "NodeVisitor", { enumerable: true, get: function() {
       return visit_1.NodeVisitor;
     } });
     var nodes_1 = requireNodes();
-    Object.defineProperty(exports, "ASTRootBase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ASTRootBase", { enumerable: true, get: function() {
       return nodes_1.ASTRootBase;
     } });
-    Object.defineProperty(exports, "ASTBase", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "ASTBase", { enumerable: true, get: function() {
       return nodes_1.ASTBase;
     } });
-    Object.defineProperty(exports, "Program", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Program", { enumerable: true, get: function() {
       return nodes_1.Program;
     } });
-    Object.defineProperty(exports, "Declaration", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Declaration", { enumerable: true, get: function() {
       return nodes_1.Declaration;
     } });
-    Object.defineProperty(exports, "Constructor", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Constructor", { enumerable: true, get: function() {
       return nodes_1.Constructor;
     } });
-    Object.defineProperty(exports, "Field", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Field", { enumerable: true, get: function() {
       return nodes_1.Field;
     } });
-    Object.defineProperty(exports, "FieldBuiltinDef", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "FieldBuiltinDef", { enumerable: true, get: function() {
       return nodes_1.FieldBuiltinDef;
     } });
-    Object.defineProperty(exports, "FieldCurlyExprDef", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "FieldCurlyExprDef", { enumerable: true, get: function() {
       return nodes_1.FieldCurlyExprDef;
     } });
-    Object.defineProperty(exports, "FieldAnonymousDef", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "FieldAnonymousDef", { enumerable: true, get: function() {
       return nodes_1.FieldAnonymousDef;
     } });
-    Object.defineProperty(exports, "FieldNamedDef", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "FieldNamedDef", { enumerable: true, get: function() {
       return nodes_1.FieldNamedDef;
     } });
-    Object.defineProperty(exports, "FieldExprDef", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "FieldExprDef", { enumerable: true, get: function() {
       return nodes_1.FieldExprDef;
     } });
-    Object.defineProperty(exports, "Combinator", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Combinator", { enumerable: true, get: function() {
       return nodes_1.Combinator;
     } });
-    Object.defineProperty(exports, "Expression", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "Expression", { enumerable: true, get: function() {
       return nodes_1.Expression;
     } });
-    Object.defineProperty(exports, "CondExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "CondExpr", { enumerable: true, get: function() {
       return nodes_1.CondExpr;
     } });
-    Object.defineProperty(exports, "CompareExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "CompareExpr", { enumerable: true, get: function() {
       return nodes_1.CompareExpr;
     } });
-    Object.defineProperty(exports, "CellRefExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "CellRefExpr", { enumerable: true, get: function() {
       return nodes_1.CellRefExpr;
     } });
-    Object.defineProperty(exports, "BuiltinExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BuiltinExpr", { enumerable: true, get: function() {
       return nodes_1.BuiltinExpr;
     } });
-    Object.defineProperty(exports, "BuiltinOneArgExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BuiltinOneArgExpr", { enumerable: true, get: function() {
       return nodes_1.BuiltinOneArgExpr;
     } });
-    Object.defineProperty(exports, "BuiltinZeroArgs", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BuiltinZeroArgs", { enumerable: true, get: function() {
       return nodes_1.BuiltinZeroArgs;
     } });
-    Object.defineProperty(exports, "CombinatorExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "CombinatorExpr", { enumerable: true, get: function() {
       return nodes_1.CombinatorExpr;
     } });
-    Object.defineProperty(exports, "MathExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "MathExpr", { enumerable: true, get: function() {
       return nodes_1.MathExpr;
     } });
-    Object.defineProperty(exports, "NegateExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "NegateExpr", { enumerable: true, get: function() {
       return nodes_1.NegateExpr;
     } });
-    Object.defineProperty(exports, "RefExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "RefExpr", { enumerable: true, get: function() {
       return nodes_1.RefExpr;
     } });
-    Object.defineProperty(exports, "NameExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "NameExpr", { enumerable: true, get: function() {
       return nodes_1.NameExpr;
     } });
-    Object.defineProperty(exports, "NumberExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "NumberExpr", { enumerable: true, get: function() {
       return nodes_1.NumberExpr;
     } });
-    Object.defineProperty(exports, "FieldBuiltinType", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "FieldBuiltinType", { enumerable: true, get: function() {
       return nodes_1.FieldBuiltinType;
     } });
-    Object.defineProperty(exports, "CompareOperator", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "CompareOperator", { enumerable: true, get: function() {
       return nodes_1.CompareOperator;
     } });
-    Object.defineProperty(exports, "BuiltinOneArgOperators", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BuiltinOneArgOperators", { enumerable: true, get: function() {
       return nodes_1.BuiltinOneArgOperators;
     } });
-    Object.defineProperty(exports, "BuiltinZeroArgsOperators", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "BuiltinZeroArgsOperators", { enumerable: true, get: function() {
       return nodes_1.BuiltinZeroArgsOperators;
     } });
-    Object.defineProperty(exports, "MathOperator", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "MathOperator", { enumerable: true, get: function() {
       return nodes_1.MathOperator;
     } });
   })(dist);
@@ -52737,7 +52699,7 @@ var hasRequiredBuild;
 function requireBuild() {
   if (hasRequiredBuild) return build;
   hasRequiredBuild = 1;
-  (function(exports) {
+  (function(exports$1) {
     var __createBinding = build && build.__createBinding || (Object.create ? (function(o4, m2, k2, k22) {
       if (k22 === void 0) k22 = k2;
       var desc = Object.getOwnPropertyDescriptor(m2, k2);
@@ -52751,37 +52713,37 @@ function requireBuild() {
       if (k22 === void 0) k22 = k2;
       o4[k22] = m2[k2];
     }));
-    var __exportStar = build && build.__exportStar || function(m2, exports2) {
-      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2)) __createBinding(exports2, m2, p2);
+    var __exportStar = build && build.__exportStar || function(m2, exports$12) {
+      for (var p2 in m2) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports$12, p2)) __createBinding(exports$12, m2, p2);
     };
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.TypescriptGenerator = exports.isBigIntExpr = exports.isBigInt = exports.generateCode = exports.generateCodeWithGenerator = exports.getTLBCode = exports.generateCodeByAST = exports.getTLBCodeByAST = void 0;
-    __exportStar(requireAst(), exports);
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.TypescriptGenerator = exports$1.isBigIntExpr = exports$1.isBigInt = exports$1.generateCode = exports$1.generateCodeWithGenerator = exports$1.getTLBCode = exports$1.generateCodeByAST = exports$1.getTLBCodeByAST = void 0;
+    __exportStar(requireAst(), exports$1);
     var main_1 = requireMain();
-    Object.defineProperty(exports, "getTLBCodeByAST", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getTLBCodeByAST", { enumerable: true, get: function() {
       return main_1.getTLBCodeByAST;
     } });
-    Object.defineProperty(exports, "generateCodeByAST", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "generateCodeByAST", { enumerable: true, get: function() {
       return main_1.generateCodeByAST;
     } });
-    Object.defineProperty(exports, "getTLBCode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "getTLBCode", { enumerable: true, get: function() {
       return main_1.getTLBCode;
     } });
-    Object.defineProperty(exports, "generateCodeWithGenerator", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "generateCodeWithGenerator", { enumerable: true, get: function() {
       return main_1.generateCodeWithGenerator;
     } });
-    Object.defineProperty(exports, "generateCode", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "generateCode", { enumerable: true, get: function() {
       return main_1.generateCode;
     } });
     var utils_1 = requireUtils$1();
-    Object.defineProperty(exports, "isBigInt", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "isBigInt", { enumerable: true, get: function() {
       return utils_1.isBigInt;
     } });
-    Object.defineProperty(exports, "isBigIntExpr", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "isBigIntExpr", { enumerable: true, get: function() {
       return utils_1.isBigIntExpr;
     } });
     var generator_1 = requireGenerator();
-    Object.defineProperty(exports, "TypescriptGenerator", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "TypescriptGenerator", { enumerable: true, get: function() {
       return generator_1.TypescriptGenerator;
     } });
   })(build);
@@ -54827,41 +54789,41 @@ var hasRequiredDist;
 function requireDist() {
   if (hasRequiredDist) return dist$2;
   hasRequiredDist = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.blockSchema = exports.unwrap = exports.TLBSchemaError = exports.TLBRuntimeError = exports.TLBDataError = exports.parseTLB = exports.TLBRuntime = exports.parseCell = exports.encodeCell = exports.replacer = void 0;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.blockSchema = exports$1.unwrap = exports$1.TLBSchemaError = exports$1.TLBRuntimeError = exports$1.TLBDataError = exports$1.parseTLB = exports$1.TLBRuntime = exports$1.parseCell = exports$1.encodeCell = exports$1.replacer = void 0;
     var parser_1 = requireParser();
-    Object.defineProperty(exports, "replacer", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "replacer", { enumerable: true, get: function() {
       return parser_1.replacer;
     } });
-    Object.defineProperty(exports, "encodeCell", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "encodeCell", { enumerable: true, get: function() {
       return parser_1.encodeCell;
     } });
-    Object.defineProperty(exports, "parseCell", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "parseCell", { enumerable: true, get: function() {
       return parser_1.parseCell;
     } });
     var TLBRuntime_1 = requireTLBRuntime();
-    Object.defineProperty(exports, "TLBRuntime", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "TLBRuntime", { enumerable: true, get: function() {
       return TLBRuntime_1.TLBRuntime;
     } });
-    Object.defineProperty(exports, "parseTLB", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "parseTLB", { enumerable: true, get: function() {
       return TLBRuntime_1.parseTLB;
     } });
-    Object.defineProperty(exports, "TLBDataError", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "TLBDataError", { enumerable: true, get: function() {
       return TLBRuntime_1.TLBDataError;
     } });
-    Object.defineProperty(exports, "TLBRuntimeError", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "TLBRuntimeError", { enumerable: true, get: function() {
       return TLBRuntime_1.TLBRuntimeError;
     } });
-    Object.defineProperty(exports, "TLBSchemaError", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "TLBSchemaError", { enumerable: true, get: function() {
       return TLBRuntime_1.TLBSchemaError;
     } });
     var Result_1 = requireResult();
-    Object.defineProperty(exports, "unwrap", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "unwrap", { enumerable: true, get: function() {
       return Result_1.unwrap;
     } });
     var schema_1 = requireSchema();
-    Object.defineProperty(exports, "blockSchema", { enumerable: true, get: function() {
+    Object.defineProperty(exports$1, "blockSchema", { enumerable: true, get: function() {
       return schema_1.blockSchema;
     } });
   })(dist$2);
@@ -55504,11 +55466,12 @@ class RequestProcessor {
           const error2 = new WalletKitError(ERROR_CODES.WALLET_NOT_FOUND, "Wallet not found for connect request", void 0, { walletId, eventId: event.id });
           throw error2;
         }
-        const url = new URL(event.preview.dAppInfo?.url || "");
-        const domain = url.host;
-        const newSession = await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), event.preview.dAppInfo?.name || "", domain, event.preview.dAppInfo?.iconUrl || "", event.preview.dAppInfo?.description || "", wallet, {
-          isJsBridge: event.isJsBridge
-        });
+        const newSession = await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), {
+          name: event.preview.dAppInfo?.name || "",
+          url: event.preview.dAppInfo?.url || "",
+          iconUrl: event.preview.dAppInfo?.iconUrl || "",
+          description: event.preview.dAppInfo?.description || ""
+        }, wallet, event.isJsBridge ?? false);
         await this.bridgeManager.createSession(newSession.sessionId);
         const response = await this.createConnectApprovalResponse(event);
         await this.bridgeManager.sendResponse(event, response.result);
@@ -55550,9 +55513,13 @@ class RequestProcessor {
           const error2 = new WalletKitError(ERROR_CODES.WALLET_NOT_FOUND, "Wallet not found for connect approval result", void 0, { walletId, eventId: event.id });
           throw error2;
         }
-        const url = new URL(event.result.dAppUrl);
-        const domain = url.host;
-        await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), event.result.dAppName, domain, event.result.dAppIconUrl, event.result.dAppDescription, wallet);
+        const isJsBridge = false;
+        await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), {
+          name: event.result.dAppName,
+          url: event.result.dAppUrl,
+          iconUrl: event.result.dAppIconUrl,
+          description: event.result.dAppDescription
+        }, wallet, isJsBridge);
         await this.bridgeManager.sendResponse(event, event.result.response);
         if (this.analytics) {
           const sessionData = event.from ? await this.sessionManager.getSession(event.from) : void 0;
@@ -55611,16 +55578,14 @@ class RequestProcessor {
           message: reason || "User rejected connection"
         }
       };
-      const newSession = await this.sessionManager.createSession(event.from || "", event.preview.dAppInfo?.name || "", "", "", "", void 0, {
-        disablePersist: true
-      });
+      const sessionId = event.from || "";
       try {
-        await this.bridgeManager.sendResponse(event, response, newSession);
+        await this.bridgeManager.sendResponse(event, response, new SessionCrypto());
       } catch (error2) {
         log$c.error("Failed to send connect request rejection response", { error: error2 });
       }
       if (this.analytics) {
-        const sessionData = event.from ? await this.sessionManager.getSession(newSession.sessionId) : void 0;
+        const sessionData = event.from ? await this.sessionManager.getSession(sessionId) : void 0;
         this.analytics.emitWalletConnectRejected({
           client_id: event.from,
           wallet_id: sessionData?.publicKey,
@@ -56418,7 +56383,7 @@ class StorageEventProcessor {
    */
   async processNextAvailableEvent() {
     try {
-      const allLocalSessions = this.sessionManager.getSessionsForAPI();
+      const allLocalSessions = this.sessionManager.getSessions();
       const allSessions = allLocalSessions.filter((session) => session.walletId && this.registeredWallets.has(session.walletId));
       const enabledEventTypes = this.getEnabledEventTypes();
       const allEvents = [];
@@ -56797,36 +56762,36 @@ var hasRequiredUtils;
 function requireUtils() {
   if (hasRequiredUtils) return utils;
   hasRequiredUtils = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.wrapXOFConstructorWithOpts = exports.wrapConstructorWithOpts = exports.wrapConstructor = exports.Hash = exports.nextTick = exports.swap32IfBE = exports.byteSwapIfBE = exports.swap8IfBE = exports.isLE = void 0;
-    exports.isBytes = isBytes;
-    exports.anumber = anumber;
-    exports.abytes = abytes;
-    exports.ahash = ahash;
-    exports.aexists = aexists;
-    exports.aoutput = aoutput;
-    exports.u8 = u8;
-    exports.u32 = u32;
-    exports.clean = clean;
-    exports.createView = createView;
-    exports.rotr = rotr;
-    exports.rotl = rotl;
-    exports.byteSwap = byteSwap;
-    exports.byteSwap32 = byteSwap32;
-    exports.bytesToHex = bytesToHex;
-    exports.hexToBytes = hexToBytes;
-    exports.asyncLoop = asyncLoop;
-    exports.utf8ToBytes = utf8ToBytes;
-    exports.bytesToUtf8 = bytesToUtf8;
-    exports.toBytes = toBytes;
-    exports.kdfInputToBytes = kdfInputToBytes;
-    exports.concatBytes = concatBytes;
-    exports.checkOpts = checkOpts;
-    exports.createHasher = createHasher;
-    exports.createOptHasher = createOptHasher;
-    exports.createXOFer = createXOFer;
-    exports.randomBytes = randomBytes;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.wrapXOFConstructorWithOpts = exports$1.wrapConstructorWithOpts = exports$1.wrapConstructor = exports$1.Hash = exports$1.nextTick = exports$1.swap32IfBE = exports$1.byteSwapIfBE = exports$1.swap8IfBE = exports$1.isLE = void 0;
+    exports$1.isBytes = isBytes;
+    exports$1.anumber = anumber;
+    exports$1.abytes = abytes;
+    exports$1.ahash = ahash;
+    exports$1.aexists = aexists;
+    exports$1.aoutput = aoutput;
+    exports$1.u8 = u8;
+    exports$1.u32 = u32;
+    exports$1.clean = clean;
+    exports$1.createView = createView;
+    exports$1.rotr = rotr;
+    exports$1.rotl = rotl;
+    exports$1.byteSwap = byteSwap;
+    exports$1.byteSwap32 = byteSwap32;
+    exports$1.bytesToHex = bytesToHex;
+    exports$1.hexToBytes = hexToBytes;
+    exports$1.asyncLoop = asyncLoop;
+    exports$1.utf8ToBytes = utf8ToBytes;
+    exports$1.bytesToUtf8 = bytesToUtf8;
+    exports$1.toBytes = toBytes;
+    exports$1.kdfInputToBytes = kdfInputToBytes;
+    exports$1.concatBytes = concatBytes;
+    exports$1.checkOpts = checkOpts;
+    exports$1.createHasher = createHasher;
+    exports$1.createOptHasher = createOptHasher;
+    exports$1.createXOFer = createXOFer;
+    exports$1.randomBytes = randomBytes;
     const crypto_1 = /* @__PURE__ */ requireCrypto();
     function isBytes(a2) {
       return a2 instanceof Uint8Array || ArrayBuffer.isView(a2) && a2.constructor.name === "Uint8Array";
@@ -56880,19 +56845,19 @@ function requireUtils() {
     function rotl(word, shift) {
       return word << shift | word >>> 32 - shift >>> 0;
     }
-    exports.isLE = (() => new Uint8Array(new Uint32Array([287454020]).buffer)[0] === 68)();
+    exports$1.isLE = (() => new Uint8Array(new Uint32Array([287454020]).buffer)[0] === 68)();
     function byteSwap(word) {
       return word << 24 & 4278190080 | word << 8 & 16711680 | word >>> 8 & 65280 | word >>> 24 & 255;
     }
-    exports.swap8IfBE = exports.isLE ? (n) => n : (n) => byteSwap(n);
-    exports.byteSwapIfBE = exports.swap8IfBE;
+    exports$1.swap8IfBE = exports$1.isLE ? (n) => n : (n) => byteSwap(n);
+    exports$1.byteSwapIfBE = exports$1.swap8IfBE;
     function byteSwap32(arr) {
       for (let i = 0; i < arr.length; i++) {
         arr[i] = byteSwap(arr[i]);
       }
       return arr;
     }
-    exports.swap32IfBE = exports.isLE ? (u) => u : byteSwap32;
+    exports$1.swap32IfBE = exports$1.isLE ? (u) => u : byteSwap32;
     const hasHexBuiltin = /* @__PURE__ */ (() => (
       // @ts-ignore
       typeof Uint8Array.from([]).toHex === "function" && typeof Uint8Array.fromHex === "function"
@@ -56941,7 +56906,7 @@ function requireUtils() {
     }
     const nextTick = async () => {
     };
-    exports.nextTick = nextTick;
+    exports$1.nextTick = nextTick;
     async function asyncLoop(iters, tick, cb) {
       let ts = Date.now();
       for (let i = 0; i < iters; i++) {
@@ -56949,7 +56914,7 @@ function requireUtils() {
         const diff = Date.now() - ts;
         if (diff >= 0 && diff < tick)
           continue;
-        await (0, exports.nextTick)();
+        await (0, exports$1.nextTick)();
         ts += diff;
       }
     }
@@ -56996,7 +56961,7 @@ function requireUtils() {
     }
     class Hash {
     }
-    exports.Hash = Hash;
+    exports$1.Hash = Hash;
     function createHasher(hashCons) {
       const hashC = (msg) => hashCons().update(toBytes(msg)).digest();
       const tmp = hashCons();
@@ -57021,9 +56986,9 @@ function requireUtils() {
       hashC.create = (opts) => hashCons(opts);
       return hashC;
     }
-    exports.wrapConstructor = createHasher;
-    exports.wrapConstructorWithOpts = createOptHasher;
-    exports.wrapXOFConstructorWithOpts = createXOFer;
+    exports$1.wrapConstructor = createHasher;
+    exports$1.wrapConstructorWithOpts = createOptHasher;
+    exports$1.wrapXOFConstructorWithOpts = createXOFer;
     function randomBytes(bytesLength = 32) {
       if (crypto_1.crypto && typeof crypto_1.crypto.getRandomValues === "function") {
         return crypto_1.crypto.getRandomValues(new Uint8Array(bytesLength));
@@ -57815,9 +57780,9 @@ var hasRequiredHmac;
 function requireHmac() {
   if (hasRequiredHmac) return hmac;
   hasRequiredHmac = 1;
-  (function(exports) {
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.hmac = exports.HMAC = void 0;
+  (function(exports$1) {
+    Object.defineProperty(exports$1, "__esModule", { value: true });
+    exports$1.hmac = exports$1.HMAC = void 0;
     const utils_ts_1 = /* @__PURE__ */ requireUtils();
     class HMAC extends utils_ts_1.Hash {
       constructor(hash, _key) {
@@ -57883,10 +57848,10 @@ function requireHmac() {
         this.iHash.destroy();
       }
     }
-    exports.HMAC = HMAC;
+    exports$1.HMAC = HMAC;
     const hmac2 = (hash, key, message) => new HMAC(hash, key).update(message).digest();
-    exports.hmac = hmac2;
-    exports.hmac.create = (hash, key) => new HMAC(hash, key);
+    exports$1.hmac = hmac2;
+    exports$1.hmac.create = (hash, key) => new HMAC(hash, key);
   })(hmac);
   return hmac;
 }
@@ -58531,8 +58496,14 @@ class Initializer {
   async initializeManagers(options, storage) {
     const walletManager = new WalletManager(storage);
     await walletManager.initialize();
-    const sessionManager = new SessionManager(storage, walletManager);
-    await sessionManager.initialize();
+    let sessionManager;
+    if (options.sessionManager) {
+      sessionManager = options.sessionManager;
+    } else {
+      const storedSessionManager = new TONConnectStoredSessionManager(storage, walletManager);
+      await storedSessionManager.initialize();
+      sessionManager = storedSessionManager;
+    }
     const eventStore = new StorageEventStore(storage);
     const eventRouter = new EventRouter(options, this.eventEmitter, sessionManager, walletManager, this.analyticsManager);
     const bridgeManager = new BridgeManager(options?.walletManifest, options?.bridge, sessionManager, storage, eventStore, eventRouter, options, this.eventEmitter, this.analyticsManager);
@@ -58771,6 +58742,7 @@ class LRUCache {
   #sizes;
   #starts;
   #ttls;
+  #autopurgeTimers;
   #hasDispose;
   #hasFetchMethod;
   #hasDisposeAfter;
@@ -58789,6 +58761,7 @@ class LRUCache {
       // properties
       starts: c.#starts,
       ttls: c.#ttls,
+      autopurgeTimers: c.#autopurgeTimers,
       sizes: c.#sizes,
       keyMap: c.#keyMap,
       keyList: c.#keyList,
@@ -58979,10 +58952,16 @@ class LRUCache {
     const starts = new ZeroArray(this.#max);
     this.#ttls = ttls;
     this.#starts = starts;
+    const purgeTimers = this.ttlAutopurge ? new Array(this.#max) : void 0;
+    this.#autopurgeTimers = purgeTimers;
     this.#setItemTTL = (index, ttl, start = this.#perf.now()) => {
       starts[index] = ttl !== 0 ? start : 0;
       ttls[index] = ttl;
-      if (ttl !== 0 && this.ttlAutopurge) {
+      if (purgeTimers?.[index]) {
+        clearTimeout(purgeTimers[index]);
+        purgeTimers[index] = void 0;
+      }
+      if (ttl !== 0 && purgeTimers) {
         const t = setTimeout(() => {
           if (this.#isStale(index)) {
             this.#delete(this.#keyList[index], "expire");
@@ -58991,6 +58970,7 @@ class LRUCache {
         if (t.unref) {
           t.unref();
         }
+        purgeTimers[index] = t;
       }
     };
     this.#updateItemAge = (index) => {
@@ -59540,6 +59520,10 @@ class LRUCache {
       }
     }
     this.#removeItemSize(head);
+    if (this.#autopurgeTimers?.[head]) {
+      clearTimeout(this.#autopurgeTimers[head]);
+      this.#autopurgeTimers[head] = void 0;
+    }
     if (free) {
       this.#keyList[head] = void 0;
       this.#valList[head] = void 0;
@@ -59911,6 +59895,10 @@ class LRUCache {
     if (this.#size !== 0) {
       const index = this.#keyMap.get(k2);
       if (index !== void 0) {
+        if (this.#autopurgeTimers?.[index]) {
+          clearTimeout(this.#autopurgeTimers?.[index]);
+          this.#autopurgeTimers[index] = void 0;
+        }
         deleted = true;
         if (this.#size === 1) {
           this.#clear(reason);
@@ -59981,6 +59969,11 @@ class LRUCache {
     if (this.#ttls && this.#starts) {
       this.#ttls.fill(0);
       this.#starts.fill(0);
+      for (const t of this.#autopurgeTimers ?? []) {
+        if (t !== void 0)
+          clearTimeout(t);
+      }
+      this.#autopurgeTimers?.fill(void 0);
     }
     if (this.#sizes) {
       this.#sizes.fill(0);
@@ -61663,6 +61656,10 @@ class TonWalletKit {
       const session = await this.sessionManager.getSession(sessionId2);
       if (session) {
         try {
+          const sessionCrypto = new SessionCrypto({
+            publicKey: session.publicKey,
+            secretKey: session.privateKey
+          });
           await CallForSuccess(() => this.bridgeManager.sendResponse({
             sessionId: sessionId2,
             isJsBridge: session?.isJsBridge,
@@ -61672,7 +61669,7 @@ class TonWalletKit {
             event: "disconnect",
             id: Date.now(),
             payload: {}
-          }, session), 10, 100);
+          }, sessionCrypto), 10, 100);
         } catch (error2) {
           log$2.error("Failed to send disconnect to bridge", { sessionId: sessionId2, error: error2 });
         }
@@ -61700,7 +61697,7 @@ class TonWalletKit {
   }
   async listSessions() {
     await this.ensureInitialized();
-    return this.sessionManager.getSessionsForAPI();
+    return this.sessionManager.getSessions();
   }
   // === Event Handler Registration (Delegated) ===
   onConnectRequest(cb) {

@@ -43,6 +43,7 @@ extension TONJetton: JSValueDecodable {}
 extension TONJettonsResponse: JSValueDecodable {}
 extension TONNetwork: JSValueDecodable {}
 extension TONTransactionEmulatedPreview: JSValueDecodable {}
+extension TONDAppInfo: JSValueDecodable {}
 
 extension TONBalance: JSValueDecodable {
     
@@ -85,6 +86,7 @@ extension TONBridgeEventMessage: JSValueEncodable {}
 extension TONBridgeInjectOptions: JSValueEncodable {}
 extension TONPreparedSignData: JSValueEncodable {}
 extension TONProofMessage: JSValueEncodable {}
+extension TONConnectSession: JSValueEncodable {}
 
 extension TONBalance: JSValueEncodable {
     
