@@ -29110,14 +29110,14 @@ class TONConnectStoredSessionManager {
   /**
    * Get all sessions as array
    */
-  getSessions() {
+  async getSessions() {
     return Array.from(this.sessions.values());
   }
   /**
    * Get sessions for specific wallet by wallet ID
    */
-  getSessionsForWallet(walletId) {
-    return this.getSessions().filter((session) => session.walletId === walletId);
+  async getSessionsForWallet(walletId) {
+    return (await this.getSessions()).filter((session) => session.walletId === walletId);
   }
   /**
    * Update session activity timestamp
@@ -29137,13 +29137,12 @@ class TONConnectStoredSessionManager {
     if (removed) {
       await this.persistSessions();
     }
-    return removed;
   }
   /**
    * Remove all sessions for a wallet by wallet ID or wallet adapter
    */
   async removeSessionsForWallet(walletId) {
-    const sessionsToRemove = this.getSessionsForWallet(walletId);
+    const sessionsToRemove = await this.getSessionsForWallet(walletId);
     let removedCount = 0;
     for (const session of sessionsToRemove) {
       if (this.sessions.delete(session.sessionId)) {
@@ -30846,7 +30845,7 @@ class BridgeManager {
   //     return this.sessions.size;
   // }
   async getClients() {
-    return this.sessionManager.getSessions().map((session) => ({
+    return (await this.sessionManager.getSessions()).map((session) => ({
       session: new SessionCrypto({
         publicKey: session.publicKey,
         secretKey: session.privateKey.length > 64 ? session.privateKey.slice(0, 64) : session.privateKey
@@ -56383,7 +56382,7 @@ class StorageEventProcessor {
    */
   async processNextAvailableEvent() {
     try {
-      const allLocalSessions = this.sessionManager.getSessions();
+      const allLocalSessions = await this.sessionManager.getSessions();
       const allSessions = allLocalSessions.filter((session) => session.walletId && this.registeredWallets.has(session.walletId));
       const enabledEventTypes = this.getEnabledEventTypes();
       const allEvents = [];
@@ -61683,7 +61682,7 @@ class TonWalletKit {
         log$2.error("Failed to remove session", { sessionId, error: error2 });
       }
     } else {
-      const sessions = this.sessionManager.getSessions();
+      const sessions = await this.sessionManager.getSessions();
       if (sessions.length > 0) {
         for (const session of sessions) {
           try {
@@ -61697,7 +61696,7 @@ class TonWalletKit {
   }
   async listSessions() {
     await this.ensureInitialized();
-    return this.sessionManager.getSessions();
+    return await this.sessionManager.getSessions();
   }
   // === Event Handler Registration (Delegated) ===
   onConnectRequest(cb) {
@@ -62710,7 +62709,7 @@ class WalletV4R2Adapter {
     ];
   }
 }
-var __async$1 = (__this, __arguments, generator2) => {
+var __async$3 = (__this, __arguments, generator2) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -62735,22 +62734,22 @@ class SwiftStorageAdapter {
     this.swiftStorage = swiftStorage;
   }
   get(key) {
-    return __async$1(this, null, function* () {
+    return __async$3(this, null, function* () {
       return yield this.swiftStorage.get(key);
     });
   }
   set(key, value) {
-    return __async$1(this, null, function* () {
+    return __async$3(this, null, function* () {
       yield this.swiftStorage.set(key, value);
     });
   }
   remove(key) {
-    return __async$1(this, null, function* () {
+    return __async$3(this, null, function* () {
       yield this.swiftStorage.remove(key);
     });
   }
   clear() {
-    return __async$1(this, null, function* () {
+    return __async$3(this, null, function* () {
       yield this.swiftStorage.clear();
     });
   }
@@ -62790,6 +62789,181 @@ class SwiftWalletAdapter {
     return this.swiftWalletAdapter.getSignedTonProof(input, options);
   }
 }
+var __async$2 = (__this, __arguments, generator2) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator2.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator2.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x2) => x2.done ? resolve(x2.value) : Promise.resolve(x2.value).then(fulfilled, rejected);
+    step((generator2 = generator2.apply(__this, __arguments)).next());
+  });
+};
+class SwiftTONConnectSessionsManager {
+  constructor(swiftSessionsManager) {
+    this.swiftSessionsManager = swiftSessionsManager;
+  }
+  createSession(sessionId, dAppInfo, wallet, isJsBridge) {
+    return __async$2(this, null, function* () {
+      return yield this.swiftSessionsManager.createSession(sessionId, dAppInfo, wallet, isJsBridge);
+    });
+  }
+  getSession(sessionId) {
+    return __async$2(this, null, function* () {
+      return yield this.swiftSessionsManager.getSession(sessionId);
+    });
+  }
+  getSessionByDomain(domain) {
+    return __async$2(this, null, function* () {
+      return yield this.swiftSessionsManager.getSessionByDomain(domain);
+    });
+  }
+  getSessions() {
+    return __async$2(this, null, function* () {
+      return yield this.swiftSessionsManager.getSessions();
+    });
+  }
+  getSessionsForWallet(walletId) {
+    return __async$2(this, null, function* () {
+      return yield this.swiftSessionsManager.getSessionsForWallet(walletId);
+    });
+  }
+  removeSession(sessionId) {
+    return __async$2(this, null, function* () {
+      yield this.swiftSessionsManager.removeSession(sessionId);
+    });
+  }
+  removeSessionsForWallet(walletId) {
+    return __async$2(this, null, function* () {
+      yield this.swiftSessionsManager.removeSessionsForWallet(walletId);
+    });
+  }
+  clearSessions() {
+    return __async$2(this, null, function* () {
+      yield this.swiftSessionsManager.clearSessions();
+    });
+  }
+}
+var __async$1 = (__this, __arguments, generator2) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator2.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator2.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x2) => x2.done ? resolve(x2.value) : Promise.resolve(x2.value).then(fulfilled, rejected);
+    step((generator2 = generator2.apply(__this, __arguments)).next());
+  });
+};
+class SwiftAPIClientAdapter {
+  constructor(swiftApiClient) {
+    this.swiftApiClient = swiftApiClient;
+  }
+  sendBoc(boc) {
+    return __async$1(this, null, function* () {
+      return this.swiftApiClient.sendBoc(boc);
+    });
+  }
+  runGetMethod(address, method, stack, seqno) {
+    return __async$1(this, null, function* () {
+      return this.swiftApiClient.runGetMethod(address, method, stack, seqno);
+    });
+  }
+  nftItemsByAddress(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("nftItemsByAddress is not implemented yet");
+    });
+  }
+  nftItemsByOwner(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("nftItemsByOwner is not implemented yet");
+    });
+  }
+  fetchEmulation(_messageBoc, _ignoreSignature) {
+    return __async$1(this, null, function* () {
+      throw new Error("fetchEmulation is not implemented yet");
+    });
+  }
+  getAccountState(_address, _seqno) {
+    return __async$1(this, null, function* () {
+      throw new Error("getAccountState is not implemented yet");
+    });
+  }
+  getBalance(_address, _seqno) {
+    return __async$1(this, null, function* () {
+      throw new Error("getBalance is not implemented yet");
+    });
+  }
+  getAccountTransactions(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("getAccountTransactions is not implemented yet");
+    });
+  }
+  getTransactionsByHash(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("getTransactionsByHash is not implemented yet");
+    });
+  }
+  getPendingTransactions(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("getPendingTransactions is not implemented yet");
+    });
+  }
+  getTrace(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("getTrace is not implemented yet");
+    });
+  }
+  getPendingTrace(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("getPendingTrace is not implemented yet");
+    });
+  }
+  resolveDnsWallet(_domain) {
+    return __async$1(this, null, function* () {
+      throw new Error("resolveDnsWallet is not implemented yet");
+    });
+  }
+  backResolveDnsWallet(_address) {
+    return __async$1(this, null, function* () {
+      throw new Error("backResolveDnsWallet is not implemented yet");
+    });
+  }
+  jettonsByAddress(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("jettonsByAddress is not implemented yet");
+    });
+  }
+  jettonsByOwnerAddress(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("jettonsByOwnerAddress is not implemented yet");
+    });
+  }
+  getEvents(_request) {
+    return __async$1(this, null, function* () {
+      throw new Error("getEvents is not implemented yet");
+    });
+  }
+}
 var __async = (__this, __arguments, generator2) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -62810,10 +62984,11 @@ var __async = (__this, __arguments, generator2) => {
     step((generator2 = generator2.apply(__this, __arguments)).next());
   });
 };
-window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null, null, function* () {
+window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager, apiClients) => __async(null, null, function* () {
   console.log("🚀 WalletKit iOS Bridge starting...");
   console.log("Creating WalletKit instance with configuration", configuration);
   console.log("Storage", storage);
+  console.log("API Clients", apiClients);
   configuration.bridge.jsBridgeTransport = (sessionID, message) => {
     bridgeTransport({ sessionID, messageID: message.messageId, message });
   };
@@ -62825,10 +63000,19 @@ window.initWalletKit = (configuration, storage, bridgeTransport) => __async(null
       };
     }
   }
+  for (const apiClient of apiClients) {
+    const network = apiClient.getNetwork();
+    const client = new SwiftAPIClientAdapter(apiClient);
+    console.log("API Client Network", network);
+    networks[network.chainId] = {
+      apiClient: client
+    };
+  }
   const walletKit = new TonWalletKit({
     networks,
     walletManifest: configuration.walletManifest,
     deviceInfo: configuration.deviceInfo,
+    sessionManager: sessionManager ? new SwiftTONConnectSessionsManager(sessionManager) : void 0,
     bridge: configuration.bridge,
     eventProcessor: configuration.eventsConfiguration,
     storage: storage ? new SwiftStorageAdapter(storage) : new MemoryStorageAdapter({})

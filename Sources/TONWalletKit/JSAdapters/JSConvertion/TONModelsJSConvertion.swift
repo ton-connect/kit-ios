@@ -44,6 +44,7 @@ extension TONJettonsResponse: JSValueDecodable {}
 extension TONNetwork: JSValueDecodable {}
 extension TONTransactionEmulatedPreview: JSValueDecodable {}
 extension TONDAppInfo: JSValueDecodable {}
+extension TONRawStackItem: JSValueDecodable {}
 
 extension TONBalance: JSValueDecodable {
     
@@ -63,6 +64,15 @@ extension TONUserFriendlyAddress: JSValueDecodable {
         let stringValue: String = try value.decode()
         
         return try TONUserFriendlyAddress(value: stringValue)
+    }
+}
+
+extension TONBase64: JSValueDecodable {
+    
+    static func from(_ value: JSValue) throws -> Self? {
+        let stringValue: String = try value.decode()
+        
+        return TONBase64(base64Encoded: stringValue)
     }
 }
 
@@ -87,6 +97,7 @@ extension TONBridgeInjectOptions: JSValueEncodable {}
 extension TONPreparedSignData: JSValueEncodable {}
 extension TONProofMessage: JSValueEncodable {}
 extension TONConnectSession: JSValueEncodable {}
+extension TONGetMethodResult: JSValueEncodable {}
 
 extension TONBalance: JSValueEncodable {
     

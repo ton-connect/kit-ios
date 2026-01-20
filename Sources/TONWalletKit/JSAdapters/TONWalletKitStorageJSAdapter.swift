@@ -77,3 +77,5 @@ class TONWalletKitStorageJSAdapter: NSObject, JSWalletKitStorage {
         }
     }
 }
+
+extension TONWalletKitStorageJSAdapter: JSValueEncodable {}

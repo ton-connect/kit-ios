@@ -143,4 +143,9 @@ extension Optional: JSValueEncodable where Wrapped: JSValueEncodable {
     }
 }
 
-
+extension JSExport where Self: JSExport {
+    
+    func encode(in context: JSContext) throws -> Any {
+        self
+    }
+}

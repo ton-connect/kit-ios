@@ -36,7 +36,7 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         self.sessionsManager = sessionsManager
     }
     
-    func createSession(
+    @objc(createSession::::) func createSession(
         sessionId: JSValue,
         dAppInfo: JSValue,
         wallet: JSValue,
@@ -71,7 +71,7 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
     
-    func sessions() -> JSValue {
+    @objc(getSessions) func sessions() -> JSValue {
         JSValue(newPromiseIn: context) { [weak self] resolve, reject in
             Task {
                 guard let self else { return }
@@ -88,7 +88,7 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
     
-    func session(sessionId: JSValue) -> JSValue {
+    @objc(getSession:) func session(sessionId: JSValue) -> JSValue {
         do {
             let sessionId: TONConnectSessionID = try sessionId.decode()
             
@@ -116,7 +116,7 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
     
-    func session(domain: JSValue) -> JSValue {
+    @objc(getSessionByDomain:) func session(domain: JSValue) -> JSValue {
         do {
             let domain: String = try domain.decode()
             
@@ -144,7 +144,7 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
     
-    func sessions(walletId: JSValue) -> JSValue {
+    @objc(getSessionsForWallet:) func sessions(walletId: JSValue) -> JSValue {
         do {
             let walletId: TONWalletID = try walletId.decode()
             
@@ -167,7 +167,7 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
     
-    func removeSession(sessionId: JSValue) -> JSValue {
+    @objc(removeSession:) func removeSession(sessionId: JSValue) -> JSValue {
         do {
             let sessionId: TONConnectSessionID = try sessionId.decode()
             
@@ -188,7 +188,7 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
     
-    func removeSessions(walletId: JSValue) -> JSValue {
+    @objc(removeSessionsForWallet:) func removeSessions(walletId: JSValue) -> JSValue {
         do {
             let walletId: TONWalletID = try walletId.decode()
             
@@ -209,7 +209,7 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
     
-    func clearSessions() -> JSValue {
+    @objc(clearSessions) func clearSessions() -> JSValue {
         JSValue(newPromiseIn: context) { [weak self] resolve, reject in
             Task {
                 guard let self else { return }
@@ -224,3 +224,5 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
 }
+
+extension TONConnectSessionsManagerJSAdapter: JSValueEncodable {}

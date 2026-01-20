@@ -47,19 +47,33 @@ public class TONWalletKit {
         self.context = context
     }
     
-    public static func initialize(
-        configuration: TONWalletKitConfiguration,
-        storage: TONWalletKitStorageType
-    ) async throws -> TONWalletKit {
+    public static func initialize(configuration: TONWalletKitConfiguration) async throws -> TONWalletKit {
         guard let context = sharedPool.fetch(configuration: configuration) else {
             let context = JSWalletKitContext()
             try await context.load(script: JSWalletKitScript())
             
-            let storage = storage.jsStorage(context: context)
+            let storage = configuration.storage.jsStorage(context: context)
+            let sessionManager: any JSValueEncodable = configuration.sessionManager.map {
+                TONConnectSessionsManagerJSAdapter(
+                    context: context,
+                    sessionsManager: $0
+                )
+            }
+            let apiClients = configuration.networkConfigurations.compactMap { config -> TONAPIClientJSAdapter? in
+                guard let apiClient = config.apiClient else { return nil }
+                
+                return TONAPIClientJSAdapter(
+                    context: context,
+                    apiClient: apiClient,
+                    network: config.network
+                )
+            }
             
             try await context.initializeWalletKit(
                 configuration: configuration,
-                storage: AnyJSValueEncodable(storage)
+                storage: AnyJSValueEncodable(storage),
+                sessionManager: sessionManager,
+                apiClients: apiClients,
             )
             
             sharedPool.store(configuration: configuration, walletKitContext: context)
@@ -189,7 +203,7 @@ private class TONWalletKitReusableContextPool {
 
 private extension TONWalletKitStorageType {
 
-    func jsStorage(context: JSContext) -> (any JSWalletKitStorage)? {
+    func jsStorage(context: JSContext) -> (any JSValueEncodable)? {
         switch self {
         case .memory: nil
         case .keychain:

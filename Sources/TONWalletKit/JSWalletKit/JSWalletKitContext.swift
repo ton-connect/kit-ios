@@ -54,7 +54,9 @@ class JSWalletKitContext: JSContext {
     
     func initializeWalletKit(
         configuration: any JSValueEncodable,
-        storage: any JSValueEncodable
+        storage: any JSValueEncodable,
+        sessionManager: any JSValueEncodable,
+        apiClients: any JSValueEncodable
     ) async throws {
         let bridgeTransport: @convention(block) (JSValue) -> Void = { [weak self] response in
             do {
@@ -64,7 +66,13 @@ class JSWalletKitContext: JSContext {
                 debugPrint("Swift Bridge: Failed to decode transport response - \(error)")
             }
         }
-        try await self.initWalletKit(configuration, storage, AnyJSValueEncodable(bridgeTransport))
+        try await self.initWalletKit(
+            configuration,
+            storage,
+            AnyJSValueEncodable(bridgeTransport),
+            sessionManager,
+            apiClients
+        )
     }
     
     func add(eventsHandler: any JSBridgeEventsHandler) async throws {
