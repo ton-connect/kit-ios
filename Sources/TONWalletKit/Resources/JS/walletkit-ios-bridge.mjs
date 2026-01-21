@@ -62996,7 +62996,7 @@ window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager,
   if (configuration.networkConfigurations) {
     for (const netConfig of configuration.networkConfigurations) {
       networks[netConfig.network.chainId] = {
-        apiClient: netConfig.apiClient
+        apiClient: netConfig.apiClientConfiguration
       };
     }
   }
