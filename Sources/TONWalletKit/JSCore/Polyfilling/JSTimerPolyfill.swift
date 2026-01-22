@@ -82,7 +82,7 @@ public class JSTimerPolyfill: NSObject, JSPolyfill, JSTimerManager {
             return -1
         }
         
-        let identifier = timersQueue.sync { self.timerIdentifierProvider.nextTimerIdentifier() }
+        let identifier = timersQueue.sync { timerIdentifierProvider.nextTimerIdentifier() }
         
         preserveTimerSlot(for: identifier)
         
@@ -110,11 +110,14 @@ public class JSTimerPolyfill: NSObject, JSPolyfill, JSTimerManager {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
+            var timer: Timer?
+            
             self.timersQueue.sync {
-                if let timer = self.timers.removeValue(forKey: identifier) {
-                    timer?.invalidate()
+                if let removedTimer = self.timers.removeValue(forKey: identifier) {
+                    timer = removedTimer
                 }
             }
+            timer?.invalidate()
         }
     }
     
