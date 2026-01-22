@@ -129,7 +129,7 @@ public class TONWalletKit {
         )
     }
     
-    public func wallet(id: String) throws -> any TONWalletProtocol {
+    public func wallet(id: TONWalletID) throws -> any TONWalletProtocol {
         let wallet: JSValue = try walletKit.getWallet(id)
         let address: String = try wallet.getAddress()
         
@@ -158,7 +158,7 @@ public class TONWalletKit {
         try await walletKit.handleTonConnectUrl(url)
     }
       
-    public func remove(walletId: String) async throws {
+    public func remove(walletId: TONWalletID) async throws {
         try await walletKit.removeWallet(walletId)
     }
     
