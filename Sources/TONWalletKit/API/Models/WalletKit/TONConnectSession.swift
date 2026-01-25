@@ -39,10 +39,18 @@ public struct TONConnectSession: Codable {
     public var privateKey: String
     public var publicKey: String
     public var domain: String
-    public var dAppInfo: TONDAppInfo
+    /** Display name of the dApp */
+    public var dAppName: String?
+    /** Brief description of the dApp's purpose */
+    public var dAppDescription: String?
+    /** Main website URL of the dApp */
+    public var dAppUrl: URL?
+    /** Icon/logo URL of the dApp */
+    public var dAppIconUrl: URL?
     public var isJsBridge: Bool?
+    public var schemaVersion: Double
 
-    public init(sessionId: String, walletId: String, walletAddress: TONUserFriendlyAddress, createdAt: String, lastActivityAt: String, privateKey: String, publicKey: String, domain: String, dAppInfo: TONDAppInfo, isJsBridge: Bool? = nil) {
+    public init(sessionId: String, walletId: String, walletAddress: TONUserFriendlyAddress, createdAt: String, lastActivityAt: String, privateKey: String, publicKey: String, domain: String, dAppName: String? = nil, dAppDescription: String? = nil, dAppUrl: URL? = nil, dAppIconUrl: URL? = nil, isJsBridge: Bool? = nil, schemaVersion: Double) {
         self.sessionId = sessionId
         self.walletId = walletId
         self.walletAddress = walletAddress
@@ -51,8 +59,12 @@ public struct TONConnectSession: Codable {
         self.privateKey = privateKey
         self.publicKey = publicKey
         self.domain = domain
-        self.dAppInfo = dAppInfo
+        self.dAppName = dAppName
+        self.dAppDescription = dAppDescription
+        self.dAppUrl = dAppUrl
+        self.dAppIconUrl = dAppIconUrl
         self.isJsBridge = isJsBridge
+        self.schemaVersion = schemaVersion
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -64,8 +76,12 @@ public struct TONConnectSession: Codable {
         case privateKey
         case publicKey
         case domain
-        case dAppInfo
+        case dAppName
+        case dAppDescription
+        case dAppUrl
+        case dAppIconUrl
         case isJsBridge
+        case schemaVersion
     }
 
     // Encodable protocol methods
@@ -80,8 +96,12 @@ public struct TONConnectSession: Codable {
         try container.encode(privateKey, forKey: .privateKey)
         try container.encode(publicKey, forKey: .publicKey)
         try container.encode(domain, forKey: .domain)
-        try container.encode(dAppInfo, forKey: .dAppInfo)
+        try container.encodeIfPresent(dAppName, forKey: .dAppName)
+        try container.encodeIfPresent(dAppDescription, forKey: .dAppDescription)
+        try container.encodeIfPresent(dAppUrl, forKey: .dAppUrl)
+        try container.encodeIfPresent(dAppIconUrl, forKey: .dAppIconUrl)
         try container.encodeIfPresent(isJsBridge, forKey: .isJsBridge)
+        try container.encode(schemaVersion, forKey: .schemaVersion)
     }
 }
 

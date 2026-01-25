@@ -28946,10 +28946,6 @@ function isValidBOC(bocString) {
     return false;
   }
 }
-var distExports$1 = requireDist$4();
-function createWalletId(network, address) {
-  return distExports$1.sha256_sync(`${network.chainId}:${address}`).toString("base64");
-}
 globalLogger.createChild("WalletManager");
 class WalletManager {
   wallets = /* @__PURE__ */ new Map();
@@ -28983,7 +28979,7 @@ class WalletManager {
     if (!validation.isValid) {
       throw new Error(`Invalid wallet: ${validation.errors.join(", ")}`);
     }
-    const walletId = createWalletId(wallet.getNetwork(), wallet.getAddress());
+    const walletId = wallet.getWalletId();
     if (this.wallets.has(walletId)) {
       return walletId;
     }
@@ -28998,7 +28994,7 @@ class WalletManager {
     if (typeof walletIdOrAdapter === "string") {
       walletId = walletIdOrAdapter;
     } else {
-      walletId = createWalletId(walletIdOrAdapter.getNetwork(), walletIdOrAdapter.getAddress());
+      walletId = walletIdOrAdapter.getWalletId();
     }
     const removed = this.wallets.delete(walletId);
     return removed;
@@ -29007,7 +29003,7 @@ class WalletManager {
    * Update existing wallet
    */
   async updateWallet(wallet) {
-    const walletId = createWalletId(wallet.getNetwork(), wallet.getAddress());
+    const walletId = wallet.getWalletId();
     if (!this.wallets.has(walletId)) {
       throw new Error(`Wallet with ID ${walletId} not found`);
     }
@@ -29039,7 +29035,7 @@ class WalletManager {
    * Get wallet ID for a wallet adapter
    */
   getWalletId(wallet) {
-    return createWalletId(wallet.getNetwork(), wallet.getAddress());
+    return wallet.getWalletId();
   }
 }
 const log$i = globalLogger.createChild("TONConnectStoredSessionManager");
@@ -29048,6 +29044,7 @@ class TONConnectStoredSessionManager {
   storage;
   walletManager;
   storageKey = "sessions";
+  schemaVersion = 1;
   constructor(storage, walletManager) {
     this.storage = storage;
     this.walletManager = walletManager;
@@ -29057,6 +29054,7 @@ class TONConnectStoredSessionManager {
    */
   async initialize() {
     await this.loadSessions();
+    await this.migrateSessions();
   }
   /**
    * Create new session
@@ -29069,8 +29067,13 @@ class TONConnectStoredSessionManager {
     const now = /* @__PURE__ */ new Date();
     const randomKeyPair = new SessionCrypto().stringifyKeypair();
     const walletId = wallet.getWalletId();
-    const url = new URL(dAppInfo.url || "");
-    const domain = url.host;
+    let domain;
+    try {
+      const url = new URL(dAppInfo.url || "");
+      domain = url.host;
+    } catch {
+      throw new Error("Unable to resolve domain from dApp URL for new sessions");
+    }
     const session = {
       sessionId,
       walletId,
@@ -29080,8 +29083,12 @@ class TONConnectStoredSessionManager {
       privateKey: randomKeyPair.secretKey,
       publicKey: randomKeyPair.publicKey,
       domain,
-      dAppInfo,
-      isJsBridge
+      dAppName: dAppInfo.name,
+      dAppDescription: dAppInfo.description,
+      dAppUrl: dAppInfo.url,
+      dAppIconUrl: dAppInfo.iconUrl,
+      isJsBridge,
+      schemaVersion: this.schemaVersion
     };
     this.sessions.set(sessionId, session);
     await this.persistSessions();
@@ -29227,6 +29234,23 @@ class TONConnectStoredSessionManager {
     } catch (error2) {
       log$i.warn("Failed to persist sessions to storage", { error: error2 });
     }
+  }
+  async migrateSessions() {
+    for (const [sessionId, session] of this.sessions.entries()) {
+      const migratedSession = this.migrate(session);
+      if (migratedSession) {
+        this.sessions.set(sessionId, migratedSession);
+      } else {
+        this.sessions.delete(sessionId);
+      }
+    }
+    await this.persistSessions();
+  }
+  migrate(session) {
+    if (session.schemaVersion === this.schemaVersion) {
+      return session;
+    }
+    return void 0;
   }
 }
 var util$8;
@@ -30748,7 +30772,7 @@ class BridgeManager {
   /**
    * Send response to dApp
    */
-  async sendResponse(event, response, sessionCrypto) {
+  async sendResponse(event, response, providedSessionCrypto) {
     if (event.isLocal) {
       return;
     }
@@ -30764,13 +30788,11 @@ class BridgeManager {
     if (!sessionId) {
       throw new WalletKitError(ERROR_CODES.SESSION_ID_REQUIRED, "Session ID is required for sending response", void 0, { event: { id: event.id } });
     }
-    let _sessionCrypto;
-    if (sessionCrypto) {
-      _sessionCrypto = sessionCrypto;
-    } else {
+    let sessionCrypto = providedSessionCrypto;
+    if (!sessionCrypto) {
       const session = await this.sessionManager.getSession(sessionId);
       if (session) {
-        _sessionCrypto = new SessionCrypto({
+        sessionCrypto = new SessionCrypto({
           publicKey: session.publicKey,
           secretKey: session.privateKey
         });
@@ -30782,7 +30804,7 @@ class BridgeManager {
       }
     }
     try {
-      await this.bridgeProvider.send(response, _sessionCrypto, sessionId, {
+      await this.bridgeProvider.send(response, sessionCrypto, sessionId, {
         traceId: event?.traceId
       });
       log$h.debug("Response sent successfully", { sessionId, requestId: event.id });
@@ -31048,9 +31070,10 @@ class BridgeManager {
       if (!rawEvent.traceId) {
         rawEvent.traceId = v7();
       }
+      await this.sessionManager.initialize();
       if (rawEvent.from) {
         const session = await this.sessionManager.getSession(rawEvent.from);
-        rawEvent.domain = session?.dAppInfo?.url || "";
+        rawEvent.domain = session?.domain || "";
         if (session) {
           if (session?.walletId) {
             rawEvent.walletId = session.walletId;
@@ -31059,10 +31082,10 @@ class BridgeManager {
             rawEvent.walletAddress = session.walletAddress;
           }
           rawEvent.dAppInfo = {
-            name: session.dAppInfo?.name,
-            description: session.dAppInfo?.description,
-            url: session.dAppInfo?.url,
-            iconUrl: session.dAppInfo?.iconUrl
+            name: session.dAppName,
+            description: session.dAppDescription,
+            url: session.dAppUrl,
+            iconUrl: session.dAppIconUrl
           };
         }
       } else if (rawEvent.domain) {
@@ -31078,10 +31101,10 @@ class BridgeManager {
         }
         if (session) {
           rawEvent.dAppInfo = {
-            name: session.dAppInfo?.name,
-            description: session.dAppInfo?.description,
-            url: session.dAppInfo?.url,
-            iconUrl: session.dAppInfo?.iconUrl
+            name: session.dAppName,
+            description: session.dAppDescription,
+            url: session.dAppUrl,
+            iconUrl: session.dAppIconUrl
           };
           if (!rawEvent.from) {
             rawEvent.from = session.sessionId;
@@ -54828,7 +54851,7 @@ function requireDist() {
   })(dist$2);
   return dist$2;
 }
-var distExports = requireDist();
+var distExports$1 = requireDist();
 const BASE64_REGEX = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 const BOC_PREFIX = "te6cc";
 function isValidObject(data) {
@@ -55053,7 +55076,7 @@ class SignDataHandler extends BasicHandler {
     }
     if (data.type === "cell") {
       try {
-        const parsed = distExports.parseTLB(data.value.schema).deserialize(data.value.content);
+        const parsed = distExports$1.parseTLB(data.value.schema).deserialize(data.value.content);
         return {
           type: "cell",
           value: {
@@ -55283,6 +55306,7 @@ class EventRouter {
     return enabledTypes;
   }
 }
+var distExports = requireDist$4();
 const tonProofPrefix = "ton-proof-item-v2/";
 const tonConnectPrefix = "ton-connect";
 async function CreateTonProofMessageBytes(message) {
@@ -55301,9 +55325,9 @@ async function CreateTonProofMessageBytes(message) {
     ts,
     Buffer.from(message.payload)
   ]);
-  const messageHash = distExports$1.sha256_sync(m2);
+  const messageHash = distExports.sha256_sync(m2);
   const fullMes = Buffer.concat([Buffer.from([255, 255]), Buffer.from(tonConnectPrefix), Buffer.from(messageHash)]);
-  const res = distExports$1.sha256_sync(fullMes);
+  const res = distExports.sha256_sync(fullMes);
   return Buffer.from(res);
 }
 function CreateTonProofMessage({ address, domain, payload, stateInit, timestamp }) {
@@ -55392,7 +55416,7 @@ function createTextBinaryHash(data, parsedAddr, domain, timestamp) {
     payloadLenBuffer,
     payloadBuffer
   ]);
-  return distExports$1.sha256_sync(message);
+  return distExports.sha256_sync(message);
 }
 function createCellHash(payload, parsedAddr, domain, timestamp) {
   const cell = distExports$2.Cell.fromBase64(payload.content);
@@ -55465,7 +55489,7 @@ class RequestProcessor {
           const error2 = new WalletKitError(ERROR_CODES.WALLET_NOT_FOUND, "Wallet not found for connect request", void 0, { walletId, eventId: event.id });
           throw error2;
         }
-        const newSession = await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), {
+        const newSession = await this.sessionManager.createSession(event.from || (await distExports.getSecureRandomBytes(32)).toString("hex"), {
           name: event.preview.dAppInfo?.name || "",
           url: event.preview.dAppInfo?.url || "",
           iconUrl: event.preview.dAppInfo?.iconUrl || "",
@@ -55513,7 +55537,7 @@ class RequestProcessor {
           throw error2;
         }
         const isJsBridge = false;
-        await this.sessionManager.createSession(event.from || (await distExports$1.getSecureRandomBytes(32)).toString("hex"), {
+        await this.sessionManager.createSession(event.from || (await distExports.getSecureRandomBytes(32)).toString("hex"), {
           name: event.result.dAppName,
           url: event.result.dAppUrl,
           iconUrl: event.result.dAppIconUrl,
@@ -58171,8 +58195,8 @@ var srcExports = requireSrc();
 async function bip39ToPrivateKey(mnemonic2) {
   const seed = await srcExports.mnemonicToSeed(mnemonic2.join(" "));
   const TON_DERIVATION_PATH = [44, 607, 0];
-  const seedContainer = await distExports$1.deriveEd25519Path(seed, TON_DERIVATION_PATH);
-  return distExports$1.keyPairFromSeed(seedContainer.subarray(0, 32));
+  const seedContainer = await distExports.deriveEd25519Path(seed, TON_DERIVATION_PATH);
+  return distExports.keyPairFromSeed(seedContainer.subarray(0, 32));
 }
 async function MnemonicToKeyPair(mnemonic2, mnemonicType = "ton") {
   const mnemonicArray = Array.isArray(mnemonic2) ? mnemonic2 : mnemonic2.split(" ");
@@ -58180,7 +58204,7 @@ async function MnemonicToKeyPair(mnemonic2, mnemonicType = "ton") {
     throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, `Invalid mnemonic length: expected 12 or 24 words, got ${mnemonicArray.length}`);
   }
   if (mnemonicType === "ton") {
-    const key = await distExports$1.mnemonicToWalletKey(mnemonicArray);
+    const key = await distExports.mnemonicToWalletKey(mnemonicArray);
     return {
       publicKey: new Uint8Array(key.publicKey),
       secretKey: new Uint8Array(key.secretKey)
@@ -58198,19 +58222,19 @@ async function MnemonicToKeyPair(mnemonic2, mnemonicType = "ton") {
 function DefaultSignature(data, privateKey) {
   let fullKey = privateKey;
   if (fullKey.length === 32) {
-    const keyPair = distExports$1.keyPairFromSeed(Buffer.from(fullKey));
+    const keyPair = distExports.keyPairFromSeed(Buffer.from(fullKey));
     fullKey = keyPair.secretKey;
   }
-  return Uint8ArrayToHex(distExports$1.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fullKey)));
+  return Uint8ArrayToHex(distExports.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fullKey)));
 }
 function createWalletSigner(privateKey) {
   return async (data) => {
     return DefaultSignature(Uint8Array.from(data), privateKey);
   };
 }
-const fakeKeyPair = distExports$1.keyPairFromSeed(Buffer.alloc(32, 0));
+const fakeKeyPair = distExports.keyPairFromSeed(Buffer.alloc(32, 0));
 function FakeSignature(data) {
-  return Uint8ArrayToHex([...distExports$1.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fakeKeyPair.secretKey))]);
+  return Uint8ArrayToHex([...distExports.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fakeKeyPair.secretKey))]);
 }
 class Signer {
   /**
@@ -58234,7 +58258,7 @@ class Signer {
    */
   static async fromPrivateKey(privateKey) {
     const privateKeyBytes = typeof privateKey === "string" ? Uint8Array.from(Buffer.from(privateKey.replace("0x", ""), "hex")) : privateKey;
-    const keyPair = distExports$1.keyPairFromSeed(Buffer.from(privateKeyBytes));
+    const keyPair = distExports.keyPairFromSeed(Buffer.from(privateKeyBytes));
     const signer = createWalletSigner(keyPair.secretKey);
     return {
       sign: signer,
@@ -58257,6 +58281,9 @@ function getVersion() {
 }
 function getEventsSubsystem() {
   return "wallet";
+}
+function createWalletId(network, address) {
+  return distExports.sha256_sync(`${network.chainId}:${address}`).toString("base64");
 }
 function storeJettonTransferMessage(src2) {
   return (builder2) => {
@@ -60872,7 +60899,7 @@ function toTonDnsCategory(category) {
   if (typeof category === "number") {
     return BigInt(category);
   }
-  return BigInt("0x" + distExports$1.sha256_sync(category).toString("hex"));
+  return BigInt("0x" + distExports.sha256_sync(category).toString("hex"));
 }
 async function dnsResolve(client, domain, category, resolver) {
   let currentResolver = resolver ?? ROOT_DNS_RESOLVER_MAINNET;
@@ -61566,7 +61593,7 @@ class TonWalletKit {
     const wallets = this.walletManager.getWallets();
     for (const wallet of wallets) {
       try {
-        const walletId = createWalletId(wallet.getNetwork(), wallet.getAddress());
+        const walletId = wallet.getWalletId();
         await this.eventProcessor.startProcessing(walletId);
       } catch (error2) {
         log$2.error("Failed to start event processing for wallet", {
@@ -62809,48 +62836,93 @@ var __async$2 = (__this, __arguments, generator2) => {
     step((generator2 = generator2.apply(__this, __arguments)).next());
   });
 };
-class SwiftTONConnectSessionsManager {
-  constructor(swiftSessionsManager) {
-    this.swiftSessionsManager = swiftSessionsManager;
+class SwiftAPIClientAdapter {
+  constructor(swiftApiClient) {
+    this.swiftApiClient = swiftApiClient;
   }
-  createSession(sessionId, dAppInfo, wallet, isJsBridge) {
+  sendBoc(boc) {
     return __async$2(this, null, function* () {
-      return yield this.swiftSessionsManager.createSession(sessionId, dAppInfo, wallet, isJsBridge);
+      return this.swiftApiClient.sendBoc(boc);
     });
   }
-  getSession(sessionId) {
+  runGetMethod(address, method, stack, seqno) {
     return __async$2(this, null, function* () {
-      return yield this.swiftSessionsManager.getSession(sessionId);
+      return this.swiftApiClient.runGetMethod(address, method, stack, seqno);
     });
   }
-  getSessionByDomain(domain) {
+  nftItemsByAddress(_request) {
     return __async$2(this, null, function* () {
-      return yield this.swiftSessionsManager.getSessionByDomain(domain);
+      throw new Error("nftItemsByAddress is not implemented yet");
     });
   }
-  getSessions() {
+  nftItemsByOwner(_request) {
     return __async$2(this, null, function* () {
-      return yield this.swiftSessionsManager.getSessions();
+      throw new Error("nftItemsByOwner is not implemented yet");
     });
   }
-  getSessionsForWallet(walletId) {
+  fetchEmulation(_messageBoc, _ignoreSignature) {
     return __async$2(this, null, function* () {
-      return yield this.swiftSessionsManager.getSessionsForWallet(walletId);
+      throw new Error("fetchEmulation is not implemented yet");
     });
   }
-  removeSession(sessionId) {
+  getAccountState(_address, _seqno) {
     return __async$2(this, null, function* () {
-      yield this.swiftSessionsManager.removeSession(sessionId);
+      throw new Error("getAccountState is not implemented yet");
     });
   }
-  removeSessionsForWallet(walletId) {
+  getBalance(_address, _seqno) {
     return __async$2(this, null, function* () {
-      yield this.swiftSessionsManager.removeSessionsForWallet(walletId);
+      throw new Error("getBalance is not implemented yet");
     });
   }
-  clearSessions() {
+  getAccountTransactions(_request) {
     return __async$2(this, null, function* () {
-      yield this.swiftSessionsManager.clearSessions();
+      throw new Error("getAccountTransactions is not implemented yet");
+    });
+  }
+  getTransactionsByHash(_request) {
+    return __async$2(this, null, function* () {
+      throw new Error("getTransactionsByHash is not implemented yet");
+    });
+  }
+  getPendingTransactions(_request) {
+    return __async$2(this, null, function* () {
+      throw new Error("getPendingTransactions is not implemented yet");
+    });
+  }
+  getTrace(_request) {
+    return __async$2(this, null, function* () {
+      throw new Error("getTrace is not implemented yet");
+    });
+  }
+  getPendingTrace(_request) {
+    return __async$2(this, null, function* () {
+      throw new Error("getPendingTrace is not implemented yet");
+    });
+  }
+  resolveDnsWallet(_domain) {
+    return __async$2(this, null, function* () {
+      throw new Error("resolveDnsWallet is not implemented yet");
+    });
+  }
+  backResolveDnsWallet(_address) {
+    return __async$2(this, null, function* () {
+      throw new Error("backResolveDnsWallet is not implemented yet");
+    });
+  }
+  jettonsByAddress(_request) {
+    return __async$2(this, null, function* () {
+      throw new Error("jettonsByAddress is not implemented yet");
+    });
+  }
+  jettonsByOwnerAddress(_request) {
+    return __async$2(this, null, function* () {
+      throw new Error("jettonsByOwnerAddress is not implemented yet");
+    });
+  }
+  getEvents(_request) {
+    return __async$2(this, null, function* () {
+      throw new Error("getEvents is not implemented yet");
     });
   }
 }
@@ -62874,93 +62946,52 @@ var __async$1 = (__this, __arguments, generator2) => {
     step((generator2 = generator2.apply(__this, __arguments)).next());
   });
 };
-class SwiftAPIClientAdapter {
-  constructor(swiftApiClient) {
-    this.swiftApiClient = swiftApiClient;
+class SwiftTONConnectSessionsManager {
+  constructor(swiftSessionsManager) {
+    this.swiftSessionsManager = swiftSessionsManager;
   }
-  sendBoc(boc) {
+  initialize() {
     return __async$1(this, null, function* () {
-      return this.swiftApiClient.sendBoc(boc);
     });
   }
-  runGetMethod(address, method, stack, seqno) {
+  createSession(sessionId, dAppInfo, wallet, isJsBridge) {
     return __async$1(this, null, function* () {
-      return this.swiftApiClient.runGetMethod(address, method, stack, seqno);
+      return yield this.swiftSessionsManager.createSession(sessionId, dAppInfo, wallet, isJsBridge);
     });
   }
-  nftItemsByAddress(_request) {
+  getSession(sessionId) {
     return __async$1(this, null, function* () {
-      throw new Error("nftItemsByAddress is not implemented yet");
+      return yield this.swiftSessionsManager.getSession(sessionId);
     });
   }
-  nftItemsByOwner(_request) {
+  getSessionByDomain(domain) {
     return __async$1(this, null, function* () {
-      throw new Error("nftItemsByOwner is not implemented yet");
+      return yield this.swiftSessionsManager.getSessionByDomain(domain);
     });
   }
-  fetchEmulation(_messageBoc, _ignoreSignature) {
+  getSessions() {
     return __async$1(this, null, function* () {
-      throw new Error("fetchEmulation is not implemented yet");
+      return yield this.swiftSessionsManager.getSessions();
     });
   }
-  getAccountState(_address, _seqno) {
+  getSessionsForWallet(walletId) {
     return __async$1(this, null, function* () {
-      throw new Error("getAccountState is not implemented yet");
+      return yield this.swiftSessionsManager.getSessionsForWallet(walletId);
     });
   }
-  getBalance(_address, _seqno) {
+  removeSession(sessionId) {
     return __async$1(this, null, function* () {
-      throw new Error("getBalance is not implemented yet");
+      yield this.swiftSessionsManager.removeSession(sessionId);
     });
   }
-  getAccountTransactions(_request) {
+  removeSessionsForWallet(walletId) {
     return __async$1(this, null, function* () {
-      throw new Error("getAccountTransactions is not implemented yet");
+      yield this.swiftSessionsManager.removeSessionsForWallet(walletId);
     });
   }
-  getTransactionsByHash(_request) {
+  clearSessions() {
     return __async$1(this, null, function* () {
-      throw new Error("getTransactionsByHash is not implemented yet");
-    });
-  }
-  getPendingTransactions(_request) {
-    return __async$1(this, null, function* () {
-      throw new Error("getPendingTransactions is not implemented yet");
-    });
-  }
-  getTrace(_request) {
-    return __async$1(this, null, function* () {
-      throw new Error("getTrace is not implemented yet");
-    });
-  }
-  getPendingTrace(_request) {
-    return __async$1(this, null, function* () {
-      throw new Error("getPendingTrace is not implemented yet");
-    });
-  }
-  resolveDnsWallet(_domain) {
-    return __async$1(this, null, function* () {
-      throw new Error("resolveDnsWallet is not implemented yet");
-    });
-  }
-  backResolveDnsWallet(_address) {
-    return __async$1(this, null, function* () {
-      throw new Error("backResolveDnsWallet is not implemented yet");
-    });
-  }
-  jettonsByAddress(_request) {
-    return __async$1(this, null, function* () {
-      throw new Error("jettonsByAddress is not implemented yet");
-    });
-  }
-  jettonsByOwnerAddress(_request) {
-    return __async$1(this, null, function* () {
-      throw new Error("jettonsByOwnerAddress is not implemented yet");
-    });
-  }
-  getEvents(_request) {
-    return __async$1(this, null, function* () {
-      throw new Error("getEvents is not implemented yet");
+      yield this.swiftSessionsManager.clearSessions();
     });
   }
 }
@@ -63316,21 +63347,6 @@ window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager,
           return result;
         } catch (error2) {
           console.error("❌ Failed to disconnect session:", error2);
-          throw error2;
-        }
-      });
-    },
-    // Jettons
-    getJettons(walletAddress) {
-      return __async(this, null, function* () {
-        if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("🪙 Bridge: Getting jettons for:", walletAddress);
-        try {
-          const jettons = yield walletKit.jettons.getAddressJettons(walletAddress);
-          console.log("✅ Got jettons for", walletAddress, ":", jettons);
-          return jettons;
-        } catch (error2) {
-          console.error("❌ Failed to get jettons:", error2);
           throw error2;
         }
       });
