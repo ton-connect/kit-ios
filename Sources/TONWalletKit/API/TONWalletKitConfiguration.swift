@@ -12,10 +12,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,12 +34,16 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
     let networkConfigurations: [NetworkConfiguration]
     let deviceInfo: DeviceInfo
     let walletManifest: Manifest
+    let storage: TONWalletKitStorageType
+    let sessionManager: (any TONConnectSessionsManager)?
     let bridge: Bridge?
     let eventsConfiguration: EventsConfiguration?
     
     public init(
         networkConfigurations: Set<NetworkConfiguration>,
         walletManifest: Manifest,
+        storage: TONWalletKitStorageType = .keychain,
+        sessionManager: (any TONConnectSessionsManager)? = nil,
         bridge: Bridge?,
         eventsConfiguration: EventsConfiguration? = nil,
         features: [any Feature],
@@ -57,8 +61,23 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
         manifest.features = rawFeatures
         
         self.walletManifest = manifest
+        self.storage = storage
+        self.sessionManager = sessionManager
         self.bridge = bridge
         self.eventsConfiguration = eventsConfiguration
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(
+            networkConfigurations.filter {
+                $0.apiClientConfiguration != nil
+            },
+            forKey: .networkConfigurations)
+        try container.encode(deviceInfo, forKey: .deviceInfo)
+        try container.encode(walletManifest, forKey: .walletManifest)
+        try container.encodeIfPresent(bridge, forKey: .bridge)
+        try container.encodeIfPresent(eventsConfiguration, forKey: .eventsConfiguration)
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -66,19 +85,27 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
         hasher.combine(deviceInfo)
         hasher.combine(walletManifest)
         hasher.combine(bridge)
+        hasher.combine(eventsConfiguration)
     }
+    
+    public static func == (lhs: TONWalletKitConfiguration, rhs: TONWalletKitConfiguration) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
     
     enum CodingKeys: CodingKey {
         case networkConfigurations
         case deviceInfo
         case walletManifest
         case bridge
+        case eventsConfiguration
     }
+    
 }
 
 extension TONWalletKitConfiguration {
     
-    public struct EventsConfiguration: Codable, Hashable {
+    public struct EventsConfiguration: Encodable, Hashable {
         let disableEvents: Bool
         let disableTransactionEmulation: Bool
         
@@ -88,17 +115,34 @@ extension TONWalletKitConfiguration {
         }
     }
     
-    public struct NetworkConfiguration: Codable, Hashable {
+    public struct NetworkConfiguration: Encodable, Hashable {
         let network: TONNetwork
-        let apiClient: APIClient?
+        let apiClientConfiguration: APIClientConfiguration?
+        let apiClient: TONAPIClient?
         
-        public init(network: TONNetwork, apiClient: APIClient?) {
+        public init(network: TONNetwork, apiClientConfiguration: APIClientConfiguration) {
+            self.network = network
+            self.apiClientConfiguration = apiClientConfiguration
+            self.apiClient = nil
+        }
+        
+        public init(network: TONNetwork, apiClient: TONAPIClient) {
             self.network = network
             self.apiClient = apiClient
+            self.apiClientConfiguration = nil
         }
         
         public func hash(into hasher: inout Hasher) {
             hasher.combine(network)
+        }
+        
+        public static func == (lhs: NetworkConfiguration, rhs: NetworkConfiguration) -> Bool {
+            return lhs.network == rhs.network
+        }
+        
+        enum CodingKeys: CodingKey {
+            case network
+            case apiClientConfiguration
         }
     }
     
@@ -181,7 +225,7 @@ extension TONWalletKitConfiguration {
         }
     }
     
-    public struct APIClient: Codable, Hashable {
+    public struct APIClientConfiguration: Encodable, Hashable {
         let url: URL?
         let key: String
         

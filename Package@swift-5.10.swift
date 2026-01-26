@@ -35,7 +35,7 @@ let package = Package(
             targets: ["TONWalletKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.4.0")
+        .package(url: "https://github.com/attaswift/BigInt.git", exact: "5.3.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

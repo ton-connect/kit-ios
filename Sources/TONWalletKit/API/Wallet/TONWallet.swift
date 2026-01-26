@@ -28,12 +28,12 @@ import Foundation
 import BigInt
 
 public class TONWallet: TONWalletProtocol {
-    public let id: String
+    public let id: TONWalletID
     public let address: TONUserFriendlyAddress
 
     let jsWallet: any JSDynamicObject
 
-    init(
+    required init(
         jsWallet: any JSDynamicObject,
         id: String,
         address: TONUserFriendlyAddress
@@ -99,4 +99,18 @@ public class TONWallet: TONWalletProtocol {
 extension TONWallet: JSValueEncodable {
     
     func encode(in context: JSContext) throws -> Any { jsWallet }
+}
+
+extension TONWallet: JSValueDecodable {
+    
+    static func from(_ value: JSValue) throws -> Self? {
+        let id: TONWalletID = try value.getWalletId()
+        let address: TONUserFriendlyAddress = try value.getAddress()
+        
+        return Self(
+            jsWallet: value,
+            id: id,
+            address: address
+        )
+    }
 }

@@ -35,7 +35,7 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
         self.version = version
     }
     
-    func identifier() throws -> String {
+    func identifier() throws -> TONWalletID {
         try jsWalletAdapter.getWalletId()
     }
     
