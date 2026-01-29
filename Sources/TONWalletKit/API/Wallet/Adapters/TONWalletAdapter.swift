@@ -39,9 +39,9 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
         try jsWalletAdapter.getWalletId()
     }
     
-    func publicKey() -> TONHex {
-        let result: String? = try? jsWalletAdapter.getPublicKey()
-        return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
+    func publicKey() throws -> TONHex {
+        let publicKey: String = try jsWalletAdapter.getPublicKey()
+        return TONHex(hexString: publicKey)
     }
     
     func network() throws -> TONNetwork {

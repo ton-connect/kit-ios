@@ -162,21 +162,21 @@ public class TONWalletKit {
         try await walletKit.removeWallet(walletId)
     }
     
-    public func add(eventsHandler: TONBridgeEventsHandler) async throws {
+    public func add(eventsHandler: TONBridgeEventsHandler) throws {
         if eventHandlersAdapters.contains(where: { $0 == eventsHandler }) {
             return
         }
         
         let adapter = TONBridgeEventsHandlerJSAdapter(handler: eventsHandler, context: context)
         
-        try await context.add(eventsHandler: adapter)
+        try context.add(eventsHandler: adapter)
         
         eventHandlersAdapters.append(adapter)
     }
     
-    public func remove(eventsHandler: TONBridgeEventsHandler) async throws {
+    public func remove(eventsHandler: TONBridgeEventsHandler) throws {
         if let adapter = eventHandlersAdapters.first(where: { $0 == eventsHandler }) {
-            try await context.remove(eventsHandler: adapter)
+            try context.remove(eventsHandler: adapter)
             
             eventHandlersAdapters.removeAll { $0 === adapter }
         }

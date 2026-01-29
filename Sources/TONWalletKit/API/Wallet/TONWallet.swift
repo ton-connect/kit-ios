@@ -35,7 +35,7 @@ public class TONWallet: TONWalletProtocol {
 
     required init(
         jsWallet: any JSDynamicObject,
-        id: String,
+        id: TONWalletID,
         address: TONUserFriendlyAddress
     ) {
         self.jsWallet = jsWallet

@@ -29,18 +29,18 @@ import Foundation
 public class TONWalletTransactionRequest {
     let context: any JSDynamicObject
     
-    public let event: TONTransactionRequestEvent
+    public let event: TONSendTransactionRequestEvent
     
     init(
         context: any JSDynamicObject,
-        event: TONTransactionRequestEvent
+        event: TONSendTransactionRequestEvent
     ) {
         self.context = context
         self.event = event
     }
     
-    public func approve() async throws -> TONTransactionApprovalResponse {
-        try await context.walletKit.approveTransactionRequest(event)
+    public func approve(response: TONSendTransactionApprovalResponse? = nil) async throws -> TONSendTransactionApprovalResponse {
+        return try await context.walletKit.approveTransactionRequest(event, response)
     }
     
     public func reject(reason: String? = nil) async throws {

@@ -33,11 +33,11 @@ extension TONNFTsResponse: JSValueDecodable {}
 extension TONNFT: JSValueDecodable {}
 extension TONPreparedSignData: JSValueDecodable {}
 extension TONProofMessage: JSValueDecodable {}
-extension TONTransactionApprovalResponse: JSValueDecodable {}
+extension TONSendTransactionApprovalResponse: JSValueDecodable {}
 extension TONSignDataApprovalResponse: JSValueDecodable {}
 extension TONConnectionRequestEvent: JSValueDecodable {}
 extension TONSignDataRequestEvent: JSValueDecodable {}
-extension TONTransactionRequestEvent: JSValueDecodable {}
+extension TONSendTransactionRequestEvent: JSValueDecodable {}
 extension TONDisconnectionEvent: JSValueDecodable {}
 extension TONJetton: JSValueDecodable {}
 extension TONJettonsResponse: JSValueDecodable {}
@@ -89,7 +89,7 @@ extension TONV4R2WalletParameters: JSValueEncodable {}
 extension TONV5R1WalletParameters: JSValueEncodable {}
 extension TONConnectionRequestEvent: JSValueEncodable {}
 extension TONSignDataRequestEvent: JSValueEncodable {}
-extension TONTransactionRequestEvent: JSValueEncodable {}
+extension TONSendTransactionRequestEvent: JSValueEncodable {}
 extension TONDisconnectionEvent: JSValueEncodable {}
 extension TONWalletKitConfiguration: JSValueEncodable {}
 extension TONBridgeEventMessage: JSValueEncodable {}
@@ -98,8 +98,13 @@ extension TONPreparedSignData: JSValueEncodable {}
 extension TONProofMessage: JSValueEncodable {}
 extension TONConnectSession: JSValueEncodable {}
 extension TONGetMethodResult: JSValueEncodable {}
+extension TONConnectionApprovalResponse: JSValueEncodable {}
+extension TONSendTransactionApprovalResponse: JSValueEncodable {}
+extension TONSignDataApprovalResponse: JSValueEncodable {}
 
 extension TONBalance: JSValueEncodable {
     
     func encode(in context: JSContext) throws -> Any { String(nanoUnits) }
 }
+
+extension AnyCodable: JSValueEncodable, JSValueDecodable {}

@@ -75,7 +75,7 @@ class JSWalletKitContext: JSContext {
         )
     }
     
-    func add(eventsHandler: any JSBridgeEventsHandler) async throws {
+    func add(eventsHandler: any JSBridgeEventsHandler) throws {
         if let bridgeEventHandlers {
             bridgeEventHandlers.add(handler: eventsHandler)
             return
@@ -103,14 +103,14 @@ class JSWalletKitContext: JSContext {
             }
         }
         
-        try await self.walletKit.setEventsListeners(AnyJSValueEncodable(callback))
+        try self.walletKit.setEventsListeners(AnyJSValueEncodable(callback))
     }
     
-    func remove(eventsHandler: any JSBridgeEventsHandler) async throws {
+    func remove(eventsHandler: any JSBridgeEventsHandler) throws {
         bridgeEventHandlers?.remove(handler: eventsHandler)
         
         if bridgeEventHandlers?.isEmpty != false {
-            try await self.walletKit.removeEventListeners()
+            try self.walletKit.removeEventListeners()
         }
     }
 }

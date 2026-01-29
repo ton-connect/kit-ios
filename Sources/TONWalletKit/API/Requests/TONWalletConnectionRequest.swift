@@ -39,11 +39,15 @@ public class TONWalletConnectionRequest {
         self.event = event
     }
     
-    public func approve(wallet: any TONWalletProtocol) async throws {
+    public func approve(
+        wallet: any TONWalletProtocol,
+        response: TONConnectionApprovalResponse? = nil
+    ) async throws {
         var event = self.event
         event.walletId = wallet.id
         event.walletAddress = wallet.address
-        try await context.walletKit.approveConnectRequest(event)
+        
+        try await context.walletKit.approveConnectRequest(event, response)
     }
     
     public func reject(reason: String? = nil) async throws {
