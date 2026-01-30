@@ -33,17 +33,20 @@ public struct TONConnectionApprovalProof: Codable {
     public var signature: TONBase64
     public var timestamp: Double
     public var domain: TONConnectionApprovalProofDomain
+    public var payload: String
 
-    public init(signature: TONBase64, timestamp: Double, domain: TONConnectionApprovalProofDomain) {
+    public init(signature: TONBase64, timestamp: Double, domain: TONConnectionApprovalProofDomain, payload: String) {
         self.signature = signature
         self.timestamp = timestamp
         self.domain = domain
+        self.payload = payload
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case signature
         case timestamp
         case domain
+        case payload
     }
 
     // Encodable protocol methods
@@ -53,6 +56,7 @@ public struct TONConnectionApprovalProof: Codable {
         try container.encode(signature, forKey: .signature)
         try container.encode(timestamp, forKey: .timestamp)
         try container.encode(domain, forKey: .domain)
+        try container.encode(payload, forKey: .payload)
     }
 }
 
