@@ -38,7 +38,7 @@ public protocol TONWalletAdapterProtocol: AnyObject {
     func signedTonProof(input: TONProofMessage, fakeSignature: Bool?) async throws -> TONHex
 }
 
-public protocol TONWalletProtocol {
+public protocol TONWalletProtocol: TONWalletAdapterProtocol {
     var id: TONWalletID { get }
     var address: TONUserFriendlyAddress { get }
     

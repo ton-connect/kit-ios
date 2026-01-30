@@ -83,8 +83,8 @@ class WalletsListViewModel: ObservableObject {
             .store(in: &subscribers)
         
         Task {
-            self.kit = try await TONWalletKit.mainnet()
-            try await kit?.add(eventsHandler: TONEventsHandler.shared)
+            self.kit = TONWalletKit.mainnet()
+            try kit?.add(eventsHandler: TONEventsHandler.shared)
         }
     }
     

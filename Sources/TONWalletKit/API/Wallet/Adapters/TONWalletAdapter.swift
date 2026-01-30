@@ -27,12 +27,10 @@
 import Foundation
 
 class TONWalletAdapter: TONWalletAdapterProtocol {
-    let version: TONWalletVersion
     let jsWalletAdapter: any JSDynamicObject
     
-    init(jsWalletAdapter: any JSDynamicObject, version: TONWalletVersion) {
+    init(jsWalletAdapter: any JSDynamicObject) {
         self.jsWalletAdapter = jsWalletAdapter
-        self.version = version
     }
     
     func identifier() throws -> TONWalletID {

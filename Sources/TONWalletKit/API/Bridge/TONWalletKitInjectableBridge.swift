@@ -28,19 +28,19 @@ import Foundation
 import Combine
 
 class TONWalletKitInjectableBridge {
-    private let walletKit: any JSDynamicObject
+    private let jsWalletKit: any JSDynamicObject
     private let bridgeTransport: JSBridgeTransport
     
     init(
-        walletKit: any JSDynamicObject,
+        jsWalletKit: any JSDynamicObject,
         bridgeTransport: JSBridgeTransport
     ) {
-        self.walletKit = walletKit
+        self.jsWalletKit = jsWalletKit
         self.bridgeTransport = bridgeTransport
     }
     
     func request(message: TONBridgeEventMessage, request: Any) async throws {
-        try await walletKit.processInjectedBridgeRequest(message, AnyJSValueEncodable(request))
+        try await jsWalletKit.processInjectedBridgeRequest(message, AnyJSValueEncodable(request))
     }
     
     func waitForResponse() -> AnyPublisher<Response, Error> {
