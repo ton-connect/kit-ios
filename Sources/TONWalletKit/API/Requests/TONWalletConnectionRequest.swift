@@ -40,14 +40,26 @@ public class TONWalletConnectionRequest {
     }
     
     public func approve(
-        wallet: any TONWalletProtocol,
+        walletId: TONWalletID,
+        walletAddress: TONUserFriendlyAddress,
         response: TONConnectionApprovalResponse? = nil
     ) async throws {
         var event = self.event
-        event.walletId = wallet.id
-        event.walletAddress = wallet.address
+        event.walletId = walletId
+        event.walletAddress = walletAddress
         
         try await context.walletKit.approveConnectRequest(event, response)
+    }
+    
+    public func approve(
+        wallet: any TONWalletProtocol,
+        response: TONConnectionApprovalResponse? = nil
+    ) async throws {
+        try await approve(
+            walletId: wallet.id,
+            walletAddress: wallet.address,
+            response: response
+        )
     }
     
     public func reject(reason: String? = nil) async throws {
