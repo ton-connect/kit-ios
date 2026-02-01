@@ -134,7 +134,12 @@ public class TONWalletKit {
     }
         
     public func connect(url: String) async throws {
-        try await jsWalletKit().handleTonConnectUrl(url)
+        var components = URLComponents(string: url)
+        
+        if components?.scheme == nil {
+            components?.scheme = "tc"
+        }
+        try await jsWalletKit().handleTonConnectUrl(components?.url?.absoluteString ?? url)
     }
       
     public func remove(walletId: TONWalletID) async throws {

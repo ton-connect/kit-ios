@@ -26,7 +26,7 @@
 
 import Foundation
 
-public class TONWalletTransactionRequest {
+public class TONWalletSendTransactionRequest {
     let context: any JSDynamicObject
     
     public let event: TONSendTransactionRequestEvent

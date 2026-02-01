@@ -28,7 +28,7 @@ import Foundation
 
 public enum TONWalletKitEvent {
     case connectRequest(TONWalletConnectionRequest)
-    case transactionRequest(TONWalletTransactionRequest)
+    case transactionRequest(TONWalletSendTransactionRequest)
     case signDataRequest(TONWalletSignDataRequest)
     case disconnect(TONDisconnectionEvent)
     
@@ -39,7 +39,7 @@ public enum TONWalletKitEvent {
             self = .connectRequest(TONWalletConnectionRequest(context: context, event: event))
         case .transactionRequest:
             let event: TONSendTransactionRequestEvent = try bridgeEvent.value.decode()
-            self = .transactionRequest(TONWalletTransactionRequest(context: context, event: event))
+            self = .transactionRequest(TONWalletSendTransactionRequest(context: context, event: event))
         case .signDataRequest:
             let event: TONSignDataRequestEvent = try bridgeEvent.value.decode()
             self = .signDataRequest(TONWalletSignDataRequest(context: context, event: event))
