@@ -44,12 +44,12 @@ public class TONWalletConnectionRequest {
         response: TONConnectionApprovalResponse? = nil
     ) async throws {
         let jsWallet: JSValue = try await context.walletKit.getWallet(walletId)
-        let address: String = try await jsWallet.getAddress()
+        let address: TONUserFriendlyAddress = try await jsWallet.getAddress()
         
         let wallet = TONWallet(
             jsWallet: jsWallet,
             id: walletId,
-            address: try TONUserFriendlyAddress(value: address)
+            address: address
         )
         
         return try await approve(wallet: wallet, response: response)
