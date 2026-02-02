@@ -39,6 +39,7 @@ public class TONWalletSendTransactionRequest {
         self.event = event
     }
     
+    @discardableResult
     public func approve(response: TONSendTransactionApprovalResponse? = nil) async throws -> TONSendTransactionApprovalResponse {
         return try await context.walletKit.approveTransactionRequest(event, response)
     }
