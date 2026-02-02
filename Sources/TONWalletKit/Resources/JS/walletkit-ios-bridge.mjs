@@ -37910,6 +37910,8 @@ class TonWalletKit {
         return;
       }
       const walletAddress = wallet.getAddress();
+      const walletStateInit = await wallet.getStateInit();
+      const publicKey = wallet.getPublicKey().replace("0x", "");
       const deviceInfo = getDeviceInfoForWallet(wallet, this.config.deviceInfo);
       const connectResponse = {
         event: "connect",
@@ -37922,8 +37924,8 @@ class TonWalletKit {
               address: distExports$1.Address.parse(walletAddress).toRawString(),
               // TODO: Support multiple networks
               network: wallet.getNetwork().chainId === CHAIN.MAINNET ? CHAIN.MAINNET : CHAIN.TESTNET,
-              walletStateInit: "",
-              publicKey: ""
+              walletStateInit,
+              publicKey
             }
           ]
         }
