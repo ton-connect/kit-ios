@@ -27,21 +27,19 @@
 import Foundation
 
 class TONWalletAdapter: TONWalletAdapterProtocol {
-    let version: TONWalletVersion
     let jsWalletAdapter: any JSDynamicObject
     
-    init(jsWalletAdapter: any JSDynamicObject, version: TONWalletVersion) {
+    init(jsWalletAdapter: any JSDynamicObject) {
         self.jsWalletAdapter = jsWalletAdapter
-        self.version = version
     }
     
     func identifier() throws -> TONWalletID {
         try jsWalletAdapter.getWalletId()
     }
     
-    func publicKey() -> TONHex {
-        let result: String? = try? jsWalletAdapter.getPublicKey()
-        return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
+    func publicKey() throws -> TONHex {
+        let publicKey: String = try jsWalletAdapter.getPublicKey()
+        return TONHex(hexString: publicKey)
     }
     
     func network() throws -> TONNetwork {

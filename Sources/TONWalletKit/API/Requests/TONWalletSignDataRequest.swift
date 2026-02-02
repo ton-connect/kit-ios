@@ -39,8 +39,9 @@ public class TONWalletSignDataRequest {
         self.event = event
     }
     
-    public func approve() async throws -> TONSignDataApprovalResponse {
-        try await context.walletKit.approveSignDataRequest(event)
+    @discardableResult
+    public func approve(response: TONSignDataApprovalResponse? = nil) async throws -> TONSignDataApprovalResponse {
+        return try await context.walletKit.approveSignDataRequest(event, response)
     }
     
     public func reject(reason: String? = nil) async throws {

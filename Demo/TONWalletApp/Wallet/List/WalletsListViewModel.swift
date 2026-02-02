@@ -83,8 +83,8 @@ class WalletsListViewModel: ObservableObject {
             .store(in: &subscribers)
         
         Task {
-            self.kit = try await TONWalletKit.mainnet()
-            try await kit?.add(eventsHandler: TONEventsHandler.shared)
+            self.kit = TONWalletKit.mainnet()
+            try kit?.add(eventsHandler: TONEventsHandler.shared)
         }
     }
     
@@ -97,12 +97,12 @@ extension WalletsListViewModel {
     
     struct Event: Identifiable {
         let id = UUID()
-        let transactionRequest: TONWalletTransactionRequest?
+        let transactionRequest: TONWalletSendTransactionRequest?
         let signDataRequest: TONWalletSignDataRequest?
         let connectionRequest: TONWalletConnectionRequest?
         
         init(
-            transactionRequest: TONWalletTransactionRequest? = nil,
+            transactionRequest: TONWalletSendTransactionRequest? = nil,
             signDataRequest: TONWalletSignDataRequest? = nil,
             connectionRequest: TONWalletConnectionRequest? = nil
         ) {

@@ -69,9 +69,11 @@ public extension WKWebView {
             forMainFrameOnly: false,
         )
         
+        let bridge = try walletKit.injectableBridge()
+        
         configuration.userContentController.addUserScript(injectionScript)
         configuration.userContentController.addScriptMessageHandler(
-            TONWalletKitInjectionMessagesHandler(injectableBridge: walletKit.injectableBridge()),
+            TONWalletKitInjectionMessagesHandler(injectableBridge: bridge),
             contentWorld: .page,
             name: "walletKitInjectionBridge"
         )

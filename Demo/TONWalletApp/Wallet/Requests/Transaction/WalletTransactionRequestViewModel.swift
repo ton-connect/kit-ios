@@ -30,13 +30,13 @@ import TONWalletKit
 
 @MainActor
 class WalletTransactionRequestViewModel: ObservableObject {
-    private let request: TONWalletTransactionRequest
+    private let request: TONWalletSendTransactionRequest
     
     var dAppInfo: TONDAppInfo? { request.event.dAppInfo }
     
     let dismiss = PassthroughSubject<Void, Never>()
     
-    init(request: TONWalletTransactionRequest) {
+    init(request: TONWalletSendTransactionRequest) {
         self.request = request
     }
     

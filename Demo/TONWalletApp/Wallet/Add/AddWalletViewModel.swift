@@ -56,7 +56,7 @@ class AddWalletViewModel: ObservableObject {
         )
         
         do {
-            let kit = try await TONWalletKit.mainnet()
+            let kit = TONWalletKit.mainnet()
             let signer = try await kit.signer(mnemonic: mnemonic)
             
             let adapter: TONWalletAdapterProtocol

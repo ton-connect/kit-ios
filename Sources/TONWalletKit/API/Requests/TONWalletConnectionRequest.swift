@@ -39,11 +39,31 @@ public class TONWalletConnectionRequest {
         self.event = event
     }
     
-    public func approve(wallet: any TONWalletProtocol) async throws {
+    public func approve(
+        walletId: TONWalletID,
+        response: TONConnectionApprovalResponse? = nil
+    ) async throws {
+        let jsWallet: JSValue = try await context.walletKit.getWallet(walletId)
+        let address: TONUserFriendlyAddress = try await jsWallet.getAddress()
+        
+        let wallet = TONWallet(
+            jsWallet: jsWallet,
+            id: walletId,
+            address: address
+        )
+        
+        return try await approve(wallet: wallet, response: response)
+    }
+    
+    public func approve(
+        wallet: any TONWalletProtocol,
+        response: TONConnectionApprovalResponse? = nil
+    ) async throws {
         var event = self.event
         event.walletId = wallet.id
         event.walletAddress = wallet.address
-        try await context.walletKit.approveConnectRequest(event)
+        
+        try await context.walletKit.approveConnectRequest(event, response)
     }
     
     public func reject(reason: String? = nil) async throws {

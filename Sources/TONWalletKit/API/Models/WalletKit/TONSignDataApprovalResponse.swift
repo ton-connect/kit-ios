@@ -32,13 +32,21 @@ import BigInt
 public struct TONSignDataApprovalResponse: Codable {
 
     public var signature: TONHex
+    /** Timestamp when the data was signed */
+    public var timestamp: Int
+    /** Domain associated with the sign request */
+    public var domain: String
 
-    public init(signature: TONHex) {
+    public init(signature: TONHex, timestamp: Int, domain: String) {
         self.signature = signature
+        self.timestamp = timestamp
+        self.domain = domain
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case signature
+        case timestamp
+        case domain
     }
 
     // Encodable protocol methods
@@ -46,6 +54,8 @@ public struct TONSignDataApprovalResponse: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(signature, forKey: .signature)
+        try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(domain, forKey: .domain)
     }
 }
 
