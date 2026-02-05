@@ -30,14 +30,6 @@ import WebKit
 
 public extension WKWebView {
     
-    @available(*, deprecated, message: "Use inject(walletKit:configuration:) instead.")
-    func inject(walletKit: TONWalletKit, key: String? = nil) throws {
-        try inject(
-            walletKit: walletKit,
-            configuration: TONBridgeInjectionConfiguration(key: key)
-        )
-    }
-    
     func inject(
         walletKit: TONWalletKit,
         configuration: TONBridgeInjectionConfiguration? = nil
