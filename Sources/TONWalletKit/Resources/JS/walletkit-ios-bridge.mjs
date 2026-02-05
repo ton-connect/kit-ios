@@ -39371,7 +39371,7 @@ class SwiftTONConnectSessionsManager {
   }
   removeSession(sessionId) {
     return __async$1(this, null, function* () {
-      yield this.swiftSessionsManager.removeSession(sessionId);
+      return yield this.swiftSessionsManager.removeSession(sessionId);
     });
   }
   removeSessions(parameters) {
