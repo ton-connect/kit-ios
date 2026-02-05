@@ -35,15 +35,20 @@ public struct TONConnectSessionCreationParameters {
     public var isJsBridge: Bool
 }
 
+public struct TONConnectSessionsFilter: Decodable {
+    public var walletId: TONWalletID?
+    public var domain: String?
+    public var isJsBridge: Bool?
+}
+
 public protocol TONConnectSessionsManager: AnyObject {
     func createSession(with parameters: TONConnectSessionCreationParameters) async throws -> TONConnectSession
     
-    func sessions() async throws -> [TONConnectSession]
     func session(id: TONConnectSessionID) async throws -> TONConnectSession?
-    func session(domain: String) async throws -> TONConnectSession?
-    func sessions(walletId: TONWalletID) async throws -> [TONConnectSession]
+    func sessions(filter: TONConnectSessionsFilter?) async throws -> [TONConnectSession]
     
-    func removeSession(id: TONConnectSessionID) async throws
-    func removeSessions(walletId: TONWalletID) async throws
+    func removeSession(id: TONConnectSessionID) async throws -> TONConnectSession?
+    func removeSessions(filter: TONConnectSessionsFilter?) async throws -> [TONConnectSession]
+    
     func removeAllSessions() async throws
 }

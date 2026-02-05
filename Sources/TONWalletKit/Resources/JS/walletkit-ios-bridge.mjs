@@ -29100,56 +29100,50 @@ class TONConnectStoredSessionManager {
   async getSession(sessionId) {
     return this.sessions.get(sessionId);
   }
-  async getSessionByDomain(domain) {
-    let host;
-    try {
-      host = new URL(domain).host;
-    } catch {
-      return void 0;
+  async getSessions(filter) {
+    let sessions = Array.from(this.sessions.values());
+    if (!filter) {
+      return sessions;
     }
-    for (const session of this.sessions.values()) {
-      if (session.domain === host) {
-        return this.getSession(session.sessionId);
+    let domain;
+    if (filter.domain) {
+      try {
+        domain = new URL(filter.domain).host;
+      } catch {
+        domain = filter.domain;
       }
     }
-    return void 0;
-  }
-  /**
-   * Get all sessions as array
-   */
-  async getSessions() {
-    return Array.from(this.sessions.values());
-  }
-  /**
-   * Get sessions for specific wallet by wallet ID
-   */
-  async getSessionsForWallet(walletId) {
-    return (await this.getSessions()).filter((session) => session.walletId === walletId);
-  }
-  /**
-   * Update session activity timestamp
-   */
-  async updateSessionActivity(sessionId) {
-    const session = this.sessions.get(sessionId);
-    if (session) {
-      session.lastActivityAt = (/* @__PURE__ */ new Date()).toISOString();
-      await this.persistSessions();
-    }
+    sessions.filter((session) => {
+      let isIncluded = true;
+      if (filter.walletId) {
+        isIncluded = isIncluded && session.walletId === filter.walletId;
+      }
+      if (filter.domain) {
+        isIncluded = isIncluded && session.domain === domain;
+      }
+      if (filter.isJsBridge !== void 0) {
+        isIncluded = isIncluded && session.isJsBridge === filter.isJsBridge;
+      }
+      return isIncluded;
+    });
+    return sessions;
   }
   /**
    * Remove session by ID
    */
   async removeSession(sessionId) {
+    const session = await this.getSession(sessionId);
+    if (!session) {
+      return session;
+    }
     const removed = this.sessions.delete(sessionId);
     if (removed) {
       await this.persistSessions();
     }
+    return session;
   }
-  /**
-   * Remove all sessions for a wallet by wallet ID or wallet adapter
-   */
-  async removeSessionsForWallet(walletId) {
-    const sessionsToRemove = await this.getSessionsForWallet(walletId);
+  async removeSessions(filter) {
+    const sessionsToRemove = await this.getSessions(filter);
     let removedCount = 0;
     for (const session of sessionsToRemove) {
       if (this.sessions.delete(session.sessionId)) {
@@ -29159,6 +29153,7 @@ class TONConnectStoredSessionManager {
     if (removedCount > 0) {
       await this.persistSessions();
     }
+    return sessionsToRemove;
   }
   /**
    * Clear all sessions
@@ -31065,7 +31060,8 @@ class BridgeManager {
         isJsBridge: event?.isJsBridge,
         tabId: event?.tabId,
         messageId: event?.messageId,
-        traceId: event?.traceId
+        traceId: event?.traceId,
+        walletId: event?.walletId
       };
       if (!rawEvent.traceId) {
         rawEvent.traceId = v7();
@@ -31089,7 +31085,12 @@ class BridgeManager {
           };
         }
       } else if (rawEvent.domain) {
-        const session = await this.sessionManager.getSessionByDomain(rawEvent.domain);
+        const sessions = await this.sessionManager.getSessions({
+          walletId: event.walletId,
+          domain: rawEvent.domain,
+          isJsBridge: rawEvent.isJsBridge
+        });
+        const session = sessions.length > 0 ? sessions[0] : void 0;
         if (session?.walletId) {
           rawEvent.walletId = session.walletId;
         }
@@ -33666,7 +33667,7 @@ class StorageEventProcessor {
         return false;
       }
       const eventToUse = allEvents[0];
-      const walletId = allSessions.find((s2) => s2.sessionId === eventToUse.sessionId)?.walletId || "no-wallet";
+      const walletId = allSessions.find((s2) => s2.sessionId === eventToUse.sessionId)?.walletId || eventToUse.rawEvent.walletId || "no-wallet";
       const processed = await this.processEvent(eventToUse, walletId);
       return processed;
     } catch (error2) {
@@ -37897,23 +37898,28 @@ class TonWalletKit {
     this.eventEmitter.on("restoreConnection", async (event) => {
       if (!event.domain) {
         log$2.error("Domain is required for restore connection");
-        return;
+        return this.sendErrorConnectResponse(event);
       }
-      const session = await this.sessionManager.getSessionByDomain(event.domain);
+      const sessions = await this.sessionManager.getSessions({
+        walletId: event.walletId,
+        domain: event.domain,
+        isJsBridge: true
+      });
+      const session = sessions.length > 0 ? sessions[0] : void 0;
       if (!session) {
         log$2.error("Session not found for domain", { domain: event.domain });
-        return;
+        return this.sendErrorConnectResponse(event);
       }
       const wallet = session.walletId ? this.walletManager?.getWallet(session.walletId) : void 0;
       if (!wallet) {
         log$2.error("Wallet not found for session", { walletId: session.walletId });
-        return;
+        return this.sendErrorConnectResponse(event);
       }
       const walletAddress = wallet.getAddress();
       const walletStateInit = await wallet.getStateInit();
       const publicKey = wallet.getPublicKey().replace("0x", "");
       const deviceInfo = getDeviceInfoForWallet(wallet, this.config.deviceInfo);
-      const connectResponse = {
+      const tonConnectEvent = {
         event: "connect",
         id: Date.now(),
         payload: {
@@ -37930,8 +37936,19 @@ class TonWalletKit {
           ]
         }
       };
-      this.bridgeManager.sendJsBridgeResponse(event?.tabId?.toString() || "", true, event?.id ?? event?.messageId, connectResponse);
+      this.bridgeManager.sendJsBridgeResponse(event?.tabId?.toString() || "", true, event?.id ?? event?.messageId, tonConnectEvent);
     });
+  }
+  async sendErrorConnectResponse(event) {
+    const tonConnectEvent = {
+      event: "connect_error",
+      id: Date.now(),
+      payload: {
+        code: CONNECT_EVENT_ERROR_CODES.UNKNOWN_APP_ERROR,
+        message: ""
+      }
+    };
+    await this.bridgeManager.sendJsBridgeResponse(event?.tabId?.toString() || "", true, event?.id ?? event?.messageId, tonConnectEvent);
   }
   // === Initialization ===
   /**
@@ -38047,7 +38064,7 @@ class TonWalletKit {
     }
     await this.eventProcessor.stopProcessing(wallet.getAddress());
     await this.walletManager.removeWallet(walletId);
-    await this.sessionManager.removeSessionsForWallet(walletId);
+    await this.sessionManager.removeSessions({ walletId });
   }
   async clearWallets() {
     await this.ensureInitialized();
@@ -39347,19 +39364,9 @@ class SwiftTONConnectSessionsManager {
       return yield this.swiftSessionsManager.getSession(sessionId);
     });
   }
-  getSessionByDomain(domain) {
+  getSessions(parameters) {
     return __async$1(this, null, function* () {
-      return yield this.swiftSessionsManager.getSessionByDomain(domain);
-    });
-  }
-  getSessions() {
-    return __async$1(this, null, function* () {
-      return yield this.swiftSessionsManager.getSessions();
-    });
-  }
-  getSessionsForWallet(walletId) {
-    return __async$1(this, null, function* () {
-      return yield this.swiftSessionsManager.getSessionsForWallet(walletId);
+      return yield this.swiftSessionsManager.getSessions(parameters);
     });
   }
   removeSession(sessionId) {
@@ -39367,9 +39374,9 @@ class SwiftTONConnectSessionsManager {
       yield this.swiftSessionsManager.removeSession(sessionId);
     });
   }
-  removeSessionsForWallet(walletId) {
+  removeSessions(parameters) {
     return __async$1(this, null, function* () {
-      yield this.swiftSessionsManager.removeSessionsForWallet(walletId);
+      return yield this.swiftSessionsManager.removeSessions(parameters);
     });
   }
   clearSessions() {

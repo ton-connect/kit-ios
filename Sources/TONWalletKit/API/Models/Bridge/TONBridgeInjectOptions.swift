@@ -32,4 +32,5 @@ struct TONBridgeInjectOptions: Codable {
     let jsBridgeKey: String?
     let injectTonKey: Bool?
     let isWalletBrowser: Bool?
+    let walletId: TONWalletID?
 }

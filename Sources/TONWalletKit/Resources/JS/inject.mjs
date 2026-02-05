@@ -185,6 +185,7 @@ class TonConnectBridge {
   walletInfo;
   protocolVersion;
   isWalletBrowser;
+  walletId;
   // Private state
   transport;
   eventListeners = [];
@@ -193,6 +194,7 @@ class TonConnectBridge {
     this.walletInfo = config.walletInfo;
     this.protocolVersion = config.protocolVersion;
     this.isWalletBrowser = config.isWalletBrowser;
+    this.walletId = config.walletId;
     this.transport = transport;
     this.transport.onEvent((event) => {
       this.notifyListeners(event);
@@ -207,7 +209,8 @@ class TonConnectBridge {
     }
     return this.transport.send({
       method: "connect",
-      params: { protocolVersion, ...message }
+      params: { protocolVersion, ...message },
+      walletId: this.walletId
     });
   }
   /**
@@ -216,7 +219,8 @@ class TonConnectBridge {
   async restoreConnection() {
     return this.transport.send({
       method: "restoreConnection",
-      params: []
+      params: [],
+      walletId: this.walletId
     });
   }
   /**
@@ -225,7 +229,8 @@ class TonConnectBridge {
   async send(message) {
     return this.transport.send({
       method: "send",
-      params: [message]
+      params: [message],
+      walletId: this.walletId
     });
   }
   /**
@@ -440,7 +445,8 @@ function createBridgeConfig(options) {
     walletInfo,
     jsBridgeKey,
     isWalletBrowser: options.isWalletBrowser ?? false,
-    protocolVersion: SUPPORTED_PROTOCOL_VERSION
+    protocolVersion: SUPPORTED_PROTOCOL_VERSION,
+    walletId: options.walletId
   };
 }
 function injectBridge(window2, options, argsTransport) {

@@ -30,7 +30,18 @@ import WebKit
 
 public extension WKWebView {
     
+    @available(*, deprecated, message: "Use inject(walletKit:configuration:) instead.")
     func inject(walletKit: TONWalletKit, key: String? = nil) throws {
+        try inject(
+            walletKit: walletKit,
+            configuration: TONBridgeInjectionConfiguration(key: key)
+        )
+    }
+    
+    func inject(
+        walletKit: TONWalletKit,
+        configuration: TONBridgeInjectionConfiguration? = nil
+    ) throws {
         #if DEBUG
         
         #if os(macOS)
@@ -50,9 +61,10 @@ public extension WKWebView {
         let options = TONBridgeInjectOptions(
             deviceInfo: walletKit.configuration.deviceInfo,
             walletInfo: walletKit.configuration.walletManifest,
-            jsBridgeKey: key ?? walletKit.configuration.bridge?.webViewInjectionKey,
+            jsBridgeKey: configuration?.key ?? walletKit.configuration.bridge?.webViewInjectionKey,
             injectTonKey: nil,
-            isWalletBrowser: true
+            isWalletBrowser: true,
+            walletId: configuration?.walletId
         )
         
         let encoder = JSONEncoder()
@@ -71,8 +83,8 @@ public extension WKWebView {
         
         let bridge = try walletKit.injectableBridge()
         
-        configuration.userContentController.addUserScript(injectionScript)
-        configuration.userContentController.addScriptMessageHandler(
+        self.configuration.userContentController.addUserScript(injectionScript)
+        self.configuration.userContentController.addScriptMessageHandler(
             TONWalletKitInjectionMessagesHandler(injectableBridge: bridge),
             contentWorld: .page,
             name: "walletKitInjectionBridge"

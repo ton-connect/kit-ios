@@ -1,8 +1,8 @@
 //
-//  JSTONConnectSessionsManager.swift
+//  TONBridgeInjectionConfiguration.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 20.01.2026.
+//  Created by Nikita Rodionov on 05.02.2026.
 //  
 //  Copyright (c) 2026 TON Connect
 //
@@ -24,32 +24,15 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-import Foundation
-import JavaScriptCore
-
-@objc protocol JSTONConnectSessionsManager: JSExport {
-
-    @objc(createSession::::)
-    func createSession(
-        sessionId: JSValue,
-        dAppInfo: JSValue,
-        wallet: JSValue,
-        isJsBridge: JSValue
-    ) -> JSValue
+public struct TONBridgeInjectionConfiguration {
+    public let key: String?
+    public let walletId: TONWalletID?
     
-    @objc(getSession:)
-    func session(sessionId: JSValue) -> JSValue
-    
-    @objc(getSessions:)
-    func sessions(filter: JSValue) -> JSValue
-    
-    @objc(removeSession:)
-    func removeSession(sessionId: JSValue) -> JSValue
-    
-    @objc(removeSessions:)
-    func removeSessions(filter: JSValue) -> JSValue
-    
-    @objc(clearSessions)
-    func clearSessions() -> JSValue
+    public init(
+        key: String? = nil,
+        walletId: TONWalletID? = nil
+    ) {
+        self.key = key
+        self.walletId = walletId
+    }
 }
-
