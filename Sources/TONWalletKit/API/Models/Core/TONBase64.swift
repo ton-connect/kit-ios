@@ -30,12 +30,16 @@ public struct TONBase64: Codable {
     public let value: String
     public var data: Data? { Data(base64Encoded: value) }
     
-    public init(base64Encoded: String) {
+    public init(base64Encoded: String) throws {
+        if Data(base64Encoded: base64Encoded) == nil {
+            throw "\(base64Encoded) is not a valid base64 encoded string."
+        }
+        
         self.value = base64Encoded
     }
     
     public init(data: Data) {
-        self.init(base64Encoded: data.base64EncodedString())
+        self.value = data.base64EncodedString()
     }
     
     public init(string: String) {

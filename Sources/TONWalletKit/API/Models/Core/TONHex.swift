@@ -30,12 +30,15 @@ public struct TONHex: Codable {
     public let value: String
     public var data: Data? { Data(hex: value) }
     
-    public init(hexString: String) {
+    public init(hexString: String) throws {
+        if Data(hex: hexString) == nil {
+            throw "\(hexString) is not a valid hex string."
+        }
         self.value = hexString
     }
     
     public init(data: Data) {
-        self.init(hexString: data.hexWithPrefix)
+        self.value = data.hexWithPrefix
     }
     
     public init(string: String) {

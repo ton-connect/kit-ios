@@ -29,8 +29,8 @@ import Foundation
 public class TONWalletKit {
     let configuration: TONWalletKitConfiguration
     
-    private let contextProvider = TONWalletKitContextProvider()
-    private var context: JSWalletKitContext? {
+    private let contextProvider: any TONWalletKitContextProviderProtocol
+    private var context: (any JSWalletKitContextProtocol)? {
         didSet {
             guard let context else { return }
             
@@ -49,8 +49,19 @@ public class TONWalletKit {
         eventHandlers.forEach { $0.invalidate() }
     }
     
-    public init(configuration: TONWalletKitConfiguration) {
+    public convenience init(configuration: TONWalletKitConfiguration) {
+        self.init(
+            configuration: configuration,
+            contextProvider: TONWalletKitContextProvider()
+        )
+    }
+    
+    init(
+        configuration: TONWalletKitConfiguration,
+        contextProvider: any TONWalletKitContextProviderProtocol
+    ) {
         self.configuration = configuration
+        self.contextProvider = contextProvider
     }
     
     public func initialize() async throws {
@@ -94,26 +105,15 @@ public class TONWalletKit {
 
     public func add(walletAdapter: any TONWalletAdapterProtocol) async throws -> any TONWalletProtocol {
         let walletAdapter = TONEncodableWalletAdapter(walletAdapter: walletAdapter)
-        let wallet = try await jsWalletKit().addWallet(walletAdapter)
-        let address: String = try await wallet.getAddress()
-        let id: String = try await wallet.getWalletId()
-        
-        return TONWallet(
-            jsWallet: wallet,
-            id: id,
-            address: try TONUserFriendlyAddress(value: address)
-        )
+        let wallet: TONWallet = try await jsWalletKit().addWallet(walletAdapter)
+
+        return wallet
     }
     
     public func wallet(id: TONWalletID) async throws -> any TONWalletProtocol {
-        let wallet: JSValue = try await jsWalletKit().getWallet(id)
-        let address: String = try await wallet.getAddress()
+        let wallet: TONWallet = try await jsWalletKit().getWallet(id)
         
-        return TONWallet(
-            jsWallet: wallet,
-            id: id,
-            address: try TONUserFriendlyAddress(value: address),
-        )
+        return wallet
     }
     
     public func wallets() async throws -> [any TONWalletProtocol] {
@@ -177,7 +177,7 @@ public class TONWalletKit {
         eventHandlers.removeAll { $0 == eventsHandler }
     }
     
-    private func addHandlers(to context: JSWalletKitContext) {
+    private func addHandlers(to context: any JSWalletKitContextProtocol) {
         if pendingEventHandlers.isEmpty {
             return
         }
@@ -219,84 +219,5 @@ public class TONWalletKit {
         } else {
             throw "Unable to resolve initialized Wallet Kit instance"
         }
-    }
-}
-
-private extension TONWalletKitStorageType {
-
-    func jsStorage(context: JSContext) -> (any JSValueEncodable)? {
-        switch self {
-        case .memory: nil
-        case .keychain:
-            TONWalletKitStorageJSAdapter(
-                context: context,
-                storage: TONWalletKitKeychainStorage()
-            )
-        case .custom(let value):
-            TONWalletKitStorageJSAdapter(
-                context: context,
-                storage: value
-            )
-        }
-    }
-}
-
-private actor TONWalletKitContextProvider {
-    private var result: Result<JSWalletKitContext, Error>?
-    private var task: Task<JSWalletKitContext, Error>?
-    
-    func context(for configuration: TONWalletKitConfiguration) async throws -> JSWalletKitContext {
-        if let result {
-            switch result {
-            case .success(let context):
-                return context
-            case .failure(let error):
-                throw error
-            }
-        } else if let task {
-            return try await task.value
-        }
-        
-        let task = Task {
-            do {
-                let context = JSWalletKitContext()
-                try await context.load(script: JSWalletKitScript())
-                
-                let storage = configuration.storage.jsStorage(context: context)
-                let sessionManager: any JSValueEncodable = configuration.sessionManager.map {
-                    TONConnectSessionsManagerJSAdapter(
-                        context: context,
-                        sessionsManager: $0
-                    )
-                }
-                let apiClients = configuration.networkConfigurations.compactMap { config -> TONAPIClientJSAdapter? in
-                    guard let apiClient = config.apiClient else { return nil }
-                    
-                    return TONAPIClientJSAdapter(
-                        context: context,
-                        apiClient: apiClient,
-                        network: config.network
-                    )
-                }
-                
-                try await context.initializeWalletKit(
-                    configuration: configuration,
-                    storage: AnyJSValueEncodable(storage),
-                    sessionManager: sessionManager,
-                    apiClients: apiClients,
-                )
-                
-                self.result = .success(context)
-                self.task = nil
-                
-                return context
-            } catch {
-                self.result = .failure(error)
-                self.task = nil
-                
-                throw error
-            }
-        }
-        return try await task.value
     }
 }

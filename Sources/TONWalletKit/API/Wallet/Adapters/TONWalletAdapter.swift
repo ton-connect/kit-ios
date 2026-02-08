@@ -39,7 +39,7 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
     
     func publicKey() throws -> TONHex {
         let publicKey: String = try jsWalletAdapter.getPublicKey()
-        return TONHex(hexString: publicKey)
+        return try TONHex(hexString: publicKey)
     }
     
     func network() throws -> TONNetwork {
@@ -51,11 +51,11 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
     }
     
     func stateInit() async throws -> TONBase64 {
-        TONBase64(base64Encoded: try await jsWalletAdapter.getStateInit())
+        try TONBase64(base64Encoded: try await jsWalletAdapter.getStateInit())
     }
     
     func signedSendTransaction(input: TONTransactionRequest, fakeSignature: Bool?) async throws -> TONBase64 {
-        TONBase64(
+        try TONBase64(
             base64Encoded: try await jsWalletAdapter.getSignedSendTransaction(
                 input,
                 TONSignedSendTransactionAllOptions(fakeSignature: fakeSignature)
@@ -64,7 +64,7 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
     }
     
     func signedSignData(input: TONPreparedSignData, fakeSignature: Bool?) async throws -> TONHex {
-        TONHex(
+        try TONHex(
             hexString: try await jsWalletAdapter.getSignedSignData(
                 input,
                 TONSignedSendTransactionAllOptions(fakeSignature: fakeSignature)
@@ -73,7 +73,7 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
     }
     
     func signedTonProof(input: TONProofMessage, fakeSignature: Bool?) async throws -> TONHex {
-        TONHex(
+        try TONHex(
             hexString: try await jsWalletAdapter.getSignedTonProof(
                 input,
                 TONSignedSendTransactionAllOptions(fakeSignature: fakeSignature)
@@ -88,9 +88,4 @@ struct TONSignedSendTransactionAllOptions: Codable, JSValueDecodable, JSValueEnc
 
 struct TONGetAddressOptions: Codable, JSValueDecodable, JSValueEncodable {
     let testnet: Bool?
-}
-
-extension TONWalletAdapter: JSValueEncodable {
-    
-    func encode(in context: JSContext) throws -> Any { jsWalletAdapter }
 }

@@ -40,6 +40,13 @@ class TONWalletSignerJSAdapter: NSObject, JSWalletSigner {
     }
     
     @objc(sign:) func sign(data: [UInt8]) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         let data = Data(data)
         
         return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
@@ -58,6 +65,10 @@ class TONWalletSignerJSAdapter: NSObject, JSWalletSigner {
     }
     
     @objc func publicKey() -> JSValue {
-        JSValue(object: signer.publicKey().value, in: context)
+        guard let context else {
+            return JSValue(undefinedIn: JSContext())
+        }
+        
+        return JSValue(object: signer.publicKey().value, in: context)
     }
 }

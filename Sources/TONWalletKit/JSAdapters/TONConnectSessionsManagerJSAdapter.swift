@@ -42,6 +42,13 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         wallet: JSValue,
         isJsBridge: JSValue
     ) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         do {
             let wallet: TONWallet = try wallet.decode()
             
@@ -58,8 +65,8 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                     
                     do {
                         let session = try await self.sessionsManager.createSession(with: parameters)
-                        guard let context = self.context else { return }
                         let encodedSession = try session.encode(in: context)
+                        
                         resolve?.call(withArguments: [encodedSession])
                     } catch {
                         reject?.call(withArguments: [error.localizedDescription])
@@ -72,6 +79,13 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
     }
     
     @objc(getSessions:) func sessions(filter: JSValue) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         var sessionFilter: TONConnectSessionsFilter?
         
         do {
@@ -87,7 +101,6 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                 do {
                     let sessions = try await self.sessionsManager.sessions(filter: sessionFilter)
                     
-                    guard let context = self.context else { return }
                     let encodedSessions = try sessions.encode(in: context)
                     resolve?.call(withArguments: [encodedSessions])
                 } catch {
@@ -98,6 +111,13 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
     }
     
     @objc(getSession:) func session(sessionId: JSValue) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         do {
             let sessionId: TONConnectSessionID = try sessionId.decode()
             
@@ -107,7 +127,6 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                     
                     do {
                         let session = try await self.sessionsManager.session(id: sessionId)
-                        guard let context = self.context else { return }
                         
                         if let session {
                             let encodedSession = try session.encode(in: context)
@@ -126,6 +145,13 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
     }
     
     @objc(removeSession:) func removeSession(sessionId: JSValue) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         do {
             let sessionId: TONConnectSessionID = try sessionId.decode()
             
@@ -136,7 +162,6 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                     do {
                         let session = try await self.sessionsManager.removeSession(id: sessionId)
                         
-                        guard let context = self.context else { return }
                         let encodedSession = try session.encode(in: context)
                         resolve?.call(withArguments: [encodedSession])
                     } catch {
@@ -150,6 +175,13 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
     }
     
     @objc(removeSessions:) func removeSessions(filter: JSValue) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         var sessionFilter: TONConnectSessionsFilter?
         
         do {
@@ -164,9 +196,8 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                 
                 do {
                     let sessions = try await self.sessionsManager.removeSessions(filter: sessionFilter)
-                    
-                    guard let context = self.context else { return }
                     let encodedSessions = try sessions.encode(in: context)
+                    
                     resolve?.call(withArguments: [encodedSessions])
                 } catch {
                     reject?.call(withArguments: [error.localizedDescription])
@@ -176,7 +207,14 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
     }
     
     @objc(clearSessions) func clearSessions() -> JSValue {
-        JSValue(newPromiseIn: context) { [weak self] resolve, reject in
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
+        return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
             Task {
                 guard let self else { return }
                 

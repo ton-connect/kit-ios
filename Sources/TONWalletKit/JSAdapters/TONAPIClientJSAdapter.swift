@@ -36,16 +36,17 @@ class TONAPIClientJSAdapter: NSObject, JSAPIClient {
         apiClient: any TONAPIClient,
         network: TONNetwork,
     ) {
+        
         self.context = context
         self.apiClient = apiClient
         self.network = network
     }
     
     @objc(getNetwork) func getNetwork() -> JSValue {
+        guard let context else {
+            return JSValue(undefinedIn: JSContext())
+        }
         do {
-            guard let context else {
-                throw "Unable to resolve JS context"
-            }
             return JSValue(object: try network.encode(in: context), in: context)
         } catch {
             return JSValue(undefinedIn: context)
@@ -53,6 +54,13 @@ class TONAPIClientJSAdapter: NSObject, JSAPIClient {
     }
     
     @objc(sendBoc:) func send(boc: JSValue) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         do {
             let boc: TONBase64 = try boc.decode()
             
@@ -79,6 +87,13 @@ class TONAPIClientJSAdapter: NSObject, JSAPIClient {
         stack: JSValue,
         seqno: JSValue
     ) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         do {
             let address: TONUserFriendlyAddress = try address.decode()
             let method: String = try method.decode()

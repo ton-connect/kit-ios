@@ -32,7 +32,7 @@ public class JSSecureRandomBytesPolyfill: JSPolyfill {
     public func apply(to context: JSContext) {
         let getSecureRandomBytes: @convention(block) (Int) -> JSValue = { [weak context] length in
             guard let context else {
-                return JSValue(undefinedIn: context)
+                return JSValue(undefinedIn: JSContext())
             }
             
             do {
