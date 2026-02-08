@@ -27,14 +27,14 @@
 import Foundation
 
 protocol TONWalletKitContextProviderProtocol {
-    func context(for configuration: TONWalletKitConfiguration) async throws -> JSWalletKitContext
+    func context(for configuration: TONWalletKitConfiguration) async throws -> any JSWalletKitContextProtocol
 }
 
 actor TONWalletKitContextProvider: TONWalletKitContextProviderProtocol {
     private var result: Result<JSWalletKitContext, Error>?
     private var task: Task<JSWalletKitContext, Error>?
-    
-    func context(for configuration: TONWalletKitConfiguration) async throws -> JSWalletKitContext {
+
+    func context(for configuration: TONWalletKitConfiguration) async throws -> any JSWalletKitContextProtocol {
         if let result {
             switch result {
             case .success(let context):

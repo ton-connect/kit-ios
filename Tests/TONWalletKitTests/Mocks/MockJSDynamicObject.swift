@@ -31,13 +31,16 @@ class MockJSDynamicObject: JSDynamicObject {
     let jsContext: JSContext
     var callRecords: [(path: String, args: [Any])] = []
     var shouldThrowOnCall: Bool = false
+    var stubbedResults: [String: Any] = [:]
+    var stubbedAsyncResults: [String: Any] = [:]
+    var stubbedProperties: [String: Any] = [:]
 
     init(jsContext: JSContext = JSContext()!) {
         self.jsContext = jsContext
     }
 
     subscript<T: JSValueDecodable>(dynamicMember member: String) -> T? {
-        nil
+        stubbedProperties[member] as? T
     }
 
     subscript(dynamicMember member: String) -> any JSDynamicObjectMember {

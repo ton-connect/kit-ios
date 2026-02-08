@@ -50,6 +50,12 @@ struct MockJSDynamicObjectMember: JSDynamicObjectMember {
 
     func dynamicallyCall<T>(withArguments args: [any JSValueEncodable]) async throws -> T where T: JSValueDecodable {
         _ = try await dynamicallyCall(withArguments: args) as JSValue
+        if let result = root.stubbedAsyncResults[path] as? T {
+            return result
+        }
+        if let result = root.stubbedResults[path] as? T {
+            return result
+        }
         throw "Mock: cannot decode to \(T.self)"
     }
 
@@ -62,6 +68,9 @@ struct MockJSDynamicObjectMember: JSDynamicObjectMember {
 
     func dynamicallyCall<T>(withArguments args: [any JSValueEncodable]) throws -> T where T: JSValueDecodable {
         _ = try dynamicallyCall(withArguments: args) as JSValue
+        if let result = root.stubbedResults[path] as? T {
+            return result
+        }
         throw "Mock: cannot decode to \(T.self)"
     }
 }
