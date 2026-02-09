@@ -37,11 +37,12 @@ extension {{projectName}}API {
 
 /** {{.}} */{{/description}}{{#isDeprecated}}
 @available(*, deprecated, message: "This schema is deprecated."){{/isDeprecated}}{{#vendorExtensions.x-discriminated-union}}
-{{> modelDiscriminatedEnum}}{{/vendorExtensions.x-discriminated-union}}{{^vendorExtensions.x-discriminated-union}}{{#vendorExtensions.x-is-one-of-interface}}
+{{> modelDiscriminatedEnum}}{{/vendorExtensions.x-discriminated-union}}{{^vendorExtensions.x-discriminated-union}}{{#vendorExtensions.x-is-generic}}
+{{> modelGeneric}}{{/vendorExtensions.x-is-generic}}{{^vendorExtensions.x-is-generic}}{{#vendorExtensions.x-is-one-of-interface}}
 {{> modelOneOf}}{{/vendorExtensions.x-is-one-of-interface}}{{^vendorExtensions.x-is-one-of-interface}}{{#isArray}}
 {{> modelArray}}{{/isArray}}{{^isArray}}{{#isEnum}}
 {{> modelEnum}}{{/isEnum}}{{^isEnum}}
-{{> modelAllOf}}{{/isEnum}}{{/isArray}}{{/vendorExtensions.x-is-one-of-interface}}{{/vendorExtensions.x-discriminated-union}}{{/model}}{{/models}}
+{{> modelAllOf}}{{/isEnum}}{{/isArray}}{{/vendorExtensions.x-is-one-of-interface}}{{/vendorExtensions.x-is-generic}}{{/vendorExtensions.x-discriminated-union}}{{/model}}{{/models}}
 {{#swiftUseApiNamespace}}
 }
 {{/swiftUseApiNamespace}}{{#models}}{{#model}}{{#vendorExtensions.x-swift-identifiable}}
