@@ -29113,7 +29113,7 @@ class TONConnectStoredSessionManager {
         domain = filter.domain;
       }
     }
-    sessions.filter((session) => {
+    return sessions.filter((session) => {
       let isIncluded = true;
       if (filter.walletId) {
         isIncluded = isIncluded && session.walletId === filter.walletId;
@@ -29126,21 +29126,15 @@ class TONConnectStoredSessionManager {
       }
       return isIncluded;
     });
-    return sessions;
   }
   /**
    * Remove session by ID
    */
   async removeSession(sessionId) {
-    const session = await this.getSession(sessionId);
-    if (!session) {
-      return session;
-    }
     const removed = this.sessions.delete(sessionId);
     if (removed) {
       await this.persistSessions();
     }
-    return session;
   }
   async removeSessions(filter) {
     const sessionsToRemove = await this.getSessions(filter);
@@ -29153,7 +29147,6 @@ class TONConnectStoredSessionManager {
     if (removedCount > 0) {
       await this.persistSessions();
     }
-    return sessionsToRemove;
   }
   /**
    * Clear all sessions
@@ -30988,14 +30981,16 @@ class BridgeManager {
         isJsBridge: true,
         tabId: messageInfo.tabId,
         domain: messageInfo.domain,
-        messageId: messageInfo.messageId
+        messageId: messageInfo.messageId,
+        walletId: messageInfo.walletId
       });
     } else if (event.method == "restoreConnection") {
       this.eventEmitter?.emit("restoreConnection", {
         ...event,
         tabId: messageInfo.tabId,
         domain: messageInfo.domain,
-        messageId: messageInfo.messageId
+        messageId: messageInfo.messageId,
+        walletId: messageInfo.walletId
       });
     } else if (event.method == "send" && event?.params?.length === 1) {
       this.eventQueue.push({
@@ -31005,7 +31000,8 @@ class BridgeManager {
         isJsBridge: true,
         tabId: messageInfo.tabId,
         domain: messageInfo.domain,
-        messageId: messageInfo.messageId
+        messageId: messageInfo.messageId,
+        walletId: messageInfo.walletId
       });
     }
     this.processBridgeEvents().catch((error2) => {
@@ -39371,12 +39367,12 @@ class SwiftTONConnectSessionsManager {
   }
   removeSession(sessionId) {
     return __async$1(this, null, function* () {
-      return yield this.swiftSessionsManager.removeSession(sessionId);
+      yield this.swiftSessionsManager.removeSession(sessionId);
     });
   }
   removeSessions(parameters) {
     return __async$1(this, null, function* () {
-      return yield this.swiftSessionsManager.removeSessions(parameters);
+      yield this.swiftSessionsManager.removeSessions(parameters);
     });
   }
   clearSessions() {
