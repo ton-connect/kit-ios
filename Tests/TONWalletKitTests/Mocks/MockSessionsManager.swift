@@ -33,8 +33,6 @@ class MockSessionsManager: TONConnectSessionsManager {
     var createSessionCalls: [TONConnectSessionCreationParameters] = []
     var sessionIdCalls: [TONConnectSessionID] = []
     var sessionsCalls: [TONConnectSessionsFilter?] = []
-    var removeSessionCalls: [TONConnectSessionID] = []
-    var removeSessionsCalls: [TONConnectSessionsFilter?] = []
     var removeAllSessionsCallCount = 0
 
     func createSession(with parameters: TONConnectSessionCreationParameters) async throws -> TONConnectSession {
@@ -55,16 +53,12 @@ class MockSessionsManager: TONConnectSessionsManager {
         return [mockSession]
     }
 
-    func removeSession(id: TONConnectSessionID) async throws -> TONConnectSession? {
+    func removeSession(id: TONConnectSessionID) async throws {
         if shouldThrow { throw "Mock sessions manager error" }
-        removeSessionCalls.append(id)
-        return mockSession
     }
 
-    func removeSessions(filter: TONConnectSessionsFilter?) async throws -> [TONConnectSession] {
+    func removeSessions(filter: TONConnectSessionsFilter?) async throws {
         if shouldThrow { throw "Mock sessions manager error" }
-        removeSessionsCalls.append(filter)
-        return [mockSession]
     }
 
     func removeAllSessions() async throws {

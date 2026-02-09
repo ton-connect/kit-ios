@@ -187,10 +187,8 @@ struct TONConnectSessionsManagerJSAdapterTests {
 
         let result = sut.removeSession(sessionId: sessionId)
         let resolved = try await result.then()
-        let session: TONConnectSession? = try resolved.decode()
 
-        #expect(session?.sessionId == "test-session-id")
-        #expect(session?.domain == "example.com")
+        #expect(resolved.isUndefined)
     }
 
     @Test("removeSession rejects when context is deallocated")
@@ -232,10 +230,8 @@ struct TONConnectSessionsManagerJSAdapterTests {
 
         let result = sut.removeSessions(filter: filter)
         let resolved = try await result.then()
-        let sessions: [TONConnectSession] = try resolved.decode()
 
-        #expect(sessions.count == 1)
-        #expect(sessions.first?.sessionId == "test-session-id")
+        #expect(resolved.isUndefined)
     }
 
     @Test("removeSessions rejects when context is deallocated")

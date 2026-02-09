@@ -11,7 +11,12 @@ struct TONWalletKitInjectableBridgeTests {
         let mock = MockJSDynamicObject()
         let transport = JSBridgeTransport()
         let sut = TONWalletKitInjectableBridge(jsWalletKit: mock, bridgeTransport: transport)
-        let message = TONBridgeEventMessage(messageId: "msg-1", tabId: nil, domain: nil)
+        let message = TONBridgeEventMessage(
+            messageId: "msg-1",
+            tabId: nil,
+            domain: nil,
+            walletId: "wallet-id"
+        )
 
         try await sut.request(message: message, request: "request-data")
 
@@ -25,7 +30,12 @@ struct TONWalletKitInjectableBridgeTests {
         mock.shouldThrowOnCall = true
         let transport = JSBridgeTransport()
         let sut = TONWalletKitInjectableBridge(jsWalletKit: mock, bridgeTransport: transport)
-        let message = TONBridgeEventMessage(messageId: "msg-1", tabId: nil, domain: nil)
+        let message = TONBridgeEventMessage(
+            messageId: "msg-1",
+            tabId: nil,
+            domain: nil,
+            walletId: "wallet-id"
+        )
 
         await #expect(throws: (any Error).self) {
             try await sut.request(message: message, request: "data")
