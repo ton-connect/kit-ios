@@ -55,8 +55,7 @@ public extension WKWebView {
             walletInfo: walletKit.configuration.walletManifest,
             jsBridgeKey: configuration?.key ?? walletKit.configuration.bridge?.webViewInjectionKey,
             injectTonKey: nil,
-            isWalletBrowser: true,
-            walletId: configuration?.walletId
+            isWalletBrowser: true
         )
         
         let encoder = JSONEncoder()
@@ -77,7 +76,10 @@ public extension WKWebView {
         
         self.configuration.userContentController.addUserScript(injectionScript)
         self.configuration.userContentController.addScriptMessageHandler(
-            TONWalletKitInjectionMessagesHandler(injectableBridge: bridge),
+            TONWalletKitInjectionMessagesHandler(
+                injectableBridge: bridge,
+                walletId: configuration?.walletId
+            ),
             contentWorld: .page,
             name: "walletKitInjectionBridge"
         )
@@ -86,12 +88,18 @@ public extension WKWebView {
 
 private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHandlerWithReply {
     private let injectableBridge: TONWalletKitInjectableBridge
+    private let walletId: TONWalletID?
+    
     private var subscribers: [String: AnyCancellable] = [:]
     
     private let defaultTimeout: Int = 10000
     
-    init(injectableBridge: TONWalletKitInjectableBridge) {
+    init(
+        injectableBridge: TONWalletKitInjectableBridge,
+        walletId: TONWalletID?
+    ) {
         self.injectableBridge = injectableBridge
+        self.walletId = walletId
     }
     
     func userContentController(
@@ -114,7 +122,8 @@ private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHan
         let eventMessage = TONBridgeEventMessage(
             messageId: messageID,
             tabId: messageDictionary?["frameID"] as? String,
-            domain: domain
+            domain: domain,
+            walletId: walletId
         )
         
         let timeout = messageDictionary?["timeout"] as? Int

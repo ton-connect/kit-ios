@@ -209,8 +209,7 @@ class TonConnectBridge {
     }
     return this.transport.send({
       method: "connect",
-      params: { protocolVersion, ...message },
-      walletId: this.walletId
+      params: { protocolVersion, ...message }
     });
   }
   /**
@@ -219,8 +218,7 @@ class TonConnectBridge {
   async restoreConnection() {
     return this.transport.send({
       method: "restoreConnection",
-      params: [],
-      walletId: this.walletId
+      params: []
     });
   }
   /**
@@ -229,8 +227,7 @@ class TonConnectBridge {
   async send(message) {
     return this.transport.send({
       method: "send",
-      params: [message],
-      walletId: this.walletId
+      params: [message]
     });
   }
   /**

@@ -113,7 +113,7 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                             let encodedSession = try session.encode(in: context)
                             resolve?.call(withArguments: [encodedSession])
                         } else {
-                            resolve?.call(withArguments: [JSValue(undefinedIn: context) as Any])
+                            resolve?.call(withArguments: [JSValue(undefinedIn: context)])
                         }
                     } catch {
                         reject?.call(withArguments: [error.localizedDescription])
@@ -134,11 +134,11 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                     guard let self else { return }
                     
                     do {
-                        let session = try await self.sessionsManager.removeSession(id: sessionId)
+                        try await self.sessionsManager.removeSession(id: sessionId)
                         
                         guard let context = self.context else { return }
-                        let encodedSession = try session.encode(in: context)
-                        resolve?.call(withArguments: [encodedSession])
+                        
+                        resolve?.call(withArguments: [JSValue(undefinedIn: context)])
                     } catch {
                         reject?.call(withArguments: [error.localizedDescription])
                     }
@@ -163,11 +163,11 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                 guard let self else { return }
                 
                 do {
-                    let sessions = try await self.sessionsManager.removeSessions(filter: sessionFilter)
+                    try await self.sessionsManager.removeSessions(filter: sessionFilter)
                     
                     guard let context = self.context else { return }
-                    let encodedSessions = try sessions.encode(in: context)
-                    resolve?.call(withArguments: [encodedSessions])
+                    
+                    resolve?.call(withArguments: [JSValue(undefinedIn: context)])
                 } catch {
                     reject?.call(withArguments: [error.localizedDescription])
                 }

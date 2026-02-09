@@ -47,8 +47,8 @@ public protocol TONConnectSessionsManager: AnyObject {
     func session(id: TONConnectSessionID) async throws -> TONConnectSession?
     func sessions(filter: TONConnectSessionsFilter?) async throws -> [TONConnectSession]
     
-    func removeSession(id: TONConnectSessionID) async throws -> TONConnectSession?
-    func removeSessions(filter: TONConnectSessionsFilter?) async throws -> [TONConnectSession]
+    func removeSession(id: TONConnectSessionID) async throws
+    func removeSessions(filter: TONConnectSessionsFilter?) async throws
     
     func removeAllSessions() async throws
 }
