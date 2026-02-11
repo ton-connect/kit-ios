@@ -30,7 +30,7 @@ import Security
 public class TONWalletKitKeychainStorage: TONWalletKitStorage {
     private let service = "com.tonwalletkit.keychain"
 
-    public func save(key: String, value: String) throws {
+    public func set(key: String, value: String) throws {
         let data = value.data(using: .utf8)
         
         let query: [String: Any] = [

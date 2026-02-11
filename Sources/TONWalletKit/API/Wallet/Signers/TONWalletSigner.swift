@@ -34,16 +34,11 @@ class TONWalletSigner: TONWalletSignerProtocol {
     }
     
     func sign(data: Data) async throws -> TONHex {
-        TONHex(hexString: try await jsWalletSigner.sign([UInt8](data)))
+        try TONHex(hexString: try await jsWalletSigner.sign([UInt8](data)))
     }
     
     func publicKey() -> TONHex {
         let result: String? = jsWalletSigner.publicKey
-        return result.flatMap { TONHex(hexString: $0) } ?? TONHex(string: "")
+        return result.flatMap { try? TONHex(hexString: $0) } ?? TONHex(string: "")
     }
-}
-
-extension TONWalletSigner: JSValueEncodable {
-    
-    func encode(in context: JSContext) throws -> Any { jsWalletSigner }
 }

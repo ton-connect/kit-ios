@@ -39,7 +39,7 @@ public class JSPBKDF2Polyfill: JSPolyfill {
             String
         ) -> JSValue = { [weak context] password, salt, iterations, keySize, hash in
             guard let context else {
-                return JSValue(undefinedIn: context)
+                return JSValue(undefinedIn: JSContext())
             }
             
             do {

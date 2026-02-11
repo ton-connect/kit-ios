@@ -35,7 +35,7 @@ public struct TONConnectSessionCreationParameters {
     public var isJsBridge: Bool
 }
 
-public struct TONConnectSessionsFilter: Decodable {
+public struct TONConnectSessionsFilter: Codable {
     public var walletId: TONWalletID?
     public var domain: String?
     public var isJsBridge: Bool?

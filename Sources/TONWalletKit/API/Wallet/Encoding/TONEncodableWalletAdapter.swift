@@ -40,3 +40,8 @@ class TONEncodableWalletAdapter: JSValueEncodable {
         return TONWalletAdapterJSAdapter(context: context, walletAdapter: walletAdapter)
     }
 }
+
+extension TONWalletAdapter: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any { jsWalletAdapter }
+}

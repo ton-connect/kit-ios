@@ -28,28 +28,44 @@ import Foundation
 import Combine
 import JavaScriptCore
 
-class JSWalletKitContext: JSContext {
+protocol JSWalletKitContextProtocol: JSDynamicObject, AnyObject {
+    var bridgeTransport: JSBridgeTransport { get }
+    
+    func initializeWalletKit(
+        configuration: any JSValueEncodable,
+        storage: any JSValueEncodable,
+        sessionManager: any JSValueEncodable,
+        apiClients: any JSValueEncodable
+    ) async throws
+    
+    func add(eventsHandler: any JSBridgeEventsHandler) throws
+    func remove(eventsHandler: any JSBridgeEventsHandler) throws
+}
+
+class JSWalletKitContext: JSWalletKitContextProtocol {
+    private let context: any JSDynamicObject
     private var bridgeEventHandlers: JSBridgeRawEventsHandler?
+    
     let bridgeTransport = JSBridgeTransport()
     
-    override init() {
-        super.init()
+    convenience init() {
+        self.init(context: JSContext())
         
 #if DEBUG
-        polyfill(with: JSConsoleLogPolyfill())
+        self.jsContext.polyfill(with: JSConsoleLogPolyfill())
 #endif
-        polyfill(with: JSTimerPolyfill())
-        polyfill(with: JSFetchPolyfill())
-        polyfill(with: JSWalletKitInitialPolyfill())
+        self.jsContext.polyfill(with: JSTimerPolyfill())
+        self.jsContext.polyfill(with: JSFetchPolyfill())
+        self.jsContext.polyfill(with: JSWalletKitInitialPolyfill())
     }
     
-    override init!(virtualMachine: JSVirtualMachine!) {
-        super.init(virtualMachine: virtualMachine)
+    private init(context: any JSDynamicObject) {
+        self.context = context
     }
     
     func load(script: any JSScript) async throws {
         let code = try await script.load()
-        self.evaluateScript(code)
+        jsContext.evaluateScript(code)
     }
     
     func initializeWalletKit(
@@ -92,13 +108,13 @@ class JSWalletKitContext: JSContext {
                 try self.bridgeEventHandlers?.handle(eventType: eventType, eventData: eventData)
                 
                 return JSValue(
-                    newPromiseResolvedWithResult: JSValue(undefinedIn: self),
-                    in: self
+                    newPromiseResolvedWithResult: JSValue(undefinedIn: self.jsContext),
+                    in: self.jsContext
                 )
             } catch {
                 return JSValue(
                     newPromiseRejectedWithReason: error.localizedDescription,
-                    in: self
+                    in: self.jsContext
                 )
             }
         }
@@ -112,5 +128,17 @@ class JSWalletKitContext: JSContext {
         if bridgeEventHandlers?.isEmpty != false {
             try self.walletKit.removeEventListeners()
         }
+    }
+}
+
+extension JSWalletKitContext: JSDynamicObject {
+    var jsContext: JSContext { context.jsContext }
+    
+    subscript<T>(dynamicMember member: String) -> T? where T : JSValueDecodable {
+        context[dynamicMember: member]
+    }
+    
+    subscript(dynamicMember member: String) -> any JSDynamicObjectMember {
+        context[dynamicMember: member]
     }
 }

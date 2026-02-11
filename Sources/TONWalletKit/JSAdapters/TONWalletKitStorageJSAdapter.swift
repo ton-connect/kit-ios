@@ -28,19 +28,26 @@ import Foundation
 
 class TONWalletKitStorageJSAdapter: NSObject, JSWalletKitStorage {
     private weak var context: JSContext?
-    private let storage: TONWalletKitStorage
+    private let storage: any TONWalletKitStorage
     
     init(
         context: JSContext,
-        storage: TONWalletKitStorage
+        storage: any TONWalletKitStorage
     ) {
         self.context = context
         self.storage = storage
     }
     
-    @objc(set::) func save(key: String, value: String) -> JSValue {
+    @objc(set::) func set(key: String, value: String) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         do {
-            try storage.save(key: key, value: value)
+            try storage.set(key: key, value: value)
             return JSValue(newPromiseResolvedWithResult: JSValue(undefinedIn: context), in: context)
         } catch {
             return JSValue(newPromiseRejectedWithReason: error.localizedDescription, in: context)
@@ -48,6 +55,13 @@ class TONWalletKitStorageJSAdapter: NSObject, JSWalletKitStorage {
     }
     
     @objc(get:) func get(key: String) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         do {
             if let value = try storage.get(key: key) {
                 return JSValue(newPromiseResolvedWithResult: value, in: context)
@@ -60,6 +74,13 @@ class TONWalletKitStorageJSAdapter: NSObject, JSWalletKitStorage {
     }
     
     @objc(remove:) func remove(key: String) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         do {
             try storage.remove(key: key)
             return JSValue(newPromiseResolvedWithResult: JSValue(undefinedIn: context), in: context)
@@ -69,6 +90,13 @@ class TONWalletKitStorageJSAdapter: NSObject, JSWalletKitStorage {
     }
     
     @objc func clear() -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         do {
             try storage.clear()
             return JSValue(newPromiseResolvedWithResult: JSValue(undefinedIn: context), in: context)

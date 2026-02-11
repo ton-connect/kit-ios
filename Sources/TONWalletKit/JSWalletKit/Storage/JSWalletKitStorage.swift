@@ -28,7 +28,7 @@ import Foundation
 import JavaScriptCore
 
 @objc protocol JSWalletKitStorage: JSExport {
-    @objc(set::) func save(key: String, value: String) -> JSValue
+    @objc(set::) func set(key: String, value: String) -> JSValue
     @objc(get:) func get(key: String) -> JSValue
     @objc(remove:) func remove(key: String) -> JSValue
     @objc func clear() -> JSValue

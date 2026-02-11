@@ -31,12 +31,19 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     private weak var context: JSContext?
     private let walletAdapter: any TONWalletAdapterProtocol
     
-    init(context: JSContext, walletAdapter: any TONWalletAdapterProtocol) {
+    init(
+        context: JSContext,
+        walletAdapter: any TONWalletAdapterProtocol
+    ) {
         self.context = context
         self.walletAdapter = walletAdapter
     }
     
     @objc(getPublicKey) func publicKey() -> JSValue {
+        guard let context else {
+            return JSValue(undefinedIn: JSContext())
+        }
+        
         do {
             return JSValue(object: try walletAdapter.publicKey().value, in: context)
         } catch {
@@ -45,6 +52,10 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     }
     
     @objc(getWalletId) func identifier() -> JSValue {
+        guard let context else {
+            return JSValue(undefinedIn: JSContext())
+        }
+        
         do {
             return JSValue(object: try walletAdapter.identifier(), in: context)
         } catch {
@@ -53,10 +64,11 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     }
     
     @objc(getNetwork) func network() -> JSValue {
+        guard let context else {
+            return JSValue(undefinedIn: JSContext())
+        }
+        
         do {
-            guard let context else {
-                throw "Unable to resolve JS context"
-            }
             return JSValue(object: try walletAdapter.network().encode(in: context), in: context)
         } catch {
             return JSValue(undefinedIn: context)
@@ -64,6 +76,10 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     }
     
     @objc(getAddress:) func address(options: JSValue) -> JSValue {
+        guard let context else {
+            return JSValue(undefinedIn: JSContext())
+        }
+        
         let options: TONGetAddressOptions? = try? options.decode()
         
         do {
@@ -75,7 +91,14 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     }
     
     @objc(getStateInit) func stateInit() -> JSValue {
-        JSValue(newPromiseIn: context) { [weak self] resolve, reject in
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
+        return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
             Task {
                 guard let self else { return }
                 
@@ -91,6 +114,13 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     }
     
     @objc(getSignedSendTransaction::) func signedSendTransaction(input: JSValue, options: JSValue) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         let options: TONSignedSendTransactionAllOptions? = try? options.decode()
         
         do {
@@ -118,6 +148,13 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     }
     
     @objc(getSignedSignData::) func signedSignData(input: JSValue, options: JSValue) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         let options: TONSignedSendTransactionAllOptions? = try? options.decode()
         
         do {
@@ -145,6 +182,13 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
     }
     
     @objc(getSignedTonProof::) func signedTonProof(input: JSValue, options: JSValue) -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
         let options: TONSignedSendTransactionAllOptions? = try? options.decode()
         
         do {

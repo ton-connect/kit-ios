@@ -27,14 +27,17 @@
 import Foundation
 
 class TONBridgeEventsHandlerJSAdapter: JSBridgeEventsHandler {
-    private weak var handler: TONBridgeEventsHandler?
-    private weak var context: JSContext?
+    private weak var handler: (any TONBridgeEventsHandler)?
+    private weak var context: (any JSWalletKitContextProtocol)?
     
     var isValid: Bool {
         return handler != nil && context != nil
     }
     
-    init(handler: TONBridgeEventsHandler, context: JSContext) {
+    init(
+        handler: any TONBridgeEventsHandler,
+        context: any JSWalletKitContextProtocol
+    ) {
         self.handler = handler
         self.context = context
     }
