@@ -37,23 +37,17 @@ import JavaScriptCore
         isJsBridge: JSValue
     ) -> JSValue
     
-    @objc(getSessions)
-    func sessions() -> JSValue
-    
     @objc(getSession:)
     func session(sessionId: JSValue) -> JSValue
     
-    @objc(getSessionByDomain:)
-    func session(domain: JSValue) -> JSValue
-    
-    @objc(getSessionsForWallet:)
-    func sessions(walletId: JSValue) -> JSValue
+    @objc(getSessions:)
+    func sessions(filter: JSValue) -> JSValue
     
     @objc(removeSession:)
     func removeSession(sessionId: JSValue) -> JSValue
     
-    @objc(removeSessionsForWallet:)
-    func removeSessions(walletId: JSValue) -> JSValue
+    @objc(removeSessions:)
+    func removeSessions(filter: JSValue) -> JSValue
     
     @objc(clearSessions)
     func clearSessions() -> JSValue

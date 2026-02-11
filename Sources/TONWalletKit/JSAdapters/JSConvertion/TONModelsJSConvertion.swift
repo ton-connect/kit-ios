@@ -45,6 +45,7 @@ extension TONNetwork: JSValueDecodable {}
 extension TONTransactionEmulatedPreview: JSValueDecodable {}
 extension TONDAppInfo: JSValueDecodable {}
 extension TONRawStackItem: JSValueDecodable {}
+extension TONConnectSessionsFilter: JSValueDecodable {}
 
 extension TONBalance: JSValueDecodable {
     

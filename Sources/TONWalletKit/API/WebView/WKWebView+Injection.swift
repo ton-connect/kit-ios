@@ -30,7 +30,10 @@ import WebKit
 
 public extension WKWebView {
     
-    func inject(walletKit: TONWalletKit, key: String? = nil) throws {
+    func inject(
+        walletKit: TONWalletKit,
+        configuration: TONBridgeInjectionConfiguration? = nil
+    ) throws {
         #if DEBUG
         
         #if os(macOS)
@@ -50,7 +53,7 @@ public extension WKWebView {
         let options = TONBridgeInjectOptions(
             deviceInfo: walletKit.configuration.deviceInfo,
             walletInfo: walletKit.configuration.walletManifest,
-            jsBridgeKey: key ?? walletKit.configuration.bridge?.webViewInjectionKey,
+            jsBridgeKey: configuration?.key ?? walletKit.configuration.bridge?.webViewInjectionKey,
             injectTonKey: nil,
             isWalletBrowser: true
         )
@@ -71,9 +74,12 @@ public extension WKWebView {
         
         let bridge = try walletKit.injectableBridge()
         
-        configuration.userContentController.addUserScript(injectionScript)
-        configuration.userContentController.addScriptMessageHandler(
-            TONWalletKitInjectionMessagesHandler(injectableBridge: bridge),
+        self.configuration.userContentController.addUserScript(injectionScript)
+        self.configuration.userContentController.addScriptMessageHandler(
+            TONWalletKitInjectionMessagesHandler(
+                injectableBridge: bridge,
+                walletId: configuration?.walletId
+            ),
             contentWorld: .page,
             name: "walletKitInjectionBridge"
         )
@@ -82,12 +88,18 @@ public extension WKWebView {
 
 private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHandlerWithReply {
     private let injectableBridge: TONWalletKitInjectableBridge
+    private let walletId: TONWalletID?
+    
     private var subscribers: [String: AnyCancellable] = [:]
     
     private let defaultTimeout: Int = 10000
     
-    init(injectableBridge: TONWalletKitInjectableBridge) {
+    init(
+        injectableBridge: TONWalletKitInjectableBridge,
+        walletId: TONWalletID?
+    ) {
         self.injectableBridge = injectableBridge
+        self.walletId = walletId
     }
     
     func userContentController(
@@ -110,7 +122,8 @@ private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHan
         let eventMessage = TONBridgeEventMessage(
             messageId: messageID,
             tabId: messageDictionary?["frameID"] as? String,
-            domain: domain
+            domain: domain,
+            walletId: walletId
         )
         
         let timeout = messageDictionary?["timeout"] as? Int

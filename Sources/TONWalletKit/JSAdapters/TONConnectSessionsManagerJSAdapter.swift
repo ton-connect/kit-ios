@@ -71,13 +71,22 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
     
-    @objc(getSessions) func sessions() -> JSValue {
-        JSValue(newPromiseIn: context) { [weak self] resolve, reject in
+    @objc(getSessions:) func sessions(filter: JSValue) -> JSValue {
+        var sessionFilter: TONConnectSessionsFilter?
+        
+        do {
+            sessionFilter = try filter.decode()
+        } catch {
+            return JSValue(newPromiseRejectedWithReason: error.localizedDescription, in: context)
+        }
+        
+        return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
             Task {
                 guard let self else { return }
                 
                 do {
-                    let sessions = try await self.sessionsManager.sessions()
+                    let sessions = try await self.sessionsManager.sessions(filter: sessionFilter)
+                    
                     guard let context = self.context else { return }
                     let encodedSessions = try sessions.encode(in: context)
                     resolve?.call(withArguments: [encodedSessions])
@@ -104,59 +113,8 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                             let encodedSession = try session.encode(in: context)
                             resolve?.call(withArguments: [encodedSession])
                         } else {
-                            resolve?.call(withArguments: [JSValue(undefinedIn: context) as Any])
+                            resolve?.call(withArguments: [JSValue(undefinedIn: context)])
                         }
-                    } catch {
-                        reject?.call(withArguments: [error.localizedDescription])
-                    }
-                }
-            }
-        } catch {
-            return JSValue(newPromiseRejectedWithReason: error.localizedDescription, in: context)
-        }
-    }
-    
-    @objc(getSessionByDomain:) func session(domain: JSValue) -> JSValue {
-        do {
-            let domain: String = try domain.decode()
-            
-            return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
-                Task {
-                    guard let self else { return }
-                    
-                    do {
-                        let session = try await self.sessionsManager.session(domain: domain)
-                        guard let context = self.context else { return }
-                        
-                        if let session {
-                            let encodedSession = try session.encode(in: context)
-                            resolve?.call(withArguments: [encodedSession])
-                        } else {
-                            resolve?.call(withArguments: [JSValue(undefinedIn: context) as Any])
-                        }
-                    } catch {
-                        reject?.call(withArguments: [error.localizedDescription])
-                    }
-                }
-            }
-        } catch {
-            return JSValue(newPromiseRejectedWithReason: error.localizedDescription, in: context)
-        }
-    }
-    
-    @objc(getSessionsForWallet:) func sessions(walletId: JSValue) -> JSValue {
-        do {
-            let walletId: TONWalletID = try walletId.decode()
-            
-            return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
-                Task {
-                    guard let self else { return }
-                    
-                    do {
-                        let session = try await self.sessionsManager.sessions(walletId: walletId)
-                        guard let context = self.context else { return }
-                        let encodedSession = try session.encode(in: context)
-                        resolve?.call(withArguments: [encodedSession])
                     } catch {
                         reject?.call(withArguments: [error.localizedDescription])
                     }
@@ -177,7 +135,10 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
                     
                     do {
                         try await self.sessionsManager.removeSession(id: sessionId)
-                        resolve?.call(withArguments: [])
+                        
+                        guard let context = self.context else { return }
+                        
+                        resolve?.call(withArguments: [JSValue(undefinedIn: context)])
                     } catch {
                         reject?.call(withArguments: [error.localizedDescription])
                     }
@@ -188,24 +149,29 @@ class TONConnectSessionsManagerJSAdapter: NSObject, JSTONConnectSessionsManager 
         }
     }
     
-    @objc(removeSessionsForWallet:) func removeSessions(walletId: JSValue) -> JSValue {
+    @objc(removeSessions:) func removeSessions(filter: JSValue) -> JSValue {
+        var sessionFilter: TONConnectSessionsFilter?
+        
         do {
-            let walletId: TONWalletID = try walletId.decode()
-            
-            return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
-                Task {
-                    guard let self else { return }
-                    
-                    do {
-                        try await self.sessionsManager.removeSessions(walletId: walletId)
-                        resolve?.call(withArguments: [])
-                    } catch {
-                        reject?.call(withArguments: [error.localizedDescription])
-                    }
-                }
-            }
+            sessionFilter = try filter.decode()
         } catch {
             return JSValue(newPromiseRejectedWithReason: error.localizedDescription, in: context)
+        }
+        
+        return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
+            Task {
+                guard let self else { return }
+                
+                do {
+                    try await self.sessionsManager.removeSessions(filter: sessionFilter)
+                    
+                    guard let context = self.context else { return }
+                    
+                    resolve?.call(withArguments: [JSValue(undefinedIn: context)])
+                } catch {
+                    reject?.call(withArguments: [error.localizedDescription])
+                }
+            }
         }
     }
     

@@ -1,8 +1,8 @@
 //
-//  TONConnectSessionsManager.swift
+//  TONBridgeInjectionConfiguration.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 20.01.2026.
+//  Created by Nikita Rodionov on 05.02.2026.
 //  
 //  Copyright (c) 2026 TON Connect
 //
@@ -24,31 +24,15 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-import Foundation
-
-public typealias TONConnectSessionID = String
-
-public struct TONConnectSessionCreationParameters {
-    public var sessionId: TONConnectSessionID
-    public var wallet: TONWalletProtocol
-    public var dAppInfo: TONDAppInfo
-    public var isJsBridge: Bool
-}
-
-public struct TONConnectSessionsFilter: Decodable {
-    public var walletId: TONWalletID?
-    public var domain: String?
-    public var isJsBridge: Bool?
-}
-
-public protocol TONConnectSessionsManager: AnyObject {
-    func createSession(with parameters: TONConnectSessionCreationParameters) async throws -> TONConnectSession
+public struct TONBridgeInjectionConfiguration {
+    public let key: String?
+    public let walletId: TONWalletID?
     
-    func session(id: TONConnectSessionID) async throws -> TONConnectSession?
-    func sessions(filter: TONConnectSessionsFilter?) async throws -> [TONConnectSession]
-    
-    func removeSession(id: TONConnectSessionID) async throws
-    func removeSessions(filter: TONConnectSessionsFilter?) async throws
-    
-    func removeAllSessions() async throws
+    public init(
+        key: String? = nil,
+        walletId: TONWalletID? = nil
+    ) {
+        self.key = key
+        self.walletId = walletId
+    }
 }
