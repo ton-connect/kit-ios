@@ -15,7 +15,8 @@ struct TONWalletKitInjectableBridgeTests {
             messageId: "msg-1",
             tabId: nil,
             domain: nil,
-            walletId: "wallet-id"
+            walletId: "wallet-id",
+            metadata: "test"
         )
 
         try await sut.request(message: message, request: "request-data")
@@ -34,7 +35,8 @@ struct TONWalletKitInjectableBridgeTests {
             messageId: "msg-1",
             tabId: nil,
             domain: nil,
-            walletId: "wallet-id"
+            walletId: "wallet-id",
+            metadata: "test"
         )
 
         await #expect(throws: (any Error).self) {
