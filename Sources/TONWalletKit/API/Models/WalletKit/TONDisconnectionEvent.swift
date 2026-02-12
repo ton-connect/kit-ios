@@ -49,9 +49,10 @@ public struct TONDisconnectionEvent: Codable {
     public var messageId: String?
     public var traceId: String?
     public var dAppInfo: TONDAppInfo?
+    public var metadata: TONBridgeEventMetadata?
     public var preview: TONDisconnectionEventPreview
 
-    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: String? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil, preview: TONDisconnectionEventPreview) {
+    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: String? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil, metadata: TONBridgeEventMetadata? = nil, preview: TONDisconnectionEventPreview) {
         self.id = id
         self.from = from
         self.walletAddress = walletAddress
@@ -64,6 +65,7 @@ public struct TONDisconnectionEvent: Codable {
         self.messageId = messageId
         self.traceId = traceId
         self.dAppInfo = dAppInfo
+        self.metadata = metadata
         self.preview = preview
     }
 
@@ -80,6 +82,7 @@ public struct TONDisconnectionEvent: Codable {
         case messageId
         case traceId
         case dAppInfo
+        case metadata
         case preview
     }
 
@@ -99,6 +102,7 @@ public struct TONDisconnectionEvent: Codable {
         try container.encodeIfPresent(messageId, forKey: .messageId)
         try container.encodeIfPresent(traceId, forKey: .traceId)
         try container.encodeIfPresent(dAppInfo, forKey: .dAppInfo)
+        try container.encodeIfPresent(metadata, forKey: .metadata)
         try container.encode(preview, forKey: .preview)
     }
 }

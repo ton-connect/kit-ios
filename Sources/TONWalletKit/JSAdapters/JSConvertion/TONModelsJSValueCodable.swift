@@ -125,6 +125,16 @@ extension TONSignDataRequestEventPreview: JSValueCodable {}
 
 extension TONSignDataText: JSValueCodable {}
 
+extension TONSwapFee: JSValueCodable {}
+
+extension TONSwapParams: JSValueCodable {}
+
+extension TONSwapQuote: JSValueCodable {}
+
+extension TONSwapQuoteParams: JSValueCodable {}
+
+extension TONSwapToken: JSValueCodable {}
+
 extension TONTokenAnimation: JSValueCodable {}
 
 extension TONTokenImage: JSValueCodable {}

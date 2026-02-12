@@ -1,8 +1,8 @@
 //
-//  TONBridgeInjectionConfiguration.swift
+//  TONBridgeEventMetadata.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 05.02.2026.
+//  Created by Nikita Rodionov on 12.02.2026.
 //  
 //  Copyright (c) 2026 TON Connect
 //
@@ -24,18 +24,41 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-public struct TONBridgeInjectionConfiguration {
-    public let key: String?
-    public let walletId: TONWalletID?
-    public let metadata: TONBridgeEventMetadata?
+import Foundation
+
+public struct TONBridgeEventMetadata: Codable {
+    public let value: Data
     
-    public init(
-        key: String? = nil,
-        walletId: TONWalletID? = nil,
-        metadata: TONBridgeEventMetadata? = nil
-    ) {
-        self.key = key
-        self.walletId = walletId
-        self.metadata = metadata
+    var stringValue: String? {
+        String(data: value, encoding: .utf8)
+    }
+    
+    public init(value: Data) {
+        self.value = value
+    }
+    
+    public enum CodingKeys: String, CodingKey, CaseIterable {
+        case type
+        case value
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let stringValue = try container.decode(String.self)
+        
+        guard let data = try stringValue.data(using: .utf8) else {
+            throw "Unable to decode bridge event metadata from string - \(stringValue)"
+        }
+        self.value = data
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(stringValue)
+    }
+    
+    public func extract<T: Decodable>() throws -> T {
+        let decoder = JSONDecoder()
+        return try decoder.decode(T.self, from: value)
     }
 }

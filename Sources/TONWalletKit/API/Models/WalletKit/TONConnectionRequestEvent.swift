@@ -49,11 +49,12 @@ public struct TONConnectionRequestEvent: Codable {
     public var messageId: String?
     public var traceId: String?
     public var dAppInfo: TONDAppInfo?
+    public var metadata: TONBridgeEventMetadata?
     /** Items requested by the dApp (e.g., wallet address, proof) */
     public var requestedItems: [TONConnectionRequestEventRequestedItem]
     public var preview: TONConnectionRequestEventPreview
 
-    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: String? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil, requestedItems: [TONConnectionRequestEventRequestedItem], preview: TONConnectionRequestEventPreview) {
+    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: String? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil, metadata: TONBridgeEventMetadata? = nil, requestedItems: [TONConnectionRequestEventRequestedItem], preview: TONConnectionRequestEventPreview) {
         self.id = id
         self.from = from
         self.walletAddress = walletAddress
@@ -66,6 +67,7 @@ public struct TONConnectionRequestEvent: Codable {
         self.messageId = messageId
         self.traceId = traceId
         self.dAppInfo = dAppInfo
+        self.metadata = metadata
         self.requestedItems = requestedItems
         self.preview = preview
     }
@@ -83,6 +85,7 @@ public struct TONConnectionRequestEvent: Codable {
         case messageId
         case traceId
         case dAppInfo
+        case metadata
         case requestedItems
         case preview
     }
@@ -103,6 +106,7 @@ public struct TONConnectionRequestEvent: Codable {
         try container.encodeIfPresent(messageId, forKey: .messageId)
         try container.encodeIfPresent(traceId, forKey: .traceId)
         try container.encodeIfPresent(dAppInfo, forKey: .dAppInfo)
+        try container.encodeIfPresent(metadata, forKey: .metadata)
         try container.encode(requestedItems, forKey: .requestedItems)
         try container.encode(preview, forKey: .preview)
     }

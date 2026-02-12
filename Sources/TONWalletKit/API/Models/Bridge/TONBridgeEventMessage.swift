@@ -31,4 +31,5 @@ struct TONBridgeEventMessage: Codable {
     let tabId: String?
     let domain: String?
     let walletId: TONWalletID?
+    let metadata: String?
 }

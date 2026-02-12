@@ -28,13 +28,15 @@
       "Hex": "Hex",
       "LogicalTime": "String",
       "Base64String": "Base64",
-      "TokenAmount": "TokenAmount"
+      "TokenAmount": "TokenAmount",
+      "BridgeEventMetadata": "BridgeEventMetadata"
   },
   "schemaMappings": {
       "UserFriendlyAddress": "UserFriendlyAddress",
       "Hex": "Hex",
       "LogicalTime": "String",
       "Base64String": "Base64",
-      "TokenAmount": "TokenAmount"
+      "TokenAmount": "TokenAmount",
+      "BridgeEventMetadata": "BridgeEventMetadata"
   }
 }
