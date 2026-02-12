@@ -49,10 +49,11 @@ public struct TONSignDataRequestEvent: Codable {
     public var messageId: String?
     public var traceId: String?
     public var dAppInfo: TONDAppInfo?
+    public var metadata: TONBridgeEventMetadata?
     public var payload: TONSignDataPayload
     public var preview: TONSignDataRequestEventPreview
 
-    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: String? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil, payload: TONSignDataPayload, preview: TONSignDataRequestEventPreview) {
+    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: String? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil, metadata: TONBridgeEventMetadata? = nil, payload: TONSignDataPayload, preview: TONSignDataRequestEventPreview) {
         self.id = id
         self.from = from
         self.walletAddress = walletAddress
@@ -65,6 +66,7 @@ public struct TONSignDataRequestEvent: Codable {
         self.messageId = messageId
         self.traceId = traceId
         self.dAppInfo = dAppInfo
+        self.metadata = metadata
         self.payload = payload
         self.preview = preview
     }
@@ -82,6 +84,7 @@ public struct TONSignDataRequestEvent: Codable {
         case messageId
         case traceId
         case dAppInfo
+        case metadata
         case payload
         case preview
     }
@@ -102,6 +105,7 @@ public struct TONSignDataRequestEvent: Codable {
         try container.encodeIfPresent(messageId, forKey: .messageId)
         try container.encodeIfPresent(traceId, forKey: .traceId)
         try container.encodeIfPresent(dAppInfo, forKey: .dAppInfo)
+        try container.encodeIfPresent(metadata, forKey: .metadata)
         try container.encode(payload, forKey: .payload)
         try container.encode(preview, forKey: .preview)
     }

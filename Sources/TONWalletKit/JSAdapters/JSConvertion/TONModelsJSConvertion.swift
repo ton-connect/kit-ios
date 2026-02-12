@@ -69,4 +69,9 @@ extension TONBalance: JSValueEncodable {
     func encode(in context: JSContext) throws -> Any { String(nanoUnits) }
 }
 
+extension TONBridgeEventMetadata: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any { self.stringValue }
+}
+
 extension AnyCodable: JSValueEncodable, JSValueDecodable {}

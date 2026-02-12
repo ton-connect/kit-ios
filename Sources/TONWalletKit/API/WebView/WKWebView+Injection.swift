@@ -78,7 +78,7 @@ public extension WKWebView {
         self.configuration.userContentController.addScriptMessageHandler(
             TONWalletKitInjectionMessagesHandler(
                 injectableBridge: bridge,
-                walletId: configuration?.walletId
+                configuration: configuration
             ),
             contentWorld: .page,
             name: "walletKitInjectionBridge"
@@ -88,7 +88,7 @@ public extension WKWebView {
 
 private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHandlerWithReply {
     private let injectableBridge: TONWalletKitInjectableBridge
-    private let walletId: TONWalletID?
+    private let configuration: TONBridgeInjectionConfiguration?
     
     private var subscribers: [String: AnyCancellable] = [:]
     
@@ -96,10 +96,10 @@ private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHan
     
     init(
         injectableBridge: TONWalletKitInjectableBridge,
-        walletId: TONWalletID?
+        configuration: TONBridgeInjectionConfiguration?
     ) {
         self.injectableBridge = injectableBridge
-        self.walletId = walletId
+        self.configuration = configuration
     }
     
     func userContentController(
@@ -123,7 +123,8 @@ private class TONWalletKitInjectionMessagesHandler: NSObject, WKScriptMessageHan
             messageId: messageID,
             tabId: messageDictionary?["frameID"] as? String,
             domain: domain,
-            walletId: walletId
+            walletId: configuration?.walletId,
+            metadata: configuration?.metadata?.stringValue
         )
         
         let timeout = messageDictionary?["timeout"] as? Int

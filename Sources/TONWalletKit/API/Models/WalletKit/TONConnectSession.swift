@@ -31,7 +31,7 @@ import BigInt
 public struct TONConnectSession: Codable {
 
     public var sessionId: String
-    /** Wallet ID format: \"network:address\" Examples: - \"-239:EQDtFpEwcFAEcRe5mLVh2N6C0x-_hJEM7W61_JLnSF74p4q2\" (mainnet) - \"-3:EQDtFpEwcFAEcRe5mLVh2N6C0x-_hJEM7W61_JLnSF74p4q2\" (testnet) */
+    /** Wallet ID - unique identifier for a wallet, should be different for similar wallets on different networks */
     public var walletId: String
     public var walletAddress: TONUserFriendlyAddress
     public var createdAt: String

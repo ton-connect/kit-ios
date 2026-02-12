@@ -128,18 +128,22 @@ public class TONWalletKit {
 
     public func send(
         transaction: TONTransactionRequest,
-        from wallet: any TONWalletProtocol
+        from wallet: any TONWalletProtocol,
+        metadata: TONBridgeEventMetadata? = nil,
     ) async throws {
-        try await jsWalletKit().sendTransaction(TONEncodableWallet(wallet: wallet), transaction)
+        try await jsWalletKit().sendTransaction(TONEncodableWallet(wallet: wallet), transaction, metadata)
     }
         
-    public func connect(url: String) async throws {
+    public func connect(
+        url: String,
+        metadata: TONBridgeEventMetadata? = nil
+    ) async throws {
         var components = URLComponents(string: url)
         
         if components?.scheme == nil {
             components?.scheme = "tc"
         }
-        try await jsWalletKit().handleTonConnectUrl(components?.url?.absoluteString ?? url)
+        try await jsWalletKit().handleTonConnectUrl(components?.url?.absoluteString ?? url, metadata)
     }
       
     public func remove(walletId: TONWalletID) async throws {
