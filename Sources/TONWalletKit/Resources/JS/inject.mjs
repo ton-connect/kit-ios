@@ -185,7 +185,6 @@ class TonConnectBridge {
   walletInfo;
   protocolVersion;
   isWalletBrowser;
-  walletId;
   // Private state
   transport;
   eventListeners = [];
@@ -194,7 +193,6 @@ class TonConnectBridge {
     this.walletInfo = config.walletInfo;
     this.protocolVersion = config.protocolVersion;
     this.isWalletBrowser = config.isWalletBrowser;
-    this.walletId = config.walletId;
     this.transport = transport;
     this.transport.onEvent((event) => {
       this.notifyListeners(event);
@@ -442,8 +440,7 @@ function createBridgeConfig(options) {
     walletInfo,
     jsBridgeKey,
     isWalletBrowser: options.isWalletBrowser ?? false,
-    protocolVersion: SUPPORTED_PROTOCOL_VERSION,
-    walletId: options.walletId
+    protocolVersion: SUPPORTED_PROTOCOL_VERSION
   };
 }
 function injectBridge(window2, options, argsTransport) {
