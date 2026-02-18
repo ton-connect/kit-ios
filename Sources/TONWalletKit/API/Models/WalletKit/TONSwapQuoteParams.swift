@@ -29,8 +29,8 @@ import BigInt
 
 public struct TONSwapQuoteParams<TProviderOptions: Codable>: Codable {
     public var amount: TONTokenAmount
-    public var fromToken: TONSwapToken
-    public var toToken: TONSwapToken
+    public var from: TONSwapToken
+    public var to: TONSwapToken
     public var network: TONNetwork
     /** Slippage tolerance in basis points (1 bp = 0.01%) */
     public var slippageBps: Double?
@@ -41,10 +41,10 @@ public struct TONSwapQuoteParams<TProviderOptions: Codable>: Codable {
     /** If true, amount is the amount to receive (buy). If false, amount is the amount to spend (sell). */
     public var isReverseSwap: Bool?
 
-    public init(amount: TONTokenAmount, fromToken: TONSwapToken, toToken: TONSwapToken, network: TONNetwork, slippageBps: Double? = nil, maxOutgoingMessages: Double? = nil, providerOptions: TProviderOptions? = nil, isReverseSwap: Bool? = nil) {
+    public init(amount: TONTokenAmount, from: TONSwapToken, to: TONSwapToken, network: TONNetwork, slippageBps: Double? = nil, maxOutgoingMessages: Double? = nil, providerOptions: TProviderOptions? = nil, isReverseSwap: Bool? = nil) {
         self.amount = amount
-        self.fromToken = fromToken
-        self.toToken = toToken
+        self.from = from
+        self.to = to
         self.network = network
         self.slippageBps = slippageBps
         self.maxOutgoingMessages = maxOutgoingMessages
@@ -54,8 +54,8 @@ public struct TONSwapQuoteParams<TProviderOptions: Codable>: Codable {
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case amount
-        case fromToken
-        case toToken
+        case from
+        case to
         case network
         case slippageBps
         case maxOutgoingMessages
@@ -68,8 +68,8 @@ public struct TONSwapQuoteParams<TProviderOptions: Codable>: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(amount, forKey: .amount)
-        try container.encode(fromToken, forKey: .fromToken)
-        try container.encode(toToken, forKey: .toToken)
+        try container.encode(from, forKey: .from)
+        try container.encode(to, forKey: .to)
         try container.encode(network, forKey: .network)
         try container.encodeIfPresent(slippageBps, forKey: .slippageBps)
         try container.encodeIfPresent(maxOutgoingMessages, forKey: .maxOutgoingMessages)

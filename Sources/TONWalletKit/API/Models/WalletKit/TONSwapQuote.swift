@@ -33,8 +33,11 @@ public struct TONSwapQuote: Codable {
 
     public var fromToken: TONSwapToken
     public var toToken: TONSwapToken
+    public var rawFromAmount: TONTokenAmount
+    public var rawToAmount: TONTokenAmount
     public var fromAmount: TONTokenAmount
     public var toAmount: TONTokenAmount
+    public var rawMinReceived: TONTokenAmount
     public var minReceived: TONTokenAmount
     public var network: TONNetwork
     /** Price impact of the swap in basis points (100 = 1%) */
@@ -48,11 +51,14 @@ public struct TONSwapQuote: Codable {
     /** Provider-specific metadata for the quote */
     public var metadata: AnyCodable?
 
-    public init(fromToken: TONSwapToken, toToken: TONSwapToken, fromAmount: TONTokenAmount, toAmount: TONTokenAmount, minReceived: TONTokenAmount, network: TONNetwork, priceImpact: Int? = nil, fee: [TONSwapFee]? = nil, providerId: String, expiresAt: Int? = nil, metadata: AnyCodable? = nil) {
+    public init(fromToken: TONSwapToken, toToken: TONSwapToken, rawFromAmount: TONTokenAmount, rawToAmount: TONTokenAmount, fromAmount: TONTokenAmount, toAmount: TONTokenAmount, rawMinReceived: TONTokenAmount, minReceived: TONTokenAmount, network: TONNetwork, priceImpact: Int? = nil, fee: [TONSwapFee]? = nil, providerId: String, expiresAt: Int? = nil, metadata: AnyCodable? = nil) {
         self.fromToken = fromToken
         self.toToken = toToken
+        self.rawFromAmount = rawFromAmount
+        self.rawToAmount = rawToAmount
         self.fromAmount = fromAmount
         self.toAmount = toAmount
+        self.rawMinReceived = rawMinReceived
         self.minReceived = minReceived
         self.network = network
         self.priceImpact = priceImpact
@@ -65,8 +71,11 @@ public struct TONSwapQuote: Codable {
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case fromToken
         case toToken
+        case rawFromAmount
+        case rawToAmount
         case fromAmount
         case toAmount
+        case rawMinReceived
         case minReceived
         case network
         case priceImpact
@@ -82,8 +91,11 @@ public struct TONSwapQuote: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(fromToken, forKey: .fromToken)
         try container.encode(toToken, forKey: .toToken)
+        try container.encode(rawFromAmount, forKey: .rawFromAmount)
+        try container.encode(rawToAmount, forKey: .rawToAmount)
         try container.encode(fromAmount, forKey: .fromAmount)
         try container.encode(toAmount, forKey: .toAmount)
+        try container.encode(rawMinReceived, forKey: .rawMinReceived)
         try container.encode(minReceived, forKey: .minReceived)
         try container.encode(network, forKey: .network)
         try container.encodeIfPresent(priceImpact, forKey: .priceImpact)

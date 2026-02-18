@@ -27,45 +27,47 @@
 import Foundation
 import BigInt
 
-public enum TONSwapToken: Codable {
+/** Token type for swap */
 
-    case jetton(TONUserFriendlyAddress)
-    case ton
+public struct TONSwapToken: Codable {
 
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let type = try container.decode(String.self, forKey: .type)
-        switch type {
+    public var address: String
+    public var decimals: Double
+    public var name: String?
+    public var symbol: String?
+    public var image: String?
+    public var chainId: String?
 
-        case "jetton":
-            let value = try container.decode(TONUserFriendlyAddress.self, forKey: .value)
-            self = .jetton(value)
-        case "ton":
-            self = .ton
-        default:
-            throw DecodingError.dataCorruptedError(
-                forKey: .type,
-                in: container,
-                debugDescription: "Unknown type: \(type)"
-            )
-        }
-    }
-
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        switch self {
-
-        case .jetton(let value):
-            try container.encode("jetton", forKey: .type)
-            try container.encode(value, forKey: .value)
-        case .ton:
-            try container.encode("ton", forKey: .type)
-        }
+    public init(address: String, decimals: Double, name: String? = nil, symbol: String? = nil, image: String? = nil, chainId: String? = nil) {
+        self.address = address
+        self.decimals = decimals
+        self.name = name
+        self.symbol = symbol
+        self.image = image
+        self.chainId = chainId
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case type
-        case value
+        case address
+        case decimals
+        case name
+        case symbol
+        case image
+        case chainId
+    }
+
+    // Encodable protocol methods
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(address, forKey: .address)
+        try container.encode(decimals, forKey: .decimals)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(symbol, forKey: .symbol)
+        try container.encodeIfPresent(image, forKey: .image)
+        try container.encodeIfPresent(chainId, forKey: .chainId)
     }
 }
+
+
 
