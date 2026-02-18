@@ -49,8 +49,10 @@ public struct TONBridgeEvent: Codable {
     public var messageId: String?
     public var traceId: String?
     public var dAppInfo: TONDAppInfo?
+    /** Raw TonConnect return strategy string. */
+    public var returnStrategy: String?
 
-    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: String? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil) {
+    public init(id: String, from: String? = nil, walletAddress: TONUserFriendlyAddress? = nil, walletId: String? = nil, domain: String? = nil, isJsBridge: Bool? = nil, tabId: String? = nil, sessionId: String? = nil, isLocal: Bool? = nil, messageId: String? = nil, traceId: String? = nil, dAppInfo: TONDAppInfo? = nil, returnStrategy: String? = nil) {
         self.id = id
         self.from = from
         self.walletAddress = walletAddress
@@ -63,6 +65,7 @@ public struct TONBridgeEvent: Codable {
         self.messageId = messageId
         self.traceId = traceId
         self.dAppInfo = dAppInfo
+        self.returnStrategy = returnStrategy
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -78,6 +81,7 @@ public struct TONBridgeEvent: Codable {
         case messageId
         case traceId
         case dAppInfo
+        case returnStrategy
     }
 
     // Encodable protocol methods
@@ -96,6 +100,7 @@ public struct TONBridgeEvent: Codable {
         try container.encodeIfPresent(messageId, forKey: .messageId)
         try container.encodeIfPresent(traceId, forKey: .traceId)
         try container.encodeIfPresent(dAppInfo, forKey: .dAppInfo)
+        try container.encodeIfPresent(returnStrategy, forKey: .returnStrategy)
     }
 }
 

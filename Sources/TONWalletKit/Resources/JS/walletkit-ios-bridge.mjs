@@ -25780,6 +25780,17 @@ function requireShardStateUnsplit() {
   ShardStateUnsplit.loadShardStateUnsplit = loadShardStateUnsplit;
   return ShardStateUnsplit;
 }
+var SignatureDomain = {};
+var hasRequiredSignatureDomain;
+function requireSignatureDomain() {
+  if (hasRequiredSignatureDomain) return SignatureDomain;
+  hasRequiredSignatureDomain = 1;
+  Object.defineProperty(SignatureDomain, "__esModule", { value: true });
+  SignatureDomain.signatureDomainEmptyTag = SignatureDomain.signatureDomainL2Tag = void 0;
+  SignatureDomain.signatureDomainL2Tag = 1907576545;
+  SignatureDomain.signatureDomainEmptyTag = 236803867;
+  return SignatureDomain;
+}
 var SplitMergeInfo = {};
 var hasRequiredSplitMergeInfo;
 function requireSplitMergeInfo() {
@@ -26345,8 +26356,8 @@ function require_export() {
   hasRequired_export = 1;
   (function(exports$1) {
     Object.defineProperty(exports$1, "__esModule", { value: true });
-    exports$1.loadSimpleLibrary = exports$1.loadShardStateUnsplit = exports$1.storeShardIdent = exports$1.loadShardIdent = exports$1.storeShardAccounts = exports$1.loadShardAccounts = exports$1.ShardAccountRefValue = exports$1.storeShardAccount = exports$1.loadShardAccount = exports$1.ReserveMode = exports$1.SendMode = exports$1.storeMessageRelaxed = exports$1.loadMessageRelaxed = exports$1.storeMessage = exports$1.loadMessage = exports$1.loadMasterchainStateExtra = exports$1.storeHashUpdate = exports$1.loadHashUpdate = exports$1.storeExtraCurrency = exports$1.loadMaybeExtraCurrency = exports$1.loadExtraCurrency = exports$1.packExtraCurrencyDict = exports$1.packExtraCurrencyCell = exports$1.storeDepthBalanceInfo = exports$1.loadDepthBalanceInfo = exports$1.storeCurrencyCollection = exports$1.loadCurrencyCollection = exports$1.storeComputeSkipReason = exports$1.loadComputeSkipReason = exports$1.storeCommonMessageInfoRelaxed = exports$1.loadCommonMessageInfoRelaxed = exports$1.storeCommonMessageInfo = exports$1.loadCommonMessageInfo = exports$1.storeOutList = exports$1.loadOutList = exports$1.storeOutAction = exports$1.loadOutAction = exports$1.storeAccountStorage = exports$1.loadAccountStorage = exports$1.storeAccountStatusChange = exports$1.loadAccountStatusChange = exports$1.storeAccountStatus = exports$1.loadAccountStatus = exports$1.storeAccountState = exports$1.loadAccountState = exports$1.storeAccount = exports$1.loadAccount = exports$1.comment = exports$1.external = exports$1.internal = void 0;
-    exports$1.storeTransactionsStoragePhase = exports$1.loadTransactionStoragePhase = exports$1.storeTransactionDescription = exports$1.loadTransactionDescription = exports$1.storeTransactionCreditPhase = exports$1.loadTransactionCreditPhase = exports$1.storeTransactionComputePhase = exports$1.loadTransactionComputePhase = exports$1.storeTransactionBouncePhase = exports$1.loadTransactionBouncePhase = exports$1.storeTransactionActionPhase = exports$1.loadTransactionActionPhase = exports$1.storeTransaction = exports$1.loadTransaction = exports$1.storeTickTock = exports$1.loadTickTock = exports$1.storeStorageUsed = exports$1.loadStorageUsed = exports$1.storeStorageInfo = exports$1.loadStorageInfo = exports$1.storeStateInit = exports$1.loadStateInit = exports$1.storeSplitMergeInfo = exports$1.loadSplitMergeInfo = exports$1.storeLibRef = exports$1.loadLibRef = exports$1.storeSimpleLibrary = void 0;
+    exports$1.signatureDomainEmptyTag = exports$1.loadShardStateUnsplit = exports$1.storeShardIdent = exports$1.loadShardIdent = exports$1.storeShardAccounts = exports$1.loadShardAccounts = exports$1.ShardAccountRefValue = exports$1.storeShardAccount = exports$1.loadShardAccount = exports$1.ReserveMode = exports$1.SendMode = exports$1.storeMessageRelaxed = exports$1.loadMessageRelaxed = exports$1.storeMessage = exports$1.loadMessage = exports$1.loadMasterchainStateExtra = exports$1.storeHashUpdate = exports$1.loadHashUpdate = exports$1.storeExtraCurrency = exports$1.loadMaybeExtraCurrency = exports$1.loadExtraCurrency = exports$1.packExtraCurrencyDict = exports$1.packExtraCurrencyCell = exports$1.storeDepthBalanceInfo = exports$1.loadDepthBalanceInfo = exports$1.storeCurrencyCollection = exports$1.loadCurrencyCollection = exports$1.storeComputeSkipReason = exports$1.loadComputeSkipReason = exports$1.storeCommonMessageInfoRelaxed = exports$1.loadCommonMessageInfoRelaxed = exports$1.storeCommonMessageInfo = exports$1.loadCommonMessageInfo = exports$1.storeOutList = exports$1.loadOutList = exports$1.storeOutAction = exports$1.loadOutAction = exports$1.storeAccountStorage = exports$1.loadAccountStorage = exports$1.storeAccountStatusChange = exports$1.loadAccountStatusChange = exports$1.storeAccountStatus = exports$1.loadAccountStatus = exports$1.storeAccountState = exports$1.loadAccountState = exports$1.storeAccount = exports$1.loadAccount = exports$1.comment = exports$1.external = exports$1.internal = void 0;
+    exports$1.storeTransactionsStoragePhase = exports$1.loadTransactionStoragePhase = exports$1.storeTransactionDescription = exports$1.loadTransactionDescription = exports$1.storeTransactionCreditPhase = exports$1.loadTransactionCreditPhase = exports$1.storeTransactionComputePhase = exports$1.loadTransactionComputePhase = exports$1.storeTransactionBouncePhase = exports$1.loadTransactionBouncePhase = exports$1.storeTransactionActionPhase = exports$1.loadTransactionActionPhase = exports$1.storeTransaction = exports$1.loadTransaction = exports$1.storeTickTock = exports$1.loadTickTock = exports$1.storeStorageUsed = exports$1.loadStorageUsed = exports$1.storeStorageInfo = exports$1.loadStorageInfo = exports$1.storeStateInit = exports$1.loadStateInit = exports$1.storeSplitMergeInfo = exports$1.loadSplitMergeInfo = exports$1.storeLibRef = exports$1.loadLibRef = exports$1.storeSimpleLibrary = exports$1.loadSimpleLibrary = exports$1.signatureDomainL2Tag = void 0;
     var _helpers_1 = require_helpers();
     Object.defineProperty(exports$1, "internal", { enumerable: true, get: function() {
       return _helpers_1.internal;
@@ -26516,6 +26527,13 @@ function require_export() {
     var ShardStateUnsplit_1 = requireShardStateUnsplit();
     Object.defineProperty(exports$1, "loadShardStateUnsplit", { enumerable: true, get: function() {
       return ShardStateUnsplit_1.loadShardStateUnsplit;
+    } });
+    var SignatureDomain_1 = requireSignatureDomain();
+    Object.defineProperty(exports$1, "signatureDomainEmptyTag", { enumerable: true, get: function() {
+      return SignatureDomain_1.signatureDomainEmptyTag;
+    } });
+    Object.defineProperty(exports$1, "signatureDomainL2Tag", { enumerable: true, get: function() {
+      return SignatureDomain_1.signatureDomainL2Tag;
     } });
     var SimpleLibrary_1 = requireSimpleLibrary();
     Object.defineProperty(exports$1, "loadSimpleLibrary", { enumerable: true, get: function() {
@@ -26990,6 +27008,60 @@ function requireSafeSign() {
   safeSign.safeSignVerify = safeSignVerify;
   return safeSign;
 }
+var domainSignature = {};
+var hasRequiredDomainSignature;
+function requireDomainSignature() {
+  if (hasRequiredDomainSignature) return domainSignature;
+  hasRequiredDomainSignature = 1;
+  Object.defineProperty(domainSignature, "__esModule", { value: true });
+  domainSignature.domainSignVerify = domainSignature.domainSign = domainSignature.signatureDomainPrefix = domainSignature.signatureDomainHash = void 0;
+  const crypto_1 = requireDist$1();
+  const SignatureDomain_1 = requireSignatureDomain();
+  function signatureDomainHash(domain) {
+    switch (domain.type) {
+      case "empty":
+        const tl = Buffer.alloc(4);
+        tl.writeInt32LE(SignatureDomain_1.signatureDomainEmptyTag);
+        return (0, crypto_1.sha256_sync)(tl);
+      case "l2": {
+        const tl2 = Buffer.alloc(8);
+        tl2.writeInt32LE(SignatureDomain_1.signatureDomainL2Tag);
+        tl2.writeInt32LE(domain.globalId, 4);
+        return (0, crypto_1.sha256_sync)(tl2);
+      }
+      default:
+        throw new Error(`Unknown SignatureDomain type ${domain.type}`);
+    }
+  }
+  domainSignature.signatureDomainHash = signatureDomainHash;
+  const signatureDomainEmptyHash = signatureDomainHash({ type: "empty" });
+  function signatureDomainPrefix(domainOrHash) {
+    const domainHash = Buffer.isBuffer(domainOrHash) ? domainOrHash : signatureDomainHash(domainOrHash);
+    if (domainHash.length !== 32) {
+      throw new Error("Invalid signature domain hash length");
+    }
+    if (domainHash.equals(signatureDomainEmptyHash)) {
+      return null;
+    }
+    return domainHash;
+  }
+  domainSignature.signatureDomainPrefix = signatureDomainPrefix;
+  function domainDataToSign(data, domain) {
+    const prefix = signatureDomainPrefix(domain);
+    return prefix ? Buffer.concat([prefix, data]) : data;
+  }
+  function domainSign({ data, secretKey, domain = { type: "empty" } }) {
+    const dataToSign = domainDataToSign(data, domain);
+    return (0, crypto_1.sign)(dataToSign, secretKey);
+  }
+  domainSignature.domainSign = domainSign;
+  function domainSignVerify({ data, signature, publicKey, domain = { type: "empty" } }) {
+    const dataToSign = domainDataToSign(data, domain);
+    return (0, crypto_1.signVerify)(dataToSign, signature, publicKey);
+  }
+  domainSignature.domainSignVerify = domainSignVerify;
+  return domainSignature;
+}
 var hasRequiredDist;
 function requireDist() {
   if (hasRequiredDist) return dist$1;
@@ -27012,7 +27084,7 @@ function requireDist() {
       for (var p2 in m) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports$12, p2)) __createBinding(exports$12, m, p2);
     };
     Object.defineProperty(exports$1, "__esModule", { value: true });
-    exports$1.safeSignVerify = exports$1.safeSign = exports$1.getMethodId = exports$1.base32Encode = exports$1.base32Decode = exports$1.crc32c = exports$1.crc16 = exports$1.fromNano = exports$1.toNano = exports$1.ComputeError = exports$1.openContract = exports$1.TupleBuilder = exports$1.TupleReader = exports$1.serializeTupleItem = exports$1.parseTupleItem = exports$1.serializeTuple = exports$1.parseTuple = exports$1.generateMerkleUpdate = exports$1.generateMerkleProofDirect = exports$1.generateMerkleProof = exports$1.exoticPruned = exports$1.exoticMerkleUpdate = exports$1.convertToMerkleProof = exports$1.exoticMerkleProof = exports$1.Dictionary = exports$1.Cell = exports$1.CellType = exports$1.Slice = exports$1.beginCell = exports$1.Builder = exports$1.BitBuilder = exports$1.BitReader = exports$1.BitString = exports$1.contractAddress = exports$1.ADNLAddress = exports$1.ExternalAddress = exports$1.address = exports$1.Address = void 0;
+    exports$1.domainSignVerify = exports$1.domainSign = exports$1.signatureDomainPrefix = exports$1.signatureDomainHash = exports$1.safeSignVerify = exports$1.safeSign = exports$1.getMethodId = exports$1.base32Encode = exports$1.base32Decode = exports$1.crc32c = exports$1.crc16 = exports$1.fromNano = exports$1.toNano = exports$1.ComputeError = exports$1.openContract = exports$1.TupleBuilder = exports$1.TupleReader = exports$1.serializeTupleItem = exports$1.parseTupleItem = exports$1.serializeTuple = exports$1.parseTuple = exports$1.generateMerkleUpdate = exports$1.generateMerkleProofDirect = exports$1.generateMerkleProof = exports$1.exoticPruned = exports$1.exoticMerkleUpdate = exports$1.convertToMerkleProof = exports$1.exoticMerkleProof = exports$1.Dictionary = exports$1.Cell = exports$1.CellType = exports$1.Slice = exports$1.beginCell = exports$1.Builder = exports$1.BitBuilder = exports$1.BitReader = exports$1.BitString = exports$1.contractAddress = exports$1.ADNLAddress = exports$1.ExternalAddress = exports$1.address = exports$1.Address = void 0;
     var Address_1 = requireAddress();
     Object.defineProperty(exports$1, "Address", { enumerable: true, get: function() {
       return Address_1.Address;
@@ -27155,6 +27227,19 @@ function requireDist() {
     } });
     Object.defineProperty(exports$1, "safeSignVerify", { enumerable: true, get: function() {
       return safeSign_1.safeSignVerify;
+    } });
+    var domainSignature_1 = requireDomainSignature();
+    Object.defineProperty(exports$1, "signatureDomainHash", { enumerable: true, get: function() {
+      return domainSignature_1.signatureDomainHash;
+    } });
+    Object.defineProperty(exports$1, "signatureDomainPrefix", { enumerable: true, get: function() {
+      return domainSignature_1.signatureDomainPrefix;
+    } });
+    Object.defineProperty(exports$1, "domainSign", { enumerable: true, get: function() {
+      return domainSignature_1.domainSign;
+    } });
+    Object.defineProperty(exports$1, "domainSignVerify", { enumerable: true, get: function() {
+      return domainSignature_1.domainSignVerify;
     } });
   })(dist$1);
   return dist$1;
@@ -31057,7 +31142,8 @@ class BridgeManager {
         tabId: event?.tabId,
         messageId: event?.messageId,
         traceId: event?.traceId,
-        walletId: event?.walletId
+        walletId: event?.walletId,
+        returnStrategy: event?.returnStrategy
       };
       if (!rawEvent.traceId) {
         rawEvent.traceId = v7();
@@ -31185,9 +31271,11 @@ function isValidHost(host) {
 }
 const log$h = globalLogger.createChild("ConnectHandler");
 class ConnectHandler extends BasicHandler {
+  config;
   analytics;
-  constructor(notify, analyticsManager) {
+  constructor(notify, config, analyticsManager) {
     super(notify);
+    this.config = config;
     this.analytics = analyticsManager?.scoped();
   }
   canHandle(event) {
@@ -31214,7 +31302,8 @@ class ConnectHandler extends BasicHandler {
       preview,
       dAppInfo: preview.dAppInfo,
       isJsBridge: event.isJsBridge,
-      tabId: event.tabId
+      tabId: event.tabId,
+      returnStrategy: event.params.returnStrategy
     };
     this.analytics?.emitWalletConnectRequestReceived({
       trace_id: event.traceId,
@@ -31266,19 +31355,21 @@ class ConnectHandler extends BasicHandler {
     const manifest = fetchedManifest || eventManifest;
     const dAppUrl = (event?.domain || manifest?.url?.toString() || "").trim();
     let finalManifestFetchErrorCode = manifestFetchErrorCode;
-    if (!finalManifestFetchErrorCode && dAppUrl) {
-      try {
-        const parsedDAppUrl = new URL(dAppUrl);
-        if (!isValidHost(parsedDAppUrl.host)) {
-          log$h.warn("Invalid dApp URL in manifest - invalid host format", {
-            dAppUrl,
-            host: parsedDAppUrl.host
-          });
+    if (!this.config.dev?.disableManifestDomainCheck) {
+      if (!finalManifestFetchErrorCode && dAppUrl) {
+        try {
+          const parsedDAppUrl = new URL(dAppUrl);
+          if (!isValidHost(parsedDAppUrl.host)) {
+            log$h.warn("Invalid dApp URL in manifest - invalid host format", {
+              dAppUrl,
+              host: parsedDAppUrl.host
+            });
+            finalManifestFetchErrorCode = CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR;
+          }
+        } catch (_) {
+          log$h.warn("Invalid dApp URL in manifest - failed to parse", { dAppUrl });
           finalManifestFetchErrorCode = CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR;
         }
-      } catch (_) {
-        log$h.warn("Invalid dApp URL in manifest - failed to parse", { dAppUrl });
-        finalManifestFetchErrorCode = CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR;
       }
     }
     const sanitizedManifest = manifest && {
@@ -31347,6 +31438,7 @@ class ConnectHandler extends BasicHandler {
     try {
       const response = await fetch(url);
       if (!response.ok) {
+        log$h.error("Failed to fetch manifest not ok", { url, status: response.status });
         return {
           manifest: null,
           manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR
@@ -31357,7 +31449,8 @@ class ConnectHandler extends BasicHandler {
         manifest: result,
         manifestFetchErrorCode: void 0
       };
-    } catch (_) {
+    } catch (e) {
+      log$h.error("Failed to fetch manifest catched", { url, error: e });
       return {
         manifest: null,
         manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR
@@ -31415,6 +31508,14 @@ function toExtraCurrencies(extraCurrency) {
   }
   return extraCurrency;
 }
+function parseConnectTransactionParamContent(raw) {
+  return {
+    messages: raw.messages,
+    network: raw.network,
+    validUntil: raw.valid_until,
+    from: raw.from
+  };
+}
 function toTransactionRequestMessage(msg) {
   asAddressFriendly(msg.address);
   return {
@@ -31440,7 +31541,7 @@ function toTransactionRequest(params) {
   return {
     messages: params.messages.map(toTransactionRequestMessage),
     network: params.network ? { chainId: params.network } : void 0,
-    validUntil: params.valid_until,
+    validUntil: params.validUntil,
     fromAddress: params.from
   };
 }
@@ -32014,12 +32115,13 @@ class TransactionHandler extends BasicHandler {
       if (event.params.length !== 1) {
         throw new WalletKitError(ERROR_CODES.INVALID_REQUEST_EVENT, "Invalid transaction request - expected exactly 1 parameter", void 0, { paramCount: event.params.length, eventId: event.id });
       }
-      const params = JSON.parse(event.params[0]);
-      const validUntilValidation = this.validateValidUntil(params.valid_until);
+      const rawParams = JSON.parse(event.params[0]);
+      const params = parseConnectTransactionParamContent(rawParams);
+      const validUntilValidation = this.validateValidUntil(params.validUntil);
       if (!validUntilValidation.isValid) {
         errors2 = errors2.concat(validUntilValidation.errors);
       } else {
-        params.valid_until = validUntilValidation.result;
+        params.validUntil = validUntilValidation.result;
       }
       const networkValidation = this.validateNetwork(params.network, wallet);
       if (!networkValidation.isValid) {
@@ -32510,7 +32612,7 @@ class EventRouter {
    */
   setupHandlers() {
     this.handlers = [
-      new ConnectHandler(this.notifyConnectRequestCallbacks.bind(this), this.analyticsManager),
+      new ConnectHandler(this.notifyConnectRequestCallbacks.bind(this), this.config, this.analyticsManager),
       new TransactionHandler(this.notifyTransactionRequestCallbacks.bind(this), this.config, this.eventEmitter, this.walletManager, this.sessionManager, this.analyticsManager),
       new SignDataHandler(this.notifySignDataRequestCallbacks.bind(this), this.walletManager, this.sessionManager, this.analyticsManager),
       new DisconnectHandler(this.notifyDisconnectCallbacks.bind(this), this.sessionManager)
@@ -33864,143 +33966,6 @@ class StorageEventProcessor {
     return enabledTypes.filter((type) => type === "connect" || type === "restoreConnection");
   }
 }
-const log$a = globalLogger.createChild("WalletTonClass");
-class WalletTonClass {
-  async createTransferTonTransaction(param) {
-    if (!isValidAddress(param.recipientAddress)) {
-      throw new Error(`Invalid to address: ${param.recipientAddress}`);
-    }
-    if (!isValidNanotonAmount(param.transferAmount)) {
-      throw new Error(`Invalid amount: ${param.transferAmount}`);
-    }
-    let body;
-    if (param.payload) {
-      body = param.payload;
-    } else if (param.comment) {
-      body = distExports$1.beginCell().storeUint(0, 32).storeStringTail(param.comment).endCell().toBoc().toString("base64");
-    }
-    const message = {
-      address: param.recipientAddress,
-      amount: param.transferAmount,
-      payload: body,
-      stateInit: param.stateInit,
-      extraCurrency: param.extraCurrency,
-      mode: param.mode
-    };
-    if (!validateTransactionMessage(message, false).isValid) {
-      throw new Error(`Invalid transaction message: ${JSON.stringify(message)}`);
-    }
-    return {
-      messages: [message],
-      fromAddress: this.getAddress()
-    };
-  }
-  async createTransferMultiTonTransaction(params) {
-    let messages = [];
-    for (const param of params) {
-      if (!isValidAddress(param.recipientAddress)) {
-        throw new Error(`Invalid to address: ${param.recipientAddress}`);
-      }
-      if (!isValidNanotonAmount(param.transferAmount)) {
-        throw new Error(`Invalid amount: ${param.transferAmount}`);
-      }
-      let body;
-      if (param.payload) {
-        body = param.payload;
-      } else if (param.comment) {
-        body = distExports$1.beginCell().storeUint(0, 32).storeStringTail(param.comment).endCell().toBoc().toString("base64");
-      }
-      const message = {
-        address: param.recipientAddress,
-        amount: param.transferAmount,
-        payload: body,
-        stateInit: param.stateInit,
-        extraCurrency: param.extraCurrency,
-        mode: param.mode
-      };
-      if (!validateTransactionMessage(message, false).isValid) {
-        throw new Error(`Invalid transaction message: ${JSON.stringify(message)}`);
-      }
-      messages.push(message);
-    }
-    return {
-      messages,
-      fromAddress: this.getAddress()
-    };
-  }
-  async getTransactionPreview(param) {
-    const transaction = await param;
-    const preview = await CallForSuccess(() => createTransactionPreview(this.client, transaction, this));
-    return preview;
-  }
-  async sendTransaction(request) {
-    try {
-      const boc = await this.getSignedSendTransaction(request);
-      await CallForSuccess(() => this.getClient().sendBoc(boc));
-      return { boc };
-    } catch (error2) {
-      log$a.error("Failed to send transaction", { error: error2 });
-      if (error2 instanceof WalletKitError) {
-        throw error2;
-      }
-      if (error2?.message?.includes("Ledger device")) {
-        throw new WalletKitError(ERROR_CODES.LEDGER_DEVICE_ERROR, "Ledger device error", error2);
-      }
-      throw error2;
-    }
-  }
-  async getBalance() {
-    return await CallForSuccess(async () => this.getClient().getBalance(this.getAddress()));
-  }
-}
-function ParseStackItem(item) {
-  switch (item.type) {
-    case "num":
-      if (item.value.startsWith("-")) {
-        return { type: "int", value: -BigInt(item.value.slice(1)) };
-      } else {
-        return { type: "int", value: BigInt(item.value) };
-      }
-    case "null":
-      return { type: "null" };
-    case "cell":
-      return { type: "cell", cell: distExports$1.Cell.fromBoc(Buffer.from(item.value, "base64"))[0] };
-    case "tuple":
-    case "list":
-      if (item.value.length === 0) {
-        return { type: "null" };
-      }
-      return { type: "tuple", items: item.value.map((value) => ParseStackItem(value)) };
-    default:
-      throw Error(`Unsupported parse stack item type: ${JSON.stringify(item)}`);
-  }
-}
-function ParseStack(list) {
-  let stack = [];
-  for (let item of list) {
-    stack.push(ParseStackItem(item));
-  }
-  return stack;
-}
-function SerializeStackItem(item) {
-  switch (item.type) {
-    case "int":
-      return { type: "num", value: `${item.value < 0 ? "-" : ""}0x${item.value.toString(16)}` };
-    case "slice":
-      return { type: "slice", value: item.cell.toBoc().toString("base64") };
-    case "cell":
-      return { type: "cell", value: item.cell.toBoc().toString("base64") };
-    default:
-      throw Error(`Unsupported serialize stack item type: ${item.type}`);
-  }
-}
-function SerializeStack(list) {
-  let stack = [];
-  for (let item of list) {
-    stack.push(SerializeStackItem(item));
-  }
-  return stack;
-}
 function isBytes(a2) {
   return a2 instanceof Uint8Array || ArrayBuffer.isView(a2) && a2.constructor.name === "Uint8Array";
 }
@@ -34653,6 +34618,54 @@ function toStringTail(data) {
 function getUnixtime() {
   return Math.floor(Date.now() / 1e3);
 }
+function ParseStackItem(item) {
+  switch (item.type) {
+    case "num":
+      if (item.value.startsWith("-")) {
+        return { type: "int", value: -BigInt(item.value.slice(1)) };
+      } else {
+        return { type: "int", value: BigInt(item.value) };
+      }
+    case "null":
+      return { type: "null" };
+    case "cell":
+      return { type: "cell", cell: distExports$1.Cell.fromBoc(Buffer.from(item.value, "base64"))[0] };
+    case "tuple":
+    case "list":
+      if (item.value.length === 0) {
+        return { type: "null" };
+      }
+      return { type: "tuple", items: item.value.map((value) => ParseStackItem(value)) };
+    default:
+      throw Error(`Unsupported parse stack item type: ${JSON.stringify(item)}`);
+  }
+}
+function ParseStack(list) {
+  let stack = [];
+  for (let item of list) {
+    stack.push(ParseStackItem(item));
+  }
+  return stack;
+}
+function SerializeStackItem(item) {
+  switch (item.type) {
+    case "int":
+      return { type: "num", value: `${item.value < 0 ? "-" : ""}0x${item.value.toString(16)}` };
+    case "slice":
+      return { type: "slice", value: item.cell.toBoc().toString("base64") };
+    case "cell":
+      return { type: "cell", value: item.cell.toBoc().toString("base64") };
+    default:
+      throw Error(`Unsupported serialize stack item type: ${item.type}`);
+  }
+}
+function SerializeStack(list) {
+  let stack = [];
+  for (let item of list) {
+    stack.push(SerializeStackItem(item));
+  }
+  return stack;
+}
 const VERSION = "0.0.3";
 function getVersion() {
   return VERSION;
@@ -34663,6 +34676,52 @@ function getEventsSubsystem() {
 function createWalletId(network, address) {
   return distExports.sha256_sync(`${network.chainId}:${address}`).toString("base64");
 }
+async function getJettonWalletAddressFromClient(client, jettonAddress, ownerAddress) {
+  if (!isValidAddress(jettonAddress)) {
+    throw new Error(`Invalid jetton address: ${jettonAddress}`);
+  }
+  try {
+    const result = await client.runGetMethod(jettonAddress, "get_wallet_address", SerializeStack([{ type: "slice", cell: distExports$1.beginCell().storeAddress(distExports$1.Address.parse(ownerAddress)).endCell() }]));
+    const parsedStack = ParseStack(result.stack);
+    const jettonWalletAddress = parsedStack[0].type === "slice" || parsedStack[0].type === "cell" ? parsedStack[0].cell.asSlice().loadAddress() : null;
+    if (!jettonWalletAddress) {
+      throw new Error("Failed to get jetton wallet address");
+    }
+    return asAddressFriendly(jettonWalletAddress.toString());
+  } catch (error2) {
+    throw new Error(`Failed to get jetton wallet address for ${jettonAddress}: ${error2 instanceof Error ? error2.message : "Unknown error"}`);
+  }
+}
+async function getJettonBalanceFromClient(client, jettonWalletAddress) {
+  try {
+    const result = await client.runGetMethod(jettonWalletAddress, "get_wallet_data");
+    const parsedStack = ParseStack(result.stack);
+    const balance = parsedStack[0].type === "int" ? parsedStack[0].value : 0n;
+    return balance.toString();
+  } catch (_error) {
+    return "0";
+  }
+}
+async function getJettonsFromClient(client, ownerAddress, params) {
+  return client.jettonsByOwnerAddress({
+    ownerAddress,
+    offset: params?.pagination.offset,
+    limit: params?.pagination.limit
+  });
+}
+async function getNftsFromClient(client, ownerAddress, params) {
+  return client.nftItemsByOwner({
+    ownerAddress,
+    pagination: params.pagination
+  });
+}
+async function getNftFromClient(client, address) {
+  const result = await client.nftItemsByAddress({ address });
+  return result.nfts.length > 0 ? result.nfts[0] : null;
+}
+const DEFAULT_JETTON_GAS_FEE = "50000000";
+const DEFAULT_NFT_GAS_FEE = "100000000";
+const DEFAULT_FORWARD_AMOUNT = 1n;
 function storeJettonTransferMessage(src) {
   return (builder2) => {
     builder2.storeUint(Number(OpCode.JettonTransfer), 32);
@@ -34675,84 +34734,17 @@ function storeJettonTransferMessage(src) {
     builder2.storeMaybeRef(src.forwardPayload);
   };
 }
-class WalletJettonClass {
-  async createTransferJettonTransaction(jettonTransferParams) {
-    if (!isValidAddress(jettonTransferParams.recipientAddress)) {
-      throw new Error(`Invalid to address: ${jettonTransferParams.recipientAddress}`);
-    }
-    if (!isValidAddress(jettonTransferParams.jettonAddress)) {
-      throw new Error(`Invalid jetton address: ${jettonTransferParams.jettonAddress}`);
-    }
-    if (!jettonTransferParams.transferAmount || BigInt(jettonTransferParams.transferAmount) <= 0n) {
-      throw new Error(`Invalid amount: ${jettonTransferParams.transferAmount}`);
-    }
-    const jettonWalletAddress = await CallForSuccess(() => this.getJettonWalletAddress(jettonTransferParams.jettonAddress));
-    const forwardPayload = jettonTransferParams.comment ? distExports$1.beginCell().storeUint(0, 32).storeStringTail(jettonTransferParams.comment).endCell() : null;
-    const jettonPayload = distExports$1.beginCell().store(storeJettonTransferMessage({
-      queryId: 0n,
-      amount: BigInt(jettonTransferParams.transferAmount),
-      destination: distExports$1.Address.parse(jettonTransferParams.recipientAddress),
-      responseDestination: distExports$1.Address.parse(this.getAddress()),
-      customPayload: null,
-      forwardAmount: 1n,
-      //1 nanoton default
-      forwardPayload
-    })).endCell();
-    const message = {
-      address: jettonWalletAddress,
-      amount: "50000000",
-      // 0.05 TON for gas fees
-      payload: jettonPayload.toBoc().toString("base64"),
-      stateInit: void 0,
-      extraCurrency: void 0,
-      mode: {
-        flags: [SendModeFlag.IGNORE_ERRORS, SendModeFlag.PAY_GAS_SEPARATELY]
-      }
-    };
-    if (!validateTransactionMessage(message, false).isValid) {
-      throw new Error(`Invalid transaction message: ${JSON.stringify(message)}`);
-    }
-    return {
-      messages: [message],
-      fromAddress: this.getAddress()
-    };
-  }
-  async getJettonBalance(jettonAddress) {
-    const jettonWalletAddress = await this.getJettonWalletAddress(jettonAddress);
-    try {
-      const result = await this.getClient().runGetMethod(jettonWalletAddress, "get_wallet_data");
-      const parsedStack = ParseStack(result.stack);
-      const balance = parsedStack[0].type === "int" ? parsedStack[0].value : 0n;
-      return balance.toString();
-    } catch (_error) {
-      return "0";
-    }
-  }
-  async getJettonWalletAddress(jettonAddress) {
-    if (!isValidAddress(jettonAddress)) {
-      throw new Error(`Invalid jetton address: ${jettonAddress}`);
-    }
-    try {
-      const result = await this.getClient().runGetMethod(jettonAddress, "get_wallet_address", SerializeStack([
-        { type: "slice", cell: distExports$1.beginCell().storeAddress(distExports$1.Address.parse(this.getAddress())).endCell() }
-      ]));
-      const parsedStack = ParseStack(result.stack);
-      const jettonWalletAddress = parsedStack[0].type === "slice" || parsedStack[0].type === "cell" ? parsedStack[0].cell.asSlice().loadAddress() : null;
-      if (!jettonWalletAddress) {
-        throw new Error("Failed to get jetton wallet address");
-      }
-      return asAddressFriendly(jettonWalletAddress.toString());
-    } catch (error2) {
-      throw new Error(`Failed to get jetton wallet address for ${jettonAddress}: ${error2 instanceof Error ? error2.message : "Unknown error"}`);
-    }
-  }
-  async getJettons(params) {
-    return this.getClient().jettonsByOwnerAddress({
-      ownerAddress: this.getAddress(),
-      offset: params?.pagination.offset,
-      limit: params?.pagination.limit
-    });
-  }
+function createJettonTransferPayload(params) {
+  const forwardPayload = params.comment ? createCommentPayload(params.comment) : null;
+  return distExports$1.beginCell().store(storeJettonTransferMessage({
+    queryId: params.queryId ?? 0n,
+    amount: params.amount,
+    destination: distExports$1.Address.parse(params.destination),
+    responseDestination: distExports$1.Address.parse(params.responseDestination),
+    customPayload: params.customPayload ?? null,
+    forwardAmount: params.forwardAmount ?? DEFAULT_FORWARD_AMOUNT,
+    forwardPayload
+  })).endCell();
 }
 function storeNftTransferMessage(message) {
   return (builder2) => {
@@ -34765,79 +34757,213 @@ function storeNftTransferMessage(message) {
     builder2.storeMaybeRef(message.forwardPayload);
   };
 }
+function createNftTransferPayload(params) {
+  const forwardPayload = params.comment ? createCommentPayload(params.comment) : null;
+  return distExports$1.beginCell().store(storeNftTransferMessage({
+    queryId: params.queryId ?? 0n,
+    newOwner: distExports$1.Address.parse(params.newOwner),
+    responseDestination: distExports$1.Address.parse(params.responseDestination),
+    customPayload: params.customPayload ?? null,
+    forwardAmount: params.forwardAmount ?? DEFAULT_FORWARD_AMOUNT,
+    forwardPayload
+  })).endCell();
+}
+function createNftTransferRawPayload(params) {
+  const transferMessage = {
+    queryId: BigInt(params.queryId),
+    newOwner: typeof params.newOwner === "string" ? distExports$1.Address.parse(params.newOwner) : params.newOwner,
+    responseDestination: params.responseDestination ? typeof params.responseDestination === "string" ? distExports$1.Address.parse(params.responseDestination) : params.responseDestination : null,
+    customPayload: params.customPayload ? typeof params.customPayload === "string" ? distExports$1.Cell.fromBase64(params.customPayload) : params.customPayload : null,
+    forwardAmount: BigInt(params.forwardAmount),
+    forwardPayload: params.forwardPayload ? typeof params.forwardPayload === "string" ? distExports$1.Cell.fromBase64(params.forwardPayload) : params.forwardPayload : null
+  };
+  return distExports$1.beginCell().store(storeNftTransferMessage(transferMessage)).endCell();
+}
+function createCommentPayload(comment) {
+  return distExports$1.beginCell().storeUint(0, 32).storeStringTail(comment).endCell();
+}
+function createCommentPayloadBase64(comment) {
+  return createCommentPayload(comment).toBoc().toString("base64");
+}
+function createTransferTransaction(params) {
+  const message = {
+    address: params.targetAddress,
+    amount: params.amount,
+    payload: params.payload.toBoc().toString("base64"),
+    stateInit: void 0,
+    extraCurrency: void 0,
+    mode: {
+      flags: [SendModeFlag.IGNORE_ERRORS, SendModeFlag.PAY_GAS_SEPARATELY]
+    }
+  };
+  if (!validateTransactionMessage(message, false).isValid) {
+    throw new Error(`Invalid transaction message: ${JSON.stringify(message)}`);
+  }
+  return {
+    messages: [message],
+    fromAddress: params.fromAddress
+  };
+}
+const log$a = globalLogger.createChild("WalletTonClass");
+class WalletTonClass {
+  async createTransferTonTransaction(param) {
+    if (!isValidAddress(param.recipientAddress)) {
+      throw new Error(`Invalid to address: ${param.recipientAddress}`);
+    }
+    if (!isValidNanotonAmount(param.transferAmount)) {
+      throw new Error(`Invalid amount: ${param.transferAmount}`);
+    }
+    let body;
+    if (param.payload) {
+      body = param.payload;
+    } else if (param.comment) {
+      body = createCommentPayloadBase64(param.comment);
+    }
+    const message = {
+      address: param.recipientAddress,
+      amount: param.transferAmount,
+      payload: body,
+      stateInit: param.stateInit,
+      extraCurrency: param.extraCurrency,
+      mode: param.mode
+    };
+    if (!validateTransactionMessage(message, false).isValid) {
+      throw new Error(`Invalid transaction message: ${JSON.stringify(message)}`);
+    }
+    return {
+      messages: [message],
+      fromAddress: this.getAddress()
+    };
+  }
+  async createTransferMultiTonTransaction(params) {
+    const messages = [];
+    for (const param of params) {
+      if (!isValidAddress(param.recipientAddress)) {
+        throw new Error(`Invalid to address: ${param.recipientAddress}`);
+      }
+      if (!isValidNanotonAmount(param.transferAmount)) {
+        throw new Error(`Invalid amount: ${param.transferAmount}`);
+      }
+      let body;
+      if (param.payload) {
+        body = param.payload;
+      } else if (param.comment) {
+        body = createCommentPayloadBase64(param.comment);
+      }
+      const message = {
+        address: param.recipientAddress,
+        amount: param.transferAmount,
+        payload: body,
+        stateInit: param.stateInit,
+        extraCurrency: param.extraCurrency,
+        mode: param.mode
+      };
+      if (!validateTransactionMessage(message, false).isValid) {
+        throw new Error(`Invalid transaction message: ${JSON.stringify(message)}`);
+      }
+      messages.push(message);
+    }
+    return {
+      messages,
+      fromAddress: this.getAddress()
+    };
+  }
+  async getTransactionPreview(param) {
+    const transaction = await param;
+    const preview = await CallForSuccess(() => createTransactionPreview(this.client, transaction, this));
+    return preview;
+  }
+  async sendTransaction(request) {
+    try {
+      const boc = await this.getSignedSendTransaction(request);
+      await CallForSuccess(() => this.getClient().sendBoc(boc));
+      return { boc };
+    } catch (error2) {
+      log$a.error("Failed to send transaction", { error: error2 });
+      if (error2 instanceof WalletKitError) {
+        throw error2;
+      }
+      if (error2?.message?.includes("Ledger device")) {
+        throw new WalletKitError(ERROR_CODES.LEDGER_DEVICE_ERROR, "Ledger device error", error2);
+      }
+      throw error2;
+    }
+  }
+  async getBalance() {
+    return await CallForSuccess(async () => this.getClient().getBalance(this.getAddress()));
+  }
+}
+class WalletJettonClass {
+  async createTransferJettonTransaction(params) {
+    if (!isValidAddress(params.recipientAddress)) {
+      throw new Error(`Invalid to address: ${params.recipientAddress}`);
+    }
+    if (!isValidAddress(params.jettonAddress)) {
+      throw new Error(`Invalid jetton address: ${params.jettonAddress}`);
+    }
+    if (!params.transferAmount || BigInt(params.transferAmount) <= 0n) {
+      throw new Error(`Invalid amount: ${params.transferAmount}`);
+    }
+    const jettonWalletAddress = await CallForSuccess(() => this.getJettonWalletAddress(params.jettonAddress));
+    const jettonPayload = createJettonTransferPayload({
+      amount: BigInt(params.transferAmount),
+      destination: params.recipientAddress,
+      responseDestination: this.getAddress(),
+      comment: params.comment
+    });
+    return createTransferTransaction({
+      targetAddress: jettonWalletAddress,
+      amount: DEFAULT_JETTON_GAS_FEE,
+      payload: jettonPayload,
+      fromAddress: this.getAddress()
+    });
+  }
+  async getJettonBalance(jettonAddress) {
+    const jettonWalletAddress = await this.getJettonWalletAddress(jettonAddress);
+    return getJettonBalanceFromClient(this.getClient(), jettonWalletAddress);
+  }
+  async getJettonWalletAddress(jettonAddress) {
+    return getJettonWalletAddressFromClient(this.getClient(), jettonAddress, this.getAddress());
+  }
+  async getJettons(params) {
+    return getJettonsFromClient(this.getClient(), this.getAddress(), params);
+  }
+}
 class WalletNftClass {
   async getNfts(params) {
-    const out = await this.getClient().nftItemsByOwner({
-      ownerAddress: this.getAddress(),
-      pagination: params.pagination
-    });
-    return out;
+    return getNftsFromClient(this.getClient(), this.getAddress(), params);
   }
   async getNft(address) {
-    const result = await this.getClient().nftItemsByAddress({
-      address
-    });
-    if (result.nfts.length > 0) {
-      return result.nfts[0];
-    }
-    return null;
+    return getNftFromClient(this.getClient(), address);
   }
-  async createTransferNftTransaction(nftTransferMessage) {
-    const forwardPayload = nftTransferMessage.comment ? distExports$1.beginCell().storeUint(0, 32).storeStringTail(nftTransferMessage.comment).endCell() : null;
-    const nftPayload = distExports$1.beginCell().store(storeNftTransferMessage({
-      customPayload: null,
-      forwardAmount: 1n,
-      forwardPayload,
-      newOwner: distExports$1.Address.parse(nftTransferMessage.recipientAddress),
-      queryId: 0n,
-      responseDestination: distExports$1.Address.parse(this.getAddress())
-    })).endCell();
-    const message = {
-      address: nftTransferMessage.nftAddress,
-      amount: nftTransferMessage.transferAmount?.toString() ?? "100000000",
-      // Default 0.1 TON
-      payload: nftPayload.toBoc().toString("base64"),
-      stateInit: void 0,
-      extraCurrency: void 0,
-      mode: {
-        flags: [SendModeFlag.IGNORE_ERRORS, SendModeFlag.PAY_GAS_SEPARATELY]
-      }
-    };
-    if (!validateTransactionMessage(message, false).isValid) {
-      throw new Error(`Invalid transaction message: ${JSON.stringify(message)}`);
-    }
-    return {
-      messages: [message],
+  async createTransferNftTransaction(params) {
+    const nftPayload = createNftTransferPayload({
+      newOwner: params.recipientAddress,
+      responseDestination: this.getAddress(),
+      comment: params.comment
+    });
+    return createTransferTransaction({
+      targetAddress: params.nftAddress,
+      amount: params.transferAmount?.toString() ?? DEFAULT_NFT_GAS_FEE,
+      payload: nftPayload,
       fromAddress: this.getAddress()
-    };
+    });
   }
   async createTransferNftRawTransaction(params) {
-    const transferMessage = {
-      queryId: BigInt(params.message.queryId),
-      newOwner: typeof params.message.newOwner === "string" ? distExports$1.Address.parse(params.message.newOwner) : params.message.newOwner,
-      responseDestination: params.message.responseDestination ? typeof params.message.responseDestination === "string" ? distExports$1.Address.parse(params.message.responseDestination) : params.message.responseDestination : null,
-      customPayload: params.message.customPayload ? typeof params.message.customPayload === "string" ? distExports$1.Cell.fromBase64(params.message.customPayload) : params.message.customPayload : null,
-      forwardAmount: BigInt(params.message.forwardAmount),
-      forwardPayload: params.message.forwardPayload ? typeof params.message.forwardPayload === "string" ? distExports$1.Cell.fromBase64(params.message.forwardPayload) : params.message.forwardPayload : null
-    };
-    const nftPayload = distExports$1.beginCell().store(storeNftTransferMessage(transferMessage)).endCell();
-    const message = {
-      address: params.nftAddress,
+    const nftPayload = createNftTransferRawPayload({
+      queryId: params.message.queryId,
+      newOwner: params.message.newOwner,
+      responseDestination: params.message.responseDestination,
+      customPayload: params.message.customPayload,
+      forwardAmount: params.message.forwardAmount,
+      forwardPayload: params.message.forwardPayload
+    });
+    return createTransferTransaction({
+      targetAddress: params.nftAddress,
       amount: params.transferAmount.toString(),
-      payload: nftPayload.toBoc().toString("base64"),
-      stateInit: void 0,
-      extraCurrency: void 0,
-      mode: {
-        flags: [SendModeFlag.IGNORE_ERRORS, SendModeFlag.PAY_GAS_SEPARATELY]
-      }
-    };
-    if (!validateTransactionMessage(message, false).isValid) {
-      throw new Error(`Invalid transaction message: ${JSON.stringify(message)}`);
-    }
-    return {
-      messages: [message],
+      payload: nftPayload,
       fromAddress: this.getAddress()
-    };
+    });
   }
 }
 const log$9 = globalLogger.createChild("Initializer");
@@ -36741,19 +36867,19 @@ class SwapManager extends DefiManager {
   /**
    * Get a quote for swapping tokens
    * @param params - Quote parameters
-   * @param provider - Optional provider name to use
+   * @param providerId - Optional provider name to use
    * @returns Promise resolving to swap quote
    */
-  async getQuote(params, provider) {
+  async getQuote(params, providerId) {
     log$7.debug("Getting swap quote", {
-      fromToken: params.fromToken,
-      toToken: params.toToken,
+      fromToken: params.from,
+      toToken: params.to,
       amount: params.amount,
       isReverseSwap: params.isReverseSwap,
-      provider: provider || this.defaultProviderId
+      providerId: providerId || this.defaultProviderId
     });
     try {
-      const quote = await this.getProvider(provider).getQuote(params);
+      const quote = await this.getProvider(providerId || this.defaultProviderId).getQuote(params);
       log$7.debug("Received swap quote", {
         fromAmount: quote.fromAmount,
         toAmount: quote.toAmount,
@@ -36768,16 +36894,16 @@ class SwapManager extends DefiManager {
   /**
    * Build a transaction for executing a swap
    * @param params - Swap parameters including quote
-   * @param provider - Optional provider name to use
    * @returns Promise resolving to transaction request
    */
-  async buildSwapTransaction(params, provider) {
+  async buildSwapTransaction(params) {
+    const providerId = params.quote.providerId || this.defaultProviderId;
     log$7.debug("Building swap transaction", {
-      userAddress: params.userAddress,
-      provider: provider || this.defaultProviderId
+      providerId,
+      userAddress: params.userAddress
     });
     try {
-      const transaction = await this.getProvider(provider).buildSwapTransaction(params);
+      const transaction = await this.getProvider(providerId).buildSwapTransaction(params);
       log$7.debug("Built swap transaction", params.quote);
       return transaction;
     } catch (error2) {
@@ -37476,7 +37602,7 @@ async function dnsLookup(client, domain, category, resolver) {
     { type: "slice", cell: toStringTail(internal) },
     { type: "int", value: toTonDnsCategory(category) }
   ];
-  const { stack, exitCode } = await client.runGetMethod(asAddressFriendly(resolver), "dnsresolve", SerializeStack(param));
+  const { stack, exitCode } = await CallForSuccess(() => client.runGetMethod(asAddressFriendly(resolver), "dnsresolve", SerializeStack(param)));
   if (stack?.length !== 2) {
     return null;
   }
@@ -37920,7 +38046,7 @@ function parseInternalTransactionId(data) {
   return null;
 }
 const log$3 = globalLogger.createChild("NetworkManager");
-class NetworkManager {
+class KitNetworkManager {
   clients = /* @__PURE__ */ new Map();
   constructor(options) {
     this.initializeClients(options);
@@ -38038,7 +38164,7 @@ class TonWalletKit {
         }
       });
     }
-    this.networkManager = new NetworkManager(options);
+    this.networkManager = new KitNetworkManager(options);
     this.eventEmitter = new EventEmitter();
     this.initializer = new Initializer(options, this.eventEmitter, this.analyticsManager);
     this.initializationPromise = this.initialize();
@@ -38754,7 +38880,7 @@ class WalletV5R1Adapter {
       const now = Math.floor(Date.now() / 1e3);
       const maxValidUntil = now + 600;
       if (input.validUntil < now) {
-        throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Transaction valid_until timestamp is in the past", void 0, { validUntil: input.validUntil, currentTime: now });
+        throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Transaction validUntil timestamp is in the past", void 0, { validUntil: input.validUntil, currentTime: now });
       } else if (input.validUntil > maxValidUntil) {
         createBodyOptions.validUntil = maxValidUntil;
       } else {
