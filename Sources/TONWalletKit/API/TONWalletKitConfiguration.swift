@@ -38,6 +38,7 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
     let sessionManager: (any TONConnectSessionsManager)?
     let bridge: Bridge?
     let eventsConfiguration: EventsConfiguration?
+    let devConfiguration: DevConfiguration?
     
     public init(
         networkConfigurations: Set<NetworkConfiguration>,
@@ -47,6 +48,7 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
         bridge: Bridge?,
         eventsConfiguration: EventsConfiguration? = nil,
         features: [any Feature],
+        devConfiguration: DevConfiguration? = nil
     ) {
         self.networkConfigurations = Array(networkConfigurations)
         
@@ -65,6 +67,7 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
         self.sessionManager = sessionManager
         self.bridge = bridge
         self.eventsConfiguration = eventsConfiguration
+        self.devConfiguration = devConfiguration
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -78,6 +81,7 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
         try container.encode(walletManifest, forKey: .walletManifest)
         try container.encodeIfPresent(bridge, forKey: .bridge)
         try container.encodeIfPresent(eventsConfiguration, forKey: .eventsConfiguration)
+        try container.encodeIfPresent(devConfiguration, forKey: .devConfiguration)
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -86,6 +90,7 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
         hasher.combine(walletManifest)
         hasher.combine(bridge)
         hasher.combine(eventsConfiguration)
+        hasher.combine(devConfiguration)
     }
     
     public static func == (lhs: TONWalletKitConfiguration, rhs: TONWalletKitConfiguration) -> Bool {
@@ -93,17 +98,31 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
     }
     
     
-    enum CodingKeys: CodingKey {
+    enum CodingKeys: String, CodingKey {
         case networkConfigurations
         case deviceInfo
         case walletManifest
         case bridge
         case eventsConfiguration
+        case devConfiguration = "dev"
     }
     
 }
 
 extension TONWalletKitConfiguration {
+    
+    public struct DevConfiguration: Encodable, Hashable {
+        let disableNetworkSend: Bool?
+        let disableManifestDomainCheck: Bool?
+        
+        public init(
+            disableNetworkSend: Bool? = nil,
+            disableManifestDomainCheck: Bool? = nil
+        ) {
+            self.disableNetworkSend = disableNetworkSend
+            self.disableManifestDomainCheck = disableManifestDomainCheck
+        }
+    }
     
     public struct EventsConfiguration: Encodable, Hashable {
         let disableEvents: Bool

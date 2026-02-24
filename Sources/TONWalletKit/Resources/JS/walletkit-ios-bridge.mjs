@@ -39721,7 +39721,8 @@ window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager,
     sessionManager: sessionManager ? new SwiftTONConnectSessionsManager(sessionManager) : void 0,
     bridge: configuration.bridge,
     eventProcessor: configuration.eventsConfiguration,
-    storage: storage ? new SwiftStorageAdapter(storage) : new MemoryStorageAdapter({})
+    storage: storage ? new SwiftStorageAdapter(storage) : new MemoryStorageAdapter({}),
+    dev: configuration.dev
   });
   console.log("🚀 WalletKit iOS Bridge starting...");
   let initialized = false;
