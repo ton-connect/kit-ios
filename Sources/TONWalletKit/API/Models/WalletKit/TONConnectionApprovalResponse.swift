@@ -31,9 +31,9 @@ import BigInt
 
 public struct TONConnectionApprovalResponse: Codable {
 
-    public var proof: TONConnectionApprovalProof
+    public var proof: TONConnectionApprovalProof?
 
-    public init(proof: TONConnectionApprovalProof) {
+    public init(proof: TONConnectionApprovalProof? = nil) {
         self.proof = proof
     }
 
@@ -45,7 +45,7 @@ public struct TONConnectionApprovalResponse: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(proof, forKey: .proof)
+        try container.encodeIfPresent(proof, forKey: .proof)
     }
 }
 
