@@ -28699,7 +28699,7 @@ function delay(ms) {
     resolve();
   }, ms));
 }
-async function CallForSuccess(toCall, attempts = 20, delayMs = 100) {
+async function CallForSuccess(toCall, attempts = 20, delayMs = 100, shouldRetry) {
   if (typeof toCall !== "function") {
     throw new Error("unknown input");
   }
@@ -28711,6 +28711,9 @@ async function CallForSuccess(toCall, attempts = 20, delayMs = 100) {
       return res;
     } catch (err) {
       lastError = err;
+      if (shouldRetry && !shouldRetry(err)) {
+        throw err;
+      }
       i++;
       await delay(delayMs);
     }
@@ -30718,11 +30721,11 @@ function getDeviceInfoWithDefaults(options) {
 }
 function getDeviceInfoForWallet(walletAdapter, deviceInfoOptions) {
   const baseDeviceInfo = getDeviceInfoWithDefaults(deviceInfoOptions);
-  if (walletAdapter?.getSupportedFeatures) {
-    const adapterFeatures = walletAdapter.getSupportedFeatures();
+  const walletSupportedFeatures = walletAdapter?.getSupportedFeatures();
+  if (walletSupportedFeatures) {
     const deviceInfo = {
       ...baseDeviceInfo,
-      features: adapterFeatures
+      features: walletSupportedFeatures
     };
     return addLegacySendTransactionFeature(deviceInfo);
   }
@@ -31824,6 +31827,10 @@ const Network = {
    */
   testnet: () => ({ chainId: "-3" }),
   /**
+   * TON Tetra L2 chain (chain ID: 662387)
+   */
+  tetra: () => ({ chainId: "662387" }),
+  /**
    * Custom network with specified chain ID
    */
   custom: (chainId) => ({ chainId })
@@ -32160,16 +32167,11 @@ class TransactionHandler extends BasicHandler {
   validateNetwork(network, wallet) {
     let errors2 = [];
     if (typeof network === "string") {
-      if (network === "-3" || network === "-239") {
-        const chain = network === "-3" ? CHAIN.TESTNET : CHAIN.MAINNET;
-        const walletNetwork = wallet.getNetwork();
-        if (chain !== walletNetwork.chainId) {
-          errors2.push("Invalid network not equal to wallet network");
-        } else {
-          return { result: chain, isValid: errors2.length === 0, errors: errors2 };
-        }
+      const walletNetwork = wallet.getNetwork();
+      if (network !== walletNetwork.chainId) {
+        errors2.push("Invalid network not equal to wallet network");
       } else {
-        errors2.push("Invalid network not a valid network");
+        return { result: network, isValid: errors2.length === 0, errors: errors2 };
       }
     } else {
       errors2.push("Invalid network not a string");
@@ -33330,24 +33332,16 @@ function parseDomain(url) {
   }
 }
 function toTonConnectSignDataPayload(payload) {
-  let network;
-  if (payload.network?.chainId === CHAIN.MAINNET) {
-    network = CHAIN.MAINNET;
-  } else if (payload.network?.chainId === CHAIN.TESTNET) {
-    network = CHAIN.TESTNET;
-  } else {
-    network = void 0;
-  }
   if (payload.data.type === "text") {
     return {
-      network,
+      network: payload.network?.chainId,
       from: payload.fromAddress,
       type: "text",
       text: payload.data.value.content
     };
   } else if (payload.data.type === "cell") {
     return {
-      network,
+      network: payload.network?.chainId,
       from: payload.fromAddress,
       type: "cell",
       schema: payload.data.value.schema,
@@ -33355,7 +33349,7 @@ function toTonConnectSignDataPayload(payload) {
     };
   } else {
     return {
-      network,
+      network: payload.network?.chainId,
       from: payload.fromAddress,
       type: "binary",
       bytes: payload.data.value.content
@@ -34570,7 +34564,24 @@ function DefaultSignature(data, privateKey) {
   }
   return Uint8ArrayToHex(distExports.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fullKey)));
 }
-function createWalletSigner(privateKey) {
+function DefaultDomainSignature(data, privateKey, domain) {
+  let fullKey = privateKey;
+  if (fullKey.length === 32) {
+    const keyPair = distExports.keyPairFromSeed(Buffer.from(fullKey));
+    fullKey = keyPair.secretKey;
+  }
+  return Uint8ArrayToHex(distExports$1.domainSign({
+    data: Buffer.from(Uint8Array.from(data)),
+    secretKey: Buffer.from(fullKey),
+    domain
+  }));
+}
+function createWalletSigner(privateKey, domain) {
+  if (domain) {
+    return async (data) => {
+      return DefaultDomainSignature(Uint8Array.from(data), privateKey, domain);
+    };
+  }
   return async (data) => {
     return DefaultSignature(Uint8Array.from(data), privateKey);
   };
@@ -34586,9 +34597,9 @@ class Signer {
    * @param options - Optional configuration for mnemonic type
    * @returns Signer function with publicKey property
    */
-  static async fromMnemonic(mnemonic2, options) {
+  static async fromMnemonic(mnemonic2, options, domain) {
     const keyPair = await MnemonicToKeyPair(mnemonic2, options?.type ?? "ton");
-    const signer = createWalletSigner(keyPair.secretKey);
+    const signer = createWalletSigner(keyPair.secretKey, domain);
     return {
       sign: signer,
       publicKey: Uint8ArrayToHex(keyPair.publicKey)
@@ -34599,10 +34610,10 @@ class Signer {
    * @param privateKey - Private key as hex string or Uint8Array
    * @returns Signer function with publicKey property
    */
-  static async fromPrivateKey(privateKey) {
+  static async fromPrivateKey(privateKey, domain) {
     const privateKeyBytes = typeof privateKey === "string" ? Uint8Array.from(Buffer.from(privateKey.replace("0x", ""), "hex")) : privateKey;
     const keyPair = distExports.keyPairFromSeed(Buffer.from(privateKeyBytes));
-    const signer = createWalletSigner(keyPair.secretKey);
+    const signer = createWalletSigner(keyPair.secretKey, domain);
     return {
       sign: signer,
       publicKey: Uint8ArrayToHex(keyPair.publicKey)
@@ -34718,6 +34729,28 @@ async function getNftsFromClient(client, ownerAddress, params) {
 async function getNftFromClient(client, address) {
   const result = await client.nftItemsByAddress({ address });
   return result.nfts.length > 0 ? result.nfts[0] : null;
+}
+function getNormalizedExtMessageHash(boc) {
+  const cell = distExports$1.Cell.fromBase64(boc);
+  const message = distExports$1.loadMessage(cell.beginParse());
+  if (message.info.type !== "external-in") {
+    throw new Error(`Message must be "external-in", got ${message.info.type}`);
+  }
+  const info = {
+    ...message.info,
+    src: void 0,
+    importFee: 0n
+  };
+  const normalizedMessage = {
+    ...message,
+    init: null,
+    info
+  };
+  const normalizedCell = distExports$1.beginCell().store(distExports$1.storeMessage(normalizedMessage, { forceRef: true })).endCell();
+  return {
+    hash: normalizedCell.hash().toString("base64"),
+    boc: normalizedCell.toBoc().toString("base64")
+  };
 }
 const DEFAULT_JETTON_GAS_FEE = "50000000";
 const DEFAULT_NFT_GAS_FEE = "100000000";
@@ -34877,7 +34910,8 @@ class WalletTonClass {
     try {
       const boc = await this.getSignedSendTransaction(request);
       await CallForSuccess(() => this.getClient().sendBoc(boc));
-      return { boc };
+      const { hash: normalizedHash, boc: normalizedBoc } = getNormalizedExtMessageHash(boc);
+      return { boc, normalizedBoc, normalizedHash };
     } catch (error2) {
       log$a.error("Failed to send transaction", { error: error2 });
       if (error2 instanceof WalletKitError) {
@@ -37661,8 +37695,8 @@ class ApiClientToncenter {
   disableNetworkSend;
   constructor(config = {}) {
     this.network = config.network;
-    const dnsResolver = this.network?.chainId === CHAIN.MAINNET ? ROOT_DNS_RESOLVER_MAINNET : ROOT_DNS_RESOLVER_TESTNET;
-    const defaultEndpoint = this.network?.chainId === CHAIN.MAINNET ? "https://toncenter.com" : "https://testnet.toncenter.com";
+    const dnsResolver = this.network?.chainId === Network.mainnet().chainId ? ROOT_DNS_RESOLVER_MAINNET : ROOT_DNS_RESOLVER_TESTNET;
+    const defaultEndpoint = this.network?.chainId === Network.mainnet().chainId ? "https://toncenter.com" : "https://testnet.toncenter.com";
     this.dnsResolver = config.dnsResolver ?? dnsResolver;
     this.endpoint = config.endpoint ?? defaultEndpoint;
     this.apiKey = config.apiKey;
@@ -37864,44 +37898,49 @@ class ApiClientToncenter {
   async getTrace(request) {
     const inTraceId = request.traceId ? request.traceId[0] : void 0;
     const traceId = padBase64(Base64Normalize(inTraceId || "").replace(/=/g, ""));
-    try {
-      const response = await CallForSuccess(() => this.getJson("/api/v3/traces", {
-        tx_hash: traceId
-      }));
-      if (response.traces.length > 0) {
+    const tryGetTrace = async (field) => {
+      const response = await CallForSuccess(
+        () => this.getJson("/api/v3/traces", { [field]: traceId }),
+        void 0,
+        void 0,
+        // 422: toncenter failed to decode field value
+        (err) => err instanceof TonClientError ? err.status !== 422 : true
+      );
+      if (response?.traces?.length > 0) {
         return response;
       }
-    } catch (error2) {
-      log$4.error("Error fetching trace", { error: error2 });
+      throw new Error(`No traces found for ${field}`);
+    };
+    const results = await Promise.allSettled([
+      tryGetTrace("tx_hash"),
+      tryGetTrace("trace_id"),
+      tryGetTrace("msg_hash")
+    ]);
+    const fulfilledResult = results.find((result) => result.status === "fulfilled");
+    if (fulfilledResult) {
+      return fulfilledResult.value;
     }
-    try {
-      const response = await CallForSuccess(() => this.getJson("/api/v3/traces", {
-        trace_id: traceId
-      }));
-      if (response.traces.length > 0) {
-        return response;
+    results.forEach((result) => {
+      if (result.status === "rejected") {
+        log$4.error("Error fetching trace", { error: result.reason });
       }
-    } catch (error2) {
-      log$4.error("Error fetching trace", { error: error2 });
-    }
-    try {
-      const response = await CallForSuccess(() => this.getJson("/api/v3/traces", {
-        msg_hash: traceId
-      }));
-      if (response.traces.length > 0) {
-        return response;
-      }
-    } catch (error2) {
-      log$4.error("Error fetching pending trace", { error: error2 });
-    }
+    });
     throw new Error("Failed to fetch trace");
   }
   async getPendingTrace(request) {
     try {
-      const response = await CallForSuccess(() => this.getJson("/api/v3/pendingTraces", {
-        ext_msg_hash: request.externalMessageHash
-      }));
-      if (response.traces.length > 0) {
+      const response = await CallForSuccess(
+        () => {
+          return this.getJson("/api/v3/pendingTraces", {
+            ext_msg_hash: request.externalMessageHash
+          });
+        },
+        void 0,
+        void 0,
+        // 422: toncenter failed to decode field value
+        (err) => err instanceof TonClientError ? err.status !== 422 : true
+      );
+      if (response?.traces?.length > 0) {
         return response;
       }
     } catch (error2) {
@@ -38080,7 +38119,14 @@ class KitNetworkManager {
     if (this.isApiClient(apiClientConfig)) {
       return apiClientConfig;
     }
-    const defaultEndpoint = network.chainId === CHAIN.MAINNET ? "https://toncenter.com" : "https://testnet.toncenter.com";
+    let defaultEndpoint;
+    if (network.chainId == Network.mainnet().chainId) {
+      defaultEndpoint = "https://toncenter.com";
+    } else if (network.chainId == Network.tetra().chainId) {
+      defaultEndpoint = "https://tetra.tonapi.io";
+    } else {
+      defaultEndpoint = "https://testnet.toncenter.com";
+    }
     const endpoint = apiClientConfig?.url || defaultEndpoint;
     return new ApiClientToncenter({
       endpoint,
@@ -38097,7 +38143,7 @@ class KitNetworkManager {
   }
   /**
    * Get API client for a specific network
-   * @param chainId - The chain ID (CHAIN.MAINNET or CHAIN.TESTNET)
+   * @param chainId - The chain ID
    * @returns The API client for the specified network
    * @throws WalletKitError if no client is configured for the network
    */
@@ -38204,7 +38250,7 @@ class TonWalletKit {
               name: "ton_addr",
               address: distExports$1.Address.parse(walletAddress).toRawString(),
               // TODO: Support multiple networks
-              network: wallet.getNetwork().chainId === CHAIN.MAINNET ? CHAIN.MAINNET : CHAIN.TESTNET,
+              network: wallet.getNetwork().chainId,
               walletStateInit,
               publicKey
             }
@@ -39495,6 +39541,9 @@ class SwiftWalletAdapter {
   }
   getSignedTonProof(input, options) {
     return this.swiftWalletAdapter.getSignedTonProof(input, options);
+  }
+  getSupportedFeatures() {
+    return this.swiftWalletAdapter.getSupportedFeatures();
   }
 }
 var __async$2 = (__this, __arguments, generator) => {
