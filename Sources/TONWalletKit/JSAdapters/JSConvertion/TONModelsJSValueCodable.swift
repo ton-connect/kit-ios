@@ -171,6 +171,10 @@ extension TONTransactionRequestMessage: JSValueCodable {}
 
 extension TONTransactionsResponse: JSValueCodable {}
 
+extension TONTransactionStatus: JSValueCodable {}
+
+extension TONTransactionStatusResponse: JSValueCodable {}
+
 extension TONTransactionStoragePhase: JSValueCodable {}
 
 extension TONTransactionTokenInfo: JSValueCodable {}

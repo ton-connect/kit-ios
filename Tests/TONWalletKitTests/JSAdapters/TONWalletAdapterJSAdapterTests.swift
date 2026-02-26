@@ -413,4 +413,45 @@ struct TONWalletAdapterJSAdapterTests {
             try await result.then()
         }
     }
+
+    @Test("supportedFeatures returns encoded features array")
+    func supportedFeaturesReturnsEncodedArray() {
+        let wallet = MockWalletAdapter()
+        wallet.mockSupportedFeatures = [
+            TONSendTransactionFeature(maxMessages: 4, extraCurrencySupported: true),
+            TONSignDataFeature(types: [.text, .binary])
+        ]
+        let sut = TONWalletAdapterJSAdapter(context: context, walletAdapter: wallet)
+
+        let result = sut.supportedFeatures()
+
+        #expect(result.isArray)
+        #expect(result.toArray()?.count == 2)
+    }
+
+    @Test("supportedFeatures returns undefined when wallet returns nil")
+    func supportedFeaturesReturnsUndefinedWhenNil() {
+        let wallet = MockWalletAdapter()
+        wallet.mockSupportedFeatures = nil
+        let sut = TONWalletAdapterJSAdapter(context: context, walletAdapter: wallet)
+
+        let result = sut.supportedFeatures()
+
+        #expect(result.isUndefined)
+    }
+
+    @Test("supportedFeatures returns undefined when context is deallocated")
+    func supportedFeaturesReturnsUndefinedWhenDeallocated() {
+        let wallet = MockWalletAdapter()
+        wallet.mockSupportedFeatures = [
+            TONSendTransactionFeature(maxMessages: 4)
+        ]
+        var jsContext: JSContext? = JSContext()!
+        let sut = TONWalletAdapterJSAdapter(context: jsContext!, walletAdapter: wallet)
+        jsContext = nil
+
+        let result = sut.supportedFeatures()
+
+        #expect(result.isUndefined)
+    }
 }

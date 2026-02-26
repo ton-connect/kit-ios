@@ -36,6 +36,7 @@ public protocol TONWalletAdapterProtocol: AnyObject {
     func signedSendTransaction(input: TONTransactionRequest, fakeSignature: Bool?) async throws -> TONBase64
     func signedSignData(input: TONPreparedSignData, fakeSignature: Bool?) async throws -> TONHex
     func signedTonProof(input: TONProofMessage, fakeSignature: Bool?) async throws -> TONHex
+    func supportedFeatures() -> [any TONFeature]?
 }
 
 public protocol TONWalletProtocol: TONWalletAdapterProtocol {
