@@ -38,4 +38,6 @@ import JavaScriptCore
     @objc(getSignedSendTransaction::) func signedSendTransaction(input: JSValue, options: JSValue) -> JSValue
     @objc(getSignedSignData::) func signedSignData(input: JSValue, options: JSValue) -> JSValue
     @objc(getSignedTonProof::) func signedTonProof(input: JSValue, options: JSValue) -> JSValue
+    
+    @objc(getSupportedFeatures) func supportedFeatures() -> JSValue
 }

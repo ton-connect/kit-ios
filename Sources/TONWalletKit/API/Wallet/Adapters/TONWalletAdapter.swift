@@ -80,6 +80,15 @@ class TONWalletAdapter: TONWalletAdapterProtocol {
             )
         )
     }
+    
+    func supportedFeatures() -> [any TONFeature]? {
+        do {
+            let features: [TONRawFeature] = try jsWalletAdapter.getSupportedFeatures()
+            return features.compactMap { $0.typed }
+        } catch {
+            return nil
+        }
+    }
 }
 
 struct TONSignedSendTransactionAllOptions: Codable, JSValueDecodable, JSValueEncodable {

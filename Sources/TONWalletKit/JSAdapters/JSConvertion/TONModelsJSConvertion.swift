@@ -29,6 +29,7 @@ import BigInt
 
 extension TONConnectSessionsFilter: JSValueCodable {}
 extension TONBridgeEventMessage: JSValueCodable {}
+extension TONRawFeature: JSValueCodable {}
 
 extension TONV4R2WalletParameters: JSValueCodable {}
 extension TONV5R1WalletParameters: JSValueEncodable {}

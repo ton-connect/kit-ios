@@ -31,6 +31,7 @@ class MockWalletAdapter: TONWalletAdapterProtocol {
     var mockIdentifier: TONWalletID = "wallet-123"
     var mockNetwork = TONNetwork.mainnet
     var mockAddress: TONUserFriendlyAddress
+    var mockSupportedFeatures: [any TONFeature]? = nil
     var shouldThrow = false
 
     init() {
@@ -81,5 +82,9 @@ class MockWalletAdapter: TONWalletAdapterProtocol {
     func signedTonProof(input: TONProofMessage, fakeSignature: Bool?) async throws -> TONHex {
         if shouldThrow { throw "Mock error" }
         return TONHex(data: Data([0xef, 0x01]))
+    }
+
+    func supportedFeatures() -> [any TONFeature]? {
+        return mockSupportedFeatures
     }
 }

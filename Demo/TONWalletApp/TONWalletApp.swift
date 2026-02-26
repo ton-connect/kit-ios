@@ -79,8 +79,8 @@ extension TONWalletKit {
             storage: .keychain,
             bridge: TONWalletKitConfiguration.Bridge(bridgeUrl: bridgeURL, webViewInjectionKey: "walletKitDemoWallet"),
             features: [
-                TONWalletKitConfiguration.SendTransactionFeature(maxMessages: 1),
-                TONWalletKitConfiguration.SignDataFeature(types: [.text, .binary, .cell]),
+                TONSendTransactionFeature(maxMessages: 255),
+                TONSignDataFeature(types: [.text, .binary, .cell]),
             ]
         )
         let kit = TONWalletKit(configuration: configuration)

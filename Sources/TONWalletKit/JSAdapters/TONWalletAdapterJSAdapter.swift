@@ -214,4 +214,22 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
             return JSValue(newPromiseRejectedWithReason: error.localizedDescription, in: context)
         }
     }
+    
+    @objc(getSupportedFeatures) func supportedFeatures() -> JSValue {
+        guard let context else {
+            return JSValue(undefinedIn: JSContext())
+        }
+        
+        guard let features = walletAdapter.supportedFeatures() else {
+            return JSValue(undefinedIn: context)
+        }
+        
+        let rawFeatures = features.map { $0.raw }
+        
+        guard let encodedFeatures = try? rawFeatures.encode(in: context) else {
+            return JSValue(undefinedIn: context)
+        }
+        
+        return JSValue(object: encodedFeatures, in: context)
+    }
 }

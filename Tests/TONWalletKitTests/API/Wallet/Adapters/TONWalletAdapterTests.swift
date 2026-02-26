@@ -219,4 +219,50 @@ struct TONWalletAdapterTests {
             try await sut.signedTonProof(input: input, fakeSignature: nil)
         }
     }
+
+    @Test("supportedFeatures() calls getSupportedFeatures and maps typed features")
+    func supportedFeaturesCallsGetSupportedFeatures() {
+        let (sut, mock) = makeSUT()
+        let rawFeatures: [TONRawFeature] = [
+            TONSendTransactionFeature(maxMessages: 4, extraCurrencySupported: true).raw,
+            TONSignDataFeature(types: [.text, .binary]).raw
+        ]
+        mock.stubbedResults["getSupportedFeatures"] = rawFeatures
+
+        let result = sut.supportedFeatures()
+
+        #expect(mock.callRecords.first?.path == "getSupportedFeatures")
+        #expect(result?.count == 2)
+        let sendTx = result?[0] as? TONSendTransactionFeature
+        #expect(sendTx?.maxMessages == 4)
+        #expect(sendTx?.extraCurrencySupported == true)
+        let signData = result?[1] as? TONSignDataFeature
+        #expect(signData?.types == [.text, .binary])
+    }
+
+    @Test("supportedFeatures() returns nil when JSDynamic throws")
+    func supportedFeaturesReturnsNilOnError() {
+        let (sut, mock) = makeSUT()
+        mock.shouldThrowOnCall = true
+
+        let result = sut.supportedFeatures()
+
+        #expect(result == nil)
+    }
+
+    @Test("supportedFeatures() filters out features with missing required fields")
+    func supportedFeaturesFiltersInvalidFeatures() {
+        let (sut, mock) = makeSUT()
+        let rawFeatures: [TONRawFeature] = [
+            TONRawFeature(name: .sendTransaction),
+            TONSendTransactionFeature(maxMessages: 2).raw
+        ]
+        mock.stubbedResults["getSupportedFeatures"] = rawFeatures
+
+        let result = sut.supportedFeatures()
+
+        #expect(result?.count == 1)
+        let sendTx = result?[0] as? TONSendTransactionFeature
+        #expect(sendTx?.maxMessages == 2)
+    }
 }
