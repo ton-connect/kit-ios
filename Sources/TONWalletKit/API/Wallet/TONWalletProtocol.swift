@@ -39,11 +39,6 @@ public protocol TONWalletAdapterProtocol: AnyObject {
     func supportedFeatures() -> [any TONFeature]?
 }
 
-public extension TONWalletAdapterProtocol {
-    
-    func supportedFeatures() -> [any TONFeature]? { nil }
-}
-
 public protocol TONWalletProtocol: TONWalletAdapterProtocol {
     var id: TONWalletID { get }
     var address: TONUserFriendlyAddress { get }
