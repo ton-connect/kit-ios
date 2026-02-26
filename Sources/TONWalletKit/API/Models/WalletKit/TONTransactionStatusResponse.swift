@@ -32,13 +32,13 @@ public struct TONTransactionStatusResponse: Codable {
 
     public var status: TONTransactionStatus
     /** Total messages in the trace */
-    public var totalMessages: Double
+    public var totalMessages: Int
     /** Messages still pending */
-    public var pendingMessages: Double
+    public var pendingMessages: Int
     /** Number of onchain messages (totalMessages - pendingMessages) */
-    public var onchainMessages: Double
+    public var onchainMessages: Int
 
-    public init(status: TONTransactionStatus, totalMessages: Double, pendingMessages: Double, onchainMessages: Double) {
+    public init(status: TONTransactionStatus, totalMessages: Int, pendingMessages: Int, onchainMessages: Int) {
         self.status = status
         self.totalMessages = totalMessages
         self.pendingMessages = pendingMessages

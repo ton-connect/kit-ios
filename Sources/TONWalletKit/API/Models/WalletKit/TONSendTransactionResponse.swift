@@ -32,9 +32,9 @@ public struct TONSendTransactionResponse: Codable {
 
     public var boc: TONBase64
     public var normalizedBoc: TONBase64
-    public var normalizedHash: TONBase64
+    public var normalizedHash: TONHex
 
-    public init(boc: TONBase64, normalizedBoc: TONBase64, normalizedHash: TONBase64) {
+    public init(boc: TONBase64, normalizedBoc: TONBase64, normalizedHash: TONHex) {
         self.boc = boc
         self.normalizedBoc = normalizedBoc
         self.normalizedHash = normalizedHash
