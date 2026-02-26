@@ -27322,10 +27322,13 @@ function isFriendlyTonAddress(address) {
   return true;
 }
 function asHex(data) {
-  if (!/^0x[0-9a-fA-F]+$/.test(data) || data.length % 2 !== 0) {
+  if (!isHex(data)) {
     throw new Error("Not a valid hex");
   }
   return data;
+}
+function isHex(data) {
+  return /^0x[0-9a-fA-F]+$/.test(data) && data.length % 2 === 0;
 }
 const ERROR_CODES = {
   // Bridge Manager Errors (7000-7099)
@@ -34748,7 +34751,7 @@ function getNormalizedExtMessageHash(boc) {
   };
   const normalizedCell = distExports$1.beginCell().store(distExports$1.storeMessage(normalizedMessage, { forceRef: true })).endCell();
   return {
-    hash: normalizedCell.hash().toString("base64"),
+    hash: `0x${normalizedCell.hash().toString("hex")}`,
     boc: normalizedCell.toBoc().toString("base64")
   };
 }
@@ -37741,7 +37744,7 @@ class ApiClientToncenter {
       return "";
     }
     const response = await this.postJson("/api/v3/message", { boc });
-    return Base64ToBigInt(response.message_hash_norm).toString(16);
+    return `0x${Base64ToBigInt(response.message_hash_norm).toString(16)}`;
   }
   async runGetMethod(address, method, stack = [], seqno) {
     const props = {
@@ -37897,7 +37900,9 @@ class ApiClientToncenter {
   }
   async getTrace(request) {
     const inTraceId = request.traceId ? request.traceId[0] : void 0;
-    const traceId = padBase64(Base64Normalize(inTraceId || "").replace(/=/g, ""));
+    const traceIdStr = inTraceId || "";
+    const isHexId = isHex(traceIdStr);
+    const traceId = isHexId ? traceIdStr : padBase64(Base64Normalize(traceIdStr).replace(/=/g, ""));
     const tryGetTrace = async (field) => {
       const response = await CallForSuccess(
         () => this.getJson("/api/v3/traces", { [field]: traceId }),
