@@ -97,10 +97,10 @@ public enum TONRawStackItem: Codable {
             try container.encode("null", forKey: .type)
         }
     }
-
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case type
         case value
     }
 }
+
 

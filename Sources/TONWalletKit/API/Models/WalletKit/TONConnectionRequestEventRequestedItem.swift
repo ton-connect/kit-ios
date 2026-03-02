@@ -69,10 +69,10 @@ public enum TONConnectionRequestEventRequestedItem: Codable {
             try container.encode("ton_addr", forKey: .type)
         }
     }
-
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case type
         case value
     }
 }
+
 

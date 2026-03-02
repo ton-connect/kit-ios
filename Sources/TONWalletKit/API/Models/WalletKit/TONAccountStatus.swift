@@ -72,10 +72,10 @@ public enum TONAccountStatus: Codable {
             try container.encode("uninit", forKey: .type)
         }
     }
-
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case type
         case value
     }
 }
+
 
