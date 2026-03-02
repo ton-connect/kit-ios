@@ -47,7 +47,7 @@ public struct TONWalletKitConfiguration: Encodable, Hashable {
         sessionManager: (any TONConnectSessionsManager)? = nil,
         bridge: Bridge?,
         eventsConfiguration: EventsConfiguration? = nil,
-        features: [any Feature],
+        features: [any TONFeature],
         devConfiguration: DevConfiguration? = nil
     ) {
         self.networkConfigurations = Array(networkConfigurations)
@@ -172,9 +172,9 @@ extension TONWalletKitConfiguration {
         
         // Currently just a constant
         private var maxProtocolVersion: Int = 2
-        let features: [RawFeature]
+        let features: [TONRawFeature]
         
-        init(appName: String, features: [RawFeature]) {
+        init(appName: String, features: [TONRawFeature]) {
 #if os(iOS)
             self.platform = UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone"
 #else
@@ -198,7 +198,7 @@ extension TONWalletKitConfiguration {
         let deepLink: String?
         let bridgeUrl: String
         
-        var features: [RawFeature] = []
+        var features: [TONRawFeature] = []
         
         public init(
             name: String,
@@ -254,60 +254,6 @@ extension TONWalletKitConfiguration {
         ) {
             self.url = url
             self.key = key
-        }
-    }
-    
-    enum FeatureName: String, Codable {
-        case sendTransaction = "SendTransaction"
-        case signData = "SignData"
-    }
-    
-    public struct RawFeature: Codable, Hashable {
-        let name: FeatureName
-        
-        private(set) var types: [TONSignDataType]?
-        
-        private(set) var maxMessages: Int?
-        private(set) var extraCurrencySupported: Bool?
-    }
-    
-    public protocol Feature {
-        var raw: RawFeature { get }
-    }
-    
-    public struct SendTransactionFeature: Feature {
-        let maxMessages: Int?
-        let extraCurrencySupported: Bool?
-        
-        public var raw: RawFeature {
-            RawFeature(
-                name: .sendTransaction,
-                maxMessages: maxMessages,
-                extraCurrencySupported: extraCurrencySupported
-            )
-        }
-        
-        public init(
-            maxMessages: Int? = nil,
-            extraCurrencySupported: Bool? = nil
-        ) {
-            self.maxMessages = maxMessages
-            self.extraCurrencySupported = extraCurrencySupported
-        }
-    }
-    
-    public struct SignDataFeature: Feature {
-        let types: [TONSignDataType]
-        
-        public var raw: RawFeature {
-            RawFeature(
-                name: .signData,
-                types: types
-            )
-        }
-        
-        public init(types: [TONSignDataType]) {
-            self.types = types
         }
     }
 }
