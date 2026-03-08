@@ -21,7 +21,15 @@
 {{#vendorExtensions.x-inline-interface-unions}}
     {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum {{#lambda.titlecase}}{{{propertyName}}}{{/lambda.titlecase}}: Codable {
     {{#cases}}
+    {{#emptyVariant}}
+        case {{{caseName}}}
+    {{/emptyVariant}}
+    {{#singleFieldVariant}}
+        case {{{caseName}}}({{{singleFieldName}}}: {{modelNamePrefix}}{{{typeName}}}{{#singleFieldOptional}}?{{/singleFieldOptional}})
+    {{/singleFieldVariant}}
+    {{^emptyVariant}}{{^singleFieldVariant}}
         case {{{caseName}}}({{modelNamePrefix}}{{{typeName}}})
+    {{/singleFieldVariant}}{{/emptyVariant}}
     {{/cases}}
 
         {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} init(from decoder: any Decoder) throws {
@@ -30,7 +38,16 @@
             switch discriminator {
     {{#cases}}
             case "{{{rawValue}}}":
+    {{#emptyVariant}}
+                self = .{{{caseName}}}
+    {{/emptyVariant}}
+    {{#singleFieldVariant}}
+                let {{{singleFieldName}}} = try container.decode{{#singleFieldOptional}}IfPresent{{/singleFieldOptional}}({{modelNamePrefix}}{{{typeName}}}.self, forKey: .{{{singleFieldName}}})
+                self = .{{{caseName}}}({{{singleFieldName}}}: {{{singleFieldName}}})
+    {{/singleFieldVariant}}
+    {{^emptyVariant}}{{^singleFieldVariant}}
                 self = .{{{caseName}}}(try {{modelNamePrefix}}{{{typeName}}}(from: decoder))
+    {{/singleFieldVariant}}{{/emptyVariant}}
     {{/cases}}
             default:
                 throw DecodingError.dataCorruptedError(
@@ -44,13 +61,29 @@
         {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} func encode(to encoder: any Encoder) throws {
             switch self {
     {{#cases}}
+    {{#emptyVariant}}
+            case .{{{caseName}}}:
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                try container.encode("{{{rawValue}}}", forKey: .discriminator)
+    {{/emptyVariant}}
+    {{#singleFieldVariant}}
+            case .{{{caseName}}}(let {{{singleFieldName}}}):
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                try container.encode("{{{rawValue}}}", forKey: .discriminator)
+                try container.encode{{#singleFieldOptional}}IfPresent{{/singleFieldOptional}}({{{singleFieldName}}}, forKey: .{{{singleFieldName}}})
+    {{/singleFieldVariant}}
+    {{^emptyVariant}}{{^singleFieldVariant}}
             case .{{{caseName}}}(let value):
                 try value.encode(to: encoder)
+    {{/singleFieldVariant}}{{/emptyVariant}}
     {{/cases}}
             }
         }
         {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum CodingKeys: String, CodingKey, CaseIterable {
             case discriminator = "{{{discriminatorField}}}"
+{{#singleFieldCodingKeys}}
+            case {{{name}}}
+{{/singleFieldCodingKeys}}
         }
     }
 {{/vendorExtensions.x-inline-interface-unions}}
