@@ -107,7 +107,7 @@ struct TONWalletKitTests {
         let (sut, _, mockContext) = makeSUT()
         try await sut.initialize()
         let mnemonic = TONMnemonic(value: (1...24).map { "word\($0)" })
-        let domain = TONSignatureDomain.l2(TONSignatureDomainL2(globalId: 42))
+        let domain = TONSignatureDomain.l2(globalId: 42)
 
         _ = try? await sut.signer(mnemonic: mnemonic, domain: domain)
 
@@ -130,7 +130,7 @@ struct TONWalletKitTests {
     func signerPrivateKeyWithDomainCallsCreate() async throws {
         let (sut, _, mockContext) = makeSUT()
         try await sut.initialize()
-        let domain = TONSignatureDomain.l2(TONSignatureDomainL2(globalId: 7))
+        let domain = TONSignatureDomain.l2(globalId: 7)
 
         _ = try? await sut.signer(privateKey: Data([0x01, 0x02]), domain: domain)
 
