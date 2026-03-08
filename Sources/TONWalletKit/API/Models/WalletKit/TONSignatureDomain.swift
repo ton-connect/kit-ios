@@ -29,9 +29,11 @@ import BigInt
 
 public enum TONSignatureDomain: Codable {
 
-    case l2(TONSignatureDomainL2)
+    case l2(globalId: Int)
 
-    case empty(AnyCodable)
+    case empty
+
+    case l3(globalId2: String)
 
 
     public init(from decoder: any Decoder) throws {
@@ -40,10 +42,15 @@ public enum TONSignatureDomain: Codable {
         switch discriminator {
 
         case "l2":
-            self = .l2(try TONSignatureDomainL2(from: decoder))
+            let globalId = try container.decode(Int.self, forKey: .globalId)
+            self = .l2(globalId: globalId)
 
         case "empty":
-            self = .empty(try AnyCodable(from: decoder))
+            self = .empty
+
+        case "l3":
+            let globalId2 = try container.decode(String.self, forKey: .globalId2)
+            self = .l3(globalId2: globalId2)
 
         default:
             throw DecodingError.dataCorruptedError(
@@ -57,16 +64,26 @@ public enum TONSignatureDomain: Codable {
     public func encode(to encoder: any Encoder) throws {
         switch self {
 
-        case .l2(let value):
-            try value.encode(to: encoder)
+        case .l2(let globalId):
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode("l2", forKey: .discriminator)
+            try container.encode(globalId, forKey: .globalId)
 
-        case .empty(let value):
-            try value.encode(to: encoder)
+        case .empty:
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode("empty", forKey: .discriminator)
+
+        case .l3(let globalId2):
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode("l3", forKey: .discriminator)
+            try container.encode(globalId2, forKey: .globalId2)
 
         }
     }
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case discriminator = "type"
+        case globalId
+        case globalId2
     }
 }
 
