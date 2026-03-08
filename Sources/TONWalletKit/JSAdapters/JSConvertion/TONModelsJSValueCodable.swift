@@ -17,6 +17,8 @@ extension TONAssetType: JSValueCodable {}
 
 extension TONBridgeEvent: JSValueCodable {}
 
+extension TONConnectSession: JSValueCodable {}
+
 extension TONConnectionApprovalProof: JSValueCodable {}
 
 extension TONConnectionApprovalProofDomain: JSValueCodable {}
@@ -32,8 +34,6 @@ extension TONConnectionRequestEventPreviewPermission: JSValueCodable {}
 extension TONConnectionRequestEventRequestedItem: JSValueCodable {}
 
 extension TONConnectionRequestTonProofRequestedItem: JSValueCodable {}
-
-extension TONConnectSession: JSValueCodable {}
 
 extension TONDAppInfo: JSValueCodable {}
 
@@ -53,8 +53,6 @@ extension TONJettonsResponse: JSValueCodable {}
 
 extension TONJettonsTransferRequest: JSValueCodable {}
 
-extension TONNetwork: JSValueCodable {}
-
 extension TONNFT: JSValueCodable {}
 
 extension TONNFTAttribute: JSValueCodable {}
@@ -65,11 +63,13 @@ extension TONNFTRawTransferRequest: JSValueCodable {}
 
 extension TONNFTRawTransferRequestMessage: JSValueCodable {}
 
+extension TONNFTTransferRequest: JSValueCodable {}
+
 extension TONNFTsRequest: JSValueCodable {}
 
 extension TONNFTsResponse: JSValueCodable {}
 
-extension TONNFTTransferRequest: JSValueCodable {}
+extension TONNetwork: JSValueCodable {}
 
 extension TONPagination: JSValueCodable {}
 
@@ -101,8 +101,6 @@ extension TONSendTransactionRequestEventPreview: JSValueCodable {}
 
 extension TONSendTransactionResponse: JSValueCodable {}
 
-extension TONSignatureDomain: JSValueCodable {}
-
 extension TONSignData: JSValueCodable {}
 
 extension TONSignDataApprovalResponse: JSValueCodable {}
@@ -126,6 +124,8 @@ extension TONSignDataRequestEvent: JSValueCodable {}
 extension TONSignDataRequestEventPreview: JSValueCodable {}
 
 extension TONSignDataText: JSValueCodable {}
+
+extension TONSignatureDomain: JSValueCodable {}
 
 extension TONSwapFee: JSValueCodable {}
 
@@ -171,8 +171,6 @@ extension TONTransactionRequest: JSValueCodable {}
 
 extension TONTransactionRequestMessage: JSValueCodable {}
 
-extension TONTransactionsResponse: JSValueCodable {}
-
 extension TONTransactionStatus: JSValueCodable {}
 
 extension TONTransactionStatusResponse: JSValueCodable {}
@@ -206,6 +204,8 @@ extension TONTransactionTraceMoneyFlow: JSValueCodable {}
 extension TONTransactionTraceMoneyFlowItem: JSValueCodable {}
 
 extension TONTransactionTraceNode: JSValueCodable {}
+
+extension TONTransactionsResponse: JSValueCodable {}
 
 extension TONTransferRequest: JSValueCodable {}
 

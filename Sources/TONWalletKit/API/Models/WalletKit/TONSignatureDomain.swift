@@ -33,8 +33,6 @@ public enum TONSignatureDomain: Codable {
 
     case empty
 
-    case l3(globalId2: String)
-
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -47,10 +45,6 @@ public enum TONSignatureDomain: Codable {
 
         case "empty":
             self = .empty
-
-        case "l3":
-            let globalId2 = try container.decode(String.self, forKey: .globalId2)
-            self = .l3(globalId2: globalId2)
 
         default:
             throw DecodingError.dataCorruptedError(
@@ -73,17 +67,11 @@ public enum TONSignatureDomain: Codable {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode("empty", forKey: .discriminator)
 
-        case .l3(let globalId2):
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode("l3", forKey: .discriminator)
-            try container.encode(globalId2, forKey: .globalId2)
-
         }
     }
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case discriminator = "type"
         case globalId
-        case globalId2
     }
 }
 
