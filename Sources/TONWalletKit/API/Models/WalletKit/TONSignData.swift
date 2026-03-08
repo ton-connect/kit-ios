@@ -71,10 +71,10 @@ public enum TONSignData: Codable {
             try container.encode(value, forKey: .value)
         }
     }
-
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case type
         case value
     }
 }
+
 

@@ -1,17 +1,60 @@
 {{!--
   Template for discriminated union enums.
-  
+
+  Two variants:
+  1. Inline object unions (x-interface-union is false/absent):
+     e.g., { type: 'null' } | { type: 'num'; value: string }
+     Uses type/value CodingKeys with per-case value decoding.
+
+  2. Interface unions (x-interface-union is true):
+     e.g., /** @discriminator name */ export type Test = TestWithMessage | TestWithNumber;
+     Uses discriminator field CodingKey, decodes full struct from decoder.
+
   Vendor extensions used:
   - x-discriminated-union: boolean indicating this is a discriminated union
+  - x-interface-union: boolean indicating this uses interface-based members
+  - x-discriminator-field: string name of the JSON discriminator property
   - x-enum-cases: array of {name, rawValue, hasAssociatedValue} for each case
-  
-  Cases with associated values are generated from vars that have x-enum-case-name extension.
-  Cases without associated values come from x-enum-cases.
-  OpenAPI Generator resolves the dataType for each var automatically.
-  
-  name: camelCase Swift case name
-  rawValue: original JSON value for encoding/decoding
+  - x-enum-case-name: camelCase Swift case name (on vars)
+  - x-enum-case-raw-value: original JSON value for encoding/decoding (on vars)
 --}}
+{{#vendorExtensions.x-interface-union}}
+{{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum {{{classname}}}: Codable {
+{{#vars}}{{#vendorExtensions.x-enum-case-name}}
+    case {{{vendorExtensions.x-enum-case-name}}}({{{dataType}}})
+{{/vendorExtensions.x-enum-case-name}}{{/vars}}
+
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let discriminator = try container.decode(String.self, forKey: .discriminator)
+        switch discriminator {
+{{#vars}}{{#vendorExtensions.x-enum-case-name}}
+        case "{{{vendorExtensions.x-enum-case-raw-value}}}":
+            self = .{{{vendorExtensions.x-enum-case-name}}}(try {{{dataType}}}(from: decoder))
+{{/vendorExtensions.x-enum-case-name}}{{/vars}}
+        default:
+            throw DecodingError.dataCorruptedError(
+                forKey: .discriminator,
+                in: container,
+                debugDescription: "Unknown discriminator value: \(discriminator)"
+            )
+        }
+    }
+
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} func encode(to encoder: any Encoder) throws {
+        switch self {
+{{#vars}}{{#vendorExtensions.x-enum-case-name}}
+        case .{{{vendorExtensions.x-enum-case-name}}}(let value):
+            try value.encode(to: encoder)
+{{/vendorExtensions.x-enum-case-name}}{{/vars}}
+        }
+    }
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum CodingKeys: String, CodingKey, CaseIterable {
+        case discriminator = "{{{vendorExtensions.x-discriminator-field}}}"
+    }
+}
+{{/vendorExtensions.x-interface-union}}
+{{^vendorExtensions.x-interface-union}}
 {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum {{{classname}}}: Codable {
 {{#vars}}{{#vendorExtensions.x-enum-case-name}}
     case {{{vendorExtensions.x-enum-case-name}}}({{{dataType}}}){{/vendorExtensions.x-enum-case-name}}{{/vars}}{{#vendorExtensions.x-enum-cases}}{{^hasAssociatedValue}}
@@ -47,9 +90,9 @@
             try container.encode("{{{rawValue}}}", forKey: .type){{/hasAssociatedValue}}{{/vendorExtensions.x-enum-cases}}
         }
     }
-
     {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum CodingKeys: String, CodingKey, CaseIterable {
         case type
         case value
     }
 }
+{{/vendorExtensions.x-interface-union}}

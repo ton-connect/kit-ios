@@ -4,6 +4,7 @@
   Vendor extensions used:
   - x-generic-params: array of {name} for type parameters
   - x-generic-type-ref: string indicating a property uses a generic type parameter
+  - x-frozen: boolean indicating the field should use AnyCodable type with private let access
 
   Generates Swift structs with generic type parameters and Codable conformance.
 --}}
@@ -12,15 +13,20 @@
 {{#description}}
     /** {{{.}}} */
 {{/description}}
+{{#vendorExtensions.x-frozen}}
+    private let {{{name}}}: AnyCodable{{^required}}?{{/required}}
+{{/vendorExtensions.x-frozen}}
+{{^vendorExtensions.x-frozen}}
 {{#vendorExtensions.x-generic-type-ref}}
     public var {{{name}}}: {{{vendorExtensions.x-generic-type-ref}}}{{^required}}?{{/required}}
 {{/vendorExtensions.x-generic-type-ref}}
 {{^vendorExtensions.x-generic-type-ref}}
     public var {{{name}}}: {{{dataType}}}{{^required}}?{{/required}}
 {{/vendorExtensions.x-generic-type-ref}}
+{{/vendorExtensions.x-frozen}}
 {{/vars}}
 
-    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} init({{#vars}}{{{name}}}: {{#vendorExtensions.x-generic-type-ref}}{{{vendorExtensions.x-generic-type-ref}}}{{/vendorExtensions.x-generic-type-ref}}{{^vendorExtensions.x-generic-type-ref}}{{{dataType}}}{{/vendorExtensions.x-generic-type-ref}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/vars}}) {
+    {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} init({{#vars}}{{{name}}}: {{#vendorExtensions.x-frozen}}AnyCodable{{/vendorExtensions.x-frozen}}{{^vendorExtensions.x-frozen}}{{#vendorExtensions.x-generic-type-ref}}{{{vendorExtensions.x-generic-type-ref}}}{{/vendorExtensions.x-generic-type-ref}}{{^vendorExtensions.x-generic-type-ref}}{{{dataType}}}{{/vendorExtensions.x-generic-type-ref}}{{/vendorExtensions.x-frozen}}{{^required}}? = nil{{/required}}{{^-last}}, {{/-last}}{{/vars}}) {
 {{#vars}}
         self.{{{name}}} = {{{name}}}
 {{/vars}}
