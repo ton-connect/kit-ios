@@ -101,6 +101,10 @@ extension TONSendTransactionRequestEventPreview: JSValueCodable {}
 
 extension TONSendTransactionResponse: JSValueCodable {}
 
+extension TONSignatureDomain: JSValueCodable {}
+
+extension TONSignatureDomainL2: JSValueCodable {}
+
 extension TONSignData: JSValueCodable {}
 
 extension TONSignDataApprovalResponse: JSValueCodable {}

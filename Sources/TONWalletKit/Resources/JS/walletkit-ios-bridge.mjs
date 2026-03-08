@@ -34623,12 +34623,6 @@ class Signer {
     };
   }
 }
-function limitString(data, limit) {
-  return data.length > limit ? data.substring(0, limit) : data;
-}
-function toStringTail(data) {
-  return distExports$1.beginCell().storeStringTail(limitString(data, 127)).endCell();
-}
 function getUnixtime() {
   return Math.floor(Date.now() / 1e3);
 }
@@ -34664,7 +34658,10 @@ function ParseStack(list) {
 function SerializeStackItem(item) {
   switch (item.type) {
     case "int":
-      return { type: "num", value: `${item.value < 0 ? "-" : ""}0x${item.value.toString(16)}` };
+      return {
+        type: "num",
+        value: `${item.value < 0 ? "-" : ""}0x${(item.value < 0 ? -item.value : item.value).toString(16)}`
+      };
     case "slice":
       return { type: "slice", value: item.cell.toBoc().toString("base64") };
     case "cell":
@@ -37565,119 +37562,6 @@ function toDnsRecords(data) {
   }
   return out;
 }
-const ROOT_DNS_RESOLVER_MAINNET = "Ef_lZ1T4NCb2mwkme9h2rJfESCE0W34ma9lWp7-_uY3zXDvq";
-const ROOT_DNS_RESOLVER_TESTNET = "kf_v5x0Thgr6pq6ur2NvkWhIf4DxAxsL-Nk5rknT6n99oEkd";
-var DnsCategory;
-(function(DnsCategory2) {
-  DnsCategory2["DnsNextResolver"] = "dns_next_resolver";
-  DnsCategory2["Wallet"] = "wallet";
-  DnsCategory2["Site"] = "site";
-  DnsCategory2["BagId"] = "storage";
-  DnsCategory2[DnsCategory2["All"] = 0] = "All";
-})(DnsCategory || (DnsCategory = {}));
-var DnsRecord;
-(function(DnsRecord2) {
-  DnsRecord2[DnsRecord2["SmcAddress"] = 40915] = "SmcAddress";
-  DnsRecord2[DnsRecord2["NextResolver"] = 47763] = "NextResolver";
-  DnsRecord2[DnsRecord2["AdnlAddress"] = 44289] = "AdnlAddress";
-  DnsRecord2[DnsRecord2["StorageAddress"] = 29811] = "StorageAddress";
-})(DnsRecord || (DnsRecord = {}));
-function toDnsInternal(domain) {
-  domain = domain.toLowerCase().normalize("NFC");
-  return domain.split(".").filter(Boolean).reverse().join("\0") + "\0";
-}
-function toTonDnsCategory(category) {
-  category = category ?? DnsCategory.All;
-  if (typeof category === "number") {
-    return BigInt(category);
-  }
-  return BigInt("0x" + distExports.sha256_sync(category).toString("hex"));
-}
-async function dnsResolve(client, domain, category, resolver) {
-  let currentResolver = resolver ?? ROOT_DNS_RESOLVER_MAINNET;
-  let unresolved = domain;
-  let maxResolveDepth = 100;
-  while (maxResolveDepth > 0) {
-    maxResolveDepth--;
-    const step = await dnsLookup(client, unresolved, DnsCategory.DnsNextResolver, currentResolver);
-    if (step == null) {
-      return null;
-    }
-    if (step.unresolved) {
-      if (!step.value) {
-        return null;
-      }
-      currentResolver = step.value;
-      unresolved = step.unresolved;
-      continue;
-    }
-    if (step.record === "NextResolver" && step.value) {
-      if (category !== void 0) {
-        return dnsLookup(client, ".", category, step.value);
-      }
-      currentResolver = step.value;
-      unresolved = ".";
-      continue;
-    }
-    if (category !== void 0) {
-      return dnsLookup(client, ".", category, currentResolver);
-    }
-    return step;
-  }
-  return null;
-}
-async function dnsLookup(client, domain, category, resolver) {
-  category = category ?? DnsCategory.DnsNextResolver;
-  resolver = resolver ?? ROOT_DNS_RESOLVER_MAINNET;
-  const result = {
-    resolved: "",
-    unresolved: ""
-  };
-  const isSelf = domain === "." || domain === "";
-  const internal = toDnsInternal(domain);
-  const param = [
-    { type: "slice", cell: toStringTail(internal) },
-    { type: "int", value: toTonDnsCategory(category) }
-  ];
-  const { stack, exitCode } = await CallForSuccess(() => client.runGetMethod(asAddressFriendly(resolver), "dnsresolve", SerializeStack(param)));
-  if (stack?.length !== 2) {
-    return null;
-  }
-  const parsedStack = ParseStack(stack);
-  if (exitCode !== 0) {
-    return null;
-  }
-  const resolvedBit = parsedStack[0].type === "int" ? Number(parsedStack[0].value) : 0;
-  if (resolvedBit === 0 || resolvedBit % 8 !== 0) {
-    return null;
-  }
-  const resolvedByte = resolvedBit / 8;
-  const part = isSelf ? [] : domain.split(".").filter(Boolean);
-  const level = internal.slice(0, Number(resolvedByte)).split(".").filter(Boolean).length;
-  result.unresolved = part.slice(0, part.length - level).join(".");
-  result.resolved = part.slice(part.length - level).join(".");
-  if (category === DnsCategory.All) {
-    throw new Error("not implemented all categories are requested");
-  }
-  const cell = parsedStack[1].type === "cell" ? parsedStack[1].cell : null;
-  if (!cell) {
-    return result;
-  }
-  const slice = cell.asSlice();
-  const tag = slice.loadUint(16);
-  if (tag == DnsRecord.NextResolver || tag == DnsRecord.SmcAddress) {
-    result.value = slice.loadAddress().toString();
-  } else if (tag == DnsRecord.AdnlAddress || tag == DnsRecord.StorageAddress) {
-    result.value = toHexString(slice.loadBuffer(32));
-  } else {
-    result.value = cell.toBoc().toString("base64");
-  }
-  if (result.value) {
-    result.record = DnsRecord[tag];
-  }
-  return result;
-}
-const log$4 = globalLogger.createChild("ApiClientToncenter");
 class TonClientError extends Error {
   status;
   details;
@@ -37688,24 +37572,118 @@ class TonClientError extends Error {
     this.details = details;
   }
 }
-class ApiClientToncenter {
-  dnsResolver;
+class BaseApiClient {
   endpoint;
   apiKey;
   timeout;
   fetchApi;
   network;
   disableNetworkSend;
-  constructor(config = {}) {
+  constructor(config, defaultEndpoint) {
     this.network = config.network;
-    const dnsResolver = this.network?.chainId === Network.mainnet().chainId ? ROOT_DNS_RESOLVER_MAINNET : ROOT_DNS_RESOLVER_TESTNET;
-    const defaultEndpoint = this.network?.chainId === Network.mainnet().chainId ? "https://toncenter.com" : "https://testnet.toncenter.com";
-    this.dnsResolver = config.dnsResolver ?? dnsResolver;
     this.endpoint = config.endpoint ?? defaultEndpoint;
     this.apiKey = config.apiKey;
     this.timeout = config.timeout ?? 3e4;
     this.fetchApi = config.fetchApi ?? fetch;
     this.disableNetworkSend = config.disableNetworkSend ?? false;
+  }
+  async doRequest(url, init = {}) {
+    const fetchFn = this.fetchApi;
+    if (!this.timeout || this.timeout <= 0) {
+      return fetchFn(url, init);
+    }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    try {
+      return await fetchFn(url, { ...init, signal: controller.signal });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+  async fetch(url, props = {}) {
+    const headers = new Headers(props.headers);
+    headers.set("accept", "application/json");
+    this.appendAuthHeaders(headers);
+    props = { ...props, headers };
+    const response = await this.doRequest(url, props);
+    if (!response.ok) {
+      throw await this.buildError(response);
+    }
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      const text = await response.text();
+      throw new TonClientError("Unexpected non-JSON response", response.status, text.slice(0, 200));
+    }
+    const json = await response.json();
+    return json;
+  }
+  async getJson(path, query) {
+    return this.fetch(this.buildUrl(path, query), { method: "GET" });
+  }
+  async postJson(path, props) {
+    return this.fetch(this.buildUrl(path), {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(props)
+    });
+  }
+  buildUrl(path, query = {}) {
+    const url = new URL(path.replace(/^\/*/, "/"), this.endpoint);
+    for (const [key, value] of Object.entries(query)) {
+      if (typeof value === "string")
+        url.searchParams.set(key, value);
+      else if (Array.isArray(value)) {
+        for (const item of value) {
+          if (typeof item === "string")
+            url.searchParams.set(key, item);
+          else if (item != null && typeof item.toString === "function") {
+            url.searchParams.set(key, item.toString());
+          }
+        }
+      } else if (value != null && typeof value.toString === "function") {
+        url.searchParams.set(key, value.toString());
+      }
+    }
+    return url;
+  }
+  async buildError(response) {
+    const message = response.statusText || "HTTP Error";
+    const code = response.status ?? 500;
+    let detail;
+    try {
+      detail = await response.json();
+    } catch {
+    }
+    return new TonClientError(`HTTP ${response.status}: ${message}`, code, detail);
+  }
+}
+const padBase64 = (data) => {
+  return data.padEnd(data.length + (4 - data.length % 4), "=");
+};
+const prepareAddress = (address) => {
+  if (address instanceof distExports$1.Address) {
+    address = address.toString();
+  }
+  return address;
+};
+const parseInternalTransactionId = (data) => {
+  if (data.hash !== "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=") {
+    return {
+      lt: data.lt,
+      hash: Base64ToHex(data.hash)
+    };
+  }
+  return null;
+};
+const log$4 = globalLogger.createChild("ApiClientToncenter");
+class ApiClientToncenter extends BaseApiClient {
+  constructor(config = {}) {
+    const defaultEndpoint = config.network?.chainId === Network.mainnet().chainId ? "https://toncenter.com" : "https://testnet.toncenter.com";
+    super(config, defaultEndpoint);
+  }
+  appendAuthHeaders(headers) {
+    if (this.apiKey)
+      headers.set("x-api-key", this.apiKey);
   }
   async nftItemsByAddress(request) {
     const props = {
@@ -37790,76 +37768,6 @@ class ApiClientToncenter {
   }
   async getBalance(address, seqno) {
     return (await this.getAccountState(address, seqno)).balance;
-  }
-  async doRequest(url, init = {}) {
-    const fetchFn = this.fetchApi;
-    if (!this.timeout || this.timeout <= 0) {
-      return fetchFn(url, init);
-    }
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-    try {
-      return await fetchFn(url, { ...init, signal: controller.signal });
-    } finally {
-      clearTimeout(timeoutId);
-    }
-  }
-  async fetch(url, props = {}) {
-    const headers = new Headers(props.headers);
-    headers.set("accept", "application/json");
-    if (this.apiKey)
-      headers.set("x-api-key", this.apiKey);
-    props = { ...props, headers };
-    const response = await this.doRequest(url, props);
-    if (!response.ok) {
-      throw await this.buildError(response);
-    }
-    const contentType = response.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) {
-      const text = await response.text();
-      throw new TonClientError("Unexpected non-JSON response", response.status, text.slice(0, 200));
-    }
-    const json = await response.json();
-    return json;
-  }
-  async getJson(path, query) {
-    return this.fetch(this.buildUrl(path, query), { method: "GET" });
-  }
-  async postJson(path, props) {
-    return this.fetch(this.buildUrl(path), {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(props)
-    });
-  }
-  buildUrl(path, query = {}) {
-    const url = new URL(path.replace(/^\/*/, "/"), this.endpoint);
-    for (const [key, value] of Object.entries(query)) {
-      if (typeof value === "string")
-        url.searchParams.set(key, value);
-      else if (Array.isArray(value)) {
-        for (const item of value) {
-          if (typeof item === "string")
-            url.searchParams.set(key, item);
-          else if (item != null && typeof item.toString === "function") {
-            url.searchParams.set(key, item.toString());
-          }
-        }
-      } else if (value != null && typeof value.toString === "function") {
-        url.searchParams.set(key, value.toString());
-      }
-    }
-    return url;
-  }
-  async buildError(response) {
-    const message = response.statusText || "HTTP Error";
-    const code = response.status ?? 500;
-    let detail;
-    try {
-      detail = await response.json();
-    } catch {
-    }
-    return new TonClientError(`HTTP ${response.status}: ${message}`, code, detail);
   }
   async getAccountTransactions(request) {
     const accounts = request.address?.map(prepareAddress);
@@ -37954,9 +37862,13 @@ class ApiClientToncenter {
     throw new Error("Failed to fetch pending trace");
   }
   async resolveDnsWallet(domain) {
-    const result = await dnsResolve(this, domain, DnsCategory.Wallet, this.dnsResolver);
-    if (result && result.value) {
-      return result.value;
+    const response = toDnsRecords(await this.getJson("/api/v3/dns/records", {
+      domain,
+      limit: 1,
+      offset: 0
+    }));
+    if (response.records.length > 0 && response.records[0].dnsWallet) {
+      return response.records[0].dnsWallet;
     }
     return null;
   }
@@ -38070,24 +37982,6 @@ class ApiClientToncenter {
     }
     return out;
   }
-}
-const padBase64 = (data) => {
-  return data.padEnd(data.length + (4 - data.length % 4), "=");
-};
-function prepareAddress(address) {
-  if (address instanceof distExports$1.Address) {
-    address = address.toString();
-  }
-  return address;
-}
-function parseInternalTransactionId(data) {
-  if (data.hash !== "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=") {
-    return {
-      lt: data.lt,
-      hash: Base64ToHex(data.hash)
-    };
-  }
-  return null;
 }
 const log$3 = globalLogger.createChild("NetworkManager");
 class KitNetworkManager {
@@ -38723,6 +38617,379 @@ class TonWalletKit {
   async processInjectedBridgeRequest(messageInfo, request) {
     await this.ensureInitialized();
     return this.bridgeManager.queueJsBridgeEvent(messageInfo, request);
+  }
+}
+function mapAccountState(raw) {
+  let status;
+  switch (raw.status) {
+    case "nonexist":
+      status = "non-existing";
+      break;
+    case "uninit":
+      status = "uninitialized";
+      break;
+    case "active":
+      status = "active";
+      break;
+    case "frozen":
+      status = "frozen";
+      break;
+    default:
+      status = "non-existing";
+  }
+  const extraCurrencies = {};
+  if (raw.extra_balance && Array.isArray(raw.extra_balance)) {
+    for (const extra of raw.extra_balance) {
+      extraCurrencies[extra.preview.id] = BigInt(extra.amount);
+    }
+  }
+  let lastTransaction = null;
+  if (raw.last_transaction_lt && raw.last_transaction_hash) {
+    lastTransaction = {
+      lt: raw.last_transaction_lt.toString(),
+      hash: raw.last_transaction_hash.startsWith("0x") ? raw.last_transaction_hash : `0x${raw.last_transaction_hash}`
+    };
+  }
+  const out = {
+    status,
+    balance: raw.balance.toString(),
+    extraCurrencies,
+    code: raw.code ? Buffer.from(raw.code, "hex").toString("base64") : null,
+    data: raw.data ? Buffer.from(raw.data, "hex").toString("base64") : null,
+    lastTransaction
+  };
+  return out;
+}
+function toRaw(address) {
+  return distExports$1.Address.parse(address).toRawString();
+}
+function mapJettonMasters(jettonInfo) {
+  const addressBook = {};
+  const jettonRaw = toRaw(jettonInfo.metadata.address);
+  const jettonFriendly = asAddressFriendly(jettonInfo.metadata.address);
+  if (jettonInfo.admin) {
+    const adminRaw = toRaw(jettonInfo.admin.address);
+    const adminFriendly = asAddressFriendly(jettonInfo.admin.address);
+    addressBook[adminRaw] = {
+      user_friendly: adminFriendly,
+      domain: jettonInfo.admin.name ?? null,
+      interfaces: []
+    };
+  }
+  addressBook[jettonRaw] = {
+    user_friendly: jettonFriendly,
+    domain: null,
+    interfaces: ["jetton_master"]
+  };
+  return {
+    jetton_masters: [
+      {
+        address: jettonRaw,
+        balance: "0",
+        owner: jettonInfo.admin ? toRaw(jettonInfo.admin.address) : "",
+        jetton: jettonRaw,
+        last_transaction_lt: "0",
+        code_hash: "",
+        data_hash: ""
+      }
+    ],
+    address_book: addressBook,
+    metadata: {
+      [jettonRaw]: {
+        is_indexed: true,
+        token_info: [
+          {
+            valid: true,
+            type: "jetton_masters",
+            name: jettonInfo.metadata.name,
+            symbol: jettonInfo.metadata.symbol,
+            description: jettonInfo.metadata.description,
+            image: jettonInfo.metadata.image,
+            extra: {
+              decimals: jettonInfo.metadata.decimals
+            }
+          }
+        ]
+      }
+    }
+  };
+}
+function mapUserJettons(rawResponse) {
+  const addressBook = {};
+  const userJettons = rawResponse.balances.map((wallet) => {
+    const isVerified = wallet.jetton.verification === "whitelist";
+    if (wallet.wallet_address) {
+      const address = asAddressFriendly(wallet.wallet_address.address);
+      if (!addressBook[address]) {
+        addressBook[address] = {
+          address,
+          domain: wallet.wallet_address.name ?? void 0,
+          interfaces: []
+        };
+      }
+    }
+    const jetton = {
+      address: asAddressFriendly(wallet.jetton.address),
+      walletAddress: asAddressFriendly(wallet.wallet_address.address),
+      balance: wallet.balance,
+      info: {
+        name: wallet.jetton.name,
+        description: "",
+        // TonApi does not provide description here
+        image: {
+          url: wallet.jetton.image
+        },
+        symbol: wallet.jetton.symbol
+      },
+      decimalsNumber: wallet.jetton.decimals,
+      prices: wallet.price ? Object.entries(wallet.price.prices).map(([currency, value]) => ({
+        value: value.toString(),
+        currency: currency.toUpperCase()
+      })) : [
+        {
+          value: "0",
+          currency: "USD"
+        }
+      ],
+      isVerified
+    };
+    return jetton;
+  });
+  return {
+    jettons: userJettons,
+    addressBook
+  };
+}
+function mapNftItem(item) {
+  const isVerified = item.trust === "whitelist" || item.verified;
+  const nft = {
+    address: asAddressFriendly(item.address),
+    index: item.index.toString(),
+    ownerAddress: item.owner ? asAddressFriendly(item.owner.address) : void 0,
+    collection: item.collection ? {
+      address: asAddressFriendly(item.collection.address),
+      name: item.collection.name,
+      description: item.collection.description
+    } : void 0,
+    info: {
+      name: item.metadata.name ?? "",
+      description: item.metadata.description ?? "",
+      image: {
+        url: item.metadata.image ?? ""
+      }
+    },
+    attributes: item.metadata.attributes?.map((attr) => ({
+      traitType: attr.trait_type,
+      value: attr.value
+    })),
+    extra: {
+      isVerified,
+      contentUrl: item.metadata.content_url,
+      previews: item.previews,
+      approvedBy: item.approved_by
+    }
+  };
+  return nft;
+}
+function mapNftItemsResponse(items) {
+  const addressBook = {};
+  items.forEach((item) => {
+    if (item.owner) {
+      const address = asAddressFriendly(item.owner.address);
+      if (!addressBook[address]) {
+        addressBook[address] = {
+          address,
+          domain: item.owner.name ?? void 0,
+          interfaces: []
+        };
+      }
+    }
+  });
+  return {
+    addressBook,
+    nfts: items.map(mapNftItem)
+  };
+}
+const hexBocToBase64 = (hex) => {
+  return Buffer.from(hex, "hex").toString("base64");
+};
+const mapTonApiGetMethodArgs = (stack) => {
+  return (stack || []).map((item) => {
+    switch (item.type) {
+      case "null":
+        return { type: "null", value: "Null" };
+      case "num":
+        if (item.value === "NaN") {
+          return { type: "nan", value: "NaN" };
+        }
+        if (item.value.startsWith("0x") || item.value.startsWith("-0x")) {
+          return { type: "int257", value: item.value };
+        }
+        return { type: "tinyint", value: item.value };
+      case "cell":
+        return { type: "cell_boc_base64", value: item.value };
+      case "slice":
+        return { type: "slice_boc_hex", value: Buffer.from(item.value, "base64").toString("hex") };
+      case "builder":
+        return { type: "cell_boc_base64", value: item.value };
+      case "tuple":
+      case "list":
+        throw new Error(`TonApi doesn't support ${item.type} in get method arguments`);
+      default:
+        throw new Error(`Unsupported stack item type: ${item.type}`);
+    }
+  });
+};
+const mapTonApiTvmStackRecord = (item) => {
+  switch (item.type) {
+    case "null":
+      return { type: "null" };
+    case "nan":
+      return { type: "num", value: "NaN" };
+    case "num":
+      return { type: "num", value: item.num };
+    case "cell":
+      return { type: "cell", value: hexBocToBase64(item.cell) };
+    case "slice":
+      return { type: "slice", value: hexBocToBase64(item.slice || item.cell) };
+    case "tuple":
+      return { type: "tuple", value: (item.tuple || []).map(mapTonApiTvmStackRecord) };
+    default:
+      throw new Error(`Unsupported TonApi stack item type: ${item.type}`);
+  }
+};
+class ApiClientTonApi extends BaseApiClient {
+  constructor(config = {}) {
+    let defaultEndpoint;
+    switch (config.network?.chainId) {
+      case Network.mainnet().chainId:
+        defaultEndpoint = "https://tonapi.io";
+        break;
+      case Network.tetra().chainId:
+        defaultEndpoint = "https://tetra.tonapi.io";
+        break;
+      default:
+        defaultEndpoint = "https://testnet.tonapi.io";
+        break;
+    }
+    super(config, defaultEndpoint);
+  }
+  async getAccountState(address, _seqno) {
+    try {
+      const raw = await this.getJson(`/v2/blockchain/accounts/${address}`);
+      return mapAccountState(raw);
+    } catch (e) {
+      if (e instanceof TonClientError && e.status === 404) {
+        return {
+          status: "non-existing",
+          balance: "0",
+          extraCurrencies: {},
+          code: null,
+          data: null,
+          lastTransaction: null
+        };
+      }
+      throw e;
+    }
+  }
+  async getBalance(address, seqno) {
+    const state = await this.getAccountState(address, seqno);
+    return state.balance;
+  }
+  async jettonsByAddress(request) {
+    const raw = await this.getJson(`/v2/jettons/${request.address}`);
+    return mapJettonMasters(raw);
+  }
+  async jettonsByOwnerAddress(request) {
+    const raw = await this.getJson(`/v2/accounts/${request.ownerAddress}/jettons?currencies=usd`);
+    return mapUserJettons(raw);
+  }
+  async nftItemsByAddress(request) {
+    if (!request.address) {
+      throw new Error("TonApi requires an address to fetch NFT items.");
+    }
+    try {
+      const raw = await this.getJson(`/v2/nfts/${request.address}`);
+      return mapNftItemsResponse([raw]);
+    } catch (e) {
+      if (e instanceof TonClientError && e.status === 404) {
+        return { addressBook: {}, nfts: [] };
+      }
+      throw e;
+    }
+  }
+  async nftItemsByOwner(request) {
+    const query = {};
+    if (request.pagination?.limit)
+      query.limit = request.pagination.limit;
+    if (request.pagination?.offset)
+      query.offset = request.pagination.offset;
+    const raw = await this.getJson(`/v2/accounts/${request.ownerAddress}/nfts`, query);
+    return mapNftItemsResponse(raw.nft_items);
+  }
+  async sendBoc(boc) {
+    if (this.disableNetworkSend) {
+      return "";
+    }
+    await this.postJson("/v2/liteserver/send_message", { body: boc });
+    const { hash } = getNormalizedExtMessageHash(boc);
+    return Base64ToBigInt(hash).toString(16);
+  }
+  async fetchEmulation(_messageBoc, _ignoreSignature) {
+    throw new Error("Method not implemented.");
+  }
+  async runGetMethod(address, method, stack, _seqno) {
+    const args = mapTonApiGetMethodArgs(stack);
+    const raw = await this.postJson(`/v2/blockchain/accounts/${address}/methods/${method}`, { args });
+    if (!raw.success) {
+      throw new Error(`TonApi runGetMethod '${method}' failed with exit code ${raw.exit_code}`);
+    }
+    return {
+      // TonApi does not return gas_used
+      gasUsed: 0,
+      exitCode: raw.exit_code,
+      stack: (raw.stack || []).map(mapTonApiTvmStackRecord)
+    };
+  }
+  async getAccountTransactions(_request) {
+    throw new Error("Method not implemented.");
+  }
+  async getTransactionsByHash(_request) {
+    throw new Error("Method not implemented.");
+  }
+  async getPendingTransactions(_request) {
+    throw new Error("Method not implemented.");
+  }
+  async getTrace(_request) {
+    throw new Error("Method not implemented.");
+  }
+  async getPendingTrace(_request) {
+    throw new Error("Method not implemented.");
+  }
+  async resolveDnsWallet(domain) {
+    try {
+      const raw = await this.getJson(`/v2/dns/${domain}/resolve`);
+      const address = raw?.wallet?.address;
+      return address ? asAddressFriendly(address) : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+  async backResolveDnsWallet(address) {
+    try {
+      const raw = await this.getJson(`/v2/accounts/${address}/dns/backresolve`);
+      return raw.domains && raw.domains.length > 0 ? raw.domains[0] : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+  async getEvents(_request) {
+    throw new Error("Method not implemented.");
+  }
+  appendAuthHeaders(headers) {
+    if (this.apiKey) {
+      headers.set("Authorization", `Bearer ${this.apiKey}`);
+    }
   }
 }
 const WalletV5R1CodeBoc = "b5ee9c7201021401000281000114ff00f4a413f4bcf2c80b01020120020302014804050102f20e02dcd020d749c120915b8f6320d70b1f2082106578746ebd21821073696e74bdb0925f03e082106578746eba8eb48020d72101d074d721fa4030fa44f828fa443058bd915be0ed44d0810141d721f4058307f40e6fa1319130e18040d721707fdb3ce03120d749810280b99130e070e2100f020120060702012008090019be5f0f6a2684080a0eb90fa02c02016e0a0b0201480c0d0019adce76a2684020eb90eb85ffc00019af1df6a2684010eb90eb858fc00017b325fb51341c75c875c2c7e00011b262fb513435c28020011e20d70b1f82107369676ebaf2e08a7f0f01e68ef0eda2edfb218308d722028308d723208020d721d31fd31fd31fed44d0d200d31f20d31fd3ffd70a000af90140ccf9109a28945f0adb31e1f2c087df02b35007b0f2d0845125baf2e0855036baf2e086f823bbf2d0882292f800de01a47fc8ca00cb1f01cf16c9ed542092f80fde70db3cd81003f6eda2edfb02f404216e926c218e4c0221d73930709421c700b38e2d01d72820761e436c20d749c008f2e09320d74ac002f2e09320d71d06c712c2005230b0f2d089d74cd7393001a4e86c128407bbf2e093d74ac000f2e093ed55e2d20001c000915be0ebd72c08142091709601d72c081c12e25210b1e30f20d74a111213009601fa4001fa44f828fa443058baf2e091ed44d0810141d718f405049d7fc8ca0040048307f453f2e08b8e14038307f45bf2e08c22d70a00216e01b3b0f2d090e2c85003cf1612f400c9ed54007230d72c08248e2d21f2e092d200ed44d0d2005113baf2d08f54503091319c01810140d721d70a00f2e08ee2c8ca0058cf16c9ed5493f2c08de20010935bdb31e1d74cd0";
@@ -39741,6 +40008,7 @@ var __async = (__this, __arguments, generator) => {
   });
 };
 window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager, apiClients) => __async(null, null, function* () {
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
   console.log("🚀 WalletKit iOS Bridge starting...");
   console.log("Creating WalletKit instance with configuration", configuration);
   console.log("Storage", storage);
@@ -39753,8 +40021,32 @@ window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager,
   const networks = {};
   if (configuration.networkConfigurations) {
     for (const netConfig of configuration.networkConfigurations) {
+      if (netConfig.apiClientType === "custom") {
+        continue;
+      }
+      let apiClient;
+      if (netConfig.apiClientType === "default") {
+        apiClient = netConfig.apiClientConfiguration;
+      } else if (netConfig.apiClientType === "toncenter") {
+        apiClient = new ApiClientToncenter({
+          dnsResolver: (_a = netConfig.apiClientConfiguration) == null ? void 0 : _a.dnsResolver,
+          endpoint: (_b = netConfig.apiClientConfiguration) == null ? void 0 : _b.url,
+          apiKey: (_c = netConfig.apiClientConfiguration) == null ? void 0 : _c.key,
+          timeout: (_d = netConfig.apiClientConfiguration) == null ? void 0 : _d.timeout,
+          network: netConfig.network,
+          disableNetworkSend: (_e = netConfig.apiClientConfiguration) == null ? void 0 : _e.disableNetworkSend
+        });
+      } else if (netConfig.apiClientType === "tonapi") {
+        apiClient = new ApiClientTonApi({
+          endpoint: (_f = netConfig.apiClientConfiguration) == null ? void 0 : _f.url,
+          apiKey: (_g = netConfig.apiClientConfiguration) == null ? void 0 : _g.key,
+          timeout: (_h = netConfig.apiClientConfiguration) == null ? void 0 : _h.timeout,
+          network: netConfig.network,
+          disableNetworkSend: (_i = netConfig.apiClientConfiguration) == null ? void 0 : _i.disableNetworkSend
+        });
+      }
       networks[netConfig.network.chainId] = {
-        apiClient: netConfig.apiClientConfiguration
+        apiClient
       };
     }
   }
@@ -39827,24 +40119,24 @@ window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager,
       walletKit.removeDisconnectCallback();
       console.log("🗑️ All event listeners removed");
     },
-    createSignerFromMnemonic(mnemonic2) {
+    createSignerFromMnemonic(mnemonic2, domain) {
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating signer from mnemonic");
+        console.log("➕ Bridge: Creating signer from mnemonic and domain - ", domain);
         if (!mnemonic2) {
           throw new Error("Mnemonic is required to create signer");
         }
-        return yield Signer.fromMnemonic(mnemonic2, { type: "ton" });
+        return yield Signer.fromMnemonic(mnemonic2, { type: "ton" }, domain);
       });
     },
-    createSignerFromPrivateKey(privateKey) {
+    createSignerFromPrivateKey(privateKey, domain) {
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating signer from private key");
+        console.log("➕ Bridge: Creating signer from private key and domain - ", domain);
         if (!privateKey) {
           throw new Error("Private key is required to create signer");
         }
-        return yield Signer.fromPrivateKey(privateKey);
+        return yield Signer.fromPrivateKey(privateKey, domain);
       });
     },
     createV4R2WalletAdapter(signer, parameters) {

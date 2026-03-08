@@ -28,6 +28,7 @@ extension TONNetwork {
     
     public static var mainnet: TONNetwork { TONNetwork(chainId: "-239") }
     public static var testnet: TONNetwork { TONNetwork(chainId: "-3") }
+    public static var tetra: TONNetwork { TONNetwork(chainId: "662387") }
 }
 
 extension TONNetwork: Hashable {
