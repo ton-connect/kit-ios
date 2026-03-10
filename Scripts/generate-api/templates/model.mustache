@@ -1,4 +1,4 @@
-{{#models}}{{#model}}//
+{{#models}}{{#model}}{{^vendorExtensions.x-skip-model}}//
 //  {{classname}}.swift
 //  TONWalletKit
 //
@@ -42,10 +42,10 @@ extension {{projectName}}API {
 {{> modelOneOf}}{{/vendorExtensions.x-is-one-of-interface}}{{^vendorExtensions.x-is-one-of-interface}}{{#isArray}}
 {{> modelArray}}{{/isArray}}{{^isArray}}{{#isEnum}}
 {{> modelEnum}}{{/isEnum}}{{^isEnum}}
-{{> modelAllOf}}{{/isEnum}}{{/isArray}}{{/vendorExtensions.x-is-one-of-interface}}{{/vendorExtensions.x-is-generic}}{{/vendorExtensions.x-discriminated-union}}{{/model}}{{/models}}
+{{> modelAllOf}}{{/isEnum}}{{/isArray}}{{/vendorExtensions.x-is-one-of-interface}}{{/vendorExtensions.x-is-generic}}{{/vendorExtensions.x-discriminated-union}}{{/vendorExtensions.x-skip-model}}{{/model}}{{/models}}
 {{#swiftUseApiNamespace}}
 }
-{{/swiftUseApiNamespace}}{{#models}}{{#model}}{{#vendorExtensions.x-swift-identifiable}}
+{{/swiftUseApiNamespace}}{{#models}}{{#model}}{{^vendorExtensions.x-skip-model}}{{#vendorExtensions.x-swift-identifiable}}
 @available(iOS 13, tvOS 13, watchOS 6, macOS 10.15, *)
 extension {{#swiftUseApiNamespace}}{{projectName}}API.{{/swiftUseApiNamespace}}{{{classname}}}: Identifiable {}
-{{/vendorExtensions.x-swift-identifiable}}{{/model}}{{/models}}
+{{/vendorExtensions.x-swift-identifiable}}{{/vendorExtensions.x-skip-model}}{{/model}}{{/models}}

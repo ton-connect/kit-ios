@@ -84,6 +84,13 @@ echo "📁 Copying generated models to destination directory: $DEST_DIR"
 mkdir -p "$DEST_DIR"
 cp -R "$MODELS_DIR/"* "$DEST_DIR/"
 
+# Remove empty/whitespace-only generated files (from x-skip-model suppression)
+find "$DEST_DIR" -name '*.swift' -type f | while read -r file; do
+    if ! grep -q '[^[:space:]]' "$file"; then
+        rm "$file"
+    fi
+done
+
 # Step 4: Generate JSValueCodable conformances
 JS_CODABLE_FILE="${PROJECT_ROOT}/Sources/TONWalletKit/JSAdapters/JSConvertion/TONModelsJSValueCodable.swift"
 echo "🔗 Generating JSValueCodable conformances..."
