@@ -114,3 +114,6 @@ public struct TONSendTransactionRequestEvent: Codable {
 
 
 
+
+extension TONSendTransactionRequestEvent: JSValueCodable {}
+

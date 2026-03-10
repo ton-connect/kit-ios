@@ -56,3 +56,6 @@ public struct TONSignDataCell: Codable {
 
 
 
+
+extension TONSignDataCell: JSValueCodable {}
+

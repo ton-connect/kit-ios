@@ -60,3 +60,6 @@ public struct TONRequestErrorEvent: Codable {
 
 
 
+
+extension TONRequestErrorEvent: JSValueCodable {}
+

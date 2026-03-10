@@ -74,3 +74,6 @@ public struct TONTransactionTokenInfoJettonWallets: Codable {
 
 
 
+
+extension TONTransactionTokenInfoJettonWallets: JSValueCodable {}
+

@@ -101,3 +101,6 @@ public struct TONTransactionTokenInfoJettonMasters: Codable {
 
 
 
+
+extension TONTransactionTokenInfoJettonMasters: JSValueCodable {}
+

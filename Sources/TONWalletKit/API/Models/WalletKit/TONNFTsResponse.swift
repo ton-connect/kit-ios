@@ -57,3 +57,6 @@ public struct TONNFTsResponse: Codable {
 
 
 
+
+extension TONNFTsResponse: JSValueCodable {}
+

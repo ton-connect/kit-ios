@@ -57,3 +57,6 @@ public struct TONTokenAnimation: Codable {
 
 
 
+
+extension TONTokenAnimation: JSValueCodable {}
+

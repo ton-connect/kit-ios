@@ -60,3 +60,6 @@ public struct TONSignDataPayload: Codable {
 
 
 
+
+extension TONSignDataPayload: JSValueCodable {}
+

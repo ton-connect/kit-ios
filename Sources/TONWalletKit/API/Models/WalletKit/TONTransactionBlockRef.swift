@@ -62,3 +62,6 @@ public struct TONTransactionBlockRef: Codable {
 
 
 
+
+extension TONTransactionBlockRef: JSValueCodable {}
+

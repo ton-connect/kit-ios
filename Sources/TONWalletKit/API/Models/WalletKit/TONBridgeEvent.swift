@@ -106,3 +106,6 @@ public struct TONBridgeEvent: Codable {
 
 
 
+
+extension TONBridgeEvent: JSValueCodable {}
+

@@ -113,3 +113,6 @@ public struct TONNFT: Codable {
 
 
 
+
+extension TONNFT: JSValueCodable {}
+

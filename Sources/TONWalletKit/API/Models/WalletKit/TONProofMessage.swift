@@ -78,3 +78,6 @@ public struct TONProofMessage: Codable {
 
 
 
+
+extension TONProofMessage: JSValueCodable {}
+

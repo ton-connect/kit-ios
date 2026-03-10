@@ -78,3 +78,6 @@ public enum TONSignDataPreview: Codable {
 }
 
 
+
+extension TONSignDataPreview: JSValueCodable {}
+

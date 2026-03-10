@@ -73,3 +73,6 @@ public struct TONTransactionTraceActionTONTransferDetails: Codable {
 
 
 
+
+extension TONTransactionTraceActionTONTransferDetails: JSValueCodable {}
+

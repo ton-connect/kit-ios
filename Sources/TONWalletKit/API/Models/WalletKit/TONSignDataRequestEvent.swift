@@ -114,3 +114,6 @@ public struct TONSignDataRequestEvent: Codable {
 
 
 
+
+extension TONSignDataRequestEvent: JSValueCodable {}
+

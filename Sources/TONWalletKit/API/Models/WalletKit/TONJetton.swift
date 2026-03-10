@@ -83,3 +83,6 @@ public struct TONJetton: Codable {
 
 
 
+
+extension TONJetton: JSValueCodable {}
+

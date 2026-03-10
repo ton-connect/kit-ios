@@ -72,3 +72,6 @@ public struct TONTokenImage: Codable {
 
 
 
+
+extension TONTokenImage: JSValueCodable {}
+

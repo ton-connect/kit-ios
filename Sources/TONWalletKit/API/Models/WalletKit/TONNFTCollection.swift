@@ -87,3 +87,6 @@ public struct TONNFTCollection: Codable {
 
 
 
+
+extension TONNFTCollection: JSValueCodable {}
+

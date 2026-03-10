@@ -57,3 +57,6 @@ public struct TONProofMessageDomain: Codable {
 
 
 
+
+extension TONProofMessageDomain: JSValueCodable {}
+

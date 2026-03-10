@@ -64,3 +64,6 @@ public struct TONNFTTransferRequest: Codable {
 
 
 
+
+extension TONNFTTransferRequest: JSValueCodable {}
+

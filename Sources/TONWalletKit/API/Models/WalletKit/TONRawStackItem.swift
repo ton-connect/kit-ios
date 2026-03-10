@@ -104,3 +104,6 @@ public enum TONRawStackItem: Codable {
 }
 
 
+
+extension TONRawStackItem: JSValueCodable {}
+

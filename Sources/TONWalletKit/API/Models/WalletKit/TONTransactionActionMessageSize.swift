@@ -57,3 +57,6 @@ public struct TONTransactionActionMessageSize: Codable {
 
 
 
+
+extension TONTransactionActionMessageSize: JSValueCodable {}
+

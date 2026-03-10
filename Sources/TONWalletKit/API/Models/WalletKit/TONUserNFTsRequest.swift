@@ -55,3 +55,6 @@ public struct TONUserNFTsRequest: Codable {
 
 
 
+
+extension TONUserNFTsRequest: JSValueCodable {}
+

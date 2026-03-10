@@ -77,3 +77,6 @@ public struct TONTransferRequest: Codable {
 
 
 
+
+extension TONTransferRequest: JSValueCodable {}
+

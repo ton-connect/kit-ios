@@ -56,3 +56,6 @@ public struct TONPagination: Codable {
 
 
 
+
+extension TONPagination: JSValueCodable {}
+

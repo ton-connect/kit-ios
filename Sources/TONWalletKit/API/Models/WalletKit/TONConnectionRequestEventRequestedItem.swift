@@ -76,3 +76,6 @@ public enum TONConnectionRequestEventRequestedItem: Codable {
 }
 
 
+
+extension TONConnectionRequestEventRequestedItem: JSValueCodable {}
+

@@ -115,3 +115,6 @@ public struct TONConnectionRequestEvent: Codable {
 
 
 
+
+extension TONConnectionRequestEvent: JSValueCodable {}
+

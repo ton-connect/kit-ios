@@ -107,3 +107,6 @@ public struct TONConnectSession: Codable {
 
 
 
+
+extension TONConnectSession: JSValueCodable {}
+

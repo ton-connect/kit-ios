@@ -110,3 +110,6 @@ public struct TONDisconnectionEvent: Codable {
 
 
 
+
+extension TONDisconnectionEvent: JSValueCodable {}
+

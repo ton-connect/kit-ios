@@ -68,3 +68,6 @@ public struct TONTransactionTraceActionCallContractDetails: Codable {
 
 
 
+
+extension TONTransactionTraceActionCallContractDetails: JSValueCodable {}
+
