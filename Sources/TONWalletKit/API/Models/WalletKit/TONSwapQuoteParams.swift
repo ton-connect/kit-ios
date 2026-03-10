@@ -79,3 +79,6 @@ public struct TONSwapQuoteParams<TProviderOptions: Codable>: Codable {
 }
 
 
+
+extension TONSwapQuoteParams: JSValueCodable {}
+

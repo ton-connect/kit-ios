@@ -72,3 +72,6 @@ public struct TONDAppInfo: Codable {
 
 
 
+
+extension TONDAppInfo: JSValueCodable {}
+

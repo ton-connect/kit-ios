@@ -56,3 +56,6 @@ public struct TONDisconnectionEventPreview: Codable {
 
 
 
+
+extension TONDisconnectionEventPreview: JSValueCodable {}
+

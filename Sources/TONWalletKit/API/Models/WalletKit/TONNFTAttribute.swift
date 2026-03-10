@@ -62,3 +62,6 @@ public struct TONNFTAttribute: Codable {
 
 
 
+
+extension TONNFTAttribute: JSValueCodable {}
+

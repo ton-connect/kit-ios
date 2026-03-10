@@ -63,3 +63,6 @@ public struct TONTransactionEmulatedPreview: Codable {
 
 
 
+
+extension TONTransactionEmulatedPreview: JSValueCodable {}
+

@@ -70,3 +70,6 @@ public struct TONNFTRawTransferRequestMessage: Codable {
 
 
 
+
+extension TONNFTRawTransferRequestMessage: JSValueCodable {}
+

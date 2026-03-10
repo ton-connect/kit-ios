@@ -78,3 +78,6 @@ public enum TONTransactionTokenInfo: Codable {
 }
 
 
+
+extension TONTransactionTokenInfo: JSValueCodable {}
+

@@ -60,3 +60,6 @@ public struct TONSignDataPreviewCell: Codable {
 
 
 
+
+extension TONSignDataPreviewCell: JSValueCodable {}
+

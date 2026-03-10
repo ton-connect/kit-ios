@@ -55,3 +55,6 @@ public struct TONSignDataRequestEventPreview: Codable {
 
 
 
+
+extension TONSignDataRequestEventPreview: JSValueCodable {}
+

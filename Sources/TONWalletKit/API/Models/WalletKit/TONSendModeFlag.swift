@@ -34,3 +34,6 @@ public enum TONSendModeFlag: Int, Codable, CaseIterable {
     case payGasSeparately = 1
 }
 
+
+extension TONSendModeFlag: JSValueCodable {}
+

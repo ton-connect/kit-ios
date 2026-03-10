@@ -69,3 +69,6 @@ public struct TONPreparedSignData: Codable {
 
 
 
+
+extension TONPreparedSignData: JSValueCodable {}
+

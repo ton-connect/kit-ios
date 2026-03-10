@@ -55,3 +55,6 @@ public struct TONSwapFee: Codable {
 
 
 
+
+extension TONSwapFee: JSValueCodable {}
+

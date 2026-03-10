@@ -51,3 +51,6 @@ public struct TONSendTransactionRequestEventPreview: Codable {
 
 
 
+
+extension TONSendTransactionRequestEventPreview: JSValueCodable {}
+

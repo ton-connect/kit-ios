@@ -108,3 +108,6 @@ public struct TONSwapQuote: Codable {
 
 
 
+
+extension TONSwapQuote: JSValueCodable {}
+

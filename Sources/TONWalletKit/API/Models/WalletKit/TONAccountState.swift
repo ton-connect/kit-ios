@@ -80,3 +80,6 @@ public struct TONAccountState: Codable {
 
 
 
+
+extension TONAccountState: JSValueCodable {}
+

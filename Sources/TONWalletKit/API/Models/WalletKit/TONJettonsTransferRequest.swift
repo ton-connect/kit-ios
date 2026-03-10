@@ -64,3 +64,6 @@ public struct TONJettonsTransferRequest: Codable {
 
 
 
+
+extension TONJettonsTransferRequest: JSValueCodable {}
+

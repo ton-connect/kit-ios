@@ -62,3 +62,6 @@ public struct TONConnectionApprovalProof: Codable {
 
 
 
+
+extension TONConnectionApprovalProof: JSValueCodable {}
+

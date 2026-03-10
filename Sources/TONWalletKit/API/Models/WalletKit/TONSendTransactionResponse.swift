@@ -58,3 +58,6 @@ public struct TONSendTransactionResponse: Codable {
 
 
 
+
+extension TONSendTransactionResponse: JSValueCodable {}
+

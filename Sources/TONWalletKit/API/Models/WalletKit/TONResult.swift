@@ -33,3 +33,6 @@ public enum TONResult: String, Codable, CaseIterable {
     case failure = "failure"
 }
 
+
+extension TONResult: JSValueCodable {}
+

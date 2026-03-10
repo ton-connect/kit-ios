@@ -91,29 +91,6 @@ find "$DEST_DIR" -name '*.swift' -type f | while read -r file; do
     fi
 done
 
-# Step 4: Generate JSValueCodable conformances
-JS_CODABLE_FILE="${PROJECT_ROOT}/Sources/TONWalletKit/JSAdapters/JSConvertion/TONModelsJSValueCodable.swift"
-echo "🔗 Generating JSValueCodable conformances..."
-
-cat > "$JS_CODABLE_FILE" << 'HEADER'
-//
-// TONModelsJSValueCodable.generated.swift
-// TONWalletKit
-//
-// Auto-generated — do not edit manually.
-//
-
-import Foundation
-HEADER
-
-for file in "$DEST_DIR"/*.swift; do
-    MODEL_NAME=$(basename "$file" .swift)
-    echo "" >> "$JS_CODABLE_FILE"
-    echo "extension $MODEL_NAME: JSValueCodable {}" >> "$JS_CODABLE_FILE"
-done
-
-echo "✅ Generated JSValueCodable conformances at $JS_CODABLE_FILE"
-
 # Clean up generated directory
 echo "🧹 Cleaning up generated directory..."
 rm -rf "$OUTPUT_DIR"

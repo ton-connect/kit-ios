@@ -61,3 +61,6 @@ public struct TONSignDataApprovalResponse: Codable {
 
 
 
+
+extension TONSignDataApprovalResponse: JSValueCodable {}
+

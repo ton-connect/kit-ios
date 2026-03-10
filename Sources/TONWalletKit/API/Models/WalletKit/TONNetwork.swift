@@ -52,3 +52,6 @@ public struct TONNetwork: Codable {
 
 
 
+
+extension TONNetwork: JSValueCodable {}
+
