@@ -21,8 +21,10 @@
 {{#vendorExtensions.x-interface-union}}
 {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum {{{classname}}}: Codable {
 {{#vars}}{{#vendorExtensions.x-enum-case-name}}
-    case {{{vendorExtensions.x-enum-case-name}}}({{{dataType}}})
-{{/vendorExtensions.x-enum-case-name}}{{/vars}}
+{{#vendorExtensions.x-empty-variant}}    case {{{vendorExtensions.x-enum-case-name}}}
+{{/vendorExtensions.x-empty-variant}}{{#vendorExtensions.x-single-field-variant}}    case {{{vendorExtensions.x-enum-case-name}}}({{{vendorExtensions.x-single-field-name}}}: {{{dataType}}}{{#vendorExtensions.x-single-field-optional}}?{{/vendorExtensions.x-single-field-optional}})
+{{/vendorExtensions.x-single-field-variant}}{{^vendorExtensions.x-empty-variant}}{{^vendorExtensions.x-single-field-variant}}    case {{{vendorExtensions.x-enum-case-name}}}({{{dataType}}})
+{{/vendorExtensions.x-single-field-variant}}{{/vendorExtensions.x-empty-variant}}{{/vendorExtensions.x-enum-case-name}}{{/vars}}
 
     {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -30,8 +32,11 @@
         switch discriminator {
 {{#vars}}{{#vendorExtensions.x-enum-case-name}}
         case "{{{vendorExtensions.x-enum-case-raw-value}}}":
-            self = .{{{vendorExtensions.x-enum-case-name}}}(try {{{dataType}}}(from: decoder))
-{{/vendorExtensions.x-enum-case-name}}{{/vars}}
+{{#vendorExtensions.x-empty-variant}}            self = .{{{vendorExtensions.x-enum-case-name}}}
+{{/vendorExtensions.x-empty-variant}}{{#vendorExtensions.x-single-field-variant}}            let {{{vendorExtensions.x-single-field-name}}} = try container.decode{{#vendorExtensions.x-single-field-optional}}IfPresent{{/vendorExtensions.x-single-field-optional}}({{{dataType}}}.self, forKey: .{{{vendorExtensions.x-single-field-name}}})
+            self = .{{{vendorExtensions.x-enum-case-name}}}({{{vendorExtensions.x-single-field-name}}}: {{{vendorExtensions.x-single-field-name}}})
+{{/vendorExtensions.x-single-field-variant}}{{^vendorExtensions.x-empty-variant}}{{^vendorExtensions.x-single-field-variant}}            self = .{{{vendorExtensions.x-enum-case-name}}}(try {{{dataType}}}(from: decoder))
+{{/vendorExtensions.x-single-field-variant}}{{/vendorExtensions.x-empty-variant}}{{/vendorExtensions.x-enum-case-name}}{{/vars}}
         default:
             throw DecodingError.dataCorruptedError(
                 forKey: .discriminator,
@@ -44,13 +49,23 @@
     {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} func encode(to encoder: any Encoder) throws {
         switch self {
 {{#vars}}{{#vendorExtensions.x-enum-case-name}}
-        case .{{{vendorExtensions.x-enum-case-name}}}(let value):
+{{#vendorExtensions.x-empty-variant}}        case .{{{vendorExtensions.x-enum-case-name}}}:
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode("{{{vendorExtensions.x-enum-case-raw-value}}}", forKey: .discriminator)
+{{/vendorExtensions.x-empty-variant}}{{#vendorExtensions.x-single-field-variant}}        case .{{{vendorExtensions.x-enum-case-name}}}(let {{{vendorExtensions.x-single-field-name}}}):
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode("{{{vendorExtensions.x-enum-case-raw-value}}}", forKey: .discriminator)
+            try container.encode{{#vendorExtensions.x-single-field-optional}}IfPresent{{/vendorExtensions.x-single-field-optional}}({{{vendorExtensions.x-single-field-name}}}, forKey: .{{{vendorExtensions.x-single-field-name}}})
+{{/vendorExtensions.x-single-field-variant}}{{^vendorExtensions.x-empty-variant}}{{^vendorExtensions.x-single-field-variant}}        case .{{{vendorExtensions.x-enum-case-name}}}(let value):
             try value.encode(to: encoder)
-{{/vendorExtensions.x-enum-case-name}}{{/vars}}
+{{/vendorExtensions.x-single-field-variant}}{{/vendorExtensions.x-empty-variant}}{{/vendorExtensions.x-enum-case-name}}{{/vars}}
         }
     }
     {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} enum CodingKeys: String, CodingKey, CaseIterable {
         case discriminator = "{{{vendorExtensions.x-discriminator-field}}}"
+{{#vendorExtensions.x-single-field-coding-keys}}
+        case {{{name}}}
+{{/vendorExtensions.x-single-field-coding-keys}}
     }
 }
 {{/vendorExtensions.x-interface-union}}

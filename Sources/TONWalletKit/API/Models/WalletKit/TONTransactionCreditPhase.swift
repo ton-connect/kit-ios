@@ -51,3 +51,6 @@ public struct TONTransactionCreditPhase: Codable {
 
 
 
+
+extension TONTransactionCreditPhase: JSValueCodable {}
+

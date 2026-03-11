@@ -52,3 +52,6 @@ public struct TONTransactionAddressMetadataEntry: Codable {
 
 
 
+
+extension TONTransactionAddressMetadataEntry: JSValueCodable {}
+

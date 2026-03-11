@@ -62,3 +62,6 @@ public struct TONConnectionRequestEventPreviewPermission: Codable {
 
 
 
+
+extension TONConnectionRequestEventPreviewPermission: JSValueCodable {}
+

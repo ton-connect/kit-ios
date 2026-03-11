@@ -112,3 +112,6 @@ public struct TONTransactionTraceAction: Codable {
 
 
 
+
+extension TONTransactionTraceAction: JSValueCodable {}
+

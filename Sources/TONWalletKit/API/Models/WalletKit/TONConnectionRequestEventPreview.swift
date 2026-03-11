@@ -61,3 +61,6 @@ public struct TONConnectionRequestEventPreview: Codable {
 
 
 
+
+extension TONConnectionRequestEventPreview: JSValueCodable {}
+

@@ -61,3 +61,6 @@ public struct TONTransactionMessageContent: Codable {
 
 
 
+
+extension TONTransactionMessageContent: JSValueCodable {}
+

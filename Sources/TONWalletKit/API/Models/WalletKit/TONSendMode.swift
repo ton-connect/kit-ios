@@ -55,3 +55,6 @@ public struct TONSendMode: Codable {
 
 
 
+
+extension TONSendMode: JSValueCodable {}
+

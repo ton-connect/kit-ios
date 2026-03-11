@@ -79,3 +79,6 @@ public enum TONAccountStatus: Codable {
 }
 
 
+
+extension TONAccountStatus: JSValueCodable {}
+

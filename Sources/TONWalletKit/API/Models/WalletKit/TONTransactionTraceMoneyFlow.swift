@@ -69,3 +69,6 @@ public struct TONTransactionTraceMoneyFlow: Codable {
 
 
 
+
+extension TONTransactionTraceMoneyFlow: JSValueCodable {}
+

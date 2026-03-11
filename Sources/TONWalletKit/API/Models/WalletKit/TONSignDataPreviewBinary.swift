@@ -51,3 +51,6 @@ public struct TONSignDataPreviewBinary: Codable {
 
 
 
+
+extension TONSignDataPreviewBinary: JSValueCodable {}
+

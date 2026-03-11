@@ -60,3 +60,6 @@ public struct TONAddressBookEntry: Codable {
 
 
 
+
+extension TONAddressBookEntry: JSValueCodable {}
+

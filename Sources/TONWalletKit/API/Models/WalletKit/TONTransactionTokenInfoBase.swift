@@ -62,3 +62,6 @@ public struct TONTransactionTokenInfoBase: Codable {
 
 
 
+
+extension TONTransactionTokenInfoBase: JSValueCodable {}
+

@@ -34,3 +34,6 @@ public enum TONAssetType: String, Codable, CaseIterable {
     case nft = "nft"
 }
 
+
+extension TONAssetType: JSValueCodable {}
+

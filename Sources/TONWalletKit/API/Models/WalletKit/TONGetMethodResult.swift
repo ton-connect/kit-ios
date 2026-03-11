@@ -58,3 +58,6 @@ public struct TONGetMethodResult: Codable {
 
 
 
+
+extension TONGetMethodResult: JSValueCodable {}
+

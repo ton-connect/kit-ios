@@ -134,3 +134,6 @@ public struct TONTransaction: Codable {
 
 
 
+
+extension TONTransaction: JSValueCodable {}
+

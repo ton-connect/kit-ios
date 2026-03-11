@@ -71,3 +71,6 @@ public struct TONSwapToken: Codable {
 
 
 
+
+extension TONSwapToken: JSValueCodable {}
+

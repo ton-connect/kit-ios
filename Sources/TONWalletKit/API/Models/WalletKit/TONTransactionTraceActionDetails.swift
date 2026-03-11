@@ -85,3 +85,6 @@ public enum TONTransactionTraceActionDetails: Codable {
 }
 
 
+
+extension TONTransactionTraceActionDetails: JSValueCodable {}
+

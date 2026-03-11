@@ -78,3 +78,6 @@ public enum TONSignData: Codable {
 }
 
 
+
+extension TONSignData: JSValueCodable {}
+

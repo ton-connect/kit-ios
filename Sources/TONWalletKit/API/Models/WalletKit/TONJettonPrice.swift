@@ -56,3 +56,6 @@ public struct TONJettonPrice: Codable {
 
 
 
+
+extension TONJettonPrice: JSValueCodable {}
+

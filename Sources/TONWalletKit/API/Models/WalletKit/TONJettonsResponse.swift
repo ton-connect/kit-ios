@@ -57,3 +57,6 @@ public struct TONJettonsResponse: Codable {
 
 
 
+
+extension TONJettonsResponse: JSValueCodable {}
+

@@ -59,3 +59,6 @@ public struct TONNFTRawTransferRequest: Codable {
 
 
 
+
+extension TONNFTRawTransferRequest: JSValueCodable {}
+

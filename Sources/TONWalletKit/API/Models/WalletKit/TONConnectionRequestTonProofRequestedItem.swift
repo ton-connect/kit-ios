@@ -51,3 +51,6 @@ public struct TONConnectionRequestTonProofRequestedItem: Codable {
 
 
 
+
+extension TONConnectionRequestTonProofRequestedItem: JSValueCodable {}
+

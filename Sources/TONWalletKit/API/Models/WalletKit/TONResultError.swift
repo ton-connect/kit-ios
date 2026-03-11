@@ -62,3 +62,6 @@ public struct TONResultError: Codable {
 
 
 
+
+extension TONResultError: JSValueCodable {}
+

@@ -35,3 +35,6 @@ public enum TONTransactionStatus: String, Codable, CaseIterable {
     case failed = "failed"
 }
 
+
+extension TONTransactionStatus: JSValueCodable {}
+

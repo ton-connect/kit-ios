@@ -52,3 +52,6 @@ public struct TONSignDataPreviewText: Codable {
 
 
 
+
+extension TONSignDataPreviewText: JSValueCodable {}
+

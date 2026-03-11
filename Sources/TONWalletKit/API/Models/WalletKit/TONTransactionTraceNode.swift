@@ -60,3 +60,6 @@ public struct TONTransactionTraceNode: Codable {
 
 
 
+
+extension TONTransactionTraceNode: JSValueCodable {}
+
