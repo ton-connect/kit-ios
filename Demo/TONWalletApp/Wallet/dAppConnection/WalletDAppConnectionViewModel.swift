@@ -43,7 +43,7 @@ class WalletDAppConnectionViewModel: ObservableObject {
     func connect() {
         Task {
             do {
-                try await TONWalletKit.mainnet().connect(url: link)
+                try await TONWalletKit.shared().connect(url: link)
             } catch {
                 debugPrint(error.localizedDescription)
             }

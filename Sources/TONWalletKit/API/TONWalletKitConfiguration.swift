@@ -137,7 +137,7 @@ extension TONWalletKitConfiguration {
     public struct NetworkConfiguration: Encodable, Hashable {
         let network: TONNetwork
         let apiClientConfiguration: APIClientConfiguration?
-        let apiClient: TONAPIClient?
+        let apiClient: APIClient?
         
         public init(network: TONNetwork, apiClientConfiguration: APIClientConfiguration) {
             self.network = network
@@ -145,24 +145,67 @@ extension TONWalletKitConfiguration {
             self.apiClient = nil
         }
         
-        public init(network: TONNetwork, apiClient: TONAPIClient) {
+        public init(network: TONNetwork, apiClient: APIClient) {
             self.network = network
             self.apiClient = apiClient
-            self.apiClientConfiguration = nil
+            self.apiClientConfiguration = apiClient.configuration
+        }
+        
+        public init(network: TONNetwork, apiClient: TONAPIClient) {
+            self = Self(network: network, apiClient: .custom(apiClient))
         }
         
         public func hash(into hasher: inout Hasher) {
             hasher.combine(network)
         }
         
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(network, forKey: .network)
+            
+            switch apiClient {
+            case .custom(let client):
+                try container.encode(APIClientType.custom, forKey: .apiClientType)
+            case .toncenter(let config):
+                try container.encode(APIClientType.toncenter, forKey: .apiClientType)
+            case .tonApi(let config):
+                try container.encode(APIClientType.tonapi, forKey: .apiClientType)
+            case nil:
+                try container.encode(APIClientType.default, forKey: .apiClientType)
+            }
+            
+            try container.encode(apiClientConfiguration, forKey: .apiClientConfiguration)
+        }
+        
         public static func == (lhs: NetworkConfiguration, rhs: NetworkConfiguration) -> Bool {
             return lhs.network == rhs.network
         }
         
-        enum CodingKeys: CodingKey {
+        enum CodingKeys: String, CodingKey {
             case network
             case apiClientConfiguration
+            case apiClientType
         }
+    }
+    
+    public enum APIClient {
+        case custom(TONAPIClient)
+        case toncenter(APIClientConfiguration)
+        case tonApi(APIClientConfiguration)
+        
+        var configuration: APIClientConfiguration? {
+            switch self {
+            case .custom: nil
+            case .toncenter(let config), .tonApi(let config): config
+            }
+        }
+    }
+    
+    enum APIClientType: String, Encodable {
+        case `default`
+        case toncenter
+        case tonapi
+        case custom
     }
     
     struct DeviceInfo: Codable, Hashable {
@@ -247,13 +290,22 @@ extension TONWalletKitConfiguration {
     public struct APIClientConfiguration: Encodable, Hashable {
         let url: URL?
         let key: String
+        let timeout: TimeInterval?
+        let disableNetworkSend: Bool?
+        let dnsResolver: String?
         
         public init(
             url: URL? = nil,
-            key: String
+            key: String,
+            timeout: TimeInterval? = nil,
+            disableNetworkSend: Bool? = nil,
+            dnsResolver: String? = nil
         ) {
             self.url = url
             self.key = key
+            self.timeout = timeout
+            self.disableNetworkSend = disableNetworkSend
+            self.dnsResolver = dnsResolver
         }
     }
 }

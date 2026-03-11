@@ -61,11 +61,16 @@ actor TONWalletKitContextProvider: TONWalletKitContextProviderProtocol {
                 let apiClients = configuration.networkConfigurations.compactMap { config -> TONAPIClientJSAdapter? in
                     guard let apiClient = config.apiClient else { return nil }
                     
-                    return TONAPIClientJSAdapter(
-                        context: context.jsContext,
-                        apiClient: apiClient,
-                        network: config.network
-                    )
+                    switch apiClient {
+                    case .custom(let client):
+                        return TONAPIClientJSAdapter(
+                            context: context.jsContext,
+                            apiClient: client,
+                            network: config.network
+                        )
+                    default:
+                        return nil
+                    }
                 }
                 
                 try await context.initializeWalletKit(
@@ -86,6 +91,7 @@ actor TONWalletKitContextProvider: TONWalletKitContextProviderProtocol {
                 throw error
             }
         }
+        
         return try await task.value
     }
 }

@@ -40,11 +40,7 @@ struct TONWalletApp: App {
             } else {
                 ProgressView()
                     .task {
-                        do {
-                            initialized = true
-                        } catch {
-                            debugPrint(error.localizedDescription)
-                        }
+                        initialized = true
                     }
             }
         }
@@ -53,21 +49,29 @@ struct TONWalletApp: App {
 
 extension TONWalletKit {
     
-    private static var _mainnet: TONWalletKit?
+    private static var _shared: TONWalletKit?
     
     @discardableResult
-    static func mainnet() -> TONWalletKit {
-        if let _mainnet {
-            return _mainnet
+    static func shared() -> TONWalletKit {
+        if let _shared {
+            return _shared
         }
         let bridgeURL = "https://bridge.tonapi.io/bridge"
         let apiClientConfig = TONWalletKitConfiguration.APIClientConfiguration(key: "25a9b2326a34b39a5fa4b264fb78fb4709e1bd576fc5e6b176639f5b71e94b0d")
+        let testNetworkConfiguration = TONWalletKitConfiguration.NetworkConfiguration(
+            network: .testnet,
+            apiClient: .toncenter(apiClientConfig)
+        )
         let mainNetworkConfiguration = TONWalletKitConfiguration.NetworkConfiguration(
             network: .mainnet,
             apiClientConfiguration: apiClientConfig
         )
+        let tetraNetworkConfiguration = TONWalletKitConfiguration.NetworkConfiguration(
+            network: .tetra,
+            apiClient: .tonApi(.init(key: ""))
+        )
         let configuration = TONWalletKitConfiguration(
-            networkConfigurations: [mainNetworkConfiguration],
+            networkConfigurations: [testNetworkConfiguration, mainNetworkConfiguration, tetraNetworkConfiguration],
             walletManifest: TONWalletKitConfiguration.Manifest(
                 name: "WalletKitDemoWallet",
                 appName: "wallet_kit_demo_wallet",
@@ -84,7 +88,7 @@ extension TONWalletKit {
             ]
         )
         let kit = TONWalletKit(configuration: configuration)
-        _mainnet = kit
+        _shared = kit
         return kit
     }
 }

@@ -102,12 +102,37 @@ struct TONWalletKitTests {
         #expect(paths.contains("walletKit.createSignerFromMnemonic"))
     }
 
+    @Test("signer(mnemonic:domain:) passes domain to createSignerFromMnemonic")
+    func signerMnemonicWithDomainCallsCreate() async throws {
+        let (sut, _, mockContext) = makeSUT()
+        try await sut.initialize()
+        let mnemonic = TONMnemonic(value: (1...24).map { "word\($0)" })
+        let domain = TONSignatureDomain.l2(globalId: 42)
+
+        _ = try? await sut.signer(mnemonic: mnemonic, domain: domain)
+
+        let paths = mockContext.callRecords.map(\.path)
+        #expect(paths.contains("walletKit.createSignerFromMnemonic"))
+    }
+
     @Test("signer(privateKey:) calls createSignerFromPrivateKey")
     func signerPrivateKeyCallsCreate() async throws {
         let (sut, _, mockContext) = makeSUT()
         try await sut.initialize()
 
         _ = try? await sut.signer(privateKey: Data([0x01, 0x02]))
+
+        let paths = mockContext.callRecords.map(\.path)
+        #expect(paths.contains("walletKit.createSignerFromPrivateKey"))
+    }
+
+    @Test("signer(privateKey:domain:) passes domain to createSignerFromPrivateKey")
+    func signerPrivateKeyWithDomainCallsCreate() async throws {
+        let (sut, _, mockContext) = makeSUT()
+        try await sut.initialize()
+        let domain = TONSignatureDomain.l2(globalId: 7)
+
+        _ = try? await sut.signer(privateKey: Data([0x01, 0x02]), domain: domain)
 
         let paths = mockContext.callRecords.map(\.path)
         #expect(paths.contains("walletKit.createSignerFromPrivateKey"))

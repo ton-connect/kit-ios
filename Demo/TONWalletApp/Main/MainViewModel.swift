@@ -39,7 +39,7 @@ class MainViewModel: ObservableObject {
             
             var tonWallets: [TONWalletProtocol] = []
             
-            let kit = TONWalletKit.mainnet()
+            let kit = TONWalletKit.shared()
             
             for wallet in wallets {
                 switch wallet.data.version {
@@ -49,7 +49,7 @@ class MainViewModel: ObservableObject {
                     let tonWallet = try await kit.add(walletAdapter: adapter)
                     tonWallets.append(tonWallet)
                 case .v5r1:
-                    let signer = try await kit.signer(mnemonic: TONMnemonic(value: wallet.data.mnemonic))
+                    let signer = try await kit.signer(mnemonic: TONMnemonic(value: wallet.data.mnemonic), domain: .l2(globalId: 662387))
                     let adapter = try await kit.walletV5R1Adapter(signer: signer, parameters: .init(network: .mainnet))
                     let tonWallet = try await kit.add(walletAdapter: adapter)
                     tonWallets.append(tonWallet)
