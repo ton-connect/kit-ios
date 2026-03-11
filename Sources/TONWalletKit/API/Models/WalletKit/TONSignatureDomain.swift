@@ -76,3 +76,6 @@ public enum TONSignatureDomain: Codable {
 }
 
 
+
+extension TONSignatureDomain: JSValueCodable {}
+
