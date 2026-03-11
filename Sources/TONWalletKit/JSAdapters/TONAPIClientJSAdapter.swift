@@ -122,6 +122,29 @@ class TONAPIClientJSAdapter: NSObject, JSAPIClient {
             return JSValue(newPromiseRejectedWithReason: error.localizedDescription, in: context)
         }
     }
+    
+    @objc(getMasterchainInfo) func masterchainInfo() -> JSValue {
+        guard let context else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+        
+        return JSValue(newPromiseIn: context) { [weak self] resolve, reject in
+            Task {
+                guard let self else { return }
+                
+                do {
+                    let result = try await self.apiClient.masterchainInfo()
+                    let jsResult = try result.encode(in: context)
+                    resolve?.call(withArguments: [jsResult])
+                } catch {
+                    reject?.call(withArguments: [error.localizedDescription])
+                }
+            }
+        }
+    }
 }
 
 extension TONAPIClientJSAdapter: JSValueEncodable {}

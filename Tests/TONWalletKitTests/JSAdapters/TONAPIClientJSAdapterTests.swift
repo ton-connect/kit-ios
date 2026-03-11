@@ -168,4 +168,44 @@ struct TONAPIClientJSAdapterTests {
             try await result.then()
         }
     }
+
+    @Test("masterchainInfo resolves with result from API client")
+    func masterchainInfoResolvesWithResult() async throws {
+        let (sut, _) = makeSUT()
+
+        let result = sut.masterchainInfo()
+        let resolved = try await result.then()
+        let decoded: TONMasterchainInfo = try resolved.decode()
+
+        #expect(decoded.seqno == 12345)
+        #expect(decoded.shard == "8000000000000000")
+        #expect(decoded.workchain == -1)
+    }
+
+    @Test("masterchainInfo rejects when API client throws")
+    func masterchainInfoRejectsWhenAPIClientThrows() async {
+        let client = MockAPIClient()
+        client.shouldThrow = true
+        let (sut, _) = makeSUT(client: client)
+
+        let result = sut.masterchainInfo()
+
+        await #expect(throws: (any Error).self) {
+            try await result.then()
+        }
+    }
+
+    @Test("masterchainInfo rejects when context is deallocated")
+    func masterchainInfoRejectsWhenDeallocated() async {
+        let client = MockAPIClient()
+        var jsContext: JSContext? = JSContext()!
+        let sut = TONAPIClientJSAdapter(context: jsContext!, apiClient: client, network: .mainnet)
+        jsContext = nil
+
+        let result = sut.masterchainInfo()
+
+        await #expect(throws: (any Error).self) {
+            try await result.then()
+        }
+    }
 }
