@@ -164,11 +164,11 @@ extension TONWalletKitConfiguration {
             try container.encode(network, forKey: .network)
             
             switch apiClient {
-            case .custom(let client):
+            case .custom:
                 try container.encode(APIClientType.custom, forKey: .apiClientType)
-            case .toncenter(let config):
+            case .toncenter:
                 try container.encode(APIClientType.toncenter, forKey: .apiClientType)
-            case .tonApi(let config):
+            case .tonApi:
                 try container.encode(APIClientType.tonapi, forKey: .apiClientType)
             case nil:
                 try container.encode(APIClientType.default, forKey: .apiClientType)

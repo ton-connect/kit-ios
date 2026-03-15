@@ -32,6 +32,17 @@ protocol JSValueEncodable {
     func encode(in context: JSContext) throws -> Any
 }
 
+extension JSValueEncodable {
+    
+    func encode(in context: JSContext?) -> Any {
+        if let context, let value = try? encode(in: context) {
+            return value
+        }
+        
+        return JSValue(undefinedIn: context)
+    }
+}
+
 extension JSValue: JSValueEncodable {
     
     func encode(in context: JSContext) throws -> Any { self }
@@ -119,6 +130,7 @@ extension JSValueEncodable where Self: Encodable {
             let data = try encoder.encode(self)
             let object = try JSONSerialization.jsonObject(with: data)
             
+            // TODO: handle case when object is Encodable but it's not a json
             guard let value = JSValue(object: object, in: context) else {
                 throw JSValueConversionError.unknown(message: "Unable to encode value: \(Self.self) to JSValue")
             }
