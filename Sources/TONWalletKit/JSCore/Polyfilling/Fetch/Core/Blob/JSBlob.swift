@@ -54,27 +54,32 @@
   /// See [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob).
   public required convenience init?(blobParts iterable: JSValue, options: JSValue) {
     guard let context = JSContext.current() else { return nil }
-    let type = options.isUndefined ? "" : options.objectForKeyedSubscript("type").toString() ?? ""
-    guard iterable.isUndefined || (iterable.isIterable && !iterable.isString) else {
-      context.exception = .constructError(
-        className: "Blob",
-        message: "The provided value cannot be converted to a sequence.",
-        in: context
-      )
-      return nil
-    }
-    guard !iterable.isUndefined else {
-      self.init(storage: "", type: MIMEType(rawValue: type))
-      return
-    }
-    let map: @convention(block) (JSValue) -> String = { $0.toString() }
-    let strings = context.objectForKeyedSubscript("Array")
-      .invokeMethod("from", withArguments: [iterable])
-      .invokeMethod("map", withArguments: [unsafeBitCast(map, to: JSValue.self)])
-      .toArray()
-      .compactMap { $0 as? String }
-    self.init(storage: strings.joined(), type: MIMEType(rawValue: type))
+
+    self.init(blobParts: iterable, options: options, context: context)
   }
+    
+    public convenience init?(blobParts iterable: JSValue, options: JSValue, context: JSContext) {
+      let type = options.isUndefined ? "" : options.objectForKeyedSubscript("type").toString() ?? ""
+      guard iterable.isUndefined || (iterable.isIterable && !iterable.isString) else {
+        context.exception = .constructError(
+          className: "Blob",
+          message: "The provided value cannot be converted to a sequence.",
+          in: context
+        )
+        return nil
+      }
+      guard !iterable.isUndefined else {
+        self.init(storage: "", type: MIMEType(rawValue: type))
+        return
+      }
+      let map: @convention(block) (JSValue) -> String = { $0.toString() }
+      let strings = context.objectForKeyedSubscript("Array")
+        .invokeMethod("from", withArguments: [iterable])
+        .invokeMethod("map", withArguments: [unsafeBitCast(map, to: JSValue.self)])
+        .toArray()
+        .compactMap { $0 as? String }
+      self.init(storage: strings.joined(), type: MIMEType(rawValue: type))
+    }
 
   /// Creates a blob from another blob.
   ///

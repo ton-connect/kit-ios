@@ -30,10 +30,10 @@ public class JSWebSocketPolyfill: JSPolyfill {
         context.setObject(JSWebSocket.self, forKeyedSubscript: "WebSocket" as NSString)
 
         context.evaluateScript("""
-            WebSocket.CONNECTING = 0;
-            WebSocket.OPEN = 1;
-            WebSocket.CLOSING = 2;
-            WebSocket.CLOSED = 3;
+            WebSocket.CONNECTING = \(JSWebSocketReadyState.connecting.rawValue);
+            WebSocket.OPEN = \(JSWebSocketReadyState.open.rawValue);
+            WebSocket.CLOSING = \(JSWebSocketReadyState.closing.rawValue);
+            WebSocket.CLOSED = \(JSWebSocketReadyState.closed.rawValue);
         """)
     }
 }

@@ -22,7 +22,7 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-@preconcurrency import JavaScriptCore
+import JavaScriptCore
 
 enum JSWebSocketReadyState: Int {
     case connecting = 0
@@ -82,9 +82,7 @@ enum JSWebSocketBinaryType: String {
     private var task: (any JSWebSocketTaskProtocol)?
     private weak var context: JSContext?
 
-    required init?(url urlString: String, protocols: JSValue) {
-        guard let context = JSContext.current() else { return nil }
-        
+    private init?(url urlString: String, protocols: JSValue, context: JSContext, task: (any JSWebSocketTaskProtocol)? = nil) {
         self.context = context
 
         guard let url = URL(string: urlString),
@@ -108,15 +106,13 @@ enum JSWebSocketBinaryType: String {
         self.url = urlString
 
         let protocolList: [String]
-        
+
         if protocols.isString {
             protocolList = [protocols.toString()]
         } else if protocols.isArray {
             protocolList = protocols.toArray().compactMap { $0 as? String }
-        } else if protocols.isUndefined || protocols.isNull {
-            protocolList = []
         } else {
-            protocolList = [protocols.toString()]
+            protocolList = []
         }
 
         if Set(protocolList).count != protocolList.count {
@@ -129,17 +125,22 @@ enum JSWebSocketBinaryType: String {
 
         super.init()
 
+        let wsTask = task ?? JSWebSocketTask(url: url, protocols: protocolList)
+        self.task = wsTask
+
         Task { @JSWebSocketActor in
-            let task = JSWebSocketTask(url: url, protocols: protocolList)
-            
-            self.task = task
-            
-            let stream = task.start()
+            let stream = wsTask.start()
 
             for await event in stream {
                 self.handleEvent(event)
             }
         }
+    }
+
+    required convenience init?(url urlString: String, protocols: JSValue) {
+        guard let context = JSContext.current() else { return nil }
+
+        self.init(url: urlString, protocols: protocols, context: context)
     }
 
     @objc(send:)
@@ -161,7 +162,7 @@ enum JSWebSocketBinaryType: String {
                 if data.isString {
                     try await task.send(.string(data.toString()))
                 } else {
-                    let bytes = await MainActor.run { self.extractBytes(from: data, in: context) }
+                    let bytes = await MainActor.run { extractBytes(from: data, in: context) }
                     
                     if let bytes {
                         try await task.send(.data(bytes))
@@ -180,54 +181,24 @@ enum JSWebSocketBinaryType: String {
         guard _readyState == .connecting || _readyState == .open else { return }
         guard let context = self.context else { return }
 
-        let code: Int
+        let reason: String = reasonValue.toString() ?? ""
         
-        if codeValue.isUndefined || codeValue.isNull {
-            code = 1000
-        } else {
-            code = Int(codeValue.toInt32())
-            if code != 1000 && !(3000...4999).contains(code) {
-                context.exception = JSValue(
-                    newErrorFromMessage: "Failed to execute 'close': The code must be either 1000, or between 3000 and 4999.",
-                    in: context
-                )
-                return
-            }
-        }
-
-        let reason: String
-        if reasonValue.isUndefined || reasonValue.isNull {
-            reason = ""
-        } else {
-            reason = reasonValue.toString() ?? ""
-            if reason.utf8.count > 123 {
-                context.exception = JSValue(
-                    newErrorFromMessage: "Failed to execute 'close': The reason must not be greater than 123 bytes.",
-                    in: context
-                )
-                return
-            }
-        }
-
         self._readyState = .closing
 
         Task { @JSWebSocketActor in
-            let closeCode = URLSessionWebSocketTask.CloseCode(rawValue: code) ?? .normalClosure
-            self.task?.close(code: closeCode, reason: reason.data(using: .utf8))
+            let closeCode = URLSessionWebSocketTask.CloseCode(rawValue: Int(codeValue.toInt32())) ?? .normalClosure
+            
+            task?.close(code: closeCode, reason: reason.data(using: .utf8))
         }
     }
 
     @objc(addEventListener::)
     func addEventListener(_ type: String, _ listener: JSValue) {
-        guard let eventType = JSEventType(rawValue: type) else { return }
+        guard let eventType = JSEventType(rawValue: type), listener.isObject else { return }
         
-        guard listener.isObject,
-              let managed = JSManagedValue(value: listener, andOwner: self) else { return }
+        guard let managed = JSManagedValue(value: listener, andOwner: self) else { return }
         
-        if eventListeners[eventType] == nil {
-            eventListeners[eventType] = []
-        }
-        eventListeners[eventType]?.append(managed)
+        eventListeners[eventType, default: []].append(managed)
     }
 
     @objc(removeEventListener::)
@@ -260,62 +231,62 @@ enum JSWebSocketBinaryType: String {
     }
 }
 
-private extension JSWebSocket {
-    
+extension JSWebSocket {
+
     func handleEvent(_ event: JSWebSocketEvent) {
         guard let context = self.context else { return }
 
         switch event {
         case .open(let negotiatedProtocol):
-            self._readyState = .open
-            self.protocol = negotiatedProtocol ?? ""
-            self.dispatchEvent(JSOpenEvent(), in: context)
+            _readyState = .open
+            `protocol` = negotiatedProtocol ?? ""
+            dispatchEvent(JSOpenEvent(), in: context)
 
         case .message(let message):
             switch message {
             case .text(let text):
-                let jsData = JSValue(object: text, in: context)
-                let properties = JSMessageEventProperties(data: jsData, origin: self.url)
-                self.dispatchEvent(JSMessageEvent(type: .message, properties: properties), in: context)
-
+                let value = JSValue(object: text, in: context)
+                let properties = JSMessageEventProperties(data: value, origin: url)
+                
+                dispatchEvent(JSMessageEvent(type: .message, properties: properties), in: context)
             case .binary(let data):
                 guard let binaryData = self.convertBinaryData(data, in: context) else { return }
+                
                 let jsValue = binaryData as? JSValue ?? JSValue(object: binaryData, in: context)
-                let properties = JSMessageEventProperties(data: jsValue, origin: self.url)
-                self.dispatchEvent(JSMessageEvent(type: .message, properties: properties), in: context)
+                let properties = JSMessageEventProperties(data: jsValue, origin: url)
+                
+                dispatchEvent(JSMessageEvent(type: .message, properties: properties), in: context)
             }
-
+            
         case .close(let code, let reason, let wasClean):
-            self._readyState = .closed
+            _readyState = .closed
+            
             let properties = JSCloseEventProperties(wasClean: wasClean, code: code, reason: reason)
-            self.dispatchEvent(JSCloseEvent(properties: properties), in: context)
+            dispatchEvent(JSCloseEvent(properties: properties), in: context)
 
         case .error(let message):
             let properties = JSErrorEventProperties(message: message)
-            self.dispatchEvent(JSErrorEvent(type: .error, properties: properties), in: context)
+            dispatchEvent(JSErrorEvent(type: .error, properties: properties), in: context)
         }
-    }
-
-    private func createUint8Array(from data: Data, in context: JSContext) -> JSValue? {
-        let uint8Constructor: JSValue? = context.Uint8Array
-        return uint8Constructor?.construct(withArguments: [Array(data)])
     }
 
     private func convertBinaryData(_ data: Data, in context: JSContext) -> Any? {
-        guard let uint8Array = createUint8Array(from: data, in: context) else { return nil }
-
-        if self._binaryType == .arraybuffer {
-            let buffer: JSValue? = uint8Array.buffer
-            return buffer
-        }
-
-        let blobClass: JSValue? = context.Blob
+        // TODO: Add helper for construcors into JSDynamic
+        let UInt8Type: JSValue? = context.Uint8Array
         
-        if let blobClass, !blobClass.isUndefined {
-            return blobClass.construct(withArguments: [[uint8Array] as [Any]])
-        }
+        guard let bytes = UInt8Type?.construct(withArguments: [Array(data)]) else { return nil }
 
-        let buffer: JSValue? = uint8Array.buffer
+        let buffer: JSValue? = bytes.buffer
+        
+        if _binaryType == .blob, let buffer {
+            let blob = JSBlob(
+                blobParts: JSValue(object: [buffer], in: context),
+                options: JSValue(undefinedIn: context),
+                context: context
+            )
+            return JSValue(object: blob, in: context)
+        }
+        
         return buffer
     }
 
@@ -323,20 +294,20 @@ private extension JSWebSocket {
         guard let encoded = try? event.encode(in: context) else { return }
 
         let handler: JSValue?
+        
         switch event.type {
-        case .open: handler = self.onopen
-        case .message: handler = self.onmessage
-        case .close: handler = self.onclose
-        case .error: handler = self.onerror
+        case .open: handler = onopen
+        case .message: handler = onmessage
+        case .close: handler = onclose
+        case .error: handler = onerror
         }
+        
         if let handler, handler.isObject {
             handler.call(withArguments: [encoded])
         }
-
-        if let listeners = self.eventListeners[event.type] {
-            for managedListener in listeners {
-                managedListener.value?.call(withArguments: [encoded])
-            }
+        
+        eventListeners[event.type]?.forEach {
+            $0.value?.call(withArguments: [encoded])
         }
     }
 }

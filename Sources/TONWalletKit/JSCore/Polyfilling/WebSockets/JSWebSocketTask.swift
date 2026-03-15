@@ -65,7 +65,7 @@ final class JSWebSocketTask: JSWebSocketTaskProtocol {
     private var continuation: AsyncStream<JSWebSocketEvent>.Continuation?
     private var delegate: SessionDelegate?
 
-    init(url: URL, protocols: [String]) {
+    nonisolated init(url: URL, protocols: [String]) {
         self.url = url
         self.protocols = protocols
     }
@@ -89,18 +89,22 @@ final class JSWebSocketTask: JSWebSocketTaskProtocol {
             self.urlSession = session
 
             let task: URLSessionWebSocketTask
+            
             if protocols.isEmpty {
                 task = session.webSocketTask(with: url)
             } else {
                 task = session.webSocketTask(with: url, protocols: protocols)
             }
+            
             self.webSocketTask = task
 
             delegate.onOpen = { [weak self] negotiatedProtocol in
                 Task { @JSWebSocketActor [weak self] in
                     guard let self, self.state == .connecting else { return }
+                    
                     self.state = .open
                     self.continuation?.yield(.open(negotiatedProtocol: negotiatedProtocol))
+                    
                     await self.receiveLoop()
                 }
             }
@@ -108,9 +112,11 @@ final class JSWebSocketTask: JSWebSocketTaskProtocol {
             delegate.onClose = { [weak self] closeCode, reason in
                 Task { @JSWebSocketActor [weak self] in
                     guard let self else { return }
+                    
                     let code = closeCode.rawValue
                     let reasonString = reason.flatMap { String(data: $0, encoding: .utf8) } ?? ""
                     let wasClean = self.state == .closing || self.state == .open
+                    
                     self.state = .closed
                     self.continuation?.yield(.close(code: code, reason: reasonString, wasClean: wasClean))
                     self.continuation?.finish()
@@ -120,10 +126,13 @@ final class JSWebSocketTask: JSWebSocketTaskProtocol {
             delegate.onComplete = { [weak self] error in
                 Task { @JSWebSocketActor [weak self] in
                     guard let self, self.state != .closed else { return }
+                    
                     if let error {
                         self.continuation?.yield(.error(error.localizedDescription))
                     }
+                    
                     let wasClean = self.state == .closing
+                    
                     self.state = .closed
                     self.continuation?.yield(.close(code: 1006, reason: "", wasClean: wasClean))
                     self.continuation?.finish()
@@ -136,11 +145,13 @@ final class JSWebSocketTask: JSWebSocketTaskProtocol {
 
     func send(_ message: URLSessionWebSocketTask.Message) async throws {
         guard let webSocketTask else { return }
+        
         try await webSocketTask.send(message)
     }
 
     func close(code: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         guard state == .connecting || state == .open else { return }
+        
         state = .closing
         webSocketTask?.cancel(with: code, reason: reason)
     }
@@ -154,6 +165,7 @@ final class JSWebSocketTask: JSWebSocketTaskProtocol {
 
     private func receiveLoop() async {
         guard let webSocketTask else { return }
+        
         while state == .open {
             do {
                 let message = try await webSocketTask.receive()
