@@ -72,16 +72,14 @@ public class TONWalletKit {
     
     public func omnistoneSwapProvider(
         config: TONOmnistonSwapProviderConfig?
-    ) async throws -> any TONSwapProviderProtocol<TONOmnistonProviderOptions, AnyCodable> {
-        let provider: TONSwapProvider<TONOmnistonSwapProviderIdentifier> = try await jsWalletKit().createOmnistonSwapProvider(config)
-        return provider
+    ) async throws -> TONOmnistonSwapProvider {
+        try await jsWalletKit().createOmnistonSwapProvider(config)
     }
-    
+
     public func deDustSwapProvider(
         config: TONDeDustSwapProviderConfig?
-    ) async throws -> any TONSwapProviderProtocol<TONDeDustProviderOptions, TONDeDustProviderOptions> {
-        let provider: TONSwapProvider<TONDeDustSwapProviderIdentifier> = try await jsWalletKit().createOmnistonSwapProvider(config)
-        return provider
+    ) async throws -> TONDeDustSwapProvider {
+        try await jsWalletKit().createOmnistonSwapProvider(config)
     }
     
     public func swap() async throws -> TONSwapManagerProtocol {

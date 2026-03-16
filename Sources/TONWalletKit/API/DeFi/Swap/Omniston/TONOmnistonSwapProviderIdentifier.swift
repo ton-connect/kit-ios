@@ -27,7 +27,7 @@
 import Foundation
 
 public struct TONOmnistonSwapProviderIdentifier: TONSwapProviderIdentifier {
-    public typealias Provider = TONSwapProviderProtocol<TONOmnistonProviderOptions, AnyCodable>
+    public typealias Provider = TONOmnistonSwapProvider
     public typealias QuoteOptions = TONOmnistonProviderOptions
     public typealias SwapOptions = AnyCodable
 

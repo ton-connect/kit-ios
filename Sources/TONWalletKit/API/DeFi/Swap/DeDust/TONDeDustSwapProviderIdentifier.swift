@@ -27,7 +27,7 @@
 import Foundation
 
 public struct TONDeDustSwapProviderIdentifier: TONSwapProviderIdentifier {
-    public typealias Provider = TONSwapProviderProtocol<TONDeDustProviderOptions, TONDeDustProviderOptions>
+    public typealias Provider = TONDeDustSwapProvider
     public typealias QuoteOptions = TONDeDustProviderOptions
     public typealias SwapOptions = TONDeDustProviderOptions
 

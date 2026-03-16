@@ -26,7 +26,7 @@
 
 import Foundation
 
-public protocol TONSwapProviderProtocol<QuoteOptions, SwapOptions>: TONDefiProviderProtocol {
+public protocol TONSwapProviderProtocol: TONDefiProviderProtocol {
     associatedtype QuoteOptions: Codable
     associatedtype SwapOptions: Codable
     
@@ -39,24 +39,24 @@ public extension TONSwapProviderProtocol {
     var type: TONDefiProviderType { .swap }
 }
 
-final class TONSwapProvider<Identifier: TONSwapProviderIdentifier>: TONSwapProviderProtocol {
-    typealias QuoteOptions = Identifier.QuoteOptions
-    typealias SwapOptions = Identifier.SwapOptions
-    typealias Identifier = Identifier
+public final class TONSwapProvider<Identifier: TONSwapProviderIdentifier>: TONSwapProviderProtocol {
+    public typealias QuoteOptions = Identifier.QuoteOptions
+    public typealias SwapOptions = Identifier.SwapOptions
+    public typealias Identifier = Identifier
 
     let jsObject: any JSDynamicObject
-    let identifier: Identifier
+    public let identifier: Identifier
 
     init(jsObject: any JSDynamicObject, identifier: Identifier) {
         self.jsObject = jsObject
         self.identifier = identifier
     }
-    
-    func quote(params: TONSwapQuoteParams<QuoteOptions>) async throws -> TONSwapQuote {
+
+    public func quote(params: TONSwapQuoteParams<QuoteOptions>) async throws -> TONSwapQuote {
         try await jsObject.getQuote(params)
     }
-    
-    func swapTransaction(params: TONSwapParams<SwapOptions>) async throws -> TONTransactionRequest {
+
+    public func swapTransaction(params: TONSwapParams<SwapOptions>) async throws -> TONTransactionRequest {
         try await jsObject.buildSwapTransaction(params)
     }
 }
