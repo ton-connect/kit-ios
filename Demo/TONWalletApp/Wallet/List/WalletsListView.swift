@@ -69,6 +69,8 @@ struct WalletsListView: View {
                 case .wallet(let viewModel):
                     WalletView(viewModel: viewModel) {
                         navigationPath.append(Paths.send(viewModel: $0))
+                    } onSwap: {
+                        navigationPath.append(Paths.swap(viewModel: $0))
                     }
                 case .addWallet:
                     AddWalletView() {
@@ -77,6 +79,8 @@ struct WalletsListView: View {
                     }
                 case .send(let viewModel):
                     SendTokensView(viewModel: viewModel)
+                case .swap(let viewModel):
+                    SwapView(viewModel: viewModel)
                 case .browser:
                     if let walletKit = viewModel.kit {
                         WebView(walletKit: walletKit, url: URL(string: "https://tonconnect-sdk-demo-dapp.vercel.app/iframe/iframe")!)
@@ -144,7 +148,8 @@ private enum Paths: Hashable {
     case addWallet
     case browser
     case send(viewModel: SendTokensViewModel)
-    
+    case swap(viewModel: SwapViewModel)
+
     func hash(into hasher: inout Hasher) {
         switch self {
         case .wallet(let viewModel):
@@ -155,9 +160,11 @@ private enum Paths: Hashable {
             hasher.combine("browser")
         case .send:
             hasher.combine("send")
+        case .swap:
+            hasher.combine("swap")
         }
     }
-    
+
     static func == (lhs: Paths, rhs: Paths) -> Bool {
         switch (lhs, rhs) {
         case (.wallet(let lhsViewModel), .wallet(let rhsViewModel)):
