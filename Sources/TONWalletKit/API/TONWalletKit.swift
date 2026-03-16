@@ -79,7 +79,7 @@ public class TONWalletKit {
     public func deDustSwapProvider(
         config: TONDeDustSwapProviderConfig?
     ) async throws -> TONDeDustSwapProvider {
-        try await jsWalletKit().createOmnistonSwapProvider(config)
+        try await jsWalletKit().createDeDustSwapProvider(config)
     }
     
     public func swap() async throws -> TONSwapManagerProtocol {
