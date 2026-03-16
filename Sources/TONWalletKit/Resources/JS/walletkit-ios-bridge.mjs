@@ -28573,6 +28573,12 @@ var LogLevel;
   LogLevel2[LogLevel2["ERROR"] = 3] = "ERROR";
   LogLevel2[LogLevel2["NONE"] = 4] = "NONE";
 })(LogLevel || (LogLevel = {}));
+function getDefaultLogLevel() {
+  if (typeof process === "undefined" || typeof process?.env === "undefined") {
+    return LogLevel.ERROR;
+  }
+  return process?.env?.WALLETKIT_LOG_LEVEL === "debug" ? LogLevel.DEBUG : process?.env?.WALLETKIT_LOG_LEVEL === "none" ? LogLevel.NONE : process?.env?.WALLETKIT_LOG_LEVEL === "info" ? LogLevel.INFO : process?.env?.WALLETKIT_LOG_LEVEL === "warn" ? LogLevel.WARN : process?.env?.WALLETKIT_LOG_LEVEL === "off" ? LogLevel.NONE : LogLevel.ERROR;
+}
 class Logger {
   config;
   parent;
@@ -28705,7 +28711,7 @@ class Logger {
   }
 }
 const globalLogger = new Logger({
-  level: LogLevel.DEBUG,
+  level: getDefaultLogLevel(),
   enableStackTrace: true
 });
 function delay(ms) {
@@ -38007,6 +38013,16 @@ class ApiClientToncenter extends BaseApiClient {
     }
     return out;
   }
+  async getMasterchainInfo() {
+    const raw = await this.getJson("/api/v3/masterchainInfo");
+    return {
+      workchain: raw.last.workchain,
+      seqno: raw.last.seqno,
+      shard: raw.last.shard,
+      fileHash: Base64ToHex(raw.last.file_hash),
+      rootHash: Base64ToHex(raw.last.root_hash)
+    };
+  }
 }
 const log$5 = globalLogger.createChild("NetworkManager");
 class KitNetworkManager {
@@ -38883,6 +38899,15 @@ const mapTonApiTvmStackRecord = (item) => {
       throw new Error(`Unsupported TonApi stack item type: ${item.type}`);
   }
 };
+function mapMasterchainInfo(rawResponse) {
+  return {
+    seqno: rawResponse.seqno,
+    shard: rawResponse.shard,
+    workchain: rawResponse.workchain_id,
+    fileHash: asHex(`0x${rawResponse.file_hash}`),
+    rootHash: asHex(`0x${rawResponse.root_hash}`)
+  };
+}
 class ApiClientTonApi extends BaseApiClient {
   constructor(config2 = {}) {
     let defaultEndpoint;
@@ -39010,6 +39035,10 @@ class ApiClientTonApi extends BaseApiClient {
   }
   async getEvents(_request) {
     throw new Error("Method not implemented.");
+  }
+  async getMasterchainInfo() {
+    const raw = await this.getJson(`/v2/blockchain/masterchain-head`);
+    return mapMasterchainInfo(raw);
   }
   appendAuthHeaders(headers) {
     if (this.apiKey) {
@@ -43513,16 +43542,6 @@ const tokenToAddress = (token) => {
   }
   return distExports$2.Address.parse(token.address).toRawString();
 };
-const addressToToken = (address, decimals = 9) => {
-  if (address === "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c") {
-    return { address: "ton", decimals: 9 };
-  }
-  try {
-    return { address: distExports$2.Address.parseRaw(address).toString(), decimals };
-  } catch {
-    return { address, decimals };
-  }
-};
 const toOmnistonAddress = (address, network) => {
   return {
     address,
@@ -43721,18 +43740,6 @@ class OmnistonSwapProvider extends SwapProvider {
       omnistonQuote: quote
     };
     const fee = [];
-    if (quote.protocolFeeAsset) {
-      fee.push({
-        amount: quote.protocolFeeUnits,
-        token: addressToToken(quote.protocolFeeAsset.address)
-      });
-    }
-    if (quote.referrerFeeAsset) {
-      fee.push({
-        amount: quote.referrerFeeUnits,
-        token: addressToToken(quote.referrerFeeAsset.address)
-      });
-    }
     return {
       rawFromAmount: quote.bidUnits,
       rawToAmount: quote.askUnits,
@@ -44140,6 +44147,11 @@ class SwiftAPIClientAdapter {
   getEvents(_request) {
     return __async$2(this, null, function* () {
       throw new Error("getEvents is not implemented yet");
+    });
+  }
+  getMasterchainInfo() {
+    return __async$2(this, null, function* () {
+      return this.swiftApiClient.getMasterchainInfo();
     });
   }
 }
