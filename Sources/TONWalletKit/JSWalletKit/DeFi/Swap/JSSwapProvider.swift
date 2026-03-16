@@ -1,10 +1,10 @@
 //
-//  JSWalletAdapter.swift
+//  JSSwapProvider.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 17.10.2025.
-//
-//  Copyright (c) 2025 TON Connect
+//  Created by Nikita Rodionov on 16.03.2026.
+//  
+//  Copyright (c) 2026 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -27,17 +27,10 @@
 import Foundation
 import JavaScriptCore
 
-@objc protocol JSWalletAdapter: JSExport {
-    @objc(getPublicKey) func publicKey() -> JSValue
-    @objc(getWalletId) func identifier() -> JSValue
-    @objc(getNetwork) func network() -> JSValue
+@objc protocol JSSwapProvider: JSExport {
+    var type: String { get }
+    var providerId: String { get }
     
-    @objc(getAddress:) func address(options: JSValue) -> JSValue
-    @objc(getStateInit) func stateInit() -> JSValue
-    
-    @objc(getSignedSendTransaction::) func signedSendTransaction(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedSignData::) func signedSignData(input: JSValue, options: JSValue) -> JSValue
-    @objc(getSignedTonProof::) func signedTonProof(input: JSValue, options: JSValue) -> JSValue
-    
-    @objc(getSupportedFeatures) func supportedFeatures() -> JSValue
+    @objc(getQuote:) func quote(params: JSValue) -> JSValue
+    @objc(buildSwapTransaction:) func swapTransaction(params: JSValue) -> JSValue
 }
