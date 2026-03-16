@@ -303,4 +303,37 @@ struct TONWalletKitTests {
 
         #expect(provider.contextCallCount == 1)
     }
+
+    @Test("omnistoneSwapProvider(config:) calls createOmnistonSwapProvider")
+    func omnistonSwapProviderCalls() async throws {
+        let (sut, _, mockContext) = makeSUT()
+        try await sut.initialize()
+
+        _ = try? await sut.omnistoneSwapProvider(config: nil)
+
+        let paths = mockContext.callRecords.map(\.path)
+        #expect(paths.contains("walletKit.createOmnistonSwapProvider"))
+    }
+
+    @Test("deDustSwapProvider(config:) calls createDeDustSwapProvider")
+    func deDustSwapProviderCalls() async throws {
+        let (sut, _, mockContext) = makeSUT()
+        try await sut.initialize()
+
+        _ = try? await sut.deDustSwapProvider(config: nil)
+
+        let paths = mockContext.callRecords.map(\.path)
+        #expect(paths.contains("walletKit.createDeDustSwapProvider"))
+    }
+
+    @Test("swap() calls swap")
+    func swapCallsSwap() async throws {
+        let (sut, _, mockContext) = makeSUT()
+        try await sut.initialize()
+
+        _ = try? await sut.swap()
+
+        let paths = mockContext.callRecords.map(\.path)
+        #expect(paths.contains("walletKit.swap"))
+    }
 }

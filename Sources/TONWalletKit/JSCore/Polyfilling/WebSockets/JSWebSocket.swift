@@ -179,7 +179,6 @@ enum JSWebSocketBinaryType: String {
     @objc(close::)
     func close(_ codeValue: JSValue, _ reasonValue: JSValue) {
         guard _readyState == .connecting || _readyState == .open else { return }
-        guard let context = self.context else { return }
 
         let reason: String = reasonValue.toString() ?? ""
         
