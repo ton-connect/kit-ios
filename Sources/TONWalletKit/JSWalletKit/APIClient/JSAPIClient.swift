@@ -42,4 +42,7 @@ import JavaScriptCore
         stack: JSValue,
         seqno: JSValue
     ) -> JSValue
+    
+    @objc(getMasterchainInfo)
+    func masterchainInfo() -> JSValue
 }

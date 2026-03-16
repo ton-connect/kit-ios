@@ -37982,6 +37982,16 @@ class ApiClientToncenter extends BaseApiClient {
     }
     return out;
   }
+  async getMasterchainInfo() {
+    const raw = await this.getJson("/api/v3/masterchainInfo");
+    return {
+      workchain: raw.last.workchain,
+      seqno: raw.last.seqno,
+      shard: raw.last.shard,
+      fileHash: Base64ToHex(raw.last.file_hash),
+      rootHash: Base64ToHex(raw.last.root_hash)
+    };
+  }
 }
 const log$3 = globalLogger.createChild("NetworkManager");
 class KitNetworkManager {
@@ -38858,6 +38868,15 @@ const mapTonApiTvmStackRecord = (item) => {
       throw new Error(`Unsupported TonApi stack item type: ${item.type}`);
   }
 };
+function mapMasterchainInfo(rawResponse) {
+  return {
+    seqno: rawResponse.seqno,
+    shard: rawResponse.shard,
+    workchain: rawResponse.workchain_id,
+    fileHash: asHex(`0x${rawResponse.file_hash}`),
+    rootHash: asHex(`0x${rawResponse.root_hash}`)
+  };
+}
 class ApiClientTonApi extends BaseApiClient {
   constructor(config = {}) {
     let defaultEndpoint;
@@ -38985,6 +39004,10 @@ class ApiClientTonApi extends BaseApiClient {
   }
   async getEvents(_request) {
     throw new Error("Method not implemented.");
+  }
+  async getMasterchainInfo() {
+    const raw = await this.getJson(`/v2/blockchain/masterchain-head`);
+    return mapMasterchainInfo(raw);
   }
   appendAuthHeaders(headers) {
     if (this.apiKey) {
@@ -39925,6 +39948,11 @@ class SwiftAPIClientAdapter {
   getEvents(_request) {
     return __async$2(this, null, function* () {
       throw new Error("getEvents is not implemented yet");
+    });
+  }
+  getMasterchainInfo() {
+    return __async$2(this, null, function* () {
+      return this.swiftApiClient.getMasterchainInfo();
     });
   }
 }
