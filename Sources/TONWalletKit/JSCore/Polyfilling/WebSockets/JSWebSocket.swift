@@ -162,8 +162,8 @@ enum JSWebSocketBinaryType: String {
                 if data.isString {
                     try await task.send(.string(data.toString()))
                 } else {
-                    let bytes = await MainActor.run { extractBytes(from: data, in: context) }
-                    
+                    let bytes = await extractBytes(from: data, in: context)
+
                     if let bytes {
                         try await task.send(.data(bytes))
                     } else {
@@ -171,7 +171,7 @@ enum JSWebSocketBinaryType: String {
                     }
                 }
             } catch {
-                // Send failure will trigger error event through the delegate
+                print(error.localizedDescription)
             }
         }
     }
@@ -179,7 +179,6 @@ enum JSWebSocketBinaryType: String {
     @objc(close::)
     func close(_ codeValue: JSValue, _ reasonValue: JSValue) {
         guard _readyState == .connecting || _readyState == .open else { return }
-        guard let context = self.context else { return }
 
         let reason: String = reasonValue.toString() ?? ""
         
@@ -210,24 +209,18 @@ enum JSWebSocketBinaryType: String {
         }
     }
 
-    private func extractBytes(from value: JSValue, in context: JSContext) -> Data? {
-        let uint8Constructor: JSValue? = context.Uint8Array
-        
-        guard let uint8Constructor else { return nil }
-        
-        guard let wrapped = uint8Constructor.construct(withArguments: [value]), !wrapped.isUndefined else {
+    func extractBytes(from value: JSValue, in context: JSContext) async -> Data? {
+        if value.isUndefined || value.isNull {
             return nil
         }
-        
-        let length: Int32 = wrapped.length ?? 0
-        var bytes = [UInt8]()
-        
-        bytes.reserveCapacity(Int(length))
-        
-        for i in 0..<Int(length) {
-            bytes.append(UInt8(wrapped.objectAtIndexedSubscript(i)?.toInt32() ?? 0))
+
+        if let blob = value.toObjectOf(JSBlob.self) as? JSBlob {
+            guard let utf8 = try? await blob.utf8(context: context) else { return nil }
+            return Data(utf8)
         }
-        return Data(bytes)
+
+        let uint8Array = JSValue.uint8Array(from: value, context: context)
+        return Data(uint8Array: uint8Array)
     }
 }
 
