@@ -239,6 +239,94 @@ struct JSValueUint8ArrayConversionTests {
         #expect(result.objectAtIndexedSubscript(2)?.toInt32() == 40)
     }
 
+    @Test("ArrayBuffer.slice from offset to end wraps correctly")
+    func arrayBufferSliceFromOffset() {
+        let value = context.evaluateScript("""
+            (function() {
+                var buf = new ArrayBuffer(5);
+                var v = new Uint8Array(buf);
+                v[0] = 10; v[1] = 20; v[2] = 30; v[3] = 40; v[4] = 50;
+                return buf.slice(3);
+            })()
+        """)!
+        let result = JSValue.uint8Array(from: value, context: context)
+        #expect(result.isUInt8Array == true)
+        let length: Int32 = result.length ?? 0
+        #expect(length == 2)
+        #expect(result.objectAtIndexedSubscript(0)?.toInt32() == 40)
+        #expect(result.objectAtIndexedSubscript(1)?.toInt32() == 50)
+    }
+
+    @Test("ArrayBuffer.slice with negative index wraps correctly")
+    func arrayBufferSliceNegativeIndex() {
+        let value = context.evaluateScript("""
+            (function() {
+                var buf = new ArrayBuffer(5);
+                var v = new Uint8Array(buf);
+                v[0] = 10; v[1] = 20; v[2] = 30; v[3] = 40; v[4] = 50;
+                return buf.slice(-2);
+            })()
+        """)!
+        let result = JSValue.uint8Array(from: value, context: context)
+        #expect(result.isUInt8Array == true)
+        let length: Int32 = result.length ?? 0
+        #expect(length == 2)
+        #expect(result.objectAtIndexedSubscript(0)?.toInt32() == 40)
+        #expect(result.objectAtIndexedSubscript(1)?.toInt32() == 50)
+    }
+
+    @Test("ArrayBuffer.slice(0, 0) produces empty Uint8Array")
+    func arrayBufferSliceEmpty() {
+        let value = context.evaluateScript("""
+            (function() {
+                var buf = new ArrayBuffer(4);
+                var v = new Uint8Array(buf);
+                v[0] = 0xFF; v[1] = 0xFF; v[2] = 0xFF; v[3] = 0xFF;
+                return buf.slice(0, 0);
+            })()
+        """)!
+        let result = JSValue.uint8Array(from: value, context: context)
+        #expect(result.isUInt8Array == true)
+        let length: Int32 = result.length ?? 0
+        #expect(length == 0)
+    }
+
+    @Test("ArrayBuffer.slice with negative start and end wraps correctly")
+    func arrayBufferSliceNegativeRange() {
+        let value = context.evaluateScript("""
+            (function() {
+                var buf = new ArrayBuffer(6);
+                var v = new Uint8Array(buf);
+                v[0] = 1; v[1] = 2; v[2] = 3; v[3] = 4; v[4] = 5; v[5] = 6;
+                return buf.slice(-4, -1);
+            })()
+        """)!
+        let result = JSValue.uint8Array(from: value, context: context)
+        #expect(result.isUInt8Array == true)
+        let length: Int32 = result.length ?? 0
+        #expect(length == 3)
+        #expect(result.objectAtIndexedSubscript(0)?.toInt32() == 3)
+        #expect(result.objectAtIndexedSubscript(1)?.toInt32() == 4)
+        #expect(result.objectAtIndexedSubscript(2)?.toInt32() == 5)
+    }
+
+    @Test("ArrayBuffer.slice single byte in the middle")
+    func arrayBufferSliceSingleByte() {
+        let value = context.evaluateScript("""
+            (function() {
+                var buf = new ArrayBuffer(4);
+                var v = new Uint8Array(buf);
+                v[0] = 0xAA; v[1] = 0xBB; v[2] = 0xCC; v[3] = 0xDD;
+                return buf.slice(2, 3);
+            })()
+        """)!
+        let result = JSValue.uint8Array(from: value, context: context)
+        #expect(result.isUInt8Array == true)
+        let length: Int32 = result.length ?? 0
+        #expect(length == 1)
+        #expect(result.objectAtIndexedSubscript(0)?.toInt32() == 0xCC)
+    }
+
     // MARK: - DataView
 
     @Test("DataView converts using buffer, byteOffset, byteLength")
