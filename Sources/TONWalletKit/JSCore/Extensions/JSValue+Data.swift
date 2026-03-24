@@ -38,6 +38,20 @@ extension JSValue {
         return false
     }
     
+    var bytesNumber: Int {
+        if self.isString {
+            return self.toString()?.data(using: .utf8)?.count ?? 0
+        }
+
+        if let blob = self.toObjectOf(JSBlob.self) as? JSBlob {
+            return Int(blob.size)
+        }
+
+        let byteLength: Int? = self.byteLength
+
+        return byteLength ?? 0
+    }
+    
     static func uint8Array(from value: JSValue, context: JSContext) -> JSValue {
         let uint8Constructor: JSValue? = context.Uint8Array
         guard let uint8Constructor else { return JSValue(undefinedIn: context) }

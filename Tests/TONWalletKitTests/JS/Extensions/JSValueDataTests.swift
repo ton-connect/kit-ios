@@ -726,3 +726,133 @@ struct DataFromUint8ArrayTests {
         #expect(data == nil)
     }
 }
+
+@Suite("JSValue bytesNumber Tests")
+struct JSValueBytesNumberTests {
+
+    private let context: JSContext = {
+        let ctx = JSContext()!
+        try! ctx.install([.blob])
+        return ctx
+    }()
+
+    @Test("ASCII string returns UTF-8 byte count")
+    func asciiString() {
+        let value = JSValue(object: "hello", in: context)!
+        #expect(value.bytesNumber == 5)
+    }
+
+    @Test("Empty string returns zero")
+    func emptyString() {
+        let value = JSValue(object: "", in: context)!
+        #expect(value.bytesNumber == 0)
+    }
+
+    @Test("Multi-byte UTF-8 string returns correct byte count")
+    func multiByteString() {
+        let value = JSValue(object: "héllo", in: context)!
+        #expect(value.bytesNumber == 6)
+    }
+
+    @Test("Emoji string returns 4 bytes per emoji")
+    func emojiString() {
+        let value = JSValue(object: "😀", in: context)!
+        #expect(value.bytesNumber == 4)
+    }
+
+    @Test("Blob returns size")
+    func blobReturnsSize() {
+        let blob = context.evaluateScript("new Blob(['hello world'])")!
+        #expect(blob.bytesNumber == 11)
+    }
+
+    @Test("Empty Blob returns zero")
+    func emptyBlob() {
+        let blob = context.evaluateScript("new Blob([])")!
+        #expect(blob.bytesNumber == 0)
+    }
+
+    @Test("Uint8Array returns byteLength")
+    func uint8Array() {
+        let value = context.evaluateScript("new Uint8Array([1, 2, 3])")!
+        #expect(value.bytesNumber == 3)
+    }
+
+    @Test("Uint16Array returns byteLength")
+    func uint16Array() {
+        let value = context.evaluateScript("new Uint16Array([1, 2])")!
+        #expect(value.bytesNumber == 4)
+    }
+
+    @Test("Uint32Array returns byteLength")
+    func uint32Array() {
+        let value = context.evaluateScript("new Uint32Array([1])")!
+        #expect(value.bytesNumber == 4)
+    }
+
+    @Test("Float64Array returns byteLength")
+    func float64Array() {
+        let value = context.evaluateScript("new Float64Array([1.0, 2.0])")!
+        #expect(value.bytesNumber == 16)
+    }
+
+    @Test("ArrayBuffer returns byteLength")
+    func arrayBuffer() {
+        let value = context.evaluateScript("new ArrayBuffer(10)")!
+        #expect(value.bytesNumber == 10)
+    }
+
+    @Test("Empty ArrayBuffer returns zero")
+    func emptyArrayBuffer() {
+        let value = context.evaluateScript("new ArrayBuffer(0)")!
+        #expect(value.bytesNumber == 0)
+    }
+
+    @Test("DataView returns byteLength of the view")
+    func dataView() {
+        let value = context.evaluateScript("new DataView(new ArrayBuffer(8), 2, 4)")!
+        #expect(value.bytesNumber == 4)
+    }
+
+    @Test("TypedArray subarray returns subarray byteLength")
+    func typedArraySubarray() {
+        let value = context.evaluateScript("new Uint16Array([1, 2, 3, 4]).subarray(1, 3)")!
+        #expect(value.bytesNumber == 4)
+    }
+
+    @Test("Uint8Array subarray returns subarray byteLength")
+    func uint8ArraySubarray() {
+        let value = context.evaluateScript("new Uint8Array([1, 2, 3, 4, 5]).subarray(1, 4)")!
+        #expect(value.bytesNumber == 3)
+    }
+
+    @Test("Number returns zero")
+    func numberReturnsZero() {
+        let value = JSValue(int32: 42, in: context)!
+        #expect(value.bytesNumber == 0)
+    }
+
+    @Test("Null returns zero")
+    func nullReturnsZero() {
+        let value = JSValue(nullIn: context)!
+        #expect(value.bytesNumber == 0)
+    }
+
+    @Test("Undefined returns zero")
+    func undefinedReturnsZero() {
+        let value = JSValue(undefinedIn: context)!
+        #expect(value.bytesNumber == 0)
+    }
+
+    @Test("Boolean returns zero")
+    func booleanReturnsZero() {
+        let value = JSValue(bool: true, in: context)!
+        #expect(value.bytesNumber == 0)
+    }
+
+    @Test("Plain object returns zero")
+    func plainObjectReturnsZero() {
+        let value = context.evaluateScript("({})")!
+        #expect(value.bytesNumber == 0)
+    }
+}

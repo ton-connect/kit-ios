@@ -1365,6 +1365,148 @@ struct JSWebSocketTests {
         if case .data(let data) = messages[2] { #expect(Array(data) == [1, 2]) }
     }
 
+    @Test("bufferedAmount starts at zero")
+    func bufferedAmountStartsAtZero() {
+        let ws = makeWebSocket()!
+        #expect(ws.bufferedAmount == 0)
+    }
+
+    @Test("bufferedAmount increases by UTF-8 byte count for string")
+    func bufferedAmountString() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(JSValue(object: "hello", in: context))
+        #expect(ws.bufferedAmount == 5)
+    }
+
+    @Test("bufferedAmount increases by UTF-8 byte count for multi-byte string")
+    func bufferedAmountMultiByteString() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(JSValue(object: "héllo", in: context))
+        #expect(ws.bufferedAmount == 6)
+    }
+
+    @Test("bufferedAmount increases by UTF-8 byte count for emoji string")
+    func bufferedAmountEmojiString() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(JSValue(object: "😀", in: context))
+        #expect(ws.bufferedAmount == 4)
+    }
+
+    @Test("bufferedAmount increases by byteLength for Uint8Array")
+    func bufferedAmountUint8Array() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(context.evaluateScript("new Uint8Array([1, 2, 3])")!)
+        #expect(ws.bufferedAmount == 3)
+    }
+
+    @Test("bufferedAmount increases by byteLength for Uint16Array")
+    func bufferedAmountUint16Array() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(context.evaluateScript("new Uint16Array([1, 2])")!)
+        #expect(ws.bufferedAmount == 4)
+    }
+
+    @Test("bufferedAmount increases by byteLength for Uint32Array")
+    func bufferedAmountUint32Array() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(context.evaluateScript("new Uint32Array([1])")!)
+        #expect(ws.bufferedAmount == 4)
+    }
+
+    @Test("bufferedAmount increases by byteLength for Float64Array")
+    func bufferedAmountFloat64Array() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(context.evaluateScript("new Float64Array([1.0, 2.0])")!)
+        #expect(ws.bufferedAmount == 16)
+    }
+
+    @Test("bufferedAmount increases by byteLength for ArrayBuffer")
+    func bufferedAmountArrayBuffer() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(context.evaluateScript("new ArrayBuffer(10)")!)
+        #expect(ws.bufferedAmount == 10)
+    }
+
+    @Test("bufferedAmount increases by byteLength for DataView")
+    func bufferedAmountDataView() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(context.evaluateScript("new DataView(new ArrayBuffer(8), 2, 4)")!)
+        #expect(ws.bufferedAmount == 4)
+    }
+
+    @Test("bufferedAmount increases by blob size")
+    func bufferedAmountBlob() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(context.evaluateScript("new Blob(['hello world'])")!)
+        #expect(ws.bufferedAmount == 11)
+    }
+
+    @Test("bufferedAmount increases by byteLength for TypedArray subarray")
+    func bufferedAmountTypedArraySubarray() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(context.evaluateScript("new Uint16Array([1, 2, 3, 4]).subarray(1, 3)")!)
+        #expect(ws.bufferedAmount == 4)
+    }
+
+    @Test("bufferedAmount accumulates across multiple sends")
+    func bufferedAmountAccumulates() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.send(JSValue(object: "abc", in: context))
+        ws.send(context.evaluateScript("new Uint8Array([1, 2])")!)
+        #expect(ws.bufferedAmount == 5)
+    }
+
+    @Test("bufferedAmount decreases after send completes")
+    func bufferedAmountDecreasesAfterSend() async {
+        let mockTask = MockJSWebSocketTask()
+        let ws = makeWebSocket(task: mockTask)!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+
+        async let sent = mockTask.expectSend(count: 1)
+        ws.send(JSValue(object: "hello", in: context))
+        #expect(ws.bufferedAmount == 5)
+
+        _ = await sent
+        #expect(ws.bufferedAmount == 0)
+    }
+
+    @Test("bufferedAmount increases but does not decrease when closing")
+    func bufferedAmountWhenClosing() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.close(JSValue(int32: 1000, in: context), JSValue(object: "", in: context))
+        ws.send(JSValue(object: "hello", in: context))
+        #expect(ws.bufferedAmount == 5)
+    }
+
+    @Test("bufferedAmount increases but does not decrease when closed")
+    func bufferedAmountWhenClosed() {
+        let ws = makeWebSocket()!
+        ws.handleEvent(.open(negotiatedProtocol: nil))
+        ws.handleEvent(.close(code: 1000, reason: "", wasClean: true))
+        ws.send(JSValue(object: "test", in: context))
+        #expect(ws.bufferedAmount == 4)
+    }
+
+    @Test("bufferedAmount unchanged when CONNECTING throws")
+    func bufferedAmountUnchangedWhenConnecting() {
+        let ws = makeWebSocket()!
+        ws.send(JSValue(object: "hello", in: context))
+        #expect(ws.bufferedAmount == 0)
+    }
+
     @Test("Receive multiple binary messages preserves order and data")
     func receiveMultipleBinaryMessages() {
         let ws = makeWebSocket()!

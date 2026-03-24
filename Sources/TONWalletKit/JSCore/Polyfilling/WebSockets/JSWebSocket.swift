@@ -154,6 +154,10 @@ enum JSWebSocketBinaryType: String {
             )
             return
         }
+
+        let byteCount = data.bytesNumber
+        bufferedAmount += byteCount
+
         guard _readyState == .open else { return }
 
         Task { @JSWebSocketActor in
@@ -173,6 +177,7 @@ enum JSWebSocketBinaryType: String {
             } catch {
                 print(error.localizedDescription)
             }
+            bufferedAmount = max(0, bufferedAmount - byteCount)
         }
     }
 
@@ -264,7 +269,6 @@ extension JSWebSocket {
     }
 
     private func convertBinaryData(_ data: Data, in context: JSContext) -> Any? {
-        // TODO: Add helper for construcors into JSDynamic
         let UInt8Type: JSValue? = context.Uint8Array
         
         guard let bytes = UInt8Type?.construct(withArguments: [Array(data)]) else { return nil }
