@@ -27,7 +27,7 @@
 import Foundation
 import JavaScriptCore
 
-@objc public protocol JSWalletAdapter: JSExport {
+@objc protocol JSWalletAdapter: JSExport {
     @objc(getPublicKey) func publicKey() -> JSValue
     @objc(getWalletId) func identifier() -> JSValue
     @objc(getNetwork) func network() -> JSValue

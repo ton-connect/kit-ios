@@ -70,6 +70,23 @@ public class TONWalletKit {
         self.context = try await contextProvider.context(for: configuration)
     }
     
+    public func omnistoneSwapProvider(
+        config: TONOmnistonSwapProviderConfig?
+    ) async throws -> TONOmnistonSwapProvider {
+        try await jsWalletKit().createOmnistonSwapProvider(config)
+    }
+
+    public func deDustSwapProvider(
+        config: TONDeDustSwapProviderConfig?
+    ) async throws -> TONDeDustSwapProvider {
+        try await jsWalletKit().createDeDustSwapProvider(config)
+    }
+    
+    public func swap() async throws -> TONSwapManagerProtocol {
+        let manager: TONSwapManager = try await jsWalletKit().swap()
+        return manager
+    }
+    
     public func signer(mnemonic: TONMnemonic, domain: TONSignatureDomain? = nil) async throws -> any TONWalletSignerProtocol {
         let signer = try await jsWalletKit().createSignerFromMnemonic(mnemonic.value, domain)
         

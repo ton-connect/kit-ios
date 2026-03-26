@@ -486,6 +486,12 @@ var LogLevel;
   LogLevel2[LogLevel2["ERROR"] = 3] = "ERROR";
   LogLevel2[LogLevel2["NONE"] = 4] = "NONE";
 })(LogLevel || (LogLevel = {}));
+function getDefaultLogLevel() {
+  if (typeof process === "undefined" || typeof process?.env === "undefined") {
+    return LogLevel.ERROR;
+  }
+  return process?.env?.WALLETKIT_LOG_LEVEL === "debug" ? LogLevel.DEBUG : process?.env?.WALLETKIT_LOG_LEVEL === "none" ? LogLevel.NONE : process?.env?.WALLETKIT_LOG_LEVEL === "info" ? LogLevel.INFO : process?.env?.WALLETKIT_LOG_LEVEL === "warn" ? LogLevel.WARN : process?.env?.WALLETKIT_LOG_LEVEL === "off" ? LogLevel.NONE : LogLevel.ERROR;
+}
 class Logger {
   config;
   parent;
@@ -618,7 +624,7 @@ class Logger {
   }
 }
 const globalLogger = new Logger({
-  level: LogLevel.DEBUG,
+  level: getDefaultLogLevel(),
   enableStackTrace: true
 });
 globalLogger.createChild("ExtensionTransport");

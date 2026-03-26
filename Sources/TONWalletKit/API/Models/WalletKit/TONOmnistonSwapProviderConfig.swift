@@ -31,7 +31,8 @@ import BigInt
 
 public struct TONOmnistonSwapProviderConfig: Codable {
 
-    public var referrerAddress: TONUserFriendlyAddress?
+    /** The address of the referrer */
+    public var referrerAddress: String?
     /** Referrer fee in basis points (1 bp = 0.01%) */
     public var referrerFeeBps: Int?
     /** Whether a flexible referrer fee is allowed */
@@ -45,7 +46,7 @@ public struct TONOmnistonSwapProviderConfig: Codable {
     /** Identifier for the provider */
     public var providerId: String?
 
-    public init(referrerAddress: TONUserFriendlyAddress? = nil, referrerFeeBps: Int? = nil, flexibleReferrerFee: Bool? = nil, apiUrl: URL? = nil, defaultSlippageBps: Int? = nil, quoteTimeoutMs: Int? = nil, providerId: String? = nil) {
+    public init(referrerAddress: String? = nil, referrerFeeBps: Int? = nil, flexibleReferrerFee: Bool? = nil, apiUrl: URL? = nil, defaultSlippageBps: Int? = nil, quoteTimeoutMs: Int? = nil, providerId: String? = nil) {
         self.referrerAddress = referrerAddress
         self.referrerFeeBps = referrerFeeBps
         self.flexibleReferrerFee = flexibleReferrerFee

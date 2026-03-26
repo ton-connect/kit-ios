@@ -28,7 +28,8 @@ import Foundation
 import BigInt
 
 public struct TONSwapQuoteParams<TProviderOptions: Codable>: Codable {
-    public var amount: TONTokenAmount
+    /** Amount of tokens to swap (incoming or outgoing depending on isReverseSwap) */
+    public var amount: String
     public var from: TONSwapToken
     public var to: TONSwapToken
     public var network: TONNetwork
@@ -41,7 +42,7 @@ public struct TONSwapQuoteParams<TProviderOptions: Codable>: Codable {
     /** If true, amount is the amount to receive (buy). If false, amount is the amount to spend (sell). */
     public var isReverseSwap: Bool?
 
-    public init(amount: TONTokenAmount, from: TONSwapToken, to: TONSwapToken, network: TONNetwork, slippageBps: Double? = nil, maxOutgoingMessages: Double? = nil, providerOptions: TProviderOptions? = nil, isReverseSwap: Bool? = nil) {
+    public init(amount: String, from: TONSwapToken, to: TONSwapToken, network: TONNetwork, slippageBps: Double? = nil, maxOutgoingMessages: Double? = nil, providerOptions: TProviderOptions? = nil, isReverseSwap: Bool? = nil) {
         self.amount = amount
         self.from = from
         self.to = to

@@ -35,10 +35,13 @@ public struct TONSwapQuote: Codable {
     public var toToken: TONSwapToken
     public var rawFromAmount: TONTokenAmount
     public var rawToAmount: TONTokenAmount
-    public var fromAmount: TONTokenAmount
-    public var toAmount: TONTokenAmount
+    /** Amount of tokens to sell */
+    public var fromAmount: String
+    /** Amount of tokens to buy */
+    public var toAmount: String
     public var rawMinReceived: TONTokenAmount
-    public var minReceived: TONTokenAmount
+    /** Minimum amount of tokens to receive (after slippage) */
+    public var minReceived: String
     public var network: TONNetwork
     /** Price impact of the swap in basis points (100 = 1%) */
     public var priceImpact: Int?
@@ -51,7 +54,7 @@ public struct TONSwapQuote: Codable {
     /** Provider-specific metadata for the quote */
     public var metadata: AnyCodable?
 
-    public init(fromToken: TONSwapToken, toToken: TONSwapToken, rawFromAmount: TONTokenAmount, rawToAmount: TONTokenAmount, fromAmount: TONTokenAmount, toAmount: TONTokenAmount, rawMinReceived: TONTokenAmount, minReceived: TONTokenAmount, network: TONNetwork, priceImpact: Int? = nil, fee: [TONSwapFee]? = nil, providerId: String, expiresAt: Int? = nil, metadata: AnyCodable? = nil) {
+    public init(fromToken: TONSwapToken, toToken: TONSwapToken, rawFromAmount: TONTokenAmount, rawToAmount: TONTokenAmount, fromAmount: String, toAmount: String, rawMinReceived: TONTokenAmount, minReceived: String, network: TONNetwork, priceImpact: Int? = nil, fee: [TONSwapFee]? = nil, providerId: String, expiresAt: Int? = nil, metadata: AnyCodable? = nil) {
         self.fromToken = fromToken
         self.toToken = toToken
         self.rawFromAmount = rawFromAmount

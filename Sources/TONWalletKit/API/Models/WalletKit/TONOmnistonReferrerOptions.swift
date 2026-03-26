@@ -31,13 +31,14 @@ import BigInt
 
 public struct TONOmnistonReferrerOptions: Codable {
 
-    public var referrerAddress: TONUserFriendlyAddress?
+    /** The address of the referrer */
+    public var referrerAddress: String?
     /** Referrer fee in basis points (1 bp = 0.01%) */
     public var referrerFeeBps: Int?
     /** Whether a flexible referrer fee is allowed */
     public var flexibleReferrerFee: Bool?
 
-    public init(referrerAddress: TONUserFriendlyAddress? = nil, referrerFeeBps: Int? = nil, flexibleReferrerFee: Bool? = nil) {
+    public init(referrerAddress: String? = nil, referrerFeeBps: Int? = nil, flexibleReferrerFee: Bool? = nil) {
         self.referrerAddress = referrerAddress
         self.referrerFeeBps = referrerFeeBps
         self.flexibleReferrerFee = flexibleReferrerFee

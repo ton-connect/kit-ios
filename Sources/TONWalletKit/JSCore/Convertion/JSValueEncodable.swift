@@ -32,17 +32,6 @@ protocol JSValueEncodable {
     func encode(in context: JSContext) throws -> Any
 }
 
-extension JSValueEncodable {
-    
-    func encode(in context: JSContext?) -> Any {
-        if let context, let value = try? encode(in: context) {
-            return value
-        }
-        
-        return JSValue(undefinedIn: context)
-    }
-}
-
 extension JSValue: JSValueEncodable {
     
     func encode(in context: JSContext) throws -> Any { self }
