@@ -44,5 +44,19 @@ class MockAPIClient: TONAPIClient {
     ) async throws -> TONGetMethodResult {
         throw "Not implemented in mock"
     }
+
+    var stubbedMasterchainInfo: TONMasterchainInfo?
+
+    func masterchainInfo() async throws -> TONMasterchainInfo {
+        if shouldThrow { throw "Mock API error" }
+        if let stubbedMasterchainInfo { return stubbedMasterchainInfo }
+        return try TONMasterchainInfo(
+            seqno: 12345,
+            shard: "8000000000000000",
+            workchain: -1,
+            fileHash: TONHex(hexString: "aabb"),
+            rootHash: TONHex(hexString: "ccdd")
+        )
+    }
 }
 

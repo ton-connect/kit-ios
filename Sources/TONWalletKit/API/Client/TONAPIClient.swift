@@ -35,4 +35,6 @@ public protocol TONAPIClient: AnyObject {
         stack: [TONRawStackItem]?,
         seqno: UInt?
     ) async throws -> TONGetMethodResult
+    
+    func masterchainInfo() async throws -> TONMasterchainInfo
 }
