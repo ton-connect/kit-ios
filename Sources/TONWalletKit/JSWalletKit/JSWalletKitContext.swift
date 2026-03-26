@@ -56,6 +56,7 @@ class JSWalletKitContext: JSWalletKitContextProtocol {
 #endif
         self.jsContext.polyfill(with: JSTimerPolyfill())
         self.jsContext.polyfill(with: JSFetchPolyfill())
+        self.jsContext.polyfill(with: JSWebSocketPolyfill())
         self.jsContext.polyfill(with: JSWalletKitInitialPolyfill())
     }
     
