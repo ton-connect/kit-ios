@@ -33,7 +33,8 @@ struct WalletView: View {
     @EnvironmentObject var appStateManager: TONWalletAppStateManager
     
     let onSend: (SendTokensViewModel) -> Void
-    
+    let onSwap: (SwapViewModel) -> Void
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16.0) {
@@ -43,6 +44,11 @@ struct WalletView: View {
                     }
                 }
                 .widget()
+
+                Button("Swap") {
+                    onSwap(viewModel.swapViewModel())
+                }
+                .buttonStyle(TONButtonStyle(type: .secondary))
                 
                 WalletDAppConnectionView(viewModel: viewModel.dAppConnection)
                     .widget()

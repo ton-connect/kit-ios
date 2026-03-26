@@ -71,6 +71,10 @@ class WalletViewModel: Identifiable, ObservableObject {
         return SendTokensViewModel(tokens: tokens)
     }
     
+    func swapViewModel() -> SwapViewModel {
+        SwapViewModel(wallet: tonWallet)
+    }
+
     func remove() {
         do {
             try storage.remove(walletAddress: tonWallet.address.value)
