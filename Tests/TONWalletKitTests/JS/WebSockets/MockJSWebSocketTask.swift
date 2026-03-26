@@ -27,8 +27,7 @@
 import Foundation
 @testable import TONWalletKit
 
-@JSWebSocketActor
-final class MockJSWebSocketTask: JSWebSocketTaskProtocol {
+actor MockJSWebSocketTask: JSWebSocketTaskProtocol {
     var sentMessages: [URLSessionWebSocketTask.Message] = []
     var closeCalls: [(code: URLSessionWebSocketTask.CloseCode, reason: Data?)] = []
     var cancelCalled = false
@@ -37,7 +36,7 @@ final class MockJSWebSocketTask: JSWebSocketTaskProtocol {
     nonisolated(unsafe) private var sendContinuation: AsyncStream<URLSessionWebSocketTask.Message>.Continuation?
     nonisolated(unsafe) private var closeContinuation: AsyncStream<(code: URLSessionWebSocketTask.CloseCode, reason: Data?)>.Continuation?
 
-    nonisolated init() {}
+    init() {}
 
     func start() -> AsyncStream<JSWebSocketEvent> {
         AsyncStream { self.eventContinuation = $0 }

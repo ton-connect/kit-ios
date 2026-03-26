@@ -24,10 +24,6 @@
 
 import Foundation
 
-@globalActor actor JSWebSocketActor: GlobalActor {
-    static let shared = JSWebSocketActor()
-}
-
 enum JSWebSocketEvent: Sendable {
     case open(negotiatedProtocol: String?)
     case message(JSWebSocketMessage)
@@ -40,16 +36,14 @@ enum JSWebSocketMessage: Sendable {
     case binary(Data)
 }
 
-@JSWebSocketActor
-protocol JSWebSocketTaskProtocol {
+protocol JSWebSocketTaskProtocol: Actor {
     func start() -> AsyncStream<JSWebSocketEvent>
     func send(_ message: URLSessionWebSocketTask.Message) async throws
     func close(code: URLSessionWebSocketTask.CloseCode, reason: Data?)
     func cancel()
 }
 
-@JSWebSocketActor
-final class JSWebSocketTask: JSWebSocketTaskProtocol {
+actor JSWebSocketTask: JSWebSocketTaskProtocol {
     enum State {
         case connecting
         case open
@@ -65,93 +59,68 @@ final class JSWebSocketTask: JSWebSocketTaskProtocol {
     private var continuation: AsyncStream<JSWebSocketEvent>.Continuation?
     private var delegate: SessionDelegate?
 
-    nonisolated init(url: URL, protocols: [String]) {
+    init(url: URL, protocols: [String]) {
         self.url = url
         self.protocols = protocols
     }
 
     func start() -> AsyncStream<JSWebSocketEvent> {
-        AsyncStream { [weak self] continuation in
-            guard let self else {
-                continuation.finish()
-                return
-            }
-            self.continuation = continuation
+        let delegate = SessionDelegate()
+        self.delegate = delegate
 
-            let delegate = SessionDelegate()
-            self.delegate = delegate
+        let session = URLSession(
+            configuration: .default,
+            delegate: delegate,
+            delegateQueue: nil
+        )
+        self.urlSession = session
 
-            let session = URLSession(
-                configuration: .default,
-                delegate: delegate,
-                delegateQueue: nil
-            )
-            self.urlSession = session
+        let task: URLSessionWebSocketTask
 
-            let task: URLSessionWebSocketTask
-            
-            if protocols.isEmpty {
-                task = session.webSocketTask(with: url)
-            } else {
-                task = session.webSocketTask(with: url, protocols: protocols)
-            }
-            
-            self.webSocketTask = task
-
-            delegate.onOpen = { [weak self] negotiatedProtocol in
-                Task { @JSWebSocketActor [weak self] in
-                    guard let self, self.state == .connecting else { return }
-                    
-                    self.state = .open
-                    self.continuation?.yield(.open(negotiatedProtocol: negotiatedProtocol))
-                    
-                    await self.receiveLoop()
-                }
-            }
-
-            delegate.onClose = { [weak self] closeCode, reason in
-                Task { @JSWebSocketActor [weak self] in
-                    guard let self else { return }
-                    
-                    let code = closeCode.rawValue
-                    let reasonString = reason.flatMap { String(data: $0, encoding: .utf8) } ?? ""
-                    let wasClean = self.state == .closing || self.state == .open
-                    
-                    self.state = .closed
-                    self.continuation?.yield(.close(code: code, reason: reasonString, wasClean: wasClean))
-                    self.continuation?.finish()
-                }
-            }
-
-            delegate.onComplete = { [weak self] error in
-                Task { @JSWebSocketActor [weak self] in
-                    guard let self, self.state != .closed else { return }
-                    
-                    if let error {
-                        self.continuation?.yield(.error(error.localizedDescription))
-                    }
-                    
-                    let wasClean = self.state == .closing
-                    
-                    self.state = .closed
-                    self.continuation?.yield(.close(code: 1006, reason: "", wasClean: wasClean))
-                    self.continuation?.finish()
-                }
-            }
-
-            task.resume()
+        if protocols.isEmpty {
+            task = session.webSocketTask(with: url)
+        } else {
+            task = session.webSocketTask(with: url, protocols: protocols)
         }
+
+        self.webSocketTask = task
+
+        delegate.onOpen = { [weak self] negotiatedProtocol in
+            Task { [weak self] in
+                await self?.handleOpen(negotiatedProtocol: negotiatedProtocol)
+            }
+        }
+
+        delegate.onClose = { [weak self] closeCode, reason in
+            Task { [weak self] in
+                await self?.handleClose(closeCode: closeCode, reason: reason)
+            }
+        }
+
+        delegate.onComplete = { [weak self] error in
+            Task { [weak self] in
+                await self?.handleComplete(error: error)
+            }
+        }
+
+        let stream = AsyncStream<JSWebSocketEvent> { continuation in
+            self.continuation = continuation
+        }
+
+        task.resume()
+
+        return stream
     }
 
     func send(_ message: URLSessionWebSocketTask.Message) async throws {
         guard let webSocketTask else { return }
-        
+
         try await webSocketTask.send(message)
     }
 
     func close(code: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         guard state == .connecting || state == .open else { return }
-        
+
         state = .closing
         webSocketTask?.cancel(with: code, reason: reason)
     }
@@ -163,9 +132,42 @@ final class JSWebSocketTask: JSWebSocketTaskProtocol {
         continuation?.finish()
     }
 
+    private func handleOpen(negotiatedProtocol: String?) async {
+        guard state == .connecting else { return }
+
+        state = .open
+        continuation?.yield(.open(negotiatedProtocol: negotiatedProtocol))
+
+        await receiveLoop()
+    }
+
+    private func handleClose(closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+        let code = closeCode.rawValue
+        let reasonString = reason.flatMap { String(data: $0, encoding: .utf8) } ?? ""
+        let wasClean = state == .closing || state == .open
+
+        state = .closed
+        continuation?.yield(.close(code: code, reason: reasonString, wasClean: wasClean))
+        continuation?.finish()
+    }
+
+    private func handleComplete(error: Error?) {
+        guard state != .closed else { return }
+
+        if let error {
+            continuation?.yield(.error(error.localizedDescription))
+        }
+
+        let wasClean = state == .closing
+
+        state = .closed
+        continuation?.yield(.close(code: 1006, reason: "", wasClean: wasClean))
+        continuation?.finish()
+    }
+
     private func receiveLoop() async {
         guard let webSocketTask else { return }
-        
+
         while state == .open {
             do {
                 let message = try await webSocketTask.receive()

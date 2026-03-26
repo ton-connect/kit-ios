@@ -128,8 +128,8 @@ enum JSWebSocketBinaryType: String {
         let wsTask = task ?? JSWebSocketTask(url: url, protocols: protocolList)
         self.task = wsTask
 
-        Task { @JSWebSocketActor in
-            let stream = wsTask.start()
+        Task {
+            let stream = await wsTask.start()
 
             for await event in stream {
                 self.handleEvent(event)
@@ -160,7 +160,7 @@ enum JSWebSocketBinaryType: String {
 
         guard _readyState == .open else { return }
 
-        Task { @JSWebSocketActor in
+        Task {
             guard let task = self.task else { return }
             do {
                 if data.isString {
@@ -189,10 +189,10 @@ enum JSWebSocketBinaryType: String {
         
         self._readyState = .closing
 
-        Task { @JSWebSocketActor in
+        Task {
             let closeCode = URLSessionWebSocketTask.CloseCode(rawValue: Int(codeValue.toInt32())) ?? .normalClosure
-            
-            task?.close(code: closeCode, reason: reason.data(using: .utf8))
+
+            await task?.close(code: closeCode, reason: reason.data(using: .utf8))
         }
     }
 
