@@ -123,7 +123,7 @@ class SwapViewModel: ObservableObject {
                     amount: amount,
                     from: fromToken,
                     to: toToken,
-                    network: TONNetwork(chainId: "-239"),
+                    network: TONNetwork.mainnet,
                     slippageBps: Double(slippageBps),
                     maxOutgoingMessages: 4,
                     isReverseSwap: isReverseSwap
