@@ -46,6 +46,10 @@ public protocol TONSwapManagerProtocol {
         identifier: Identifier
     ) async throws -> TONSwapQuote
     
+    func quote(
+        params: TONSwapQuoteParams<AnyCodable>
+    ) async throws -> TONSwapQuote
+    
     func swapTransaction<QuoteOptions: Codable>(
         params: TONSwapParams<QuoteOptions>
     ) async throws -> TONTransactionRequest
@@ -88,6 +92,12 @@ class TONSwapManager: TONSwapManagerProtocol {
         identifier: Identifier
     ) async throws -> TONSwapQuote {
         try await jsObject.getQuote(params, identifier.name)
+    }
+    
+    func quote(
+        params: TONSwapQuoteParams<AnyCodable>
+    ) async throws -> TONSwapQuote {
+        try await jsObject.getQuote(params)
     }
     
     func swapTransaction<QuoteOptions: Codable>(params: TONSwapParams<QuoteOptions>) async throws -> TONTransactionRequest {

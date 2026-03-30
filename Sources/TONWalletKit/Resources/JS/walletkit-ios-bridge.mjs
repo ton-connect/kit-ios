@@ -29367,7 +29367,7 @@ function requireUtil() {
     }
     return ret;
   }
-  function toHex(bytes) {
+  function toHex2(bytes) {
     return Array.prototype.map.call(bytes, function(n) {
       return (n < 16 ? "0" : "") + n.toString(16);
     }).join("");
@@ -29416,7 +29416,7 @@ function requireUtil() {
   }
   util = {
     normalizeInput,
-    toHex,
+    toHex: toHex2,
     debugPrint,
     testSpeed
   };
@@ -31645,8 +31645,8 @@ function toTransaction(tx) {
     traceId: tx.trace_id ?? void 0,
     previousTransactionHash: tx.prev_trans_hash ? Base64ToHex(tx.prev_trans_hash) : void 0,
     previousTransactionLogicalTime: tx.prev_trans_lt ?? void 0,
-    origStatus: toAccountStatus(tx.orig_status),
-    endStatus: toAccountStatus(tx.end_status),
+    origStatus: toAccountStatus$1(tx.orig_status),
+    endStatus: toAccountStatus$1(tx.end_status),
     totalFees: tx.total_fees,
     totalFeesExtraCurrencies: tx.total_fees_extra_currencies,
     blockRef: toTransactionBlockRef(tx.block_ref),
@@ -31655,7 +31655,7 @@ function toTransaction(tx) {
     isEmulated: tx.emulated
   };
 }
-function toAccountStatus(status) {
+function toAccountStatus$1(status) {
   if (status === "active") {
     return { type: "active" };
   } else if (status === "frozen") {
@@ -31752,7 +31752,7 @@ function toAccountState(state) {
     hash: Base64ToHex(state.hash),
     balance: state.balance,
     extraCurrencies: state.extra_currencies ?? void 0,
-    accountStatus: state.account_status ? toAccountStatus(state.account_status) : void 0,
+    accountStatus: state.account_status ? toAccountStatus$1(state.account_status) : void 0,
     frozenHash: state.frozen_hash ? Base64ToHex(state.frozen_hash) : void 0,
     dataHash: state.data_hash ? Base64ToHex(state.data_hash) : void 0,
     codeHash: state.code_hash ? Base64ToHex(state.code_hash) : void 0
@@ -34734,6 +34734,9 @@ async function getJettonWalletAddressFromClient(client2, jettonAddress, ownerAdd
 async function getJettonBalanceFromClient(client2, jettonWalletAddress) {
   try {
     const result = await client2.runGetMethod(jettonWalletAddress, "get_wallet_data");
+    if (result.exitCode !== 0) {
+      return "0";
+    }
     const parsedStack = ParseStack(result.stack);
     const balance = parsedStack[0].type === "int" ? parsedStack[0].value : 0n;
     return balance.toString();
@@ -38447,6 +38450,22 @@ class TonWalletKit {
   removeErrorCallback() {
     this.eventRouter.removeErrorCallback();
   }
+  // === URL Parsing API ===
+  /**
+   * Allow to convert url to ConnectionRequestEvent to use inline way
+   */
+  async connectionEventFromUrl(url) {
+    await this.ensureInitialized();
+    try {
+      const bridgeEvent = this.parseBridgeConnectEventFromUrl(url);
+      const handler = new ConnectHandler(() => {
+      }, this.config, this.analyticsManager);
+      return await handler.handle(bridgeEvent);
+    } catch (error2) {
+      log$4.error("Failed to create connection event from URL", { error: error2, url });
+      throw error2;
+    }
+  }
   // === URL Processing API ===
   /**
    * Handle pasted TON Connect URL/link
@@ -38455,16 +38474,7 @@ class TonWalletKit {
   async handleTonConnectUrl(url) {
     await this.ensureInitialized();
     try {
-      const parsedUrl = this.parseTonConnectUrl(url);
-      if (!parsedUrl) {
-        throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Invalid TON Connect URL format", void 0, {
-          url
-        });
-      }
-      const bridgeEvent = this.createConnectEventFromUrl(parsedUrl);
-      if (!bridgeEvent) {
-        throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Invalid TON Connect URL - unable to create bridge event", void 0, { parsedUrl });
-      }
+      const bridgeEvent = this.parseBridgeConnectEventFromUrl(url);
       await this.eventRouter.routeEvent(bridgeEvent);
     } catch (error2) {
       log$4.error("Failed to handle TON Connect URL", { error: error2, url });
@@ -38487,6 +38497,22 @@ class TonWalletKit {
       walletAddress: asAddressFriendly(wallet.getAddress())
     };
     await this.eventRouter.routeEvent(bridgeEvent);
+  }
+  /**
+   * Parse and validate TON Connect URL into a RawBridgeEventConnect
+   */
+  parseBridgeConnectEventFromUrl(url) {
+    const parsedUrl = this.parseTonConnectUrl(url);
+    if (!parsedUrl) {
+      throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Invalid TON Connect URL format", void 0, {
+        url
+      });
+    }
+    const bridgeEvent = this.createConnectEventFromUrl(parsedUrl);
+    if (!bridgeEvent) {
+      throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Invalid TON Connect URL - unable to create bridge event", void 0, { parsedUrl });
+    }
+    return bridgeEvent;
   }
   /**
    * Parse TON Connect URL to extract connection parameters
@@ -38729,9 +38755,9 @@ function mapJettonMasters(jettonInfo) {
         balance: "0",
         owner: jettonInfo.admin ? toRaw(jettonInfo.admin.address) : "",
         jetton: jettonRaw,
-        last_transaction_lt: "0",
-        code_hash: "",
-        data_hash: ""
+        last_transaction_lt: jettonInfo.last_transaction_lt?.toString() ?? "0",
+        code_hash: jettonInfo.code_hash ?? "",
+        data_hash: jettonInfo.data_hash ?? ""
       }
     ],
     address_book: addressBook,
@@ -38775,8 +38801,7 @@ function mapUserJettons(rawResponse) {
       balance: wallet.balance,
       info: {
         name: wallet.jetton.name,
-        description: "",
-        // TonApi does not provide description here
+        description: wallet.jetton.description ?? "",
         image: {
           url: wallet.jetton.image
         },
@@ -38825,6 +38850,7 @@ function mapNftItem(item) {
     })),
     extra: {
       isVerified,
+      trust: item.trust,
       contentUrl: item.metadata.content_url,
       previews: item.previews,
       approvedBy: item.approved_by
@@ -38854,6 +38880,17 @@ function mapNftItemsResponse(items) {
 const hexBocToBase64 = (hex) => {
   return Buffer.from(hex, "hex").toString("base64");
 };
+const decimalToInt257Hex = (value) => {
+  const normalized = value.trim();
+  if (!/^-?\d+$/.test(normalized)) {
+    throw new Error(`Invalid decimal stack number: ${value}`);
+  }
+  const parsed = BigInt(normalized);
+  if (parsed < 0n) {
+    return `-0x${(-parsed).toString(16)}`;
+  }
+  return `0x${parsed.toString(16)}`;
+};
 const mapTonApiGetMethodArgs = (stack) => {
   return (stack || []).map((item) => {
     switch (item.type) {
@@ -38866,7 +38903,7 @@ const mapTonApiGetMethodArgs = (stack) => {
         if (item.value.startsWith("0x") || item.value.startsWith("-0x")) {
           return { type: "int257", value: item.value };
         }
-        return { type: "tinyint", value: item.value };
+        return { type: "int257", value: decimalToInt257Hex(item.value) };
       case "cell":
         return { type: "cell_boc_base64", value: item.value };
       case "slice":
@@ -38899,6 +38936,374 @@ const mapTonApiTvmStackRecord = (item) => {
       throw new Error(`Unsupported TonApi stack item type: ${item.type}`);
   }
 };
+function toHex(value) {
+  const normalized = value.trim();
+  if (!normalized) {
+    throw new Error("Invalid hex value: empty input");
+  }
+  if (isHex(normalized)) {
+    return normalized.toLowerCase();
+  }
+  if (/^[0-9a-fA-F]+$/.test(normalized) && normalized.length % 2 === 0) {
+    return `0x${normalized.toLowerCase()}`;
+  }
+  try {
+    return Base64ToHex(Base64Normalize(normalized)).toLowerCase();
+  } catch {
+  }
+  throw new Error(`Invalid hex value: ${value}`);
+}
+function parseBlockRef(block) {
+  if (!block) {
+    return { workchain: 0, shard: "", seqno: 0 };
+  }
+  const matches = block.match(/\(\s*(-?\d+)\s*,\s*([^,]+)\s*,\s*(-?\d+)\s*\)/);
+  if (!matches) {
+    return { workchain: 0, shard: block, seqno: 0 };
+  }
+  const workchain = Number(matches[1]);
+  const seqno = Number(matches[3]);
+  return {
+    workchain: Number.isFinite(workchain) ? workchain : 0,
+    shard: matches[2].trim(),
+    seqno: Number.isFinite(seqno) ? seqno : 0
+  };
+}
+function toAccountStatus(status) {
+  if (!status)
+    return void 0;
+  if (status === "active")
+    return { type: "active" };
+  if (status === "frozen")
+    return { type: "frozen" };
+  if (status === "uninit")
+    return { type: "uninit" };
+  if (status === "nonexist")
+    return { type: "unknown", value: "nonexist" };
+  return { type: "unknown", value: status };
+}
+function mapTonApiMessage(raw) {
+  const extra = {};
+  for (const currency of raw.value_extra ?? []) {
+    extra[Number(currency.id)] = String(currency.amount ?? 0);
+  }
+  return {
+    hash: toHex(raw.hash),
+    source: raw.source ? asAddressFriendly(raw.source.address) : void 0,
+    destination: raw.destination ? asAddressFriendly(raw.destination.address) : void 0,
+    value: raw.value !== void 0 && raw.value !== null ? String(raw.value) : void 0,
+    valueExtraCurrencies: extra,
+    fwdFee: raw.fwd_fee !== void 0 && raw.fwd_fee !== null ? String(raw.fwd_fee) : void 0,
+    ihrFee: raw.ihr_fee !== void 0 && raw.ihr_fee !== null ? String(raw.ihr_fee) : void 0,
+    creationLogicalTime: raw.created_lt !== void 0 && raw.created_lt !== null ? String(raw.created_lt) : void 0,
+    createdAt: raw.created_at ? Number(raw.created_at) : void 0,
+    opcode: raw.op_code ?? void 0,
+    ihrDisabled: raw.ihr_disabled ?? void 0,
+    isBounce: raw.bounce ?? void 0,
+    isBounced: raw.bounced ?? void 0,
+    importFee: raw.import_fee !== void 0 && raw.import_fee !== null ? String(raw.import_fee) : void 0,
+    messageContent: {
+      body: void 0,
+      decoded: raw.decoded_body
+    }
+  };
+}
+function mapTonApiDescription(raw) {
+  return {
+    type: raw.transaction_type ?? "ord",
+    isAborted: raw.aborted ?? !(raw.success ?? true),
+    isDestroyed: raw.destroyed ?? false,
+    isCreditFirst: false,
+    isTock: false,
+    isInstalled: false,
+    storagePhase: {
+      storageFeesCollected: String(raw.storage_phase?.storage_fees_collected ?? 0),
+      statusChange: raw.storage_phase?.status_change ?? "unchanged"
+    },
+    creditPhase: raw.credit_phase?.credit !== void 0 && raw.credit_phase?.credit !== null ? {
+      credit: String(raw.credit_phase.credit)
+    } : void 0,
+    computePhase: {
+      isSkipped: raw.compute_phase?.skipped ?? false,
+      isSuccess: raw.compute_phase?.success ?? raw.success ?? true,
+      isMessageStateUsed: false,
+      isAccountActivated: false,
+      gasFees: String(raw.compute_phase?.gas_fees ?? 0),
+      gasUsed: String(raw.compute_phase?.gas_used ?? 0),
+      gasLimit: String(raw.compute_phase?.gas_used ?? 0),
+      mode: 0,
+      exitCode: raw.compute_phase?.exit_code ?? (raw.success ? 0 : 1),
+      vmStepsNumber: raw.compute_phase?.vm_steps ?? 0
+    },
+    action: {
+      isSuccess: raw.action_phase?.success ?? raw.success ?? true,
+      isValid: true,
+      hasNoFunds: false,
+      statusChange: "unchanged",
+      totalForwardingFees: String(raw.action_phase?.fwd_fees ?? 0),
+      totalActionFees: String(raw.action_phase?.total_fees ?? 0),
+      resultCode: raw.action_phase?.result_code ?? 0,
+      totalActionsNumber: raw.action_phase?.total_actions ?? 0,
+      specActionsNumber: 0,
+      skippedActionsNumber: raw.action_phase?.skipped_actions ?? 0,
+      messagesCreatedNumber: raw.out_msgs?.length ?? 0,
+      totalMessagesSize: {
+        cells: "0",
+        bits: "0"
+      }
+    }
+  };
+}
+function mapTonApiTransaction(raw) {
+  const blockRef = parseBlockRef(raw.block);
+  return {
+    account: asAddressFriendly(raw.account.address),
+    hash: toHex(raw.hash),
+    logicalTime: String(raw.lt),
+    now: Number(raw.utime ?? 0),
+    mcBlockSeqno: blockRef.seqno,
+    traceExternalHash: toHex(raw.hash),
+    previousTransactionHash: raw.prev_trans_hash || void 0,
+    previousTransactionLogicalTime: raw.prev_trans_lt !== void 0 && raw.prev_trans_lt !== null ? String(raw.prev_trans_lt) : void 0,
+    origStatus: toAccountStatus(raw.orig_status),
+    endStatus: toAccountStatus(raw.end_status),
+    totalFees: String(raw.total_fees ?? 0),
+    totalFeesExtraCurrencies: {},
+    blockRef,
+    inMessage: raw.in_msg ? mapTonApiMessage(raw.in_msg) : void 0,
+    outMessages: (raw.out_msgs ?? []).map((message) => mapTonApiMessage(message)),
+    description: mapTonApiDescription(raw),
+    isEmulated: false
+  };
+}
+function mapTraceStatus(status) {
+  if (!status || status === "nonexist") {
+    return "uninit";
+  }
+  if (status === "active" || status === "frozen" || status === "uninit") {
+    return status;
+  }
+  return status;
+}
+function flattenTrace(trace) {
+  const out = [trace.transaction];
+  for (const child of trace.children ?? []) {
+    out.push(...flattenTrace(child));
+  }
+  return out;
+}
+function mapTonApiTraceNode(trace) {
+  return {
+    tx_hash: trace.transaction.hash,
+    in_msg_hash: trace.transaction.in_msg?.hash ?? null,
+    children: (trace.children ?? []).map((child) => mapTonApiTraceNode(child))
+  };
+}
+function mapTonApiTraceMessage(raw) {
+  const extraCurrencies = {};
+  for (const currency of raw.value_extra ?? []) {
+    extraCurrencies[String(currency.id)] = String(currency.amount ?? 0);
+  }
+  return {
+    hash: raw.hash ?? "",
+    source: raw.source?.address ?? null,
+    destination: raw.destination?.address ?? "",
+    value: raw.value !== void 0 && raw.value !== null ? String(raw.value) : null,
+    value_extra_currencies: extraCurrencies,
+    fwd_fee: raw.fwd_fee !== void 0 && raw.fwd_fee !== null ? String(raw.fwd_fee) : null,
+    ihr_fee: raw.ihr_fee !== void 0 && raw.ihr_fee !== null ? String(raw.ihr_fee) : null,
+    created_lt: raw.created_lt !== void 0 && raw.created_lt !== null ? String(raw.created_lt) : null,
+    created_at: raw.created_at !== void 0 && raw.created_at !== null ? String(raw.created_at) : null,
+    opcode: raw.op_code ?? null,
+    ihr_disabled: raw.ihr_disabled ?? null,
+    bounce: raw.bounce ?? null,
+    bounced: raw.bounced ?? null,
+    import_fee: raw.import_fee !== void 0 && raw.import_fee !== null ? String(raw.import_fee) : null,
+    message_content: {
+      hash: "",
+      body: "",
+      decoded: raw.decoded_body ?? null
+    },
+    init_state: null,
+    hash_norm: void 0
+  };
+}
+function mapTonApiTraceTransaction(raw) {
+  const blockRef = parseBlockRef(raw.block);
+  const inMsg = raw.in_msg ? mapTonApiTraceMessage(raw.in_msg) : null;
+  const outMsgs = (raw.out_msgs ?? []).map((message) => mapTonApiTraceMessage(message));
+  return {
+    account: raw.account.address,
+    hash: raw.hash,
+    lt: String(raw.lt ?? 0),
+    now: Number(raw.utime ?? 0),
+    mc_block_seqno: blockRef.seqno,
+    trace_external_hash: raw.hash,
+    prev_trans_hash: raw.prev_trans_hash ?? null,
+    prev_trans_lt: raw.prev_trans_lt !== void 0 && raw.prev_trans_lt !== null ? String(raw.prev_trans_lt) : null,
+    orig_status: mapTraceStatus(raw.orig_status),
+    end_status: mapTraceStatus(raw.end_status),
+    total_fees: String(raw.total_fees ?? 0),
+    total_fees_extra_currencies: {},
+    description: {
+      type: raw.transaction_type ?? "ord",
+      aborted: raw.aborted ?? !(raw.success ?? true),
+      destroyed: raw.destroyed ?? false,
+      credit_first: false,
+      is_tock: false,
+      installed: false,
+      storage_ph: {
+        storage_fees_collected: String(raw.storage_phase?.storage_fees_collected ?? 0),
+        status_change: raw.storage_phase?.status_change ?? "unchanged"
+      },
+      credit_ph: raw.credit_phase?.credit !== void 0 && raw.credit_phase?.credit !== null ? { credit: String(raw.credit_phase.credit) } : void 0,
+      compute_ph: {
+        skipped: raw.compute_phase?.skipped ?? false,
+        success: raw.compute_phase?.success ?? raw.success ?? true,
+        msg_state_used: false,
+        account_activated: false,
+        gas_fees: String(raw.compute_phase?.gas_fees ?? 0),
+        gas_used: String(raw.compute_phase?.gas_used ?? 0),
+        gas_limit: String(raw.compute_phase?.gas_used ?? 0),
+        mode: 0,
+        exit_code: raw.compute_phase?.exit_code ?? (raw.success ? 0 : 1),
+        vm_steps: raw.compute_phase?.vm_steps ?? 0,
+        vm_init_state_hash: "",
+        vm_final_state_hash: ""
+      },
+      action: {
+        success: raw.action_phase?.success ?? raw.success ?? true,
+        valid: true,
+        no_funds: false,
+        status_change: "unchanged",
+        total_fwd_fees: String(raw.action_phase?.fwd_fees ?? 0),
+        total_action_fees: String(raw.action_phase?.total_fees ?? 0),
+        result_code: raw.action_phase?.result_code ?? 0,
+        tot_actions: raw.action_phase?.total_actions ?? 0,
+        spec_actions: 0,
+        skipped_actions: raw.action_phase?.skipped_actions ?? 0,
+        msgs_created: raw.out_msgs?.length ?? 0,
+        action_list_hash: "",
+        tot_msg_size: {
+          cells: "0",
+          bits: "0"
+        }
+      }
+    },
+    block_ref: {
+      workchain: blockRef.workchain,
+      shard: blockRef.shard,
+      seqno: blockRef.seqno
+    },
+    in_msg: inMsg,
+    out_msgs: outMsgs,
+    account_state_before: {
+      hash: "",
+      balance: String(raw.end_balance ?? 0),
+      extra_currencies: null,
+      account_status: mapTraceStatus(raw.orig_status),
+      frozen_hash: null,
+      data_hash: null,
+      code_hash: null
+    },
+    account_state_after: {
+      hash: "",
+      balance: String(raw.end_balance ?? 0),
+      extra_currencies: null,
+      account_status: mapTraceStatus(raw.end_status),
+      frozen_hash: null,
+      data_hash: null,
+      code_hash: null
+    },
+    emulated: false,
+    trace_id: raw.hash
+  };
+}
+function mapTonApiTrace(trace, mapTraceTransaction) {
+  const traceTransactions = flattenTrace(trace);
+  const transactions = Object.fromEntries(traceTransactions.map((tx) => [tx.hash, mapTraceTransaction(tx)]));
+  const transactionsOrder = [...traceTransactions].sort((a2, b2) => BigInt(a2.lt ?? 0) < BigInt(b2.lt ?? 0) ? -1 : 1).map((tx) => tx.hash);
+  const lts = traceTransactions.map((tx) => BigInt(tx.lt ?? 0));
+  const times = traceTransactions.map((tx) => Number(tx.utime ?? 0));
+  const startLt = lts.length > 0 ? lts.reduce((min, value) => value < min ? value : min, lts[0]) : 0n;
+  const endLt = lts.length > 0 ? lts.reduce((max, value) => value > max ? value : max, lts[0]) : 0n;
+  const startUtime = times.length > 0 ? Math.min(...times) : 0;
+  const endUtime = times.length > 0 ? Math.max(...times) : 0;
+  const traceId = trace.transaction.hash;
+  const rootTx = mapTraceTransaction(trace.transaction);
+  const messagesCount = traceTransactions.reduce((acc, tx) => acc + (tx.in_msg ? 1 : 0) + (tx.out_msgs?.length ?? 0), 0);
+  return {
+    address_book: {},
+    metadata: {},
+    traces: [
+      {
+        actions: [],
+        end_lt: endLt.toString(),
+        end_utime: endUtime,
+        external_hash: rootTx.in_msg?.hash ?? "",
+        is_incomplete: false,
+        mc_seqno_end: String(rootTx.mc_block_seqno ?? 0),
+        mc_seqno_start: String(rootTx.mc_block_seqno ?? 0),
+        start_lt: startLt.toString(),
+        start_utime: startUtime,
+        trace: mapTonApiTraceNode(trace),
+        trace_id: traceId,
+        trace_info: {
+          classification_state: "tonapi",
+          messages: messagesCount,
+          pending_messages: 0,
+          trace_state: "complete",
+          transactions: traceTransactions.length
+        },
+        transactions,
+        transactions_order: transactionsOrder,
+        warning: ""
+      }
+    ]
+  };
+}
+function normalizeTonApiAccountAddress(account) {
+  if (typeof account === "string") {
+    return account;
+  }
+  return account?.address ?? "";
+}
+function mapTonApiEvent(raw) {
+  return {
+    eventId: toHex(raw.event_id),
+    account: toAccount(raw.account, {}),
+    timestamp: Number(raw.timestamp ?? 0),
+    actions: (raw.actions ?? []).map((action) => {
+      const status = action.status === "failed" ? "failure" : "success";
+      const actionType = action.type ?? "Unknown";
+      const payload = actionType ? action[actionType] : void 0;
+      const actionIdSource = action.base_transactions?.[0] ?? raw.event_id;
+      return {
+        type: actionType,
+        id: toHex(actionIdSource),
+        status,
+        simplePreview: {
+          name: action.simple_preview?.name ?? actionType ?? "Action",
+          description: action.simple_preview?.description ?? action.simple_preview?.name ?? "Action",
+          value: action.simple_preview?.value ?? "",
+          accounts: (action.simple_preview?.accounts ?? []).map((account) => toAccount(normalizeTonApiAccountAddress(account), {})),
+          valueImage: action.simple_preview?.value_image
+        },
+        baseTransactions: (action.base_transactions ?? []).map((transactionHash) => toHex(String(transactionHash))),
+        ...payload && typeof payload === "object" ? { [actionType]: payload } : {}
+      };
+    }),
+    isScam: raw.is_scam ?? false,
+    lt: Number(raw.lt ?? 0),
+    inProgress: raw.in_progress ?? false,
+    trace: {
+      tx_hash: "",
+      in_msg_hash: null,
+      children: []
+    },
+    transactions: {}
+  };
+}
 function mapMasterchainInfo(rawResponse) {
   return {
     seqno: rawResponse.seqno,
@@ -38951,7 +39356,7 @@ class ApiClientTonApi extends BaseApiClient {
     return mapJettonMasters(raw);
   }
   async jettonsByOwnerAddress(request) {
-    const raw = await this.getJson(`/v2/accounts/${request.ownerAddress}/jettons?currencies=usd`);
+    const raw = await this.getJson(`/v2/accounts/${this.normalizeAddress(request.ownerAddress)}/jettons?currencies=usd`);
     return mapUserJettons(raw);
   }
   async nftItemsByAddress(request) {
@@ -38959,7 +39364,7 @@ class ApiClientTonApi extends BaseApiClient {
       throw new Error("TonApi requires an address to fetch NFT items.");
     }
     try {
-      const raw = await this.getJson(`/v2/nfts/${request.address}`);
+      const raw = await this.getJson(`/v2/nfts/${this.normalizeAddress(request.address)}`);
       return mapNftItemsResponse([raw]);
     } catch (e) {
       if (e instanceof TonClientError && e.status === 404) {
@@ -38974,7 +39379,7 @@ class ApiClientTonApi extends BaseApiClient {
       query.limit = request.pagination.limit;
     if (request.pagination?.offset)
       query.offset = request.pagination.offset;
-    const raw = await this.getJson(`/v2/accounts/${request.ownerAddress}/nfts`, query);
+    const raw = await this.getJson(`/v2/accounts/${this.normalizeAddress(request.ownerAddress)}/nfts`, query);
     return mapNftItemsResponse(raw.nft_items);
   }
   async sendBoc(boc) {
@@ -39001,20 +39406,85 @@ class ApiClientTonApi extends BaseApiClient {
       stack: (raw.stack || []).map(mapTonApiTvmStackRecord)
     };
   }
-  async getAccountTransactions(_request) {
-    throw new Error("Method not implemented.");
+  async getAccountTransactions(request) {
+    const address = request.address?.[0];
+    if (!address) {
+      return { transactions: [], addressBook: {} };
+    }
+    const limit = Math.max(1, Math.min(request.limit ?? 10, 100));
+    const offset = Math.max(0, request.offset ?? 0);
+    const response = await this.getJson(`/v2/blockchain/accounts/${address}/transactions`, {
+      limit,
+      offset,
+      sort_order: "desc"
+    });
+    const transactions = (response.transactions ?? []).map(mapTonApiTransaction);
+    return {
+      transactions,
+      addressBook: {}
+    };
   }
-  async getTransactionsByHash(_request) {
-    throw new Error("Method not implemented.");
+  async getTransactionsByHash(request) {
+    const isMessageHash = "msgHash" in request;
+    const requestHash = isMessageHash ? request.msgHash : request.bodyHash;
+    const normalizedHash = this.normalizeTonApiId(requestHash);
+    const byTransaction = async () => this.getJson(`/v2/blockchain/transactions/${normalizedHash}`);
+    const byMessage = async () => this.getJson(`/v2/blockchain/messages/${normalizedHash}/transaction`);
+    const primaryRequest = isMessageHash ? byMessage : byTransaction;
+    const fallbackRequest = isMessageHash ? byTransaction : byMessage;
+    let tx;
+    try {
+      tx = await primaryRequest();
+    } catch (error2) {
+      if (!(error2 instanceof TonClientError) || error2.status !== 404) {
+        throw error2;
+      }
+      tx = await fallbackRequest();
+    }
+    return {
+      transactions: [mapTonApiTransaction(tx)],
+      addressBook: {}
+    };
   }
   async getPendingTransactions(_request) {
-    throw new Error("Method not implemented.");
+    return {
+      transactions: [],
+      addressBook: {}
+    };
   }
-  async getTrace(_request) {
-    throw new Error("Method not implemented.");
+  async getTrace(request) {
+    const candidates = request.traceId && request.traceId.length > 0 ? request.traceId : [];
+    if (request.account) {
+      candidates.push(String(request.account));
+    }
+    for (const candidate of candidates) {
+      const traceId = this.normalizeTonApiId(candidate);
+      try {
+        const trace = await this.getJson(`/v2/traces/${traceId}`);
+        return mapTonApiTrace(trace, mapTonApiTraceTransaction);
+      } catch (error2) {
+        if (error2 instanceof TonClientError && error2.status === 404) {
+          continue;
+        }
+        throw error2;
+      }
+    }
+    throw new Error("Failed to fetch trace");
   }
-  async getPendingTrace(_request) {
-    throw new Error("Method not implemented.");
+  async getPendingTrace(request) {
+    for (const messageHash of request.externalMessageHash) {
+      const normalizedHash = this.normalizeTonApiId(messageHash);
+      try {
+        const tx = await this.getJson(`/v2/blockchain/messages/${normalizedHash}/transaction`);
+        return await this.getTrace({ traceId: [tx.hash] });
+      } catch (error2) {
+        if (error2 instanceof TonClientError && error2.status === 404) {
+          continue;
+        }
+        throw error2;
+      }
+    }
+    throw new Error("Failed to fetch pending trace");
   }
   async resolveDnsWallet(domain) {
     try {
@@ -39033,8 +39503,23 @@ class ApiClientTonApi extends BaseApiClient {
       return null;
     }
   }
-  async getEvents(_request) {
-    throw new Error("Method not implemented.");
+  async getEvents(request) {
+    const account = String(request.account);
+    const limit = Math.max(1, Math.min(request.limit ?? 20, 100));
+    const offset = Math.max(0, request.offset ?? 0);
+    const response = await this.getJson(`/v2/accounts/${account}/events`, {
+      limit,
+      offset,
+      sort_order: "desc",
+      i18n: "en"
+    });
+    const pageEvents = response.events ?? [];
+    return {
+      events: pageEvents.map(mapTonApiEvent),
+      offset,
+      limit,
+      hasNext: Number(response.next_from ?? 0) > 0 || pageEvents.length >= limit
+    };
   }
   async getMasterchainInfo() {
     const raw = await this.getJson(`/v2/blockchain/masterchain-head`);
@@ -39043,6 +39528,30 @@ class ApiClientTonApi extends BaseApiClient {
   appendAuthHeaders(headers) {
     if (this.apiKey) {
       headers.set("Authorization", `Bearer ${this.apiKey}`);
+    }
+  }
+  normalizeTonApiId(value) {
+    const normalizedValue = value.trim();
+    if (!normalizedValue) {
+      throw new Error("Invalid TonAPI id: value is required");
+    }
+    if (isHex(normalizedValue)) {
+      return normalizedValue.toLowerCase();
+    }
+    if (/^[0-9a-fA-F]+$/.test(normalizedValue) && normalizedValue.length % 2 === 0) {
+      return `0x${normalizedValue.toLowerCase()}`;
+    }
+    const normalizedBase64 = Base64Normalize(normalizedValue);
+    return Base64ToHex(normalizedBase64).toLowerCase();
+  }
+  normalizeAddress(address) {
+    try {
+      if (address instanceof distExports$2.Address) {
+        return address.toString();
+      }
+      return distExports$2.Address.parse(address).toString();
+    } catch {
+      return address.toString();
     }
   }
 }
@@ -43543,8 +44052,14 @@ const tokenToAddress = (token) => {
   return distExports$2.Address.parse(token.address).toRawString();
 };
 const toOmnistonAddress = (address, network) => {
+  let formattedAddress;
+  try {
+    formattedAddress = distExports$2.Address.parse(address).toString({ bounceable: true });
+  } catch {
+    formattedAddress = address;
+  }
   return {
-    address,
+    address: formattedAddress,
     blockchain: mapNetworkToBlockchainId(network)
   };
 };
@@ -43612,7 +44127,9 @@ class OmnistonSwapProvider extends SwapProvider {
       const amount = params.isReverseSwap ? { askUnits: parseUnits(params.amount, params.to.decimals).toString() } : { bidUnits: parseUnits(params.amount, params.from.decimals).toString() };
       const quoteRequest = {
         amount,
-        settlementMethods: [SettlementMethod.SETTLEMENT_METHOD_SWAP],
+        settlementMethods: params.providerOptions?.settlementMethods ?? [
+          SettlementMethod.SETTLEMENT_METHOD_SWAP
+        ],
         bidAssetAddress: toOmnistonAddress(bidAssetAddress, params.network),
         askAssetAddress: toOmnistonAddress(askAssetAddress, params.network),
         referrerAddress: referrerAddress ? toOmnistonAddress(distExports$2.Address.parse(referrerAddress).toString({ bounceable: true }), params.network) : void 0,

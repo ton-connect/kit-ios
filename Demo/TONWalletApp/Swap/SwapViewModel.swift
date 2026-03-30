@@ -1,11 +1,19 @@
 import Foundation
 import TONWalletKit
 
-enum SwapProviderOption: String, CaseIterable, Identifiable {
-    case omniston = "Omniston"
-    case dedust = "DeDust"
+struct SwapProviderOption: Identifiable, Hashable, Equatable {
+    let name: String
+    let identifier: any TONSwapProviderIdentifier
 
-    var id: String { rawValue }
+    var id: String { identifier.name }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 @MainActor
@@ -15,7 +23,8 @@ class SwapViewModel: ObservableObject {
     @Published var fromAmount = ""
     @Published var toAmount = ""
     @Published var isReverseSwap = false
-    @Published var selectedProvider: SwapProviderOption = .omniston
+    @Published var providers: [SwapProviderOption] = []
+    @Published var selectedProvider: SwapProviderOption?
     @Published var currentQuote: TONSwapQuote?
     @Published var isLoadingQuote = false
     @Published var isSwapping = false
@@ -28,8 +37,6 @@ class SwapViewModel: ObservableObject {
     let wallet: any TONWalletProtocol
 
     private var swapManager: TONSwapManagerProtocol?
-    private var omnistonIdentifier: TONOmnistonSwapProviderIdentifier?
-    private var deDustIdentifier: TONDeDustSwapProviderIdentifier?
 
     init(wallet: any TONWalletProtocol) {
         self.wallet = wallet
@@ -81,6 +88,14 @@ class SwapViewModel: ObservableObject {
     func setProvider(_ provider: SwapProviderOption) {
         selectedProvider = provider
         clearQuote()
+        
+        Task {
+            do {
+                try await getSwapManager().set(defaultProviderId: provider.identifier)
+            } catch {
+                debugPrint(error.localizedDescription)
+            }
+        }
     }
 
     func swapTokens() {
@@ -103,33 +118,19 @@ class SwapViewModel: ObservableObject {
             do {
                 let manager = try await getSwapManager()
                 let quote: TONSwapQuote
-                switch selectedProvider {
-                case .omniston:
-                    let identifier = try await getOmnistonIdentifier()
-                    let params = TONSwapQuoteParams<TONOmnistonProviderOptions>(
-                        amount: amount,
-                        from: fromToken,
-                        to: toToken,
-                        network: TONNetwork(chainId: "-239"),
-                        slippageBps: Double(slippageBps),
-                        maxOutgoingMessages: 4,
-                        isReverseSwap: isReverseSwap
-                    )
-                    quote = try await manager.quote(params: params, identifier: identifier)
-                case .dedust:
-                    let identifier = try await getDeDustIdentifier()
-                    let params = TONSwapQuoteParams<TONDeDustProviderOptions>(
-                        amount: amount,
-                        from: fromToken,
-                        to: toToken,
-                        network: TONNetwork(chainId: "-239"),
-                        slippageBps: Double(slippageBps),
-                        maxOutgoingMessages: 4,
-                        isReverseSwap: isReverseSwap
-                    )
-                    quote = try await manager.quote(params: params, identifier: identifier)
-                }
+                
+                quote = try await manager.quote(params: TONSwapQuoteParams<AnyCodable>(
+                    amount: amount,
+                    from: fromToken,
+                    to: toToken,
+                    network: TONNetwork(chainId: "-239"),
+                    slippageBps: Double(slippageBps),
+                    maxOutgoingMessages: 4,
+                    isReverseSwap: isReverseSwap
+                ))
+                
                 currentQuote = quote
+                
                 if isReverseSwap {
                     fromAmount = quote.fromAmount
                 } else {
@@ -155,24 +156,12 @@ class SwapViewModel: ObservableObject {
                     ? try TONUserFriendlyAddress(value: destinationAddress)
                     : nil
 
-                let tx: TONTransactionRequest
-                switch selectedProvider {
-                case .omniston:
-                    let params = TONSwapParams<AnyCodable>(
-                        quote: currentQuote,
-                        userAddress: wallet.address,
-                        destinationAddress: dest
-                    )
-                    tx = try await manager.swapTransaction(params: params)
-                case .dedust:
-                    let params = TONSwapParams<TONDeDustProviderOptions>(
-                        quote: currentQuote,
-                        userAddress: wallet.address,
-                        destinationAddress: dest
-                    )
-                    tx = try await manager.swapTransaction(params: params)
-                }
-
+                let tx = try await manager.swapTransaction(params: TONSwapParams<AnyCodable>(
+                    quote: currentQuote,
+                    userAddress: wallet.address,
+                    destinationAddress: dest
+                ))
+               
                 try await TONWalletKit.shared().send(transaction: tx, from: wallet)
                 clearQuote()
                 fromAmount = ""
@@ -191,6 +180,14 @@ class SwapViewModel: ObservableObject {
             getQuote()
         }
     }
+    
+    func load() async {
+        do {
+            _ = try await getSwapManager()
+        } catch {
+            debugPrint(error.localizedDescription)
+        }
+    }
 
     private func clearQuote() {
         currentQuote = nil
@@ -199,33 +196,25 @@ class SwapViewModel: ObservableObject {
 
     private func getSwapManager() async throws -> TONSwapManagerProtocol {
         if let swapManager { return swapManager }
-        let kit = try await TONWalletKit.shared()
+        let kit = TONWalletKit.shared()
         let manager = try await kit.swap()
 
         let omniston = try await kit.omnistoneSwapProvider(config: nil)
         try manager.register(provider: omniston)
-        omnistonIdentifier = omniston.identifier
-
+        
         let deDust = try await kit.deDustSwapProvider(config: nil)
         try manager.register(provider: deDust)
-        deDustIdentifier = deDust.identifier
 
         try manager.set(defaultProviderId: omniston.identifier)
 
+        self.providers = [
+            SwapProviderOption(name: "Omnistone", identifier: omniston.identifier),
+            SwapProviderOption(name: "DeDust", identifier: deDust.identifier),
+        ]
+        
+        selectedProvider = providers.first
+        
         swapManager = manager
         return manager
     }
-
-    private func getOmnistonIdentifier() async throws -> TONOmnistonSwapProviderIdentifier {
-        if let omnistonIdentifier { return omnistonIdentifier }
-        _ = try await getSwapManager()
-        return omnistonIdentifier!
-    }
-
-    private func getDeDustIdentifier() async throws -> TONDeDustSwapProviderIdentifier {
-        if let deDustIdentifier { return deDustIdentifier }
-        _ = try await getSwapManager()
-        return deDustIdentifier!
-    }
-
 }

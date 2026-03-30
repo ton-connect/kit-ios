@@ -41,7 +41,7 @@ public struct TONSwapQuoteParams<TProviderOptions: Codable>: Codable {
     public var providerOptions: TProviderOptions?
     /** If true, amount is the amount to receive (buy). If false, amount is the amount to spend (sell). */
     public var isReverseSwap: Bool?
-
+  
     public init(amount: String, from: TONSwapToken, to: TONSwapToken, network: TONNetwork, slippageBps: Double? = nil, maxOutgoingMessages: Double? = nil, providerOptions: TProviderOptions? = nil, isReverseSwap: Bool? = nil) {
         self.amount = amount
         self.from = from

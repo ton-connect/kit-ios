@@ -61,7 +61,6 @@ public final class TONSwapProvider<Identifier: TONSwapProviderIdentifier>: TONSw
     }
 }
 
-
 extension TONSwapProvider: JSValueDecodable {
     
     static func from(_ value: JSValue) throws -> Self? {
