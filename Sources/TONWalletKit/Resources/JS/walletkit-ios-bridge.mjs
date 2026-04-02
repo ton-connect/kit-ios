@@ -239,10 +239,10 @@ function getAugmentedNamespace(n) {
   if (Object.prototype.hasOwnProperty.call(n, "__esModule")) return n;
   var f2 = n.default;
   if (typeof f2 == "function") {
-    var a2 = function a3() {
+    var a4 = function a5() {
       var isInstance = false;
       try {
-        isInstance = this instanceof a3;
+        isInstance = this instanceof a5;
       } catch {
       }
       if (isInstance) {
@@ -250,19 +250,19 @@ function getAugmentedNamespace(n) {
       }
       return f2.apply(this, arguments);
     };
-    a2.prototype = f2.prototype;
-  } else a2 = {};
-  Object.defineProperty(a2, "__esModule", { value: true });
+    a4.prototype = f2.prototype;
+  } else a4 = {};
+  Object.defineProperty(a4, "__esModule", { value: true });
   Object.keys(n).forEach(function(k2) {
     var d = Object.getOwnPropertyDescriptor(n, k2);
-    Object.defineProperty(a2, k2, d.get ? d : {
+    Object.defineProperty(a4, k2, d.get ? d : {
       enumerable: true,
       get: function() {
         return n[k2];
       }
     });
   });
-  return a2;
+  return a4;
 }
 var whatwgUrl = {};
 var webidl2jsWrapper = {};
@@ -478,9 +478,9 @@ function requireLib() {
         } else {
           const d = S2.charCodeAt(i4 + 1);
           if (56320 <= d && d <= 57343) {
-            const a2 = c & 1023;
+            const a4 = c & 1023;
             const b2 = d & 1023;
-            U2.push(String.fromCodePoint((2 << 15) + (2 << 9) * a2 + b2));
+            U2.push(String.fromCodePoint((2 << 15) + (2 << 9) * a4 + b2));
             ++i4;
           } else {
             U2.push(String.fromCodePoint(65533));
@@ -2774,11 +2774,11 @@ function requireURLSearchParamsImpl() {
       this._updateSteps();
     }
     sort() {
-      this._list.sort((a2, b2) => {
-        if (a2[0] < b2[0]) {
+      this._list.sort((a4, b2) => {
+        if (a4[0] < b2[0]) {
           return -1;
         }
-        if (a2[0] > b2[0]) {
+        if (a4[0] > b2[0]) {
           return 1;
         }
         return 0;
@@ -4277,20 +4277,20 @@ function requireBuffer() {
     Buffer2.isBuffer = function isBuffer(b2) {
       return b2 != null && b2._isBuffer === true && b2 !== Buffer2.prototype;
     };
-    Buffer2.compare = function compare(a2, b2) {
-      if (isInstance(a2, Uint8Array)) a2 = Buffer2.from(a2, a2.offset, a2.byteLength);
+    Buffer2.compare = function compare(a4, b2) {
+      if (isInstance(a4, Uint8Array)) a4 = Buffer2.from(a4, a4.offset, a4.byteLength);
       if (isInstance(b2, Uint8Array)) b2 = Buffer2.from(b2, b2.offset, b2.byteLength);
-      if (!Buffer2.isBuffer(a2) || !Buffer2.isBuffer(b2)) {
+      if (!Buffer2.isBuffer(a4) || !Buffer2.isBuffer(b2)) {
         throw new TypeError(
           'The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array'
         );
       }
-      if (a2 === b2) return 0;
-      let x2 = a2.length;
+      if (a4 === b2) return 0;
+      let x2 = a4.length;
       let y2 = b2.length;
       for (let i4 = 0, len = Math.min(x2, y2); i4 < len; ++i4) {
-        if (a2[i4] !== b2[i4]) {
-          x2 = a2[i4];
+        if (a4[i4] !== b2[i4]) {
+          x2 = a4[i4];
           y2 = b2[i4];
           break;
         }
@@ -5989,7 +5989,7 @@ function requireNaclFast() {
       var _0 = new Uint8Array(16);
       var _9 = new Uint8Array(32);
       _9[0] = 9;
-      var gf0 = gf(), gf1 = gf([1]), _121665 = gf([56129, 1]), D2 = gf([30883, 4953, 19914, 30187, 55467, 16705, 2637, 112, 59544, 30585, 16505, 36039, 65139, 11119, 27886, 20995]), D22 = gf([61785, 9906, 39828, 60374, 45398, 33411, 5274, 224, 53552, 61171, 33010, 6542, 64743, 22239, 55772, 9222]), X = gf([54554, 36645, 11616, 51542, 42930, 38181, 51040, 26924, 56412, 64982, 57905, 49316, 21502, 52590, 14035, 8553]), Y = gf([26200, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214]), I = gf([41136, 18958, 6951, 50414, 58488, 44335, 6150, 12099, 55207, 15867, 153, 11085, 57099, 20417, 9344, 11139]);
+      var gf0 = gf(), gf1 = gf([1]), _121665 = gf([56129, 1]), D2 = gf([30883, 4953, 19914, 30187, 55467, 16705, 2637, 112, 59544, 30585, 16505, 36039, 65139, 11119, 27886, 20995]), D22 = gf([61785, 9906, 39828, 60374, 45398, 33411, 5274, 224, 53552, 61171, 33010, 6542, 64743, 22239, 55772, 9222]), X = gf([54554, 36645, 11616, 51542, 42930, 38181, 51040, 26924, 56412, 64982, 57905, 49316, 21502, 52590, 14035, 8553]), Y = gf([26200, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214, 26214]), I2 = gf([41136, 18958, 6951, 50414, 58488, 44335, 6150, 12099, 55207, 15867, 153, 11085, 57099, 20417, 9344, 11139]);
       function ts64(x2, i4, h2, l) {
         x2[i4] = h2 >> 24 & 255;
         x2[i4 + 1] = h2 >> 16 & 255;
@@ -6271,17 +6271,17 @@ function requireNaclFast() {
       }
       var sigma = new Uint8Array([101, 120, 112, 97, 110, 100, 32, 51, 50, 45, 98, 121, 116, 101, 32, 107]);
       function crypto_stream_salsa20_xor(c, cpos, m, mpos, b2, n, k2) {
-        var z = new Uint8Array(16), x2 = new Uint8Array(64);
+        var z2 = new Uint8Array(16), x2 = new Uint8Array(64);
         var u, i4;
-        for (i4 = 0; i4 < 16; i4++) z[i4] = 0;
-        for (i4 = 0; i4 < 8; i4++) z[i4] = n[i4];
+        for (i4 = 0; i4 < 16; i4++) z2[i4] = 0;
+        for (i4 = 0; i4 < 8; i4++) z2[i4] = n[i4];
         while (b2 >= 64) {
-          crypto_core_salsa20(x2, z, k2, sigma);
+          crypto_core_salsa20(x2, z2, k2, sigma);
           for (i4 = 0; i4 < 64; i4++) c[cpos + i4] = m[mpos + i4] ^ x2[i4];
           u = 1;
           for (i4 = 8; i4 < 16; i4++) {
-            u = u + (z[i4] & 255) | 0;
-            z[i4] = u & 255;
+            u = u + (z2[i4] & 255) | 0;
+            z2[i4] = u & 255;
             u >>>= 8;
           }
           b2 -= 64;
@@ -6289,30 +6289,30 @@ function requireNaclFast() {
           mpos += 64;
         }
         if (b2 > 0) {
-          crypto_core_salsa20(x2, z, k2, sigma);
+          crypto_core_salsa20(x2, z2, k2, sigma);
           for (i4 = 0; i4 < b2; i4++) c[cpos + i4] = m[mpos + i4] ^ x2[i4];
         }
         return 0;
       }
       function crypto_stream_salsa20(c, cpos, b2, n, k2) {
-        var z = new Uint8Array(16), x2 = new Uint8Array(64);
+        var z2 = new Uint8Array(16), x2 = new Uint8Array(64);
         var u, i4;
-        for (i4 = 0; i4 < 16; i4++) z[i4] = 0;
-        for (i4 = 0; i4 < 8; i4++) z[i4] = n[i4];
+        for (i4 = 0; i4 < 16; i4++) z2[i4] = 0;
+        for (i4 = 0; i4 < 8; i4++) z2[i4] = n[i4];
         while (b2 >= 64) {
-          crypto_core_salsa20(x2, z, k2, sigma);
+          crypto_core_salsa20(x2, z2, k2, sigma);
           for (i4 = 0; i4 < 64; i4++) c[cpos + i4] = x2[i4];
           u = 1;
           for (i4 = 8; i4 < 16; i4++) {
-            u = u + (z[i4] & 255) | 0;
-            z[i4] = u & 255;
+            u = u + (z2[i4] & 255) | 0;
+            z2[i4] = u & 255;
             u >>>= 8;
           }
           b2 -= 64;
           cpos += 64;
         }
         if (b2 > 0) {
-          crypto_core_salsa20(x2, z, k2, sigma);
+          crypto_core_salsa20(x2, z2, k2, sigma);
           for (i4 = 0; i4 < b2; i4++) c[cpos + i4] = x2[i4];
         }
         return 0;
@@ -6696,9 +6696,9 @@ function requireNaclFast() {
         for (i4 = 0; i4 < 32; i4++) m[i4] = 0;
         return 0;
       }
-      function set25519(r, a2) {
+      function set25519(r, a4) {
         var i4;
-        for (i4 = 0; i4 < 16; i4++) r[i4] = a2[i4] | 0;
+        for (i4 = 0; i4 < 16; i4++) r[i4] = a4[i4] | 0;
       }
       function car25519(o) {
         var i4, v2, c = 1;
@@ -6740,15 +6740,15 @@ function requireNaclFast() {
           o[2 * i4 + 1] = t[i4] >> 8;
         }
       }
-      function neq25519(a2, b2) {
+      function neq25519(a4, b2) {
         var c = new Uint8Array(32), d = new Uint8Array(32);
-        pack25519(c, a2);
+        pack25519(c, a4);
         pack25519(d, b2);
         return crypto_verify_32(c, 0, d, 0);
       }
-      function par25519(a2) {
+      function par25519(a4) {
         var d = new Uint8Array(32);
-        pack25519(d, a2);
+        pack25519(d, a4);
         return d[0] & 1;
       }
       function unpack25519(o, n) {
@@ -6756,15 +6756,15 @@ function requireNaclFast() {
         for (i4 = 0; i4 < 16; i4++) o[i4] = n[2 * i4] + (n[2 * i4 + 1] << 8);
         o[15] &= 32767;
       }
-      function A(o, a2, b2) {
-        for (var i4 = 0; i4 < 16; i4++) o[i4] = a2[i4] + b2[i4];
+      function A(o, a4, b2) {
+        for (var i4 = 0; i4 < 16; i4++) o[i4] = a4[i4] + b2[i4];
       }
-      function Z(o, a2, b2) {
-        for (var i4 = 0; i4 < 16; i4++) o[i4] = a2[i4] - b2[i4];
+      function Z(o, a4, b2) {
+        for (var i4 = 0; i4 < 16; i4++) o[i4] = a4[i4] - b2[i4];
       }
-      function M2(o, a2, b2) {
+      function M2(o, a4, b2) {
         var v2, c, t0 = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0, t7 = 0, t8 = 0, t9 = 0, t10 = 0, t11 = 0, t12 = 0, t13 = 0, t14 = 0, t15 = 0, t16 = 0, t17 = 0, t18 = 0, t19 = 0, t20 = 0, t21 = 0, t22 = 0, t23 = 0, t24 = 0, t25 = 0, t26 = 0, t27 = 0, t28 = 0, t29 = 0, t30 = 0, b0 = b2[0], b1 = b2[1], b22 = b2[2], b3 = b2[3], b4 = b2[4], b5 = b2[5], b6 = b2[6], b7 = b2[7], b8 = b2[8], b9 = b2[9], b10 = b2[10], b11 = b2[11], b12 = b2[12], b13 = b2[13], b14 = b2[14], b15 = b2[15];
-        v2 = a2[0];
+        v2 = a4[0];
         t0 += v2 * b0;
         t1 += v2 * b1;
         t2 += v2 * b22;
@@ -6781,7 +6781,7 @@ function requireNaclFast() {
         t13 += v2 * b13;
         t14 += v2 * b14;
         t15 += v2 * b15;
-        v2 = a2[1];
+        v2 = a4[1];
         t1 += v2 * b0;
         t2 += v2 * b1;
         t3 += v2 * b22;
@@ -6798,7 +6798,7 @@ function requireNaclFast() {
         t14 += v2 * b13;
         t15 += v2 * b14;
         t16 += v2 * b15;
-        v2 = a2[2];
+        v2 = a4[2];
         t2 += v2 * b0;
         t3 += v2 * b1;
         t4 += v2 * b22;
@@ -6815,7 +6815,7 @@ function requireNaclFast() {
         t15 += v2 * b13;
         t16 += v2 * b14;
         t17 += v2 * b15;
-        v2 = a2[3];
+        v2 = a4[3];
         t3 += v2 * b0;
         t4 += v2 * b1;
         t5 += v2 * b22;
@@ -6832,7 +6832,7 @@ function requireNaclFast() {
         t16 += v2 * b13;
         t17 += v2 * b14;
         t18 += v2 * b15;
-        v2 = a2[4];
+        v2 = a4[4];
         t4 += v2 * b0;
         t5 += v2 * b1;
         t6 += v2 * b22;
@@ -6849,7 +6849,7 @@ function requireNaclFast() {
         t17 += v2 * b13;
         t18 += v2 * b14;
         t19 += v2 * b15;
-        v2 = a2[5];
+        v2 = a4[5];
         t5 += v2 * b0;
         t6 += v2 * b1;
         t7 += v2 * b22;
@@ -6866,7 +6866,7 @@ function requireNaclFast() {
         t18 += v2 * b13;
         t19 += v2 * b14;
         t20 += v2 * b15;
-        v2 = a2[6];
+        v2 = a4[6];
         t6 += v2 * b0;
         t7 += v2 * b1;
         t8 += v2 * b22;
@@ -6883,7 +6883,7 @@ function requireNaclFast() {
         t19 += v2 * b13;
         t20 += v2 * b14;
         t21 += v2 * b15;
-        v2 = a2[7];
+        v2 = a4[7];
         t7 += v2 * b0;
         t8 += v2 * b1;
         t9 += v2 * b22;
@@ -6900,7 +6900,7 @@ function requireNaclFast() {
         t20 += v2 * b13;
         t21 += v2 * b14;
         t22 += v2 * b15;
-        v2 = a2[8];
+        v2 = a4[8];
         t8 += v2 * b0;
         t9 += v2 * b1;
         t10 += v2 * b22;
@@ -6917,7 +6917,7 @@ function requireNaclFast() {
         t21 += v2 * b13;
         t22 += v2 * b14;
         t23 += v2 * b15;
-        v2 = a2[9];
+        v2 = a4[9];
         t9 += v2 * b0;
         t10 += v2 * b1;
         t11 += v2 * b22;
@@ -6934,7 +6934,7 @@ function requireNaclFast() {
         t22 += v2 * b13;
         t23 += v2 * b14;
         t24 += v2 * b15;
-        v2 = a2[10];
+        v2 = a4[10];
         t10 += v2 * b0;
         t11 += v2 * b1;
         t12 += v2 * b22;
@@ -6951,7 +6951,7 @@ function requireNaclFast() {
         t23 += v2 * b13;
         t24 += v2 * b14;
         t25 += v2 * b15;
-        v2 = a2[11];
+        v2 = a4[11];
         t11 += v2 * b0;
         t12 += v2 * b1;
         t13 += v2 * b22;
@@ -6968,7 +6968,7 @@ function requireNaclFast() {
         t24 += v2 * b13;
         t25 += v2 * b14;
         t26 += v2 * b15;
-        v2 = a2[12];
+        v2 = a4[12];
         t12 += v2 * b0;
         t13 += v2 * b1;
         t14 += v2 * b22;
@@ -6985,7 +6985,7 @@ function requireNaclFast() {
         t25 += v2 * b13;
         t26 += v2 * b14;
         t27 += v2 * b15;
-        v2 = a2[13];
+        v2 = a4[13];
         t13 += v2 * b0;
         t14 += v2 * b1;
         t15 += v2 * b22;
@@ -7002,7 +7002,7 @@ function requireNaclFast() {
         t26 += v2 * b13;
         t27 += v2 * b14;
         t28 += v2 * b15;
-        v2 = a2[14];
+        v2 = a4[14];
         t14 += v2 * b0;
         t15 += v2 * b1;
         t16 += v2 * b22;
@@ -7019,7 +7019,7 @@ function requireNaclFast() {
         t27 += v2 * b13;
         t28 += v2 * b14;
         t29 += v2 * b15;
-        v2 = a2[15];
+        v2 = a4[15];
         t15 += v2 * b0;
         t16 += v2 * b1;
         t17 += v2 * b22;
@@ -7168,69 +7168,69 @@ function requireNaclFast() {
         o[14] = t14;
         o[15] = t15;
       }
-      function S2(o, a2) {
-        M2(o, a2, a2);
+      function S2(o, a4) {
+        M2(o, a4, a4);
       }
       function inv25519(o, i4) {
         var c = gf();
-        var a2;
-        for (a2 = 0; a2 < 16; a2++) c[a2] = i4[a2];
-        for (a2 = 253; a2 >= 0; a2--) {
+        var a4;
+        for (a4 = 0; a4 < 16; a4++) c[a4] = i4[a4];
+        for (a4 = 253; a4 >= 0; a4--) {
           S2(c, c);
-          if (a2 !== 2 && a2 !== 4) M2(c, c, i4);
+          if (a4 !== 2 && a4 !== 4) M2(c, c, i4);
         }
-        for (a2 = 0; a2 < 16; a2++) o[a2] = c[a2];
+        for (a4 = 0; a4 < 16; a4++) o[a4] = c[a4];
       }
       function pow2523(o, i4) {
         var c = gf();
-        var a2;
-        for (a2 = 0; a2 < 16; a2++) c[a2] = i4[a2];
-        for (a2 = 250; a2 >= 0; a2--) {
+        var a4;
+        for (a4 = 0; a4 < 16; a4++) c[a4] = i4[a4];
+        for (a4 = 250; a4 >= 0; a4--) {
           S2(c, c);
-          if (a2 !== 1) M2(c, c, i4);
+          if (a4 !== 1) M2(c, c, i4);
         }
-        for (a2 = 0; a2 < 16; a2++) o[a2] = c[a2];
+        for (a4 = 0; a4 < 16; a4++) o[a4] = c[a4];
       }
       function crypto_scalarmult(q, n, p2) {
-        var z = new Uint8Array(32);
+        var z2 = new Uint8Array(32);
         var x2 = new Float64Array(80), r, i4;
-        var a2 = gf(), b2 = gf(), c = gf(), d = gf(), e = gf(), f2 = gf();
-        for (i4 = 0; i4 < 31; i4++) z[i4] = n[i4];
-        z[31] = n[31] & 127 | 64;
-        z[0] &= 248;
+        var a4 = gf(), b2 = gf(), c = gf(), d = gf(), e = gf(), f2 = gf();
+        for (i4 = 0; i4 < 31; i4++) z2[i4] = n[i4];
+        z2[31] = n[31] & 127 | 64;
+        z2[0] &= 248;
         unpack25519(x2, p2);
         for (i4 = 0; i4 < 16; i4++) {
           b2[i4] = x2[i4];
-          d[i4] = a2[i4] = c[i4] = 0;
+          d[i4] = a4[i4] = c[i4] = 0;
         }
-        a2[0] = d[0] = 1;
+        a4[0] = d[0] = 1;
         for (i4 = 254; i4 >= 0; --i4) {
-          r = z[i4 >>> 3] >>> (i4 & 7) & 1;
-          sel25519(a2, b2, r);
+          r = z2[i4 >>> 3] >>> (i4 & 7) & 1;
+          sel25519(a4, b2, r);
           sel25519(c, d, r);
-          A(e, a2, c);
-          Z(a2, a2, c);
+          A(e, a4, c);
+          Z(a4, a4, c);
           A(c, b2, d);
           Z(b2, b2, d);
           S2(d, e);
-          S2(f2, a2);
-          M2(a2, c, a2);
+          S2(f2, a4);
+          M2(a4, c, a4);
           M2(c, b2, e);
-          A(e, a2, c);
-          Z(a2, a2, c);
-          S2(b2, a2);
+          A(e, a4, c);
+          Z(a4, a4, c);
+          S2(b2, a4);
           Z(c, d, f2);
-          M2(a2, c, _121665);
-          A(a2, a2, d);
-          M2(c, c, a2);
-          M2(a2, d, f2);
+          M2(a4, c, _121665);
+          A(a4, a4, d);
+          M2(c, c, a4);
+          M2(a4, d, f2);
           M2(d, b2, x2);
           S2(b2, e);
-          sel25519(a2, b2, r);
+          sel25519(a4, b2, r);
           sel25519(c, d, r);
         }
         for (i4 = 0; i4 < 16; i4++) {
-          x2[i4 + 16] = a2[i4];
+          x2[i4 + 16] = a4[i4];
           x2[i4 + 32] = c[i4];
           x2[i4 + 48] = b2[i4];
           x2[i4 + 64] = d[i4];
@@ -7429,7 +7429,7 @@ function requireNaclFast() {
         1246189591
       ];
       function crypto_hashblocks_hl(hh, hl, m, n) {
-        var wh = new Int32Array(16), wl = new Int32Array(16), bh0, bh1, bh2, bh3, bh4, bh5, bh6, bh7, bl0, bl1, bl2, bl3, bl4, bl5, bl6, bl7, th, tl, i4, j, h2, l, a2, b2, c, d;
+        var wh = new Int32Array(16), wl = new Int32Array(16), bh0, bh1, bh2, bh3, bh4, bh5, bh6, bh7, bl0, bl1, bl2, bl3, bl4, bl5, bl6, bl7, th, tl, i4, j, h2, l, a4, b2, c, d;
         var ah0 = hh[0], ah1 = hh[1], ah2 = hh[2], ah3 = hh[3], ah4 = hh[4], ah5 = hh[5], ah6 = hh[6], ah7 = hh[7], al0 = hl[0], al1 = hl[1], al2 = hl[2], al3 = hl[3], al4 = hl[4], al5 = hl[5], al6 = hl[6], al7 = hl[7];
         var pos = 0;
         while (n >= 128) {
@@ -7457,79 +7457,79 @@ function requireNaclFast() {
             bl7 = al7;
             h2 = ah7;
             l = al7;
-            a2 = l & 65535;
+            a4 = l & 65535;
             b2 = l >>> 16;
             c = h2 & 65535;
             d = h2 >>> 16;
             h2 = (ah4 >>> 14 | al4 << 32 - 14) ^ (ah4 >>> 18 | al4 << 32 - 18) ^ (al4 >>> 41 - 32 | ah4 << 32 - (41 - 32));
             l = (al4 >>> 14 | ah4 << 32 - 14) ^ (al4 >>> 18 | ah4 << 32 - 18) ^ (ah4 >>> 41 - 32 | al4 << 32 - (41 - 32));
-            a2 += l & 65535;
+            a4 += l & 65535;
             b2 += l >>> 16;
             c += h2 & 65535;
             d += h2 >>> 16;
             h2 = ah4 & ah5 ^ ~ah4 & ah6;
             l = al4 & al5 ^ ~al4 & al6;
-            a2 += l & 65535;
+            a4 += l & 65535;
             b2 += l >>> 16;
             c += h2 & 65535;
             d += h2 >>> 16;
             h2 = K[i4 * 2];
             l = K[i4 * 2 + 1];
-            a2 += l & 65535;
+            a4 += l & 65535;
             b2 += l >>> 16;
             c += h2 & 65535;
             d += h2 >>> 16;
             h2 = wh[i4 % 16];
             l = wl[i4 % 16];
-            a2 += l & 65535;
+            a4 += l & 65535;
             b2 += l >>> 16;
             c += h2 & 65535;
             d += h2 >>> 16;
-            b2 += a2 >>> 16;
+            b2 += a4 >>> 16;
             c += b2 >>> 16;
             d += c >>> 16;
             th = c & 65535 | d << 16;
-            tl = a2 & 65535 | b2 << 16;
+            tl = a4 & 65535 | b2 << 16;
             h2 = th;
             l = tl;
-            a2 = l & 65535;
+            a4 = l & 65535;
             b2 = l >>> 16;
             c = h2 & 65535;
             d = h2 >>> 16;
             h2 = (ah0 >>> 28 | al0 << 32 - 28) ^ (al0 >>> 34 - 32 | ah0 << 32 - (34 - 32)) ^ (al0 >>> 39 - 32 | ah0 << 32 - (39 - 32));
             l = (al0 >>> 28 | ah0 << 32 - 28) ^ (ah0 >>> 34 - 32 | al0 << 32 - (34 - 32)) ^ (ah0 >>> 39 - 32 | al0 << 32 - (39 - 32));
-            a2 += l & 65535;
+            a4 += l & 65535;
             b2 += l >>> 16;
             c += h2 & 65535;
             d += h2 >>> 16;
             h2 = ah0 & ah1 ^ ah0 & ah2 ^ ah1 & ah2;
             l = al0 & al1 ^ al0 & al2 ^ al1 & al2;
-            a2 += l & 65535;
+            a4 += l & 65535;
             b2 += l >>> 16;
             c += h2 & 65535;
             d += h2 >>> 16;
-            b2 += a2 >>> 16;
+            b2 += a4 >>> 16;
             c += b2 >>> 16;
             d += c >>> 16;
             bh7 = c & 65535 | d << 16;
-            bl7 = a2 & 65535 | b2 << 16;
+            bl7 = a4 & 65535 | b2 << 16;
             h2 = bh3;
             l = bl3;
-            a2 = l & 65535;
+            a4 = l & 65535;
             b2 = l >>> 16;
             c = h2 & 65535;
             d = h2 >>> 16;
             h2 = th;
             l = tl;
-            a2 += l & 65535;
+            a4 += l & 65535;
             b2 += l >>> 16;
             c += h2 & 65535;
             d += h2 >>> 16;
-            b2 += a2 >>> 16;
+            b2 += a4 >>> 16;
             c += b2 >>> 16;
             d += c >>> 16;
             bh3 = c & 65535 | d << 16;
-            bl3 = a2 & 65535 | b2 << 16;
+            bl3 = a4 & 65535 | b2 << 16;
             ah1 = bh0;
             ah2 = bh1;
             ah3 = bh2;
@@ -7550,13 +7550,13 @@ function requireNaclFast() {
               for (j = 0; j < 16; j++) {
                 h2 = wh[j];
                 l = wl[j];
-                a2 = l & 65535;
+                a4 = l & 65535;
                 b2 = l >>> 16;
                 c = h2 & 65535;
                 d = h2 >>> 16;
                 h2 = wh[(j + 9) % 16];
                 l = wl[(j + 9) % 16];
-                a2 += l & 65535;
+                a4 += l & 65535;
                 b2 += l >>> 16;
                 c += h2 & 65535;
                 d += h2 >>> 16;
@@ -7564,7 +7564,7 @@ function requireNaclFast() {
                 tl = wl[(j + 1) % 16];
                 h2 = (th >>> 1 | tl << 32 - 1) ^ (th >>> 8 | tl << 32 - 8) ^ th >>> 7;
                 l = (tl >>> 1 | th << 32 - 1) ^ (tl >>> 8 | th << 32 - 8) ^ (tl >>> 7 | th << 32 - 7);
-                a2 += l & 65535;
+                a4 += l & 65535;
                 b2 += l >>> 16;
                 c += h2 & 65535;
                 d += h2 >>> 16;
@@ -7572,154 +7572,154 @@ function requireNaclFast() {
                 tl = wl[(j + 14) % 16];
                 h2 = (th >>> 19 | tl << 32 - 19) ^ (tl >>> 61 - 32 | th << 32 - (61 - 32)) ^ th >>> 6;
                 l = (tl >>> 19 | th << 32 - 19) ^ (th >>> 61 - 32 | tl << 32 - (61 - 32)) ^ (tl >>> 6 | th << 32 - 6);
-                a2 += l & 65535;
+                a4 += l & 65535;
                 b2 += l >>> 16;
                 c += h2 & 65535;
                 d += h2 >>> 16;
-                b2 += a2 >>> 16;
+                b2 += a4 >>> 16;
                 c += b2 >>> 16;
                 d += c >>> 16;
                 wh[j] = c & 65535 | d << 16;
-                wl[j] = a2 & 65535 | b2 << 16;
+                wl[j] = a4 & 65535 | b2 << 16;
               }
             }
           }
           h2 = ah0;
           l = al0;
-          a2 = l & 65535;
+          a4 = l & 65535;
           b2 = l >>> 16;
           c = h2 & 65535;
           d = h2 >>> 16;
           h2 = hh[0];
           l = hl[0];
-          a2 += l & 65535;
+          a4 += l & 65535;
           b2 += l >>> 16;
           c += h2 & 65535;
           d += h2 >>> 16;
-          b2 += a2 >>> 16;
+          b2 += a4 >>> 16;
           c += b2 >>> 16;
           d += c >>> 16;
           hh[0] = ah0 = c & 65535 | d << 16;
-          hl[0] = al0 = a2 & 65535 | b2 << 16;
+          hl[0] = al0 = a4 & 65535 | b2 << 16;
           h2 = ah1;
           l = al1;
-          a2 = l & 65535;
+          a4 = l & 65535;
           b2 = l >>> 16;
           c = h2 & 65535;
           d = h2 >>> 16;
           h2 = hh[1];
           l = hl[1];
-          a2 += l & 65535;
+          a4 += l & 65535;
           b2 += l >>> 16;
           c += h2 & 65535;
           d += h2 >>> 16;
-          b2 += a2 >>> 16;
+          b2 += a4 >>> 16;
           c += b2 >>> 16;
           d += c >>> 16;
           hh[1] = ah1 = c & 65535 | d << 16;
-          hl[1] = al1 = a2 & 65535 | b2 << 16;
+          hl[1] = al1 = a4 & 65535 | b2 << 16;
           h2 = ah2;
           l = al2;
-          a2 = l & 65535;
+          a4 = l & 65535;
           b2 = l >>> 16;
           c = h2 & 65535;
           d = h2 >>> 16;
           h2 = hh[2];
           l = hl[2];
-          a2 += l & 65535;
+          a4 += l & 65535;
           b2 += l >>> 16;
           c += h2 & 65535;
           d += h2 >>> 16;
-          b2 += a2 >>> 16;
+          b2 += a4 >>> 16;
           c += b2 >>> 16;
           d += c >>> 16;
           hh[2] = ah2 = c & 65535 | d << 16;
-          hl[2] = al2 = a2 & 65535 | b2 << 16;
+          hl[2] = al2 = a4 & 65535 | b2 << 16;
           h2 = ah3;
           l = al3;
-          a2 = l & 65535;
+          a4 = l & 65535;
           b2 = l >>> 16;
           c = h2 & 65535;
           d = h2 >>> 16;
           h2 = hh[3];
           l = hl[3];
-          a2 += l & 65535;
+          a4 += l & 65535;
           b2 += l >>> 16;
           c += h2 & 65535;
           d += h2 >>> 16;
-          b2 += a2 >>> 16;
+          b2 += a4 >>> 16;
           c += b2 >>> 16;
           d += c >>> 16;
           hh[3] = ah3 = c & 65535 | d << 16;
-          hl[3] = al3 = a2 & 65535 | b2 << 16;
+          hl[3] = al3 = a4 & 65535 | b2 << 16;
           h2 = ah4;
           l = al4;
-          a2 = l & 65535;
+          a4 = l & 65535;
           b2 = l >>> 16;
           c = h2 & 65535;
           d = h2 >>> 16;
           h2 = hh[4];
           l = hl[4];
-          a2 += l & 65535;
+          a4 += l & 65535;
           b2 += l >>> 16;
           c += h2 & 65535;
           d += h2 >>> 16;
-          b2 += a2 >>> 16;
+          b2 += a4 >>> 16;
           c += b2 >>> 16;
           d += c >>> 16;
           hh[4] = ah4 = c & 65535 | d << 16;
-          hl[4] = al4 = a2 & 65535 | b2 << 16;
+          hl[4] = al4 = a4 & 65535 | b2 << 16;
           h2 = ah5;
           l = al5;
-          a2 = l & 65535;
+          a4 = l & 65535;
           b2 = l >>> 16;
           c = h2 & 65535;
           d = h2 >>> 16;
           h2 = hh[5];
           l = hl[5];
-          a2 += l & 65535;
+          a4 += l & 65535;
           b2 += l >>> 16;
           c += h2 & 65535;
           d += h2 >>> 16;
-          b2 += a2 >>> 16;
+          b2 += a4 >>> 16;
           c += b2 >>> 16;
           d += c >>> 16;
           hh[5] = ah5 = c & 65535 | d << 16;
-          hl[5] = al5 = a2 & 65535 | b2 << 16;
+          hl[5] = al5 = a4 & 65535 | b2 << 16;
           h2 = ah6;
           l = al6;
-          a2 = l & 65535;
+          a4 = l & 65535;
           b2 = l >>> 16;
           c = h2 & 65535;
           d = h2 >>> 16;
           h2 = hh[6];
           l = hl[6];
-          a2 += l & 65535;
+          a4 += l & 65535;
           b2 += l >>> 16;
           c += h2 & 65535;
           d += h2 >>> 16;
-          b2 += a2 >>> 16;
+          b2 += a4 >>> 16;
           c += b2 >>> 16;
           d += c >>> 16;
           hh[6] = ah6 = c & 65535 | d << 16;
-          hl[6] = al6 = a2 & 65535 | b2 << 16;
+          hl[6] = al6 = a4 & 65535 | b2 << 16;
           h2 = ah7;
           l = al7;
-          a2 = l & 65535;
+          a4 = l & 65535;
           b2 = l >>> 16;
           c = h2 & 65535;
           d = h2 >>> 16;
           h2 = hh[7];
           l = hl[7];
-          a2 += l & 65535;
+          a4 += l & 65535;
           b2 += l >>> 16;
           c += h2 & 65535;
           d += h2 >>> 16;
-          b2 += a2 >>> 16;
+          b2 += a4 >>> 16;
           c += b2 >>> 16;
           d += c >>> 16;
           hh[7] = ah7 = c & 65535 | d << 16;
-          hl[7] = al7 = a2 & 65535 | b2 << 16;
+          hl[7] = al7 = a4 & 65535 | b2 << 16;
           pos += 128;
           n -= 128;
         }
@@ -7755,10 +7755,10 @@ function requireNaclFast() {
         return 0;
       }
       function add2(p2, q) {
-        var a2 = gf(), b2 = gf(), c = gf(), d = gf(), e = gf(), f2 = gf(), g = gf(), h2 = gf(), t = gf();
-        Z(a2, p2[1], p2[0]);
+        var a4 = gf(), b2 = gf(), c = gf(), d = gf(), e = gf(), f2 = gf(), g = gf(), h2 = gf(), t = gf();
+        Z(a4, p2[1], p2[0]);
         Z(t, q[1], q[0]);
-        M2(a2, a2, t);
+        M2(a4, a4, t);
         A(b2, p2[0], p2[1]);
         A(t, q[0], q[1]);
         M2(b2, b2, t);
@@ -7766,10 +7766,10 @@ function requireNaclFast() {
         M2(c, c, D22);
         M2(d, p2[2], q[2]);
         A(d, d, d);
-        Z(e, b2, a2);
+        Z(e, b2, a4);
         Z(f2, d, c);
         A(g, d, c);
-        A(h2, b2, a2);
+        A(h2, b2, a4);
         M2(p2[0], e, f2);
         M2(p2[1], h2, g);
         M2(p2[2], g, f2);
@@ -7825,13 +7825,13 @@ function requireNaclFast() {
         for (i4 = 0; i4 < 32; i4++) sk[i4 + 32] = pk[i4];
         return 0;
       }
-      var L = new Float64Array([237, 211, 245, 92, 26, 99, 18, 88, 214, 156, 247, 162, 222, 249, 222, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16]);
+      var L2 = new Float64Array([237, 211, 245, 92, 26, 99, 18, 88, 214, 156, 247, 162, 222, 249, 222, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16]);
       function modL(r, x2) {
         var carry, i4, j, k2;
         for (i4 = 63; i4 >= 32; --i4) {
           carry = 0;
           for (j = i4 - 32, k2 = i4 - 12; j < k2; ++j) {
-            x2[j] += carry - 16 * x2[i4] * L[j - (i4 - 32)];
+            x2[j] += carry - 16 * x2[i4] * L2[j - (i4 - 32)];
             carry = Math.floor((x2[j] + 128) / 256);
             x2[j] -= carry * 256;
           }
@@ -7840,11 +7840,11 @@ function requireNaclFast() {
         }
         carry = 0;
         for (j = 0; j < 32; j++) {
-          x2[j] += carry - (x2[31] >> 4) * L[j];
+          x2[j] += carry - (x2[31] >> 4) * L2[j];
           carry = x2[j] >> 8;
           x2[j] &= 255;
         }
-        for (j = 0; j < 32; j++) x2[j] -= carry * L[j];
+        for (j = 0; j < 32; j++) x2[j] -= carry * L2[j];
         for (i4 = 0; i4 < 32; i4++) {
           x2[i4 + 1] += x2[i4] >> 8;
           r[i4] = x2[i4] & 255;
@@ -7904,7 +7904,7 @@ function requireNaclFast() {
         M2(r[0], t, den);
         S2(chk, r[0]);
         M2(chk, chk, den);
-        if (neq25519(chk, num)) M2(r[0], r[0], I);
+        if (neq25519(chk, num)) M2(r[0], r[0], I2);
         S2(chk, r[0]);
         M2(chk, chk, den);
         if (neq25519(chk, num)) return -1;
@@ -7977,7 +7977,7 @@ function requireNaclFast() {
         crypto_hash_BYTES,
         gf,
         D: D2,
-        L,
+        L: L2,
         pack25519,
         unpack25519,
         M: M2,
@@ -10753,9 +10753,9 @@ function requireStrings() {
     if (src.length > 0) {
       let bytes = Math.floor(builder2.availableBits / 8);
       if (src.length > bytes) {
-        let a2 = src.subarray(0, bytes);
+        let a4 = src.subarray(0, bytes);
         let t = src.subarray(bytes);
-        builder2 = builder2.storeBuffer(a2);
+        builder2 = builder2.storeBuffer(a4);
         let bb = (0, Builder_1.beginCell)();
         writeBuffer(t, bb);
         builder2 = builder2.storeRef(bb.endCell());
@@ -11607,11 +11607,11 @@ function requireSha() {
               return (function(n3, r3, t4, e3) {
                 var i6, o2, u2, f3;
                 if (0 != n3.length % 2) throw new Error("String of HEX type must be in byte increments");
-                var w3 = r3 || [0], s3 = (t4 = t4 || 0) >>> 3, a3 = -1 === e3 ? 3 : 0;
+                var w3 = r3 || [0], s3 = (t4 = t4 || 0) >>> 3, a5 = -1 === e3 ? 3 : 0;
                 for (i6 = 0; i6 < n3.length; i6 += 2) {
                   if (o2 = parseInt(n3.substr(i6, 2), 16), isNaN(o2)) throw new Error("String of HEX type contains invalid characters");
                   for (u2 = (f3 = (i6 >>> 1) + s3) >>> 2; w3.length <= u2; ) w3.push(0);
-                  w3[u2] |= o2 << 8 * (a3 + e3 * (f3 % 4));
+                  w3[u2] |= o2 << 8 * (a5 + e3 * (f3 % 4));
                 }
                 return { value: w3, binLen: 4 * n3.length + t4 };
               })(n2, r2, t3, i5);
@@ -11619,14 +11619,14 @@ function requireSha() {
           case "TEXT":
             return function(n2, r2, t3) {
               return (function(n3, r3, t4, e3, i6) {
-                var o2, u2, f3, w3, s3, a3, h3, c2, v3 = 0, A2 = t4 || [0], E2 = (e3 = e3 || 0) >>> 3;
+                var o2, u2, f3, w3, s3, a5, h3, c2, v3 = 0, A2 = t4 || [0], E2 = (e3 = e3 || 0) >>> 3;
                 if ("UTF8" === r3) for (h3 = -1 === i6 ? 3 : 0, f3 = 0; f3 < n3.length; f3 += 1) for (u2 = [], 128 > (o2 = n3.charCodeAt(f3)) ? u2.push(o2) : 2048 > o2 ? (u2.push(192 | o2 >>> 6), u2.push(128 | 63 & o2)) : 55296 > o2 || 57344 <= o2 ? u2.push(224 | o2 >>> 12, 128 | o2 >>> 6 & 63, 128 | 63 & o2) : (f3 += 1, o2 = 65536 + ((1023 & o2) << 10 | 1023 & n3.charCodeAt(f3)), u2.push(240 | o2 >>> 18, 128 | o2 >>> 12 & 63, 128 | o2 >>> 6 & 63, 128 | 63 & o2)), w3 = 0; w3 < u2.length; w3 += 1) {
-                  for (s3 = (a3 = v3 + E2) >>> 2; A2.length <= s3; ) A2.push(0);
-                  A2[s3] |= u2[w3] << 8 * (h3 + i6 * (a3 % 4)), v3 += 1;
+                  for (s3 = (a5 = v3 + E2) >>> 2; A2.length <= s3; ) A2.push(0);
+                  A2[s3] |= u2[w3] << 8 * (h3 + i6 * (a5 % 4)), v3 += 1;
                 }
                 else for (h3 = -1 === i6 ? 2 : 0, c2 = "UTF16LE" === r3 && 1 !== i6 || "UTF16LE" !== r3 && 1 === i6, f3 = 0; f3 < n3.length; f3 += 1) {
-                  for (o2 = n3.charCodeAt(f3), true === c2 && (o2 = (w3 = 255 & o2) << 8 | o2 >>> 8), s3 = (a3 = v3 + E2) >>> 2; A2.length <= s3; ) A2.push(0);
-                  A2[s3] |= o2 << 8 * (h3 + i6 * (a3 % 4)), v3 += 2;
+                  for (o2 = n3.charCodeAt(f3), true === c2 && (o2 = (w3 = 255 & o2) << 8 | o2 >>> 8), s3 = (a5 = v3 + E2) >>> 2; A2.length <= s3; ) A2.push(0);
+                  A2[s3] |= o2 << 8 * (h3 + i6 * (a5 % 4)), v3 += 2;
                 }
                 return { value: A2, binLen: 8 * v3 + e3 };
               })(n2, e2, r2, t3, i5);
@@ -11634,14 +11634,14 @@ function requireSha() {
           case "B64":
             return function(r2, t3, e3) {
               return (function(r3, t4, e4, i6) {
-                var o2, u2, f3, w3, s3, a3, h3 = 0, c2 = t4 || [0], v3 = (e4 = e4 || 0) >>> 3, A2 = -1 === i6 ? 3 : 0, E2 = r3.indexOf("=");
+                var o2, u2, f3, w3, s3, a5, h3 = 0, c2 = t4 || [0], v3 = (e4 = e4 || 0) >>> 3, A2 = -1 === i6 ? 3 : 0, E2 = r3.indexOf("=");
                 if (-1 === r3.search(/^[a-zA-Z0-9=+/]+$/)) throw new Error("Invalid character in base-64 string");
                 if (r3 = r3.replace(/=/g, ""), -1 !== E2 && E2 < r3.length) throw new Error("Invalid '=' found in base-64 string");
                 for (o2 = 0; o2 < r3.length; o2 += 4) {
                   for (w3 = r3.substr(o2, 4), f3 = 0, u2 = 0; u2 < w3.length; u2 += 1) f3 |= n.indexOf(w3.charAt(u2)) << 18 - 6 * u2;
                   for (u2 = 0; u2 < w3.length - 1; u2 += 1) {
-                    for (s3 = (a3 = h3 + v3) >>> 2; c2.length <= s3; ) c2.push(0);
-                    c2[s3] |= (f3 >>> 16 - 8 * u2 & 255) << 8 * (A2 + i6 * (a3 % 4)), h3 += 1;
+                    for (s3 = (a5 = h3 + v3) >>> 2; c2.length <= s3; ) c2.push(0);
+                    c2[s3] |= (f3 >>> 16 - 8 * u2 & 255) << 8 * (A2 + i6 * (a5 % 4)), h3 += 1;
                   }
                 }
                 return { value: c2, binLen: 8 * h3 + e4 };
@@ -11650,8 +11650,8 @@ function requireSha() {
           case "BYTES":
             return function(n2, r2, t3) {
               return (function(n3, r3, t4, e3) {
-                var i6, o2, u2, f3, w3 = r3 || [0], s3 = (t4 = t4 || 0) >>> 3, a3 = -1 === e3 ? 3 : 0;
-                for (o2 = 0; o2 < n3.length; o2 += 1) i6 = n3.charCodeAt(o2), u2 = (f3 = o2 + s3) >>> 2, w3.length <= u2 && w3.push(0), w3[u2] |= i6 << 8 * (a3 + e3 * (f3 % 4));
+                var i6, o2, u2, f3, w3 = r3 || [0], s3 = (t4 = t4 || 0) >>> 3, a5 = -1 === e3 ? 3 : 0;
+                for (o2 = 0; o2 < n3.length; o2 += 1) i6 = n3.charCodeAt(o2), u2 = (f3 = o2 + s3) >>> 2, w3.length <= u2 && w3.push(0), w3[u2] |= i6 << 8 * (a5 + e3 * (f3 % 4));
                 return { value: w3, binLen: 8 * n3.length + t4 };
               })(n2, r2, t3, i5);
             };
@@ -11692,9 +11692,9 @@ function requireSha() {
           case "B64":
             return function(r3) {
               return (function(r4, t3, e3, i6) {
-                var o2, u2, f3, w3, s3, a3 = "", h3 = t3 / 8, c2 = -1 === e3 ? 3 : 0;
-                for (o2 = 0; o2 < h3; o2 += 3) for (w3 = o2 + 1 < h3 ? r4[o2 + 1 >>> 2] : 0, s3 = o2 + 2 < h3 ? r4[o2 + 2 >>> 2] : 0, f3 = (r4[o2 >>> 2] >>> 8 * (c2 + e3 * (o2 % 4)) & 255) << 16 | (w3 >>> 8 * (c2 + e3 * ((o2 + 1) % 4)) & 255) << 8 | s3 >>> 8 * (c2 + e3 * ((o2 + 2) % 4)) & 255, u2 = 0; u2 < 4; u2 += 1) a3 += 8 * o2 + 6 * u2 <= t3 ? n.charAt(f3 >>> 6 * (3 - u2) & 63) : i6.b64Pad;
-                return a3;
+                var o2, u2, f3, w3, s3, a5 = "", h3 = t3 / 8, c2 = -1 === e3 ? 3 : 0;
+                for (o2 = 0; o2 < h3; o2 += 3) for (w3 = o2 + 1 < h3 ? r4[o2 + 1 >>> 2] : 0, s3 = o2 + 2 < h3 ? r4[o2 + 2 >>> 2] : 0, f3 = (r4[o2 >>> 2] >>> 8 * (c2 + e3 * (o2 % 4)) & 255) << 16 | (w3 >>> 8 * (c2 + e3 * ((o2 + 1) % 4)) & 255) << 8 | s3 >>> 8 * (c2 + e3 * ((o2 + 2) % 4)) & 255, u2 = 0; u2 < 4; u2 += 1) a5 += 8 * o2 + 6 * u2 <= t3 ? n.charAt(f3 >>> 6 * (3 - u2) & 63) : i6.b64Pad;
+                return a5;
               })(r3, t2, e2, i5);
             };
           case "BYTES":
@@ -11757,7 +11757,7 @@ function requireSha() {
         if ("string" != typeof r2.b64Pad) throw new Error("Invalid b64Pad formatting option");
         return r2;
       }
-      function a2(n2, r2, e2, i5) {
+      function a4(n2, r2, e2, i5) {
         var o2 = n2 + " must include a value and format";
         if (!r2) {
           if (!i5) throw new Error(o2);
@@ -11879,32 +11879,32 @@ function requireSha() {
           var u2 = i5 || {};
           return (o2 = n2.call(this, r3, e2, i5) || this).g = true, o2.F = o2.Y, o2.C = -1, o2.p = t(o2.t, o2.i, o2.C), o2.R = C2, o2.B = function(n3) {
             return n3.slice();
-          }, o2.L = T10, o2.K = F, o2.m = [1732584193, 4023233417, 2562383102, 271733878, 3285377520], o2.S = 512, o2.U = 160, o2.T = false, u2.hmacKey && o2.k(a2("hmacKey", u2.hmacKey, o2.C)), o2;
+          }, o2.L = T10, o2.K = F, o2.m = [1732584193, 4023233417, 2562383102, 271733878, 3285377520], o2.S = 512, o2.U = 160, o2.T = false, u2.hmacKey && o2.k(a4("hmacKey", u2.hmacKey, o2.C)), o2;
         }
         return v2(r2, n2), r2;
       })(h2);
       function B2(n2) {
         return "SHA-224" == n2 ? o.slice() : u.slice();
       }
-      function L(n2, r2) {
-        var t2, e2, o2, u2, f3, w3, s3, a3, h3, c2, v3, A2, b3 = [];
-        for (t2 = r2[0], e2 = r2[1], o2 = r2[2], u2 = r2[3], f3 = r2[4], w3 = r2[5], s3 = r2[6], a3 = r2[7], v3 = 0; v3 < 64; v3 += 1) b3[v3] = v3 < 16 ? n2[v3] : m(E(A2 = b3[v3 - 2], 17) ^ E(A2, 19) ^ l(A2, 10), b3[v3 - 7], R2(b3[v3 - 15]), b3[v3 - 16]), h3 = y2(a3, U2(f3), H(f3, w3, s3), i4[v3], b3[v3]), c2 = p2(S2(t2), d(t2, e2, o2)), a3 = s3, s3 = w3, w3 = f3, f3 = p2(u2, h3), u2 = o2, o2 = e2, e2 = t2, t2 = p2(h3, c2);
-        return r2[0] = p2(t2, r2[0]), r2[1] = p2(e2, r2[1]), r2[2] = p2(o2, r2[2]), r2[3] = p2(u2, r2[3]), r2[4] = p2(f3, r2[4]), r2[5] = p2(w3, r2[5]), r2[6] = p2(s3, r2[6]), r2[7] = p2(a3, r2[7]), r2;
+      function L2(n2, r2) {
+        var t2, e2, o2, u2, f3, w3, s3, a5, h3, c2, v3, A2, b3 = [];
+        for (t2 = r2[0], e2 = r2[1], o2 = r2[2], u2 = r2[3], f3 = r2[4], w3 = r2[5], s3 = r2[6], a5 = r2[7], v3 = 0; v3 < 64; v3 += 1) b3[v3] = v3 < 16 ? n2[v3] : m(E(A2 = b3[v3 - 2], 17) ^ E(A2, 19) ^ l(A2, 10), b3[v3 - 7], R2(b3[v3 - 15]), b3[v3 - 16]), h3 = y2(a5, U2(f3), H(f3, w3, s3), i4[v3], b3[v3]), c2 = p2(S2(t2), d(t2, e2, o2)), a5 = s3, s3 = w3, w3 = f3, f3 = p2(u2, h3), u2 = o2, o2 = e2, e2 = t2, t2 = p2(h3, c2);
+        return r2[0] = p2(t2, r2[0]), r2[1] = p2(e2, r2[1]), r2[2] = p2(o2, r2[2]), r2[3] = p2(u2, r2[3]), r2[4] = p2(f3, r2[4]), r2[5] = p2(w3, r2[5]), r2[6] = p2(s3, r2[6]), r2[7] = p2(a5, r2[7]), r2;
       }
       var g = (function(n2) {
         function r2(r3, e2, i5) {
           var o2 = this;
           if ("SHA-224" !== r3 && "SHA-256" !== r3) throw new Error(f2);
           var u2 = i5 || {};
-          return (o2 = n2.call(this, r3, e2, i5) || this).F = o2.Y, o2.g = true, o2.C = -1, o2.p = t(o2.t, o2.i, o2.C), o2.R = L, o2.B = function(n3) {
+          return (o2 = n2.call(this, r3, e2, i5) || this).F = o2.Y, o2.g = true, o2.C = -1, o2.p = t(o2.t, o2.i, o2.C), o2.R = L2, o2.B = function(n3) {
             return n3.slice();
           }, o2.L = B2, o2.K = function(n3, t2, e3, i6) {
             return (function(n4, r4, t3, e4, i7) {
               for (var o3, u3 = 15 + (r4 + 65 >>> 9 << 4), f3 = r4 + t3; n4.length <= u3; ) n4.push(0);
-              for (n4[r4 >>> 5] |= 128 << 24 - r4 % 32, n4[u3] = 4294967295 & f3, n4[u3 - 1] = f3 / 4294967296 | 0, o3 = 0; o3 < n4.length; o3 += 16) e4 = L(n4.slice(o3, o3 + 16), e4);
+              for (n4[r4 >>> 5] |= 128 << 24 - r4 % 32, n4[u3] = 4294967295 & f3, n4[u3 - 1] = f3 / 4294967296 | 0, o3 = 0; o3 < n4.length; o3 += 16) e4 = L2(n4.slice(o3, o3 + 16), e4);
               return "SHA-224" === i7 ? [e4[0], e4[1], e4[2], e4[3], e4[4], e4[5], e4[6]] : e4;
             })(n3, t2, e3, i6, r3);
-          }, o2.m = B2(r3), o2.S = 512, o2.U = "SHA-224" === r3 ? 224 : 256, o2.T = false, u2.hmacKey && o2.k(a2("hmacKey", u2.hmacKey, o2.C)), o2;
+          }, o2.m = B2(r3), o2.S = 512, o2.U = "SHA-224" === r3 ? 224 : 256, o2.T = false, u2.hmacKey && o2.k(a4("hmacKey", u2.hmacKey, o2.C)), o2;
         }
         return v2(r2, n2), r2;
       })(h2), k2 = function(n2, r2) {
@@ -11918,7 +11918,7 @@ function requireSha() {
         var t2;
         return r2 < 32 ? (t2 = 32 - r2, new k2(n2.N >>> r2 | n2.I << t2, n2.I >>> r2 | n2.N << t2)) : (t2 = 64 - r2, new k2(n2.I >>> r2 | n2.N << t2, n2.N >>> r2 | n2.I << t2));
       }
-      function I(n2, r2) {
+      function I2(n2, r2) {
         return new k2(n2.N >>> r2, n2.I >>> r2 | n2.N << 32 - r2);
       }
       function M2(n2, r2, t2) {
@@ -11927,7 +11927,7 @@ function requireSha() {
       function X(n2, r2, t2) {
         return new k2(n2.N & r2.N ^ n2.N & t2.N ^ r2.N & t2.N, n2.I & r2.I ^ n2.I & t2.I ^ r2.I & t2.I);
       }
-      function z(n2) {
+      function z2(n2) {
         var r2 = N(n2, 28), t2 = N(n2, 34), e2 = N(n2, 39);
         return new k2(r2.N ^ t2.N ^ e2.N, r2.I ^ t2.I ^ e2.I);
       }
@@ -11953,7 +11953,7 @@ function requireSha() {
         return new k2(n2.N ^ r2.N, n2.I ^ r2.I);
       }
       function x2(n2) {
-        var r2 = N(n2, 1), t2 = N(n2, 8), e2 = I(n2, 7);
+        var r2 = N(n2, 1), t2 = N(n2, 8), e2 = I2(n2, 7);
         return new k2(r2.N ^ t2.N ^ e2.N, r2.I ^ t2.I ^ e2.I);
       }
       function V(n2) {
@@ -11965,8 +11965,8 @@ function requireSha() {
         return "SHA-384" === n2 ? [new k2(3418070365, o[0]), new k2(1654270250, o[1]), new k2(2438529370, o[2]), new k2(355462360, o[3]), new k2(1731405415, o[4]), new k2(41048885895, o[5]), new k2(3675008525, o[6]), new k2(1203062813, o[7])] : [new k2(u[0], 4089235720), new k2(u[1], 2227873595), new k2(u[2], 4271175723), new k2(u[3], 1595750129), new k2(u[4], 2917565137), new k2(u[5], 725511199), new k2(u[6], 4215389547), new k2(u[7], 327033209)];
       }
       function D2(n2, r2) {
-        var t2, e2, i5, o2, u2, f3, w3, s3, a3, h3, c2, v3, A2, E2, l2, b3, H2 = [];
-        for (t2 = r2[0], e2 = r2[1], i5 = r2[2], o2 = r2[3], u2 = r2[4], f3 = r2[5], w3 = r2[6], s3 = r2[7], c2 = 0; c2 < 80; c2 += 1) c2 < 16 ? (v3 = 2 * c2, H2[c2] = new k2(n2[v3], n2[v3 + 1])) : H2[c2] = j((A2 = H2[c2 - 2], E2 = void 0, l2 = void 0, b3 = void 0, E2 = N(A2, 19), l2 = N(A2, 61), b3 = I(A2, 6), new k2(E2.N ^ l2.N ^ b3.N, E2.I ^ l2.I ^ b3.I)), H2[c2 - 7], x2(H2[c2 - 15]), H2[c2 - 16]), a3 = _(s3, V(u2), M2(u2, f3, w3), Z[c2], H2[c2]), h3 = O2(z(t2), X(t2, e2, i5)), s3 = w3, w3 = f3, f3 = u2, u2 = O2(o2, a3), o2 = i5, i5 = e2, e2 = t2, t2 = O2(a3, h3);
+        var t2, e2, i5, o2, u2, f3, w3, s3, a5, h3, c2, v3, A2, E2, l2, b3, H2 = [];
+        for (t2 = r2[0], e2 = r2[1], i5 = r2[2], o2 = r2[3], u2 = r2[4], f3 = r2[5], w3 = r2[6], s3 = r2[7], c2 = 0; c2 < 80; c2 += 1) c2 < 16 ? (v3 = 2 * c2, H2[c2] = new k2(n2[v3], n2[v3 + 1])) : H2[c2] = j((A2 = H2[c2 - 2], E2 = void 0, l2 = void 0, b3 = void 0, E2 = N(A2, 19), l2 = N(A2, 61), b3 = I2(A2, 6), new k2(E2.N ^ l2.N ^ b3.N, E2.I ^ l2.I ^ b3.I)), H2[c2 - 7], x2(H2[c2 - 15]), H2[c2 - 16]), a5 = _(s3, V(u2), M2(u2, f3, w3), Z[c2], H2[c2]), h3 = O2(z2(t2), X(t2, e2, i5)), s3 = w3, w3 = f3, f3 = u2, u2 = O2(o2, a5), o2 = i5, i5 = e2, e2 = t2, t2 = O2(a5, h3);
         return r2[0] = O2(t2, r2[0]), r2[1] = O2(e2, r2[1]), r2[2] = O2(i5, r2[2]), r2[3] = O2(o2, r2[3]), r2[4] = O2(u2, r2[4]), r2[5] = O2(f3, r2[5]), r2[6] = O2(w3, r2[6]), r2[7] = O2(s3, r2[7]), r2;
       }
       var G2 = (function(n2) {
@@ -11982,11 +11982,11 @@ function requireSha() {
               for (n4[r4 >>> 5] |= 128 << 24 - r4 % 32, n4[u3] = 4294967295 & f3, n4[u3 - 1] = f3 / 4294967296 | 0, o3 = 0; o3 < n4.length; o3 += 32) e4 = D2(n4.slice(o3, o3 + 32), e4);
               return "SHA-384" === i7 ? [(e4 = e4)[0].N, e4[0].I, e4[1].N, e4[1].I, e4[2].N, e4[2].I, e4[3].N, e4[3].I, e4[4].N, e4[4].I, e4[5].N, e4[5].I] : [e4[0].N, e4[0].I, e4[1].N, e4[1].I, e4[2].N, e4[2].I, e4[3].N, e4[3].I, e4[4].N, e4[4].I, e4[5].N, e4[5].I, e4[6].N, e4[6].I, e4[7].N, e4[7].I];
             })(n3, t2, e3, i6, r3);
-          }, o2.m = q(r3), o2.S = 1024, o2.U = "SHA-384" === r3 ? 384 : 512, o2.T = false, u2.hmacKey && o2.k(a2("hmacKey", u2.hmacKey, o2.C)), o2;
+          }, o2.m = q(r3), o2.S = 1024, o2.U = "SHA-384" === r3 ? 384 : 512, o2.T = false, u2.hmacKey && o2.k(a4("hmacKey", u2.hmacKey, o2.C)), o2;
         }
         return v2(r2, n2), r2;
       })(h2), J = [new k2(0, 1), new k2(0, 32898), new k2(2147483648, 32906), new k2(2147483648, 2147516416), new k2(0, 32907), new k2(0, 2147483649), new k2(2147483648, 2147516545), new k2(2147483648, 32777), new k2(0, 138), new k2(0, 136), new k2(0, 2147516425), new k2(0, 2147483658), new k2(0, 2147516555), new k2(2147483648, 139), new k2(2147483648, 32905), new k2(2147483648, 32771), new k2(2147483648, 32770), new k2(2147483648, 128), new k2(0, 32778), new k2(2147483648, 2147483658), new k2(2147483648, 2147516545), new k2(2147483648, 32896), new k2(0, 2147483649), new k2(2147483648, 2147516424)], Q = [[0, 36, 3, 41, 18], [1, 44, 10, 45, 2], [62, 6, 43, 15, 61], [28, 55, 25, 21, 56], [27, 20, 39, 8, 14]];
-      function W(n2) {
+      function W2(n2) {
         var r2, t2 = [];
         for (r2 = 0; r2 < 5; r2 += 1) t2[r2] = [new k2(0, 0), new k2(0, 0), new k2(0, 0), new k2(0, 0), new k2(0, 0)];
         return t2;
@@ -11997,10 +11997,10 @@ function requireSha() {
         return t2;
       }
       function nn(n2, r2) {
-        var t2, e2, i5, o2, u2, f3, w3, s3, a3, h3 = [], c2 = [];
+        var t2, e2, i5, o2, u2, f3, w3, s3, a5, h3 = [], c2 = [];
         if (null !== n2) for (e2 = 0; e2 < n2.length; e2 += 2) r2[(e2 >>> 1) % 5][(e2 >>> 1) / 5 | 0] = P2(r2[(e2 >>> 1) % 5][(e2 >>> 1) / 5 | 0], new k2(n2[e2 + 1], n2[e2]));
         for (t2 = 0; t2 < 24; t2 += 1) {
-          for (o2 = W(), e2 = 0; e2 < 5; e2 += 1) h3[e2] = (u2 = r2[e2][0], f3 = r2[e2][1], w3 = r2[e2][2], s3 = r2[e2][3], a3 = r2[e2][4], new k2(u2.N ^ f3.N ^ w3.N ^ s3.N ^ a3.N, u2.I ^ f3.I ^ w3.I ^ s3.I ^ a3.I));
+          for (o2 = W2(), e2 = 0; e2 < 5; e2 += 1) h3[e2] = (u2 = r2[e2][0], f3 = r2[e2][1], w3 = r2[e2][2], s3 = r2[e2][3], a5 = r2[e2][4], new k2(u2.N ^ f3.N ^ w3.N ^ s3.N ^ a5.N, u2.I ^ f3.I ^ w3.I ^ s3.I ^ a5.I));
           for (e2 = 0; e2 < 5; e2 += 1) c2[e2] = P2(h3[(e2 + 4) % 5], Y(h3[(e2 + 1) % 5], 1));
           for (e2 = 0; e2 < 5; e2 += 1) for (i5 = 0; i5 < 5; i5 += 1) r2[e2][i5] = P2(r2[e2][i5], c2[e2]);
           for (e2 = 0; e2 < 5; e2 += 1) for (i5 = 0; i5 < 5; i5 += 1) o2[i5][(2 * e2 + 3 * i5) % 5] = Y(r2[e2][i5], Q[e2][i5]);
@@ -12029,7 +12029,7 @@ function requireSha() {
             if (s3.kmacKey || s3.hmacKey) throw new Error("Cannot set numRounds with MAC");
             if ("CSHAKE128" === o2.o || "CSHAKE256" === o2.o) throw new Error("Cannot set numRounds for CSHAKE variants");
           }
-          switch (o2.C = 1, o2.p = t(o2.t, o2.i, o2.C), o2.R = nn, o2.B = $, o2.L = W, o2.m = W(), o2.T = false, r3) {
+          switch (o2.C = 1, o2.p = t(o2.t, o2.i, o2.C), o2.R = nn, o2.B = $, o2.L = W2, o2.m = W2(), o2.T = false, r3) {
             case "SHA3-224":
               o2.S = w3 = 1152, o2.U = 224, o2.g = true, o2.F = o2.Y;
               break;
@@ -12065,18 +12065,18 @@ function requireSha() {
           }
           return o2.K = function(n3, r4, t2, e3, i6) {
             return (function(n4, r5, t3, e4, i7, o3, u3) {
-              var f3, w4, s4 = 0, a3 = [], h3 = i7 >>> 5, c2 = r5 >>> 5;
+              var f3, w4, s4 = 0, a5 = [], h3 = i7 >>> 5, c2 = r5 >>> 5;
               for (f3 = 0; f3 < c2 && r5 >= i7; f3 += h3) e4 = nn(n4.slice(f3, f3 + h3), e4), r5 -= i7;
               for (n4 = n4.slice(f3), r5 %= i7; n4.length < h3; ) n4.push(0);
-              for (n4[(f3 = r5 >>> 3) >> 2] ^= o3 << f3 % 4 * 8, n4[h3 - 1] ^= 2147483648, e4 = nn(n4, e4); 32 * a3.length < u3 && (w4 = e4[s4 % 5][s4 / 5 | 0], a3.push(w4.I), !(32 * a3.length >= u3)); ) a3.push(w4.N), 0 == 64 * (s4 += 1) % i7 && (nn(null, e4), s4 = 0);
-              return a3;
+              for (n4[(f3 = r5 >>> 3) >> 2] ^= o3 << f3 % 4 * 8, n4[h3 - 1] ^= 2147483648, e4 = nn(n4, e4); 32 * a5.length < u3 && (w4 = e4[s4 % 5][s4 / 5 | 0], a5.push(w4.I), !(32 * a5.length >= u3)); ) a5.push(w4.N), 0 == 64 * (s4 += 1) % i7 && (nn(null, e4), s4 = 0);
+              return a5;
             })(n3, r4, 0, e3, w3, u2, i6);
-          }, s3.hmacKey && o2.k(a2("hmacKey", s3.hmacKey, o2.C)), o2;
+          }, s3.hmacKey && o2.k(a4("hmacKey", s3.hmacKey, o2.C)), o2;
         }
         return v2(r2, n2), r2.prototype.O = function(n3, r3) {
           var t2 = (function(n4) {
             var r4 = n4 || {};
-            return { funcName: a2("funcName", r4.funcName, 1, { value: [], binLen: 0 }), customization: a2("Customization", r4.customization, 1, { value: [], binLen: 0 }) };
+            return { funcName: a4("funcName", r4.funcName, 1, { value: [], binLen: 0 }), customization: a4("Customization", r4.customization, 1, { value: [], binLen: 0 }) };
           })(n3 || {});
           r3 && (t2.funcName = r3);
           var e2 = w2(tn(t2.funcName), tn(t2.customization));
@@ -12088,7 +12088,7 @@ function requireSha() {
         }, r2.prototype.M = function(n3) {
           var r3 = (function(n4) {
             var r4 = n4 || {};
-            return { kmacKey: a2("kmacKey", r4.kmacKey, 1), funcName: { value: [1128353099], binLen: 32 }, customization: a2("Customization", r4.customization, 1, { value: [], binLen: 0 }) };
+            return { kmacKey: a4("kmacKey", r4.kmacKey, 1), funcName: { value: [1128353099], binLen: 32 }, customization: a4("Customization", r4.customization, 1, { value: [], binLen: 0 }) };
           })(n3 || {});
           this.O(n3, r3.funcName);
           for (var t2 = en(tn(r3.kmacKey), this.S >>> 3), e2 = 0; e2 < t2.length; e2 += this.S >>> 5) this.m = this.R(t2.slice(e2, e2 + (this.S >>> 5)), this.m), this.v += this.S;
@@ -22577,9 +22577,9 @@ function requireEd25519() {
   const ED25519_CURVE = "ed25519 seed";
   const HARDENED_OFFSET = 2147483648;
   async function getED25519MasterKeyFromSeed(seed) {
-    const I = await (0, hmac_sha512_1.hmac_sha512)(ED25519_CURVE, seed);
-    const IL = I.slice(0, 32);
-    const IR = I.slice(32);
+    const I2 = await (0, hmac_sha512_1.hmac_sha512)(ED25519_CURVE, seed);
+    const IL = I2.slice(0, 32);
+    const IR = I2.slice(32);
     return {
       key: IL,
       chainCode: IR
@@ -22593,9 +22593,9 @@ function requireEd25519() {
     const indexBuffer = Buffer.alloc(4);
     indexBuffer.writeUInt32BE(index + HARDENED_OFFSET, 0);
     const data = Buffer.concat([Buffer.alloc(1, 0), parent.key, indexBuffer]);
-    const I = await (0, hmac_sha512_1.hmac_sha512)(parent.chainCode, data);
-    const IL = I.slice(0, 32);
-    const IR = I.slice(32);
+    const I2 = await (0, hmac_sha512_1.hmac_sha512)(parent.chainCode, data);
+    const IL = I2.slice(0, 32);
+    const IR = I2.slice(32);
     return {
       key: IL,
       chainCode: IR
@@ -22625,9 +22625,9 @@ function requireSymmetric() {
   const hmac_sha512_1 = requireHmac_sha512();
   const SYMMETRIC_SEED = "Symmetric key seed";
   async function getSymmetricMasterKeyFromSeed(seed) {
-    const I = await (0, hmac_sha512_1.hmac_sha512)(SYMMETRIC_SEED, seed);
-    const IL = I.slice(32);
-    const IR = I.slice(0, 32);
+    const I2 = await (0, hmac_sha512_1.hmac_sha512)(SYMMETRIC_SEED, seed);
+    const IL = I2.slice(32);
+    const IR = I2.slice(0, 32);
     return {
       key: IL,
       chainCode: IR
@@ -22636,9 +22636,9 @@ function requireSymmetric() {
   symmetric.getSymmetricMasterKeyFromSeed = getSymmetricMasterKeyFromSeed;
   async function deriveSymmetricHardenedKey(parent, offset) {
     const data = Buffer.concat([Buffer.alloc(1, 0), Buffer.from(offset)]);
-    const I = await (0, hmac_sha512_1.hmac_sha512)(parent.chainCode, data);
-    const IL = I.slice(32);
-    const IR = I.slice(0, 32);
+    const I2 = await (0, hmac_sha512_1.hmac_sha512)(parent.chainCode, data);
+    const IL = I2.slice(32);
+    const IR = I2.slice(0, 32);
     return {
       key: IL,
       chainCode: IR
@@ -22670,9 +22670,9 @@ function requireMnemonics() {
   const HARDENED_OFFSET = 2147483648;
   const MNEMONICS_SEED = "TON Mnemonics HD seed";
   async function getMnemonicsMasterKeyFromSeed(seed) {
-    const I = await (0, hmac_sha512_1.hmac_sha512)(MNEMONICS_SEED, seed);
-    const IL = I.slice(0, 32);
-    const IR = I.slice(32);
+    const I2 = await (0, hmac_sha512_1.hmac_sha512)(MNEMONICS_SEED, seed);
+    const IL = I2.slice(0, 32);
+    const IR = I2.slice(32);
     return {
       key: IL,
       chainCode: IR
@@ -22686,9 +22686,9 @@ function requireMnemonics() {
     const indexBuffer = Buffer.alloc(4);
     indexBuffer.writeUInt32BE(index + HARDENED_OFFSET, 0);
     const data = Buffer.concat([Buffer.alloc(1, 0), parent.key, indexBuffer]);
-    const I = await (0, hmac_sha512_1.hmac_sha512)(parent.chainCode, data);
-    const IL = I.slice(0, 32);
-    const IR = I.slice(32);
+    const I2 = await (0, hmac_sha512_1.hmac_sha512)(parent.chainCode, data);
+    const IL = I2.slice(0, 32);
+    const IR = I2.slice(32);
     return {
       key: IL,
       chainCode: IR
@@ -27014,7 +27014,7 @@ function requireDomainSignature() {
   if (hasRequiredDomainSignature) return domainSignature;
   hasRequiredDomainSignature = 1;
   Object.defineProperty(domainSignature, "__esModule", { value: true });
-  domainSignature.domainSignVerify = domainSignature.domainSign = domainSignature.signatureDomainPrefix = domainSignature.signatureDomainHash = void 0;
+  domainSignature.domainSignVerify = domainSignature.domainSign = domainSignature.domainDataToSign = domainSignature.signatureDomainPrefix = domainSignature.signatureDomainHash = void 0;
   const crypto_1 = requireDist$2();
   const SignatureDomain_1 = requireSignatureDomain();
   function signatureDomainHash(domain) {
@@ -27050,6 +27050,7 @@ function requireDomainSignature() {
     const prefix = signatureDomainPrefix(domain);
     return prefix ? Buffer.concat([prefix, data]) : data;
   }
+  domainSignature.domainDataToSign = domainDataToSign;
   function domainSign({ data, secretKey, domain = { type: "empty" } }) {
     const dataToSign = domainDataToSign(data, domain);
     return (0, crypto_1.sign)(dataToSign, secretKey);
@@ -27084,7 +27085,7 @@ function requireDist$1() {
       for (var p2 in m) if (p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports$12, p2)) __createBinding(exports$12, m, p2);
     };
     Object.defineProperty(exports$1, "__esModule", { value: true });
-    exports$1.domainSignVerify = exports$1.domainSign = exports$1.signatureDomainPrefix = exports$1.signatureDomainHash = exports$1.safeSignVerify = exports$1.safeSign = exports$1.getMethodId = exports$1.base32Encode = exports$1.base32Decode = exports$1.crc32c = exports$1.crc16 = exports$1.fromNano = exports$1.toNano = exports$1.ComputeError = exports$1.openContract = exports$1.TupleBuilder = exports$1.TupleReader = exports$1.serializeTupleItem = exports$1.parseTupleItem = exports$1.serializeTuple = exports$1.parseTuple = exports$1.generateMerkleUpdate = exports$1.generateMerkleProofDirect = exports$1.generateMerkleProof = exports$1.exoticPruned = exports$1.exoticMerkleUpdate = exports$1.convertToMerkleProof = exports$1.exoticMerkleProof = exports$1.Dictionary = exports$1.Cell = exports$1.CellType = exports$1.Slice = exports$1.beginCell = exports$1.Builder = exports$1.BitBuilder = exports$1.BitReader = exports$1.BitString = exports$1.contractAddress = exports$1.ADNLAddress = exports$1.ExternalAddress = exports$1.address = exports$1.Address = void 0;
+    exports$1.domainDataToSign = exports$1.domainSignVerify = exports$1.domainSign = exports$1.signatureDomainPrefix = exports$1.signatureDomainHash = exports$1.safeSignVerify = exports$1.safeSign = exports$1.getMethodId = exports$1.base32Encode = exports$1.base32Decode = exports$1.crc32c = exports$1.crc16 = exports$1.fromNano = exports$1.toNano = exports$1.ComputeError = exports$1.openContract = exports$1.TupleBuilder = exports$1.TupleReader = exports$1.serializeTupleItem = exports$1.parseTupleItem = exports$1.serializeTuple = exports$1.parseTuple = exports$1.generateMerkleUpdate = exports$1.generateMerkleProofDirect = exports$1.generateMerkleProof = exports$1.exoticPruned = exports$1.exoticMerkleUpdate = exports$1.convertToMerkleProof = exports$1.exoticMerkleProof = exports$1.Dictionary = exports$1.Cell = exports$1.CellType = exports$1.Slice = exports$1.beginCell = exports$1.Builder = exports$1.BitBuilder = exports$1.BitReader = exports$1.BitString = exports$1.contractAddress = exports$1.ADNLAddress = exports$1.ExternalAddress = exports$1.address = exports$1.Address = void 0;
     var Address_1 = requireAddress();
     Object.defineProperty(exports$1, "Address", { enumerable: true, get: function() {
       return Address_1.Address;
@@ -27241,10 +27242,16 @@ function requireDist$1() {
     Object.defineProperty(exports$1, "domainSignVerify", { enumerable: true, get: function() {
       return domainSignature_1.domainSignVerify;
     } });
+    Object.defineProperty(exports$1, "domainDataToSign", { enumerable: true, get: function() {
+      return domainSignature_1.domainDataToSign;
+    } });
   })(dist$2);
   return dist$2;
 }
 var distExports$2 = requireDist$1();
+function resolveProvider(input, ctx) {
+  return typeof input === "function" ? input(ctx) : input;
+}
 const DEFAULT_DURABLE_EVENTS_CONFIG = {
   recoveryIntervalMs: 10 * 1e3,
   // 10 seconds
@@ -28138,7 +28145,7 @@ function collectBaseTransactionsSent(item, ownerFriendly) {
     jetton_internal_transfer: 3,
     excess: 4
   };
-  pairs.sort((a2, b2) => (priority[a2.type] ?? 99) - (priority[b2.type] ?? 99));
+  pairs.sort((a4, b2) => (priority[a4.type] ?? 99) - (priority[b2.type] ?? 99));
   return pairs.map((p2) => p2.hex);
 }
 function collectBaseTransactionsReceived(item, ownerFriendly) {
@@ -28518,11 +28525,11 @@ function buildEvent(data, account, actions, addressBook) {
   };
 }
 function filterActionsByPriority(actions) {
-  const hasJetton = actions.some((a2) => a2.type === "JettonTransfer");
-  const hasNft = actions.some((a2) => a2.type === "NftItemTransfer");
+  const hasJetton = actions.some((a4) => a4.type === "JettonTransfer");
+  const hasNft = actions.some((a4) => a4.type === "NftItemTransfer");
   if (hasJetton || hasNft) {
     const keepTypes = hasJetton ? ["JettonTransfer"] : ["NftItemTransfer"];
-    return actions.filter((a2) => keepTypes.includes(a2.type));
+    return actions.filter((a4) => keepTypes.includes(a4.type));
   }
   return actions;
 }
@@ -28832,13 +28839,13 @@ class MemoryStorageAdapter {
     return Array.from(this.store.keys());
   }
 }
-const log$n = globalLogger.createChild("StorageAdapter");
+const log$o = globalLogger.createChild("StorageAdapter");
 function createStorageAdapter(config2 = {}) {
   if (typeof localStorage !== "undefined") {
     try {
       return new LocalStorageAdapter(config2);
     } catch (error2) {
-      log$n.warn("Failed to create LocalStorageAdapter, falling back to memory", { error: error2 });
+      log$o.warn("Failed to create LocalStorageAdapter, falling back to memory", { error: error2 });
     }
   }
   if (config2.allowMemory) {
@@ -28847,7 +28854,7 @@ function createStorageAdapter(config2 = {}) {
     throw new Error("No storage adapter available");
   }
 }
-const log$m = globalLogger.createChild("Storage");
+const log$n = globalLogger.createChild("Storage");
 class Storage {
   adapter;
   constructor(adapter) {
@@ -28866,7 +28873,7 @@ class Storage {
       }
       return JSON.parse(value);
     } catch (error2) {
-      log$m.warn("Failed to parse stored value", { key, error: error2 });
+      log$n.warn("Failed to parse stored value", { key, error: error2 });
       return null;
     }
   }
@@ -28880,7 +28887,7 @@ class Storage {
       const serialized = JSON.stringify(value);
       await this.adapter.set(key, serialized);
     } catch (error2) {
-      log$m.error("Failed to serialize value for storage", { key, error: error2 });
+      log$n.error("Failed to serialize value for storage", { key, error: error2 });
       throw error2;
     }
   }
@@ -29146,7 +29153,7 @@ class WalletManager {
     return wallet.getWalletId();
   }
 }
-const log$l = globalLogger.createChild("TONConnectStoredSessionManager");
+const log$m = globalLogger.createChild("TONConnectStoredSessionManager");
 class TONConnectStoredSessionManager {
   sessions = /* @__PURE__ */ new Map();
   storage;
@@ -29308,16 +29315,16 @@ class TONConnectStoredSessionManager {
             if (wallet) {
               session.walletAddress = wallet.getAddress();
             } else {
-              log$l.warn("Session Wallet not found for session", { sessionId: session.sessionId });
+              log$m.warn("Session Wallet not found for session", { sessionId: session.sessionId });
               continue;
             }
           }
           this.sessions.set(session.sessionId, session);
         }
-        log$l.debug("Loaded session metadata", { count: storedSessions.length });
+        log$m.debug("Loaded session metadata", { count: storedSessions.length });
       }
     } catch (error2) {
-      log$l.warn("Failed to load sessions from storage", { error: error2 });
+      log$m.warn("Failed to load sessions from storage", { error: error2 });
     }
   }
   /**
@@ -29328,7 +29335,7 @@ class TONConnectStoredSessionManager {
       const sessionsToStore = Array.from(this.sessions.values());
       await this.storage.set(this.storageKey, sessionsToStore);
     } catch (error2) {
-      log$l.warn("Failed to persist sessions to storage", { error: error2 });
+      log$m.warn("Failed to persist sessions to storage", { error: error2 });
     }
   }
   async migrateSessions() {
@@ -29428,39 +29435,39 @@ function requireBlake2b() {
   if (hasRequiredBlake2b) return blake2b_1;
   hasRequiredBlake2b = 1;
   const util2 = requireUtil();
-  function ADD64AA(v3, a2, b2) {
-    const o0 = v3[a2] + v3[b2];
-    let o1 = v3[a2 + 1] + v3[b2 + 1];
+  function ADD64AA(v3, a4, b2) {
+    const o0 = v3[a4] + v3[b2];
+    let o1 = v3[a4 + 1] + v3[b2 + 1];
     if (o0 >= 4294967296) {
       o1++;
     }
-    v3[a2] = o0;
-    v3[a2 + 1] = o1;
+    v3[a4] = o0;
+    v3[a4 + 1] = o1;
   }
-  function ADD64AC(v3, a2, b0, b1) {
-    let o0 = v3[a2] + b0;
+  function ADD64AC(v3, a4, b0, b1) {
+    let o0 = v3[a4] + b0;
     if (b0 < 0) {
       o0 += 4294967296;
     }
-    let o1 = v3[a2 + 1] + b1;
+    let o1 = v3[a4 + 1] + b1;
     if (o0 >= 4294967296) {
       o1++;
     }
-    v3[a2] = o0;
-    v3[a2 + 1] = o1;
+    v3[a4] = o0;
+    v3[a4 + 1] = o1;
   }
   function B2B_GET32(arr, i4) {
     return arr[i4] ^ arr[i4 + 1] << 8 ^ arr[i4 + 2] << 16 ^ arr[i4 + 3] << 24;
   }
-  function B2B_G(a2, b2, c, d, ix, iy) {
+  function B2B_G(a4, b2, c, d, ix, iy) {
     const x0 = m[ix];
     const x1 = m[ix + 1];
     const y0 = m[iy];
     const y1 = m[iy + 1];
-    ADD64AA(v2, a2, b2);
-    ADD64AC(v2, a2, x0, x1);
-    let xor0 = v2[d] ^ v2[a2];
-    let xor1 = v2[d + 1] ^ v2[a2 + 1];
+    ADD64AA(v2, a4, b2);
+    ADD64AC(v2, a4, x0, x1);
+    let xor0 = v2[d] ^ v2[a4];
+    let xor1 = v2[d + 1] ^ v2[a4 + 1];
     v2[d] = xor1;
     v2[d + 1] = xor0;
     ADD64AA(v2, c, d);
@@ -29468,10 +29475,10 @@ function requireBlake2b() {
     xor1 = v2[b2 + 1] ^ v2[c + 1];
     v2[b2] = xor0 >>> 24 ^ xor1 << 8;
     v2[b2 + 1] = xor1 >>> 24 ^ xor0 << 8;
-    ADD64AA(v2, a2, b2);
-    ADD64AC(v2, a2, y0, y1);
-    xor0 = v2[d] ^ v2[a2];
-    xor1 = v2[d + 1] ^ v2[a2 + 1];
+    ADD64AA(v2, a4, b2);
+    ADD64AC(v2, a4, y0, y1);
+    xor0 = v2[d] ^ v2[a4];
+    xor1 = v2[d + 1] ^ v2[a4 + 1];
     v2[d] = xor0 >>> 16 ^ xor1 << 16;
     v2[d + 1] = xor1 >>> 16 ^ xor0 << 16;
     ADD64AA(v2, c, d);
@@ -29906,13 +29913,13 @@ function requireBlake2s() {
   function B2S_GET32(v3, i4) {
     return v3[i4] ^ v3[i4 + 1] << 8 ^ v3[i4 + 2] << 16 ^ v3[i4 + 3] << 24;
   }
-  function B2S_G(a2, b2, c, d, x2, y2) {
-    v2[a2] = v2[a2] + v2[b2] + x2;
-    v2[d] = ROTR32(v2[d] ^ v2[a2], 16);
+  function B2S_G(a4, b2, c, d, x2, y2) {
+    v2[a4] = v2[a4] + v2[b2] + x2;
+    v2[d] = ROTR32(v2[d] ^ v2[a4], 16);
     v2[c] = v2[c] + v2[d];
     v2[b2] = ROTR32(v2[b2] ^ v2[c], 12);
-    v2[a2] = v2[a2] + v2[b2] + y2;
-    v2[d] = ROTR32(v2[d] ^ v2[a2], 8);
+    v2[a4] = v2[a4] + v2[b2] + y2;
+    v2[d] = ROTR32(v2[d] ^ v2[a4], 8);
     v2[c] = v2[c] + v2[d];
     v2[b2] = ROTR32(v2[b2] ^ v2[c], 7);
   }
@@ -30241,7 +30248,7 @@ function p(i4) {
   let e = new AbortController();
   return i4?.aborted ? e.abort() : i4?.addEventListener("abort", () => e.abort(), { once: true }), e;
 }
-function M(i4, e) {
+function M$1(i4, e) {
   let t = null, r = null, n = null;
   return { create: async (d, ...u) => {
     if (n?.abort(), n = p(d), n.signal.aborted) throw new a("Resource creation was aborted");
@@ -30265,7 +30272,7 @@ function M(i4, e) {
     }
   } };
 }
-function D(i4, e) {
+function D$1(i4, e) {
   let t = e?.timeout, r = e?.signal, n = p(r);
   return new Promise(async (o, c) => {
     if (r?.aborted) {
@@ -30284,7 +30291,7 @@ function D(i4, e) {
     }, { timeout: t, signal: n.signal });
   });
 }
-var y = class i2 {
+var y$1 = class i2 {
   constructor(e, t, r, n, o, c, l) {
     this.bridgeUrl = e;
     this.sessionIds = t;
@@ -30298,7 +30305,7 @@ var y = class i2 {
   static postPath = "message";
   static verifyPath = "verify";
   static defaultTtl = 300;
-  eventSource = M(async (e, t) => await U({ bridgeUrl: this.bridgeUrl, ssePath: i2.ssePath, sessionIds: this.sessionIds, errorHandler: this.errorsHandler.bind(this), messageHandler: this.messagesHandler.bind(this), signal: e, connectingDeadlineMS: t, lastEventId: this.lastEventId, heartbeatFormat: this.heartbeatFormat, enableQueueDoneEvent: this.enableQueueDoneEvent }), async (e) => {
+  eventSource = M$1(async (e, t) => await U$1({ bridgeUrl: this.bridgeUrl, ssePath: i2.ssePath, sessionIds: this.sessionIds, errorHandler: this.errorsHandler.bind(this), messageHandler: this.messagesHandler.bind(this), signal: e, connectingDeadlineMS: t, lastEventId: this.lastEventId, heartbeatFormat: this.heartbeatFormat, enableQueueDoneEvent: this.enableQueueDoneEvent }), async (e) => {
     e.close();
   });
   get isReady() {
@@ -30360,9 +30367,9 @@ var y = class i2 {
     this.listener(e);
   }
 };
-async function U(i4) {
+async function U$1(i4) {
   let { lastEventId: e, heartbeatFormat: t, enableQueueDoneEvent: r } = i4;
-  return await D(async (n, o, c) => {
+  return await D$1(async (n, o, c) => {
     let { signal: l } = c;
     if (s("[BridgeGateway] Connecting to bridge SSE..."), l?.aborted) {
       o(new a("Bridge connection aborted before connection"));
@@ -30386,8 +30393,8 @@ async function U(i4) {
       }
       try {
         u.close(), await i4.errorHandler(u, g);
-      } catch (I) {
-        u.close(), o(I);
+      } catch (I2) {
+        u.close(), o(I2);
       }
     }, u.onopen = () => {
       if (l?.aborted) {
@@ -30429,7 +30436,7 @@ async function f(i4, e) {
   }
   throw c;
 }
-function x(i4) {
+function x$1(i4) {
   return [...new Set(i4)];
 }
 function T(i4, e) {
@@ -30438,15 +30445,15 @@ function T(i4, e) {
   for (let n of t) if (!r.has(n)) return false;
   return true;
 }
-function G(i4, e) {
+function G$1(i4, e) {
   let t = w.blake2bInit(S.box.nonceLength);
   return w.blake2bUpdate(t, i4), w.blake2bUpdate(t, e), w.blake2bFinal(t);
 }
-function R(i4, e, t) {
-  let r = i4.subarray(0, S.box.publicKeyLength), n = G(r, e), o = i4.subarray(S.box.publicKeyLength);
+function R$1(i4, e, t) {
+  let r = i4.subarray(0, S.box.publicKeyLength), n = G$1(r, e), o = i4.subarray(S.box.publicKeyLength);
   return S.box.open(o, n, r, t);
 }
-var C = class i3 {
+var C$1 = class i3 {
   constructor(e, t = null, r = null, n = void 0) {
     this.bridgeUrl = e;
     this.listener = t;
@@ -30560,7 +30567,7 @@ var C = class i3 {
     await f(({ signal: r }) => this.openGateway(this.clients.map((n) => n.session), { lastEventId: this.lastEventId, connectingDeadlineMS: t?.connectingDeadlineMs ?? this.defaultConnectingDeadlineMS, signal: r }), { attempts: Number.MAX_SAFE_INTEGER, delayMs: t?.delayMs ?? this.defaultRetryDelayMs, signal: e, exponential: t?.exponential ?? true, maxDelayMs: t?.maxDelayMs ?? this.defaultMaxExponentialDelayMS });
   }
   async verify(e, t) {
-    return f(async ({ signal: r }) => y.verifyRequest(this.bridgeUrl, e, { signal: r }), { attempts: t?.attempts ?? Number.MAX_SAFE_INTEGER, delayMs: t?.delayMs ?? this.defaultRetryDelayMs, signal: t?.signal, exponential: t?.exponential ?? true, maxDelayMs: t?.maxDelayMs ?? this.defaultMaxExponentialDelayMS });
+    return f(async ({ signal: r }) => y$1.verifyRequest(this.bridgeUrl, e, { signal: r }), { attempts: t?.attempts ?? Number.MAX_SAFE_INTEGER, delayMs: t?.delayMs ?? this.defaultRetryDelayMs, signal: t?.signal, exponential: t?.exponential ?? true, maxDelayMs: t?.maxDelayMs ?? this.defaultMaxExponentialDelayMS });
   }
   async send(e, t, r, n) {
     if (n?.signal?.aborted) {
@@ -30569,7 +30576,7 @@ var C = class i3 {
     }
     let o = t.encrypt(JSON.stringify(e), hexToByteArray(r)), c = n?.topic ?? ("method" in e ? e.method : void 0);
     await f(async ({ signal: l }) => {
-      await y.sendRequest(this.bridgeUrl, o, t.sessionId, r, { traceId: n?.traceId, topic: c, signal: l, ttl: n?.ttl });
+      await y$1.sendRequest(this.bridgeUrl, o, t.sessionId, r, { traceId: n?.traceId, topic: c, signal: l, ttl: n?.ttl });
     }, { attempts: n?.attempts ?? Number.MAX_SAFE_INTEGER, delayMs: n?.delayMs ?? this.defaultRetryDelayMs, signal: n?.signal, exponential: n?.exponential ?? true, maxDelayMs: n?.maxDelayMs ?? this.defaultMaxExponentialDelayMS });
   }
   async close() {
@@ -30603,7 +30610,7 @@ var C = class i3 {
   }
   loadMaybeSource(e, t) {
     if (!t) return;
-    let r = R(Base64.decode(t).toUint8Array(), hexToByteArray(e.sessionId), hexToByteArray(e.stringifyKeypair().secretKey));
+    let r = R$1(Base64.decode(t).toUint8Array(), hexToByteArray(e.sessionId), hexToByteArray(e.stringifyKeypair().secretKey));
     if (!r) throw new Error("Decrypt error ");
     let n = JSON.parse(new TextDecoder().decode(r));
     return { origin: n.origin, ip: n.ip, time: n.time, userAgent: n.user_agent };
@@ -30649,7 +30656,7 @@ var C = class i3 {
       s("[BridgeProvider] Open gateway aborted after close.");
       return;
     }
-    this.gateway = new y(this.bridgeUrl, x(e.map(({ sessionId: r }) => r)), this.gatewayListener.bind(this), this.gatewayErrorsListener.bind(this), this.lastEventId, "message", true), s("[BridgeProvider] BridgeGateway created. Connecting to bridge..."), this.onConnectingCallback?.(), await this.gateway.registerSession({ connectingDeadlineMS: t?.connectingDeadlineMS, signal: t?.signal }), s("[BridgeProvider] Connected to bridge successfully.");
+    this.gateway = new y$1(this.bridgeUrl, x$1(e.map(({ sessionId: r }) => r)), this.gatewayListener.bind(this), this.gatewayErrorsListener.bind(this), this.lastEventId, "message", true), s("[BridgeProvider] BridgeGateway created. Connecting to bridge..."), this.onConnectingCallback?.(), await this.gateway.registerSession({ connectingDeadlineMS: t?.connectingDeadlineMS, signal: t?.signal }), s("[BridgeProvider] Connected to bridge successfully.");
   }
   async closeGateway() {
     this.gateway && (s("[BridgeProvider] Closing previous gateway..."), await this.gateway.close(), this.gateway = null, s("[BridgeProvider] Gateway closed."));
@@ -30774,7 +30781,7 @@ function addLegacySendTransactionFeature(options) {
 }
 const TONCONNECT_BRIDGE_RESPONSE = "TONCONNECT_BRIDGE_RESPONSE";
 globalLogger.createChild("ExtensionTransport");
-const log$k = globalLogger.createChild("BridgeManager");
+const log$l = globalLogger.createChild("BridgeManager");
 class BridgeManager {
   config;
   bridgeProvider;
@@ -30830,7 +30837,7 @@ class BridgeManager {
    */
   async start() {
     if (this.bridgeProvider) {
-      log$k.warn("Bridge already initialized");
+      log$l.warn("Bridge already initialized");
       return;
     }
     try {
@@ -30842,7 +30849,7 @@ class BridgeManager {
         this.reconnectAttempts = 0;
       }
     } catch (error2) {
-      log$k.error("Failed to start bridge", { error: error2 });
+      log$l.error("Failed to start bridge", { error: error2 });
       throw error2;
     }
     const requestProcessing = () => {
@@ -30855,7 +30862,7 @@ class BridgeManager {
    * Create new session for a dApp connection
    */
   async createSession(appSessionId) {
-    log$k.info("[BRIDGE] Creating session", { appSessionId });
+    log$l.info("[BRIDGE] Creating session", { appSessionId });
     const session = await this.sessionManager.getSession(appSessionId);
     if (!session) {
       throw new WalletKitError(ERROR_CODES.SESSION_NOT_FOUND, `Session not found`, void 0, {
@@ -30863,7 +30870,7 @@ class BridgeManager {
       });
     }
     if (this.bridgeProvider && this.isConnected) {
-      log$k.info("[BRIDGE] Updating clients");
+      log$l.info("[BRIDGE] Updating clients");
       await this.updateClients();
     }
   }
@@ -30874,7 +30881,7 @@ class BridgeManager {
     if (this.bridgeProvider && this.isConnected) {
       await this.updateClients();
     }
-    log$k.debug("Session removed", { appSessionId });
+    log$l.debug("Session removed", { appSessionId });
   }
   /**
    * Send response to dApp
@@ -30914,9 +30921,9 @@ class BridgeManager {
       await this.bridgeProvider.send(response, sessionCrypto, sessionId, {
         traceId: event?.traceId
       });
-      log$k.debug("Response sent successfully", { sessionId, requestId: event.id });
+      log$l.debug("Response sent successfully", { sessionId, requestId: event.id });
     } catch (error2) {
-      log$k.error("Failed to send response through bridge", {
+      log$l.error("Failed to send response through bridge", {
         sessionId,
         requestId: event.id,
         error: error2
@@ -31005,13 +31012,13 @@ class BridgeManager {
           client_id: client2?.clientId
         });
       }
-      this.bridgeProvider = await C.open({
+      this.bridgeProvider = await C$1.open({
         bridgeUrl: this.config.bridgeUrl,
         clients,
         listener: this.queueBridgeEvent.bind(this),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         errorListener: (error2) => {
-          log$k.error("Bridge listener error", { error: error2.toString() });
+          log$l.error("Bridge listener error", { error: error2.toString() });
           this.analytics?.emitBridgeClientConnectError({
             error_message: `${error2?.toString() || "Unknown error"}${error2?.errorCode ? ` (Code: ${error2?.errorCode})` : ""}`,
             trace_id: error2?.traceId ?? connectTraceId,
@@ -31025,7 +31032,7 @@ class BridgeManager {
       });
       this.isConnected = true;
       this.reconnectAttempts = 0;
-      log$k.info("Bridge connected successfully");
+      log$l.info("Bridge connected successfully");
       if (this.analytics) {
         const client2 = clients[0];
         this.analytics.emitBridgeClientConnectEstablished({
@@ -31034,7 +31041,7 @@ class BridgeManager {
         });
       }
     } catch (error2) {
-      log$k.error("Bridge connection failed", { error: error2?.toString() });
+      log$l.error("Bridge connection failed", { error: error2?.toString() });
       this.analytics?.emitBridgeClientConnectError({
         error_message: `${error2?.toString() || "Unknown error"}${error2?.errorCode ? ` (Code: ${error2?.errorCode})` : ""}`,
         trace_id: error2?.traceId ?? connectTraceId,
@@ -31043,9 +31050,9 @@ class BridgeManager {
       if (!this.config.disableHttpConnection) {
         if (this.reconnectAttempts < (this.config.maxReconnectAttempts || 5)) {
           this.reconnectAttempts++;
-          log$k.info("Bridge reconnection attempt", { attempt: this.reconnectAttempts });
+          log$l.info("Bridge reconnection attempt", { attempt: this.reconnectAttempts });
           setTimeout(() => {
-            this.connectToSSEBridge().catch((error3) => log$k.error("Bridge reconnection failed", { error: error3 }));
+            this.connectToSSEBridge().catch((error3) => log$l.error("Bridge reconnection failed", { error: error3 }));
           }, this.config.reconnectInterval);
         }
       }
@@ -31066,10 +31073,10 @@ class BridgeManager {
    * Add client to existing bridge connection
    */
   async updateClients() {
-    log$k.debug("Updating clients");
+    log$l.debug("Updating clients");
     if (this.bridgeProvider) {
       const clients = await this.getClients();
-      log$k.info("[BRIDGE] Restoring connection", { clients: clients.length });
+      log$l.info("[BRIDGE] Restoring connection", { clients: clients.length });
       await this.bridgeProvider.restoreConnection(clients, {
         lastEventId: this.lastEventId
       });
@@ -31080,14 +31087,14 @@ class BridgeManager {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   queueBridgeEvent(event) {
-    log$k.debug("Bridge event queued", { eventId: event?.id, event });
+    log$l.debug("Bridge event queued", { eventId: event?.id, event });
     this.eventQueue.push(event);
     this.processBridgeEvents().catch((error2) => {
-      log$k.error("Error in background event processing", { error: error2 });
+      log$l.error("Error in background event processing", { error: error2 });
     });
   }
   queueJsBridgeEvent(messageInfo, event) {
-    log$k.debug("JS Bridge event queued", { eventId: messageInfo?.messageId });
+    log$l.debug("JS Bridge event queued", { eventId: messageInfo?.messageId });
     if (!event) {
       return;
     }
@@ -31124,7 +31131,7 @@ class BridgeManager {
       });
     }
     this.processBridgeEvents().catch((error2) => {
-      log$k.error("Error in background event processing", { error: error2 });
+      log$l.error("Error in background event processing", { error: error2 });
     });
   }
   /**
@@ -31136,7 +31143,7 @@ class BridgeManager {
    */
   async processBridgeEvents() {
     if (this.isProcessing) {
-      log$k.debug("Event processing already in progress, skipping");
+      log$l.debug("Event processing already in progress, skipping");
       return;
     }
     this.isProcessing = true;
@@ -31149,7 +31156,7 @@ class BridgeManager {
         }
       }
     } catch (error2) {
-      log$k.error("Error during event processing", { error: error2 });
+      log$l.error("Error during event processing", { error: error2 });
       this.isProcessing = false;
       this.restartConnection();
       return;
@@ -31163,7 +31170,7 @@ class BridgeManager {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async handleBridgeEvent(event) {
     try {
-      log$k.info("Bridge event received", { event });
+      log$l.info("Bridge event received", { event });
       const rawEvent = {
         id: event.id || crypto.randomUUID(),
         method: event.method || "unknown",
@@ -31236,21 +31243,21 @@ class BridgeManager {
         if (this.eventEmitter) {
           this.eventEmitter.emit("bridge-storage-updated");
         }
-        log$k.info("Event stored durably", { eventId: rawEvent.id, method: rawEvent.method });
+        log$l.info("Event stored durably", { eventId: rawEvent.id, method: rawEvent.method });
       } catch (error2) {
-        log$k.error("Failed to store event durably", {
+        log$l.error("Failed to store event durably", {
           eventId: rawEvent.id,
           error: error2.message
         });
         throw WalletKitError.fromError(ERROR_CODES.EVENT_STORE_OPERATION_FAILED, "Failed to store event durably", error2, { eventId: rawEvent.id, method: rawEvent.method });
       }
-      log$k.info("Bridge event processed", { rawEvent });
+      log$l.info("Bridge event processed", { rawEvent });
       if (event?.lastEventId && event.lastEventId !== this.lastEventId) {
         this.lastEventId = event.lastEventId;
         await this.saveLastEventId();
       }
     } catch (error2) {
-      log$k.error("Error handling bridge event", { error: error2 });
+      log$l.error("Error handling bridge event", { error: error2 });
     }
   }
   /**
@@ -31261,11 +31268,11 @@ class BridgeManager {
       const savedEventId = await this.storage.get(this.storageKey);
       if (savedEventId) {
         this.lastEventId = savedEventId;
-        log$k.debug("Loaded last event ID from storage", { lastEventId: this.lastEventId });
+        log$l.debug("Loaded last event ID from storage", { lastEventId: this.lastEventId });
       }
     } catch (error2) {
       const storageError = WalletKitError.fromError(ERROR_CODES.STORAGE_READ_FAILED, "Failed to load last event ID from storage", error2);
-      log$k.warn("Failed to load last event ID from storage", { error: storageError });
+      log$l.warn("Failed to load last event ID from storage", { error: storageError });
     }
   }
   /**
@@ -31275,11 +31282,11 @@ class BridgeManager {
     try {
       if (this.lastEventId) {
         await this.storage.set(this.storageKey, this.lastEventId);
-        log$k.debug("Saved last event ID to storage", { lastEventId: this.lastEventId });
+        log$l.debug("Saved last event ID to storage", { lastEventId: this.lastEventId });
       }
     } catch (error2) {
       const storageError = WalletKitError.fromError(ERROR_CODES.STORAGE_WRITE_FAILED, "Failed to save last event ID to storage", error2);
-      log$k.warn("Failed to save last event ID to storage", { error: storageError });
+      log$l.warn("Failed to save last event ID to storage", { error: storageError });
     }
   }
 }
@@ -31303,7 +31310,7 @@ function isValidHost(host) {
   const parts = host.split(".");
   return parts.every((part) => part.length > 0);
 }
-const log$j = globalLogger.createChild("ConnectHandler");
+const log$k = globalLogger.createChild("ConnectHandler");
 class ConnectHandler extends BasicHandler {
   config;
   analytics;
@@ -31325,7 +31332,7 @@ class ConnectHandler extends BasicHandler {
         manifest = result.manifest;
         manifestFetchErrorCode = result.manifestFetchErrorCode;
       } catch (error2) {
-        log$j.warn("Failed to fetch manifest", { error: error2 });
+        log$k.warn("Failed to fetch manifest", { error: error2 });
       }
     }
     const preview = this.createPreview(event, manifestUrl, manifest, manifestFetchErrorCode);
@@ -31394,14 +31401,14 @@ class ConnectHandler extends BasicHandler {
         try {
           const parsedDAppUrl = new URL(dAppUrl);
           if (!isValidHost(parsedDAppUrl.host)) {
-            log$j.warn("Invalid dApp URL in manifest - invalid host format", {
+            log$k.warn("Invalid dApp URL in manifest - invalid host format", {
               dAppUrl,
               host: parsedDAppUrl.host
             });
             finalManifestFetchErrorCode = CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR;
           }
         } catch (_) {
-          log$j.warn("Invalid dApp URL in manifest - failed to parse", { dAppUrl });
+          log$k.warn("Invalid dApp URL in manifest - failed to parse", { dAppUrl });
           finalManifestFetchErrorCode = CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR;
         }
       }
@@ -31464,7 +31471,7 @@ class ConnectHandler extends BasicHandler {
     if (directResult.manifest) {
       return directResult;
     }
-    log$j.info("Direct manifest fetch failed, trying proxy", { manifestUrl });
+    log$k.info("Direct manifest fetch failed, trying proxy", { manifestUrl });
     const proxyUrl = `${ConnectHandler.MANIFEST_PROXY_URL}${manifestUrl}`;
     return this.tryFetchManifest(proxyUrl);
   }
@@ -31472,7 +31479,7 @@ class ConnectHandler extends BasicHandler {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        log$j.error("Failed to fetch manifest not ok", { url, status: response.status });
+        log$k.error("Failed to fetch manifest not ok", { url, status: response.status });
         return {
           manifest: null,
           manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR
@@ -31484,7 +31491,7 @@ class ConnectHandler extends BasicHandler {
         manifestFetchErrorCode: void 0
       };
     } catch (e) {
-      log$j.error("Failed to fetch manifest catched", { url, error: e });
+      log$k.error("Failed to fetch manifest catched", { url, error: e });
       return {
         manifest: null,
         manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR
@@ -32042,7 +32049,7 @@ async function createTransactionPreview(client2, request, wallet) {
     moneyFlow
   };
 }
-const log$i = globalLogger.createChild("TransactionHandler");
+const log$j = globalLogger.createChild("TransactionHandler");
 class TransactionHandler extends BasicHandler {
   config;
   walletManager;
@@ -32065,7 +32072,7 @@ class TransactionHandler extends BasicHandler {
     const walletId = event.walletId;
     const walletAddress = event.walletAddress;
     if (!walletId && !walletAddress) {
-      log$i.error("Wallet ID not found", { event });
+      log$j.error("Wallet ID not found", { event });
       return {
         error: {
           code: SEND_TRANSACTION_ERROR_CODES.UNKNOWN_APP_ERROR,
@@ -32076,7 +32083,7 @@ class TransactionHandler extends BasicHandler {
     }
     const wallet = walletId ? this.walletManager.getWallet(walletId) : void 0;
     if (!wallet) {
-      log$i.error("Wallet not found", { event, walletId, walletAddress });
+      log$j.error("Wallet not found", { event, walletId, walletAddress });
       return {
         error: {
           code: SEND_TRANSACTION_ERROR_CODES.UNKNOWN_APP_ERROR,
@@ -32087,7 +32094,7 @@ class TransactionHandler extends BasicHandler {
     }
     const requestValidation = this.parseTonConnectTransactionRequest(event, wallet);
     if (!requestValidation.result || !requestValidation?.validation?.isValid) {
-      log$i.error("Failed to parse transaction request", { event, requestValidation });
+      log$j.error("Failed to parse transaction request", { event, requestValidation });
       this.eventEmitter.emit("event:error", event);
       return {
         error: {
@@ -32106,11 +32113,11 @@ class TransactionHandler extends BasicHandler {
           try {
             this.eventEmitter.emit("emulation:result", preview.trace);
           } catch (error2) {
-            log$i.warn("Error emitting emulation result event", { error: error2 });
+            log$j.warn("Error emitting emulation result event", { error: error2 });
           }
         }
       } catch (error2) {
-        log$i.error("Failed to create transaction preview", { error: error2 });
+        log$j.error("Failed to create transaction preview", { error: error2 });
         preview = {
           error: {
             code: ERROR_CODES.UNKNOWN_EMULATION_ERROR,
@@ -32183,7 +32190,7 @@ class TransactionHandler extends BasicHandler {
         validation: { isValid: errors2.length === 0, errors: errors2 }
       };
     } catch (error2) {
-      log$i.error("Failed to parse transaction request", { error: error2 });
+      log$j.error("Failed to parse transaction request", { error: error2 });
       errors2.push("Failed to parse transaction request");
       return {
         result: void 0,
@@ -32340,7 +32347,7 @@ function validateSignDataPayloadCell(data) {
   }
   return null;
 }
-const log$h = globalLogger.createChild("SignDataHandler");
+const log$i = globalLogger.createChild("SignDataHandler");
 class SignDataHandler extends BasicHandler {
   analytics;
   walletManager;
@@ -32365,14 +32372,14 @@ class SignDataHandler extends BasicHandler {
     const wallet = walletId ? this.walletManager.getWallet(walletId) : void 0;
     const payload = this.parseDataToSign(event);
     if (!payload) {
-      log$h.error("No data to sign found in request", { event });
+      log$i.error("No data to sign found in request", { event });
       throw new WalletKitError(ERROR_CODES.INVALID_REQUEST_EVENT, "No data to sign found in request", void 0, {
         eventId: event.id
       });
     }
     const preview = this.createDataPreview(payload.data, event);
     if (!preview) {
-      log$h.error("No preview found for data", { data: payload });
+      log$i.error("No preview found for data", { data: payload });
       throw new WalletKitError(ERROR_CODES.RESPONSE_CREATION_FAILED, "Failed to create preview for sign data request", void 0, { eventId: event.id, data: payload });
     }
     const signEvent = {
@@ -32408,7 +32415,7 @@ class SignDataHandler extends BasicHandler {
       const parsed = JSON.parse(event.params[0]);
       const validationResult = validateSignDataPayload(parsed);
       if (validationResult) {
-        log$h.error("Invalid data to sign found in request", { validationResult });
+        log$i.error("Invalid data to sign found in request", { validationResult });
         return void 0;
       }
       if (parsed === void 0) {
@@ -32446,7 +32453,7 @@ class SignDataHandler extends BasicHandler {
         data: signData
       };
     } catch (error2) {
-      log$h.error("Invalid data to sign found in request", { error: error2 });
+      log$i.error("Invalid data to sign found in request", { error: error2 });
       return void 0;
     }
   }
@@ -32481,7 +32488,7 @@ class SignDataHandler extends BasicHandler {
           }
         };
       } catch (error2) {
-        log$h.error("Error deserializing cell", { error: error2 });
+        log$i.error("Error deserializing cell", { error: error2 });
         return {
           type: "cell",
           value: {
@@ -32537,7 +32544,7 @@ class DisconnectHandler extends BasicHandler {
     return void 0;
   }
 }
-const log$g = globalLogger.createChild("EventRouter");
+const log$h = globalLogger.createChild("EventRouter");
 class EventRouter {
   config;
   eventEmitter;
@@ -32569,7 +32576,7 @@ class EventRouter {
   async routeEvent(event) {
     const validation = validateBridgeEvent(event);
     if (!validation.isValid) {
-      log$g.error("Invalid bridge event", { errors: validation.errors });
+      log$h.error("Invalid bridge event", { errors: validation.errors });
       return;
     }
     try {
@@ -32581,7 +32588,7 @@ class EventRouter {
             try {
               await this.bridgeManager.sendResponse(event, result);
             } catch (error2) {
-              log$g.error("Error sending response for error event", { error: error2, event, result });
+              log$h.error("Error sending response for error event", { error: error2, event, result });
             }
             return;
           }
@@ -32590,7 +32597,7 @@ class EventRouter {
         }
       }
     } catch (error2) {
-      log$g.error("Error routing event", { error: error2 });
+      log$h.error("Error routing event", { error: error2 });
       throw error2;
     }
   }
@@ -32775,11 +32782,11 @@ var T1 = TT[0], T2 = TT[1], T3 = TT[2], T4 = TT[3], T5 = TT[4];
 var T6 = TT[5], T7 = TT[6], T8 = TT[7], T9 = TT[8], Ta = TT[9];
 var Tb = TT[10], Tc = TT[11], Td = TT[12], Te = TT[13], Tf = TT[14];
 function crc32_buf(B2, seed) {
-  var C2 = seed ^ -1, L = B2.length - 15, i4 = 0;
-  for (; i4 < L; )
+  var C2 = seed ^ -1, L2 = B2.length - 15, i4 = 0;
+  for (; i4 < L2; )
     C2 = Tf[B2[i4++] ^ C2 & 255] ^ Te[B2[i4++] ^ C2 >> 8 & 255] ^ Td[B2[i4++] ^ C2 >> 16 & 255] ^ Tc[B2[i4++] ^ C2 >>> 24] ^ Tb[B2[i4++]] ^ Ta[B2[i4++]] ^ T9[B2[i4++]] ^ T8[B2[i4++]] ^ T7[B2[i4++]] ^ T6[B2[i4++]] ^ T5[B2[i4++]] ^ T4[B2[i4++]] ^ T3[B2[i4++]] ^ T2[B2[i4++]] ^ T1[B2[i4++]] ^ T0[B2[i4++]];
-  L += 15;
-  while (i4 < L)
+  L2 += 15;
+  while (i4 < L2)
     C2 = C2 >>> 8 ^ T0[(C2 ^ B2[i4++]) & 255];
   return ~C2;
 }
@@ -32833,7 +32840,7 @@ function PrepareSignData(data) {
     hash: Uint8ArrayToHex(finalHash)
   };
 }
-const log$f = globalLogger.createChild("RequestProcessor");
+const log$g = globalLogger.createChild("RequestProcessor");
 class RequestProcessor {
   walletKitOptions;
   sessionManager;
@@ -32921,7 +32928,7 @@ class RequestProcessor {
       }
       return;
     } catch (error2) {
-      log$f.error("Failed to approve connect request", { error: error2 });
+      log$g.error("Failed to approve connect request", { error: error2 });
       throw error2;
     }
   }
@@ -32930,7 +32937,7 @@ class RequestProcessor {
    */
   async rejectConnectRequest(event, reason, errorCode) {
     try {
-      log$f.info("Connect request rejected", {
+      log$g.info("Connect request rejected", {
         id: event.id,
         dAppName: event.preview.dAppInfo?.name || "",
         reason: reason || "User rejected connection"
@@ -32948,7 +32955,7 @@ class RequestProcessor {
       try {
         await this.bridgeManager.sendResponse(event, response, new SessionCrypto());
       } catch (error2) {
-        log$f.error("Failed to send connect request rejection response", { error: error2 });
+        log$g.error("Failed to send connect request rejection response", { error: error2 });
       }
       if (this.analytics) {
         const sessionData = event.from ? await this.sessionManager.getSession(sessionId) : void 0;
@@ -32977,7 +32984,7 @@ class RequestProcessor {
       }
       return;
     } catch (error2) {
-      log$f.error("Failed to reject connect request", { error: error2 });
+      log$g.error("Failed to reject connect request", { error: error2 });
       throw error2;
     }
   }
@@ -33009,7 +33016,7 @@ class RequestProcessor {
         return { signedBoc };
       }
     } catch (error2) {
-      log$f.error("Failed to approve transaction request", { error: error2 });
+      log$g.error("Failed to approve transaction request", { error: error2 });
       if (error2 instanceof WalletKitError) {
         throw error2;
       }
@@ -33064,7 +33071,7 @@ class RequestProcessor {
       }
       return;
     } catch (error2) {
-      log$f.error("Failed to reject transaction request", { error: error2 });
+      log$g.error("Failed to reject transaction request", { error: error2 });
       throw error2;
     }
   }
@@ -33171,7 +33178,7 @@ class RequestProcessor {
         };
       }
     } catch (error2) {
-      log$f.error("Failed to approve sign data request", {
+      log$g.error("Failed to approve sign data request", {
         error: error2?.message?.toString() ?? error2?.toString()
       });
       if (error2 instanceof WalletKitError) {
@@ -33210,7 +33217,7 @@ class RequestProcessor {
       }
       return;
     } catch (error2) {
-      log$f.error("Failed to reject sign data request", { error: error2 });
+      log$g.error("Failed to reject sign data request", { error: error2 });
       throw error2;
     }
   }
@@ -33303,7 +33310,7 @@ async function signTransactionInternal(wallet, request) {
   const signedBoc = await wallet.getSignedSendTransaction(request, {
     fakeSignature: false
   });
-  log$f.debug("Signing transaction", {
+  log$g.debug("Signing transaction", {
     messagesNumber: request.messages.length,
     fromAddress: request.fromAddress,
     validUntil: request.validUntil
@@ -33358,7 +33365,7 @@ function parseDomain(url) {
       value: parsedUrl.host
     };
   } catch (error2) {
-    log$f.error("Failed to parse domain", { error: error2 });
+    log$g.error("Failed to parse domain", { error: error2 });
     return { lengthBytes: 0, value: "" };
   }
 }
@@ -33390,7 +33397,7 @@ function toTonConnectSignDataPayload(payload) {
 const getEventUUID = () => {
   return crypto.randomUUID();
 };
-const log$e = globalLogger.createChild("EventStore");
+const log$f = globalLogger.createChild("EventStore");
 const MAX_EVENT_SIZE_BYTES = 100 * 1024;
 class StorageEventStore {
   storage;
@@ -33424,7 +33431,7 @@ class StorageEventStore {
       sizeBytes
     };
     await this.saveEvent(storedEvent);
-    log$e.info("Event stored", {
+    log$f.info("Event stored", {
       eventId: storedEvent.id,
       eventType,
       sizeBytes,
@@ -33442,7 +33449,7 @@ class StorageEventStore {
       event.status === "new" && // Must match one of the session IDs
       event.sessionId && sessionIds.includes(event.sessionId) && // Must be one of the requested event types
       eventTypes.includes(event.eventType)
-    )).sort((a2, b2) => a2.createdAt - b2.createdAt);
+    )).sort((a4, b2) => a4.createdAt - b2.createdAt);
   }
   /**
    * Get events that don't require a wallet or session (e.g., connect events)
@@ -33453,7 +33460,7 @@ class StorageEventStore {
       // Only new events
       event.status === "new" && // Must be one of the requested event types
       eventTypes.includes(event.eventType)
-    )).sort((a2, b2) => a2.createdAt - b2.createdAt);
+    )).sort((a4, b2) => a4.createdAt - b2.createdAt);
   }
   /**
    * Attempt to acquire exclusive lock on an event for processing
@@ -33463,11 +33470,11 @@ class StorageEventStore {
       const allEvents = await this.getAllEventsFromStorage();
       const event = allEvents[eventId];
       if (!event) {
-        log$e.warn("Cannot lock non-existent event", { eventId });
+        log$f.warn("Cannot lock non-existent event", { eventId });
         return void 0;
       }
       if (event.status !== "new") {
-        log$e.debug("Cannot lock event - not in new status", {
+        log$f.debug("Cannot lock event - not in new status", {
           eventId,
           status: event.status,
           lockedBy: event.lockedBy
@@ -33482,7 +33489,7 @@ class StorageEventStore {
       };
       allEvents[eventId] = updatedEvent;
       await this.storage.set(this.storageKey, allEvents);
-      log$e.debug("Event lock acquired", { eventId, walletAddress: walletId });
+      log$f.debug("Event lock acquired", { eventId, walletAddress: walletId });
       return updatedEvent;
     });
   }
@@ -33510,7 +33517,7 @@ class StorageEventStore {
       };
       allEvents[eventId] = updatedEvent;
       await this.storage.set(this.storageKey, allEvents);
-      log$e.debug("Event retry count incremented", {
+      log$f.debug("Event retry count incremented", {
         eventId,
         retryCount: updatedEvent.retryCount,
         error: error2
@@ -33540,7 +33547,7 @@ class StorageEventStore {
       }
       allEvents[eventId] = updatedEvent;
       await this.storage.set(this.storageKey, allEvents);
-      log$e.debug("Event status updated", { eventId, oldStatus, newStatus: status });
+      log$f.debug("Event status updated", { eventId, oldStatus, newStatus: status });
       return updatedEvent;
     });
   }
@@ -33552,7 +33559,7 @@ class StorageEventStore {
       const allEvents = await this.getAllEventsFromStorage();
       return allEvents[eventId] || null;
     } catch (error2) {
-      log$e.warn("Failed to get event", { eventId, error: error2 });
+      log$f.warn("Failed to get event", { eventId, error: error2 });
       return null;
     }
   }
@@ -33572,7 +33579,7 @@ class StorageEventStore {
         };
         await this.saveEvent(recoveredEvent);
         recoveredCount++;
-        log$e.info("Recovered stale event", {
+        log$f.info("Recovered stale event", {
           eventId: event.id,
           lockedBy: event.lockedBy,
           staleMinutes: Math.round((now - event.processingStartedAt) / 6e4),
@@ -33581,7 +33588,7 @@ class StorageEventStore {
       }
     }
     if (recoveredCount > 0) {
-      log$e.info("Event recovery completed", { recoveredCount });
+      log$f.info("Event recovery completed", { recoveredCount });
     }
     return recoveredCount;
   }
@@ -33596,7 +33603,7 @@ class StorageEventStore {
     for (const event of events) {
       if (event.status === "completed" && event.completedAt && event.completedAt < cutoffTime || event.status === "errored" && event.createdAt < cutoffTime) {
         eventsToRemove.push(event.id);
-        log$e.debug("Marked event for cleanup", { eventId: event.id, status: event.status });
+        log$f.debug("Marked event for cleanup", { eventId: event.id, status: event.status });
       }
     }
     if (eventsToRemove.length > 0) {
@@ -33608,7 +33615,7 @@ class StorageEventStore {
         }
         await this.storage.set(this.storageKey, allEvents);
       });
-      log$e.info("Event cleanup completed", { cleanedUpCount });
+      log$f.info("Event cleanup completed", { cleanedUpCount });
     }
     return cleanedUpCount;
   }
@@ -33620,7 +33627,7 @@ class StorageEventStore {
       const allEvents = await this.getAllEventsFromStorage();
       return Object.values(allEvents);
     } catch (error2) {
-      log$e.warn("Failed to get all events", { error: error2 });
+      log$f.warn("Failed to get all events", { error: error2 });
       return [];
     }
   }
@@ -33648,7 +33655,7 @@ class StorageEventStore {
       const eventsData = await this.storage.get(this.storageKey);
       return eventsData || {};
     } catch (error2) {
-      log$e.warn("Failed to get events from storage", { error: error2 });
+      log$f.warn("Failed to get events from storage", { error: error2 });
       return {};
     }
   }
@@ -33683,7 +33690,7 @@ class StorageEventStore {
     }
   }
 }
-const log$d = globalLogger.createChild("EventProcessor");
+const log$e = globalLogger.createChild("EventProcessor");
 class StorageEventProcessor {
   eventStore;
   config;
@@ -33724,15 +33731,15 @@ class StorageEventProcessor {
     }
     if (walletId) {
       if (this.registeredWallets.has(walletId)) {
-        log$d.debug("Processing already registered for wallet", { walletId });
+        log$e.debug("Processing already registered for wallet", { walletId });
       } else {
         this.registeredWallets.add(walletId);
-        log$d.info("Registered wallet for event processing", { walletId });
+        log$e.info("Registered wallet for event processing", { walletId });
       }
     }
     if (!this.isProcessing) {
       this.isProcessing = true;
-      log$d.info("Started global event processing loop");
+      log$e.info("Started global event processing loop");
       this.processEventsLoop();
     } else {
       this.triggerProcessing();
@@ -33747,7 +33754,7 @@ class StorageEventProcessor {
     }
     if (walletId) {
       this.registeredWallets.delete(walletId);
-      log$d.info("Unregistered wallet from event processing", { walletId });
+      log$e.info("Unregistered wallet from event processing", { walletId });
     }
     if (this.registeredWallets.size === 0 && this.isProcessing && !walletId) {
       this.isProcessing = false;
@@ -33755,12 +33762,12 @@ class StorageEventProcessor {
         this.wakeUpResolver();
         this.wakeUpResolver = void 0;
       }
-      log$d.info("Stopped global event processing loop (no more wallets)");
+      log$e.info("Stopped global event processing loop (no more wallets)");
     }
   }
   async clearRegisteredWallets() {
     this.registeredWallets.clear();
-    log$d.info("Cleared registered wallets from event processing");
+    log$e.info("Cleared registered wallets from event processing");
   }
   /**
    * Process next available event from any source (wallet or no-wallet)
@@ -33785,7 +33792,7 @@ class StorageEventProcessor {
         const noWalletEvents = await this.eventStore.getNoWalletEvents(noWalletEventTypes);
         allEvents.push(...noWalletEvents);
       }
-      allEvents.sort((a2, b2) => a2.createdAt - b2.createdAt);
+      allEvents.sort((a4, b2) => a4.createdAt - b2.createdAt);
       if (allEvents.length === 0) {
         return false;
       }
@@ -33794,7 +33801,7 @@ class StorageEventProcessor {
       const processed = await this.processEvent(eventToUse, walletId);
       return processed;
     } catch (error2) {
-      log$d.error("Error in processNextAvailableEvent", {
+      log$e.error("Error in processNextAvailableEvent", {
         error: error2.message
       });
       return false;
@@ -33806,9 +33813,9 @@ class StorageEventProcessor {
   async completeEvent(eventId) {
     try {
       await this.eventStore.updateEventStatus(eventId, "completed", "processing");
-      log$d.debug("Event marked as completed", { eventId });
+      log$e.debug("Event marked as completed", { eventId });
     } catch (error2) {
-      log$d.error("Failed to mark event as completed", {
+      log$e.error("Failed to mark event as completed", {
         eventId,
         error: error2.message
       });
@@ -33819,7 +33826,7 @@ class StorageEventProcessor {
    */
   startRecoveryLoop() {
     if (this.recoveryTimeoutId) {
-      log$d.debug("Recovery loop already running");
+      log$e.debug("Recovery loop already running");
       return;
     }
     const recoveryLoop = async () => {
@@ -33829,7 +33836,7 @@ class StorageEventProcessor {
           this.triggerProcessing();
         }
       } catch (error2) {
-        log$d.error("Error in recovery loop", { error: error2.message });
+        log$e.error("Error in recovery loop", { error: error2.message });
       }
       if (this.recoveryTimeoutId !== void 0) {
         this.recoveryTimeoutId = setTimeout(recoveryLoop, this.config.recoveryIntervalMs);
@@ -33839,7 +33846,7 @@ class StorageEventProcessor {
       try {
         await this.eventStore.cleanupOldEvents(this.config.retentionMs);
       } catch (error2) {
-        log$d.error("Error in cleanup loop", { error: error2.message });
+        log$e.error("Error in cleanup loop", { error: error2.message });
       }
       if (this.cleanupTimeoutId !== void 0) {
         this.cleanupTimeoutId = setTimeout(cleanupLoop, this.config.cleanupIntervalMs);
@@ -33847,7 +33854,7 @@ class StorageEventProcessor {
     };
     this.recoveryTimeoutId = setTimeout(recoveryLoop, this.config.recoveryIntervalMs);
     this.cleanupTimeoutId = setTimeout(cleanupLoop, this.config.cleanupIntervalMs);
-    log$d.info("Recovery and cleanup loops started");
+    log$e.info("Recovery and cleanup loops started");
   }
   /**
    * Stop the recovery process
@@ -33861,7 +33868,7 @@ class StorageEventProcessor {
       clearTimeout(this.cleanupTimeoutId);
       this.cleanupTimeoutId = void 0;
     }
-    log$d.info("Recovery and cleanup loops stopped");
+    log$e.info("Recovery and cleanup loops stopped");
   }
   // Private helper methods
   /**
@@ -33871,12 +33878,12 @@ class StorageEventProcessor {
   async processEvent(event, walletId) {
     const acquiredEvent = await this.eventStore.acquireLock(event.id, walletId);
     if (!acquiredEvent) {
-      log$d.debug("Failed to acquire lock on event", { eventId: event.id, walletId });
+      log$e.debug("Failed to acquire lock on event", { eventId: event.id, walletId });
       return false;
     }
     const retryCount = event.retryCount || 0;
     if (retryCount >= this.config.maxRetries) {
-      log$d.error("Event exceeded max retries, marking as errored", {
+      log$e.error("Event exceeded max retries, marking as errored", {
         eventId: event.id,
         retryCount,
         maxRetries: this.config.maxRetries
@@ -33884,14 +33891,14 @@ class StorageEventProcessor {
       try {
         await this.eventStore.updateEventStatus(event.id, "errored", "processing");
       } catch (error2) {
-        log$d.error("Failed to mark event as errored", {
+        log$e.error("Failed to mark event as errored", {
           eventId: event.id,
           error: error2.message
         });
       }
       return false;
     }
-    log$d.info("Processing event", {
+    log$e.info("Processing event", {
       eventId: event.id,
       eventType: event.eventType,
       walletId,
@@ -33911,11 +33918,11 @@ class StorageEventProcessor {
         ...walletAddress ? { walletAddress } : {}
       });
       await this.eventStore.updateEventStatus(event.id, "completed", "processing");
-      log$d.info("Event processing completed", { eventId: event.id });
+      log$e.info("Event processing completed", { eventId: event.id });
       return true;
     } catch (error2) {
       const errorMessage = error2.message ?? "Unknown error";
-      log$d.error("Error processing event", {
+      log$e.error("Error processing event", {
         eventId: event.id,
         error: errorMessage,
         retryCount
@@ -33923,7 +33930,7 @@ class StorageEventProcessor {
       try {
         await this.eventStore.releaseLock(event.id, errorMessage);
       } catch (updateError) {
-        log$d.error("Failed to increment retry count", {
+        log$e.error("Failed to increment retry count", {
           eventId: event.id,
           error: updateError.message
         });
@@ -33942,21 +33949,21 @@ class StorageEventProcessor {
           await this.waitForWakeUpOrTimeout(500);
         }
       } catch (error2) {
-        log$d.error("Error in global processing loop", {
+        log$e.error("Error in global processing loop", {
           error: error2.message
         });
         await this.waitForWakeUpOrTimeout(500);
       }
     }
     this.wakeUpResolver = void 0;
-    log$d.debug("Global processing loop ended");
+    log$e.debug("Global processing loop ended");
   }
   /**
    * Trigger the global processing loop
    */
   triggerProcessing() {
     if (this.isProcessing && this.wakeUpResolver) {
-      log$d.debug("Waking up global processing loop");
+      log$e.debug("Waking up global processing loop");
       this.wakeUpResolver();
     }
   }
@@ -33991,8 +33998,8 @@ class StorageEventProcessor {
     return enabledTypes.filter((type) => type === "connect" || type === "restoreConnection");
   }
 }
-function isBytes(a2) {
-  return a2 instanceof Uint8Array || ArrayBuffer.isView(a2) && a2.constructor.name === "Uint8Array";
+function isBytes(a4) {
+  return a4 instanceof Uint8Array || ArrayBuffer.isView(a4) && a4.constructor.name === "Uint8Array";
 }
 function anumber(n, title = "") {
   if (!Number.isSafeInteger(n) || n < 0) {
@@ -34868,7 +34875,7 @@ function createTransferTransaction(params) {
     fromAddress: params.fromAddress
   };
 }
-const log$c = globalLogger.createChild("WalletTonClass");
+const log$d = globalLogger.createChild("WalletTonClass");
 class WalletTonClass {
   async createTransferTonTransaction(param) {
     if (!isValidAddress(param.recipientAddress)) {
@@ -34944,7 +34951,7 @@ class WalletTonClass {
       const { hash: normalizedHash, boc: normalizedBoc } = getNormalizedExtMessageHash(boc);
       return { boc, normalizedBoc, normalizedHash };
     } catch (error2) {
-      log$c.error("Failed to send transaction", { error: error2 });
+      log$d.error("Failed to send transaction", { error: error2 });
       if (error2 instanceof WalletKitError) {
         throw error2;
       }
@@ -35031,7 +35038,7 @@ class WalletNftClass {
     });
   }
 }
-const log$b = globalLogger.createChild("Initializer");
+const log$c = globalLogger.createChild("Initializer");
 class Initializer {
   config;
   networkManager;
@@ -35047,12 +35054,12 @@ class Initializer {
    */
   async initialize(options, networkManager) {
     try {
-      log$b.info("Initializing TonWalletKit...");
+      log$c.info("Initializing TonWalletKit...");
       this.networkManager = networkManager;
       const storage = this.initializeStorage(options);
       const { walletManager, sessionManager, bridgeManager, eventRouter, eventProcessor } = await this.initializeManagers(options, storage);
       const { requestProcessor } = this.initializeProcessors(sessionManager, bridgeManager, walletManager);
-      log$b.info("TonWalletKit initialized successfully");
+      log$c.info("TonWalletKit initialized successfully");
       return {
         walletManager,
         sessionManager,
@@ -35063,7 +35070,7 @@ class Initializer {
         eventProcessor
       };
     } catch (error2) {
-      log$b.error("Failed to initialize TonWalletKit", { error: error2 });
+      log$c.error("Failed to initialize TonWalletKit", { error: error2 });
       throw error2;
     }
   }
@@ -35104,9 +35111,9 @@ class Initializer {
     const bridgeManager = new BridgeManager(options?.walletManifest, options?.bridge, sessionManager, storage, eventStore, eventRouter, options, this.eventEmitter, this.analyticsManager);
     eventRouter.setBridgeManager(bridgeManager);
     bridgeManager.start().then(() => {
-      log$b.info("Bridge manager started successfully");
+      log$c.info("Bridge manager started successfully");
     }).catch((e) => {
-      log$b.error("Could not start bridge manager", { error: e?.toString?.() });
+      log$c.error("Could not start bridge manager", { error: e?.toString?.() });
     });
     const eventProcessor = new StorageEventProcessor(options?.eventProcessor, eventStore, DEFAULT_DURABLE_EVENTS_CONFIG, walletManager, sessionManager, eventRouter, this.eventEmitter);
     return {
@@ -35131,7 +35138,7 @@ class Initializer {
    */
   async cleanup(components) {
     try {
-      log$b.info("Cleaning up TonWalletKit components...");
+      log$c.info("Cleaning up TonWalletKit components...");
       if (components.eventProcessor) {
         components.eventProcessor.stopRecoveryLoop();
         await components.eventProcessor.clearRegisteredWallets();
@@ -35143,9 +35150,9 @@ class Initializer {
       if (components.eventRouter) {
         components.eventRouter.clearCallbacks();
       }
-      log$b.info("TonWalletKit cleanup completed");
+      log$c.info("TonWalletKit cleanup completed");
     } catch (error2) {
-      log$b.error("Error during cleanup", { error: error2 });
+      log$c.error("Error during cleanup", { error: error2 });
     }
   }
 }
@@ -35167,1428 +35174,538 @@ async function wrapWalletInterface(wallet) {
   });
   return newProxy;
 }
-const defaultPerf = typeof performance === "object" && performance && typeof performance.now === "function" ? performance : Date;
-const warned = /* @__PURE__ */ new Set();
-const PROCESS = typeof process === "object" && !!process ? process : {};
-const emitWarning = (msg, type, code, fn) => {
-  typeof PROCESS.emitWarning === "function" ? PROCESS.emitWarning(msg, type, code, fn) : console.error(`[${code}] ${type}: ${msg}`);
-};
-let AC = globalThis.AbortController;
-let AS = globalThis.AbortSignal;
-if (typeof AC === "undefined") {
-  AS = class AbortSignal {
+var M = typeof performance == "object" && performance && typeof performance.now == "function" ? performance : Date, I = /* @__PURE__ */ new Set(), R = typeof process == "object" && process ? process : {}, x = (a4, t, e, i4) => {
+  typeof R.emitWarning == "function" ? R.emitWarning(a4, t, e, i4) : console.error(`[${e}] ${t}: ${a4}`);
+}, C = globalThis.AbortController, D = globalThis.AbortSignal;
+if (typeof C > "u") {
+  D = class {
     onabort;
     _onabort = [];
     reason;
     aborted = false;
-    addEventListener(_, fn) {
-      this._onabort.push(fn);
+    addEventListener(i4, s2) {
+      this._onabort.push(s2);
     }
-  };
-  AC = class AbortController {
+  }, C = class {
     constructor() {
-      warnACPolyfill();
+      t();
     }
-    signal = new AS();
-    abort(reason) {
-      if (this.signal.aborted)
-        return;
-      this.signal.reason = reason;
-      this.signal.aborted = true;
-      for (const fn of this.signal._onabort) {
-        fn(reason);
+    signal = new D();
+    abort(i4) {
+      if (!this.signal.aborted) {
+        this.signal.reason = i4, this.signal.aborted = true;
+        for (let s2 of this.signal._onabort) s2(i4);
+        this.signal.onabort?.(i4);
       }
-      this.signal.onabort?.(reason);
     }
   };
-  let printACPolyfillWarning = PROCESS.env?.LRU_CACHE_IGNORE_AC_WARNING !== "1";
-  const warnACPolyfill = () => {
-    if (!printACPolyfillWarning)
-      return;
-    printACPolyfillWarning = false;
-    emitWarning("AbortController is not defined. If using lru-cache in node 14, load an AbortController polyfill from the `node-abort-controller` package. A minimal polyfill is provided for use by LRUCache.fetch(), but it should not be relied upon in other contexts (eg, passing it to other APIs that use AbortController/AbortSignal might have undesirable effects). You may disable this with LRU_CACHE_IGNORE_AC_WARNING=1 in the env.", "NO_ABORT_CONTROLLER", "ENOTSUP", warnACPolyfill);
+  let a4 = R.env?.LRU_CACHE_IGNORE_AC_WARNING !== "1", t = () => {
+    a4 && (a4 = false, x("AbortController is not defined. If using lru-cache in node 14, load an AbortController polyfill from the `node-abort-controller` package. A minimal polyfill is provided for use by LRUCache.fetch(), but it should not be relied upon in other contexts (eg, passing it to other APIs that use AbortController/AbortSignal might have undesirable effects). You may disable this with LRU_CACHE_IGNORE_AC_WARNING=1 in the env.", "NO_ABORT_CONTROLLER", "ENOTSUP", t));
   };
 }
-const shouldWarn = (code) => !warned.has(code);
-const isPosInt = (n) => n && n === Math.floor(n) && n > 0 && isFinite(n);
-const getUintArray = (max) => !isPosInt(max) ? null : max <= Math.pow(2, 8) ? Uint8Array : max <= Math.pow(2, 16) ? Uint16Array : max <= Math.pow(2, 32) ? Uint32Array : max <= Number.MAX_SAFE_INTEGER ? ZeroArray : null;
-class ZeroArray extends Array {
-  constructor(size) {
-    super(size);
-    this.fill(0);
+var G = (a4) => !I.has(a4), y = (a4) => a4 && a4 === Math.floor(a4) && a4 > 0 && isFinite(a4), U = (a4) => y(a4) ? a4 <= Math.pow(2, 8) ? Uint8Array : a4 <= Math.pow(2, 16) ? Uint16Array : a4 <= Math.pow(2, 32) ? Uint32Array : a4 <= Number.MAX_SAFE_INTEGER ? z : null : null, z = class extends Array {
+  constructor(t) {
+    super(t), this.fill(0);
   }
-}
-class Stack {
+}, W = class a2 {
   heap;
   length;
-  // private constructor
-  static #constructing = false;
-  static create(max) {
-    const HeapCls = getUintArray(max);
-    if (!HeapCls)
-      return [];
-    Stack.#constructing = true;
-    const s2 = new Stack(max, HeapCls);
-    Stack.#constructing = false;
-    return s2;
+  static #o = false;
+  static create(t) {
+    let e = U(t);
+    if (!e) return [];
+    a2.#o = true;
+    let i4 = new a2(t, e);
+    return a2.#o = false, i4;
   }
-  constructor(max, HeapCls) {
-    if (!Stack.#constructing) {
-      throw new TypeError("instantiate Stack using Stack.create(n)");
-    }
-    this.heap = new HeapCls(max);
-    this.length = 0;
+  constructor(t, e) {
+    if (!a2.#o) throw new TypeError("instantiate Stack using Stack.create(n)");
+    this.heap = new e(t), this.length = 0;
   }
-  push(n) {
-    this.heap[this.length++] = n;
+  push(t) {
+    this.heap[this.length++] = t;
   }
   pop() {
     return this.heap[--this.length];
   }
-}
-class LRUCache {
-  // options that cannot be changed without disaster
-  #max;
-  #maxSize;
-  #dispose;
-  #onInsert;
-  #disposeAfter;
-  #fetchMethod;
-  #memoMethod;
-  #perf;
-  /**
-   * {@link LRUCache.OptionsBase.perf}
-   */
+}, L = class a3 {
+  #o;
+  #c;
+  #w;
+  #C;
+  #S;
+  #L;
+  #I;
+  #m;
   get perf() {
-    return this.#perf;
+    return this.#m;
   }
-  /**
-   * {@link LRUCache.OptionsBase.ttl}
-   */
   ttl;
-  /**
-   * {@link LRUCache.OptionsBase.ttlResolution}
-   */
   ttlResolution;
-  /**
-   * {@link LRUCache.OptionsBase.ttlAutopurge}
-   */
   ttlAutopurge;
-  /**
-   * {@link LRUCache.OptionsBase.updateAgeOnGet}
-   */
   updateAgeOnGet;
-  /**
-   * {@link LRUCache.OptionsBase.updateAgeOnHas}
-   */
   updateAgeOnHas;
-  /**
-   * {@link LRUCache.OptionsBase.allowStale}
-   */
   allowStale;
-  /**
-   * {@link LRUCache.OptionsBase.noDisposeOnSet}
-   */
   noDisposeOnSet;
-  /**
-   * {@link LRUCache.OptionsBase.noUpdateTTL}
-   */
   noUpdateTTL;
-  /**
-   * {@link LRUCache.OptionsBase.maxEntrySize}
-   */
   maxEntrySize;
-  /**
-   * {@link LRUCache.OptionsBase.sizeCalculation}
-   */
   sizeCalculation;
-  /**
-   * {@link LRUCache.OptionsBase.noDeleteOnFetchRejection}
-   */
   noDeleteOnFetchRejection;
-  /**
-   * {@link LRUCache.OptionsBase.noDeleteOnStaleGet}
-   */
   noDeleteOnStaleGet;
-  /**
-   * {@link LRUCache.OptionsBase.allowStaleOnFetchAbort}
-   */
   allowStaleOnFetchAbort;
-  /**
-   * {@link LRUCache.OptionsBase.allowStaleOnFetchRejection}
-   */
   allowStaleOnFetchRejection;
-  /**
-   * {@link LRUCache.OptionsBase.ignoreFetchAbort}
-   */
   ignoreFetchAbort;
-  // computed properties
-  #size;
-  #calculatedSize;
-  #keyMap;
-  #keyList;
-  #valList;
-  #next;
-  #prev;
-  #head;
-  #tail;
-  #free;
-  #disposed;
-  #sizes;
-  #starts;
-  #ttls;
-  #autopurgeTimers;
-  #hasDispose;
-  #hasFetchMethod;
-  #hasDisposeAfter;
-  #hasOnInsert;
-  /**
-   * Do not call this method unless you need to inspect the
-   * inner workings of the cache.  If anything returned by this
-   * object is modified in any way, strange breakage may occur.
-   *
-   * These fields are private for a reason!
-   *
-   * @internal
-   */
-  static unsafeExposeInternals(c) {
-    return {
-      // properties
-      starts: c.#starts,
-      ttls: c.#ttls,
-      autopurgeTimers: c.#autopurgeTimers,
-      sizes: c.#sizes,
-      keyMap: c.#keyMap,
-      keyList: c.#keyList,
-      valList: c.#valList,
-      next: c.#next,
-      prev: c.#prev,
-      get head() {
-        return c.#head;
-      },
-      get tail() {
-        return c.#tail;
-      },
-      free: c.#free,
-      // methods
-      isBackgroundFetch: (p2) => c.#isBackgroundFetch(p2),
-      backgroundFetch: (k2, index, options, context) => c.#backgroundFetch(k2, index, options, context),
-      moveToTail: (index) => c.#moveToTail(index),
-      indexes: (options) => c.#indexes(options),
-      rindexes: (options) => c.#rindexes(options),
-      isStale: (index) => c.#isStale(index)
-    };
+  #n;
+  #_;
+  #s;
+  #i;
+  #t;
+  #a;
+  #u;
+  #l;
+  #h;
+  #b;
+  #r;
+  #y;
+  #A;
+  #d;
+  #g;
+  #T;
+  #v;
+  #f;
+  #x;
+  static unsafeExposeInternals(t) {
+    return { starts: t.#A, ttls: t.#d, autopurgeTimers: t.#g, sizes: t.#y, keyMap: t.#s, keyList: t.#i, valList: t.#t, next: t.#a, prev: t.#u, get head() {
+      return t.#l;
+    }, get tail() {
+      return t.#h;
+    }, free: t.#b, isBackgroundFetch: (e) => t.#e(e), backgroundFetch: (e, i4, s2, h2) => t.#G(e, i4, s2, h2), moveToTail: (e) => t.#D(e), indexes: (e) => t.#F(e), rindexes: (e) => t.#O(e), isStale: (e) => t.#p(e) };
   }
-  // Protected read-only members
-  /**
-   * {@link LRUCache.OptionsBase.max} (read-only)
-   */
   get max() {
-    return this.#max;
+    return this.#o;
   }
-  /**
-   * {@link LRUCache.OptionsBase.maxSize} (read-only)
-   */
   get maxSize() {
-    return this.#maxSize;
+    return this.#c;
   }
-  /**
-   * The total computed size of items in the cache (read-only)
-   */
   get calculatedSize() {
-    return this.#calculatedSize;
+    return this.#_;
   }
-  /**
-   * The number of items stored in the cache (read-only)
-   */
   get size() {
-    return this.#size;
+    return this.#n;
   }
-  /**
-   * {@link LRUCache.OptionsBase.fetchMethod} (read-only)
-   */
   get fetchMethod() {
-    return this.#fetchMethod;
+    return this.#L;
   }
   get memoMethod() {
-    return this.#memoMethod;
+    return this.#I;
   }
-  /**
-   * {@link LRUCache.OptionsBase.dispose} (read-only)
-   */
   get dispose() {
-    return this.#dispose;
+    return this.#w;
   }
-  /**
-   * {@link LRUCache.OptionsBase.onInsert} (read-only)
-   */
   get onInsert() {
-    return this.#onInsert;
+    return this.#C;
   }
-  /**
-   * {@link LRUCache.OptionsBase.disposeAfter} (read-only)
-   */
   get disposeAfter() {
-    return this.#disposeAfter;
+    return this.#S;
   }
-  constructor(options) {
-    const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, onInsert, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, memoMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort, perf } = options;
-    if (perf !== void 0) {
-      if (typeof perf?.now !== "function") {
-        throw new TypeError("perf option must have a now() method if specified");
-      }
+  constructor(t) {
+    let { max: e = 0, ttl: i4, ttlResolution: s2 = 1, ttlAutopurge: h2, updateAgeOnGet: n, updateAgeOnHas: o, allowStale: r, dispose: f2, onInsert: m, disposeAfter: c, noDisposeOnSet: d, noUpdateTTL: g, maxSize: A = 0, maxEntrySize: p2 = 0, sizeCalculation: _, fetchMethod: l, memoMethod: w2, noDeleteOnFetchRejection: b2, noDeleteOnStaleGet: S2, allowStaleOnFetchRejection: u, allowStaleOnFetchAbort: T10, ignoreFetchAbort: F, perf: v2 } = t;
+    if (v2 !== void 0 && typeof v2?.now != "function") throw new TypeError("perf option must have a now() method if specified");
+    if (this.#m = v2 ?? M, e !== 0 && !y(e)) throw new TypeError("max option must be a nonnegative integer");
+    let O2 = e ? U(e) : Array;
+    if (!O2) throw new Error("invalid max value: " + e);
+    if (this.#o = e, this.#c = A, this.maxEntrySize = p2 || this.#c, this.sizeCalculation = _, this.sizeCalculation) {
+      if (!this.#c && !this.maxEntrySize) throw new TypeError("cannot set sizeCalculation without setting maxSize or maxEntrySize");
+      if (typeof this.sizeCalculation != "function") throw new TypeError("sizeCalculation set to non-function");
     }
-    this.#perf = perf ?? defaultPerf;
-    if (max !== 0 && !isPosInt(max)) {
-      throw new TypeError("max option must be a nonnegative integer");
+    if (w2 !== void 0 && typeof w2 != "function") throw new TypeError("memoMethod must be a function if defined");
+    if (this.#I = w2, l !== void 0 && typeof l != "function") throw new TypeError("fetchMethod must be a function if specified");
+    if (this.#L = l, this.#v = !!l, this.#s = /* @__PURE__ */ new Map(), this.#i = new Array(e).fill(void 0), this.#t = new Array(e).fill(void 0), this.#a = new O2(e), this.#u = new O2(e), this.#l = 0, this.#h = 0, this.#b = W.create(e), this.#n = 0, this.#_ = 0, typeof f2 == "function" && (this.#w = f2), typeof m == "function" && (this.#C = m), typeof c == "function" ? (this.#S = c, this.#r = []) : (this.#S = void 0, this.#r = void 0), this.#T = !!this.#w, this.#x = !!this.#C, this.#f = !!this.#S, this.noDisposeOnSet = !!d, this.noUpdateTTL = !!g, this.noDeleteOnFetchRejection = !!b2, this.allowStaleOnFetchRejection = !!u, this.allowStaleOnFetchAbort = !!T10, this.ignoreFetchAbort = !!F, this.maxEntrySize !== 0) {
+      if (this.#c !== 0 && !y(this.#c)) throw new TypeError("maxSize must be a positive integer if specified");
+      if (!y(this.maxEntrySize)) throw new TypeError("maxEntrySize must be a positive integer if specified");
+      this.#B();
     }
-    const UintArray = max ? getUintArray(max) : Array;
-    if (!UintArray) {
-      throw new Error("invalid max value: " + max);
+    if (this.allowStale = !!r, this.noDeleteOnStaleGet = !!S2, this.updateAgeOnGet = !!n, this.updateAgeOnHas = !!o, this.ttlResolution = y(s2) || s2 === 0 ? s2 : 1, this.ttlAutopurge = !!h2, this.ttl = i4 || 0, this.ttl) {
+      if (!y(this.ttl)) throw new TypeError("ttl must be a positive integer if specified");
+      this.#j();
     }
-    this.#max = max;
-    this.#maxSize = maxSize;
-    this.maxEntrySize = maxEntrySize || this.#maxSize;
-    this.sizeCalculation = sizeCalculation;
-    if (this.sizeCalculation) {
-      if (!this.#maxSize && !this.maxEntrySize) {
-        throw new TypeError("cannot set sizeCalculation without setting maxSize or maxEntrySize");
-      }
-      if (typeof this.sizeCalculation !== "function") {
-        throw new TypeError("sizeCalculation set to non-function");
-      }
-    }
-    if (memoMethod !== void 0 && typeof memoMethod !== "function") {
-      throw new TypeError("memoMethod must be a function if defined");
-    }
-    this.#memoMethod = memoMethod;
-    if (fetchMethod !== void 0 && typeof fetchMethod !== "function") {
-      throw new TypeError("fetchMethod must be a function if specified");
-    }
-    this.#fetchMethod = fetchMethod;
-    this.#hasFetchMethod = !!fetchMethod;
-    this.#keyMap = /* @__PURE__ */ new Map();
-    this.#keyList = new Array(max).fill(void 0);
-    this.#valList = new Array(max).fill(void 0);
-    this.#next = new UintArray(max);
-    this.#prev = new UintArray(max);
-    this.#head = 0;
-    this.#tail = 0;
-    this.#free = Stack.create(max);
-    this.#size = 0;
-    this.#calculatedSize = 0;
-    if (typeof dispose === "function") {
-      this.#dispose = dispose;
-    }
-    if (typeof onInsert === "function") {
-      this.#onInsert = onInsert;
-    }
-    if (typeof disposeAfter === "function") {
-      this.#disposeAfter = disposeAfter;
-      this.#disposed = [];
-    } else {
-      this.#disposeAfter = void 0;
-      this.#disposed = void 0;
-    }
-    this.#hasDispose = !!this.#dispose;
-    this.#hasOnInsert = !!this.#onInsert;
-    this.#hasDisposeAfter = !!this.#disposeAfter;
-    this.noDisposeOnSet = !!noDisposeOnSet;
-    this.noUpdateTTL = !!noUpdateTTL;
-    this.noDeleteOnFetchRejection = !!noDeleteOnFetchRejection;
-    this.allowStaleOnFetchRejection = !!allowStaleOnFetchRejection;
-    this.allowStaleOnFetchAbort = !!allowStaleOnFetchAbort;
-    this.ignoreFetchAbort = !!ignoreFetchAbort;
-    if (this.maxEntrySize !== 0) {
-      if (this.#maxSize !== 0) {
-        if (!isPosInt(this.#maxSize)) {
-          throw new TypeError("maxSize must be a positive integer if specified");
-        }
-      }
-      if (!isPosInt(this.maxEntrySize)) {
-        throw new TypeError("maxEntrySize must be a positive integer if specified");
-      }
-      this.#initializeSizeTracking();
-    }
-    this.allowStale = !!allowStale;
-    this.noDeleteOnStaleGet = !!noDeleteOnStaleGet;
-    this.updateAgeOnGet = !!updateAgeOnGet;
-    this.updateAgeOnHas = !!updateAgeOnHas;
-    this.ttlResolution = isPosInt(ttlResolution) || ttlResolution === 0 ? ttlResolution : 1;
-    this.ttlAutopurge = !!ttlAutopurge;
-    this.ttl = ttl || 0;
-    if (this.ttl) {
-      if (!isPosInt(this.ttl)) {
-        throw new TypeError("ttl must be a positive integer if specified");
-      }
-      this.#initializeTTLTracking();
-    }
-    if (this.#max === 0 && this.ttl === 0 && this.#maxSize === 0) {
-      throw new TypeError("At least one of max, maxSize, or ttl is required");
-    }
-    if (!this.ttlAutopurge && !this.#max && !this.#maxSize) {
-      const code = "LRU_CACHE_UNBOUNDED";
-      if (shouldWarn(code)) {
-        warned.add(code);
-        const msg = "TTL caching without ttlAutopurge, max, or maxSize can result in unbounded memory consumption.";
-        emitWarning(msg, "UnboundedCacheWarning", code, LRUCache);
-      }
+    if (this.#o === 0 && this.ttl === 0 && this.#c === 0) throw new TypeError("At least one of max, maxSize, or ttl is required");
+    if (!this.ttlAutopurge && !this.#o && !this.#c) {
+      let E = "LRU_CACHE_UNBOUNDED";
+      G(E) && (I.add(E), x("TTL caching without ttlAutopurge, max, or maxSize can result in unbounded memory consumption.", "UnboundedCacheWarning", E, a3));
     }
   }
-  /**
-   * Return the number of ms left in the item's TTL. If item is not in cache,
-   * returns `0`. Returns `Infinity` if item is in cache without a defined TTL.
-   */
-  getRemainingTTL(key) {
-    return this.#keyMap.has(key) ? Infinity : 0;
+  getRemainingTTL(t) {
+    return this.#s.has(t) ? 1 / 0 : 0;
   }
-  #initializeTTLTracking() {
-    const ttls = new ZeroArray(this.#max);
-    const starts = new ZeroArray(this.#max);
-    this.#ttls = ttls;
-    this.#starts = starts;
-    const purgeTimers = this.ttlAutopurge ? new Array(this.#max) : void 0;
-    this.#autopurgeTimers = purgeTimers;
-    this.#setItemTTL = (index, ttl, start = this.#perf.now()) => {
-      starts[index] = ttl !== 0 ? start : 0;
-      ttls[index] = ttl;
-      if (purgeTimers?.[index]) {
-        clearTimeout(purgeTimers[index]);
-        purgeTimers[index] = void 0;
+  #j() {
+    let t = new z(this.#o), e = new z(this.#o);
+    this.#d = t, this.#A = e;
+    let i4 = this.ttlAutopurge ? new Array(this.#o) : void 0;
+    this.#g = i4, this.#N = (n, o, r = this.#m.now()) => {
+      if (e[n] = o !== 0 ? r : 0, t[n] = o, i4?.[n] && (clearTimeout(i4[n]), i4[n] = void 0), o !== 0 && i4) {
+        let f2 = setTimeout(() => {
+          this.#p(n) && this.#E(this.#i[n], "expire");
+        }, o + 1);
+        f2.unref && f2.unref(), i4[n] = f2;
       }
-      if (ttl !== 0 && purgeTimers) {
-        const t = setTimeout(() => {
-          if (this.#isStale(index)) {
-            this.#delete(this.#keyList[index], "expire");
-          }
-        }, ttl + 1);
-        if (t.unref) {
-          t.unref();
-        }
-        purgeTimers[index] = t;
+    }, this.#R = (n) => {
+      e[n] = t[n] !== 0 ? this.#m.now() : 0;
+    }, this.#z = (n, o) => {
+      if (t[o]) {
+        let r = t[o], f2 = e[o];
+        if (!r || !f2) return;
+        n.ttl = r, n.start = f2, n.now = s2 || h2();
+        let m = n.now - f2;
+        n.remainingTTL = r - m;
       }
     };
-    this.#updateItemAge = (index) => {
-      starts[index] = ttls[index] !== 0 ? this.#perf.now() : 0;
-    };
-    this.#statusTTL = (status, index) => {
-      if (ttls[index]) {
-        const ttl = ttls[index];
-        const start = starts[index];
-        if (!ttl || !start)
-          return;
-        status.ttl = ttl;
-        status.start = start;
-        status.now = cachedNow || getNow();
-        const age = status.now - start;
-        status.remainingTTL = ttl - age;
-      }
-    };
-    let cachedNow = 0;
-    const getNow = () => {
-      const n = this.#perf.now();
+    let s2 = 0, h2 = () => {
+      let n = this.#m.now();
       if (this.ttlResolution > 0) {
-        cachedNow = n;
-        const t = setTimeout(() => cachedNow = 0, this.ttlResolution);
-        if (t.unref) {
-          t.unref();
-        }
+        s2 = n;
+        let o = setTimeout(() => s2 = 0, this.ttlResolution);
+        o.unref && o.unref();
       }
       return n;
     };
-    this.getRemainingTTL = (key) => {
-      const index = this.#keyMap.get(key);
-      if (index === void 0) {
-        return 0;
-      }
-      const ttl = ttls[index];
-      const start = starts[index];
-      if (!ttl || !start) {
-        return Infinity;
-      }
-      const age = (cachedNow || getNow()) - start;
-      return ttl - age;
-    };
-    this.#isStale = (index) => {
-      const s2 = starts[index];
-      const t = ttls[index];
-      return !!t && !!s2 && (cachedNow || getNow()) - s2 > t;
+    this.getRemainingTTL = (n) => {
+      let o = this.#s.get(n);
+      if (o === void 0) return 0;
+      let r = t[o], f2 = e[o];
+      if (!r || !f2) return 1 / 0;
+      let m = (s2 || h2()) - f2;
+      return r - m;
+    }, this.#p = (n) => {
+      let o = e[n], r = t[n];
+      return !!r && !!o && (s2 || h2()) - o > r;
     };
   }
-  // conditionally set private methods related to TTL
-  #updateItemAge = () => {
+  #R = () => {
   };
-  #statusTTL = () => {
+  #z = () => {
   };
-  #setItemTTL = () => {
+  #N = () => {
   };
-  /* c8 ignore stop */
-  #isStale = () => false;
-  #initializeSizeTracking() {
-    const sizes = new ZeroArray(this.#max);
-    this.#calculatedSize = 0;
-    this.#sizes = sizes;
-    this.#removeItemSize = (index) => {
-      this.#calculatedSize -= sizes[index];
-      sizes[index] = 0;
-    };
-    this.#requireSize = (k2, v2, size, sizeCalculation) => {
-      if (this.#isBackgroundFetch(v2)) {
-        return 0;
+  #p = () => false;
+  #B() {
+    let t = new z(this.#o);
+    this.#_ = 0, this.#y = t, this.#W = (e) => {
+      this.#_ -= t[e], t[e] = 0;
+    }, this.#P = (e, i4, s2, h2) => {
+      if (this.#e(i4)) return 0;
+      if (!y(s2)) if (h2) {
+        if (typeof h2 != "function") throw new TypeError("sizeCalculation must be a function");
+        if (s2 = h2(i4, e), !y(s2)) throw new TypeError("sizeCalculation return invalid (expect positive integer)");
+      } else throw new TypeError("invalid size value (must be positive integer). When maxSize or maxEntrySize is used, sizeCalculation or size must be set.");
+      return s2;
+    }, this.#U = (e, i4, s2) => {
+      if (t[e] = i4, this.#c) {
+        let h2 = this.#c - t[e];
+        for (; this.#_ > h2; ) this.#M(true);
       }
-      if (!isPosInt(size)) {
-        if (sizeCalculation) {
-          if (typeof sizeCalculation !== "function") {
-            throw new TypeError("sizeCalculation must be a function");
-          }
-          size = sizeCalculation(v2, k2);
-          if (!isPosInt(size)) {
-            throw new TypeError("sizeCalculation return invalid (expect positive integer)");
-          }
-        } else {
-          throw new TypeError("invalid size value (must be positive integer). When maxSize or maxEntrySize is used, sizeCalculation or size must be set.");
-        }
-      }
-      return size;
-    };
-    this.#addItemSize = (index, size, status) => {
-      sizes[index] = size;
-      if (this.#maxSize) {
-        const maxSize = this.#maxSize - sizes[index];
-        while (this.#calculatedSize > maxSize) {
-          this.#evict(true);
-        }
-      }
-      this.#calculatedSize += sizes[index];
-      if (status) {
-        status.entrySize = size;
-        status.totalCalculatedSize = this.#calculatedSize;
-      }
+      this.#_ += t[e], s2 && (s2.entrySize = i4, s2.totalCalculatedSize = this.#_);
     };
   }
-  #removeItemSize = (_i) => {
+  #W = (t) => {
   };
-  #addItemSize = (_i, _s, _st) => {
+  #U = (t, e, i4) => {
   };
-  #requireSize = (_k, _v, size, sizeCalculation) => {
-    if (size || sizeCalculation) {
-      throw new TypeError("cannot set size without setting maxSize or maxEntrySize on cache");
-    }
+  #P = (t, e, i4, s2) => {
+    if (i4 || s2) throw new TypeError("cannot set size without setting maxSize or maxEntrySize on cache");
     return 0;
   };
-  *#indexes({ allowStale = this.allowStale } = {}) {
-    if (this.#size) {
-      for (let i4 = this.#tail; true; ) {
-        if (!this.#isValidIndex(i4)) {
-          break;
-        }
-        if (allowStale || !this.#isStale(i4)) {
-          yield i4;
-        }
-        if (i4 === this.#head) {
-          break;
-        } else {
-          i4 = this.#prev[i4];
-        }
-      }
-    }
+  *#F({ allowStale: t = this.allowStale } = {}) {
+    if (this.#n) for (let e = this.#h; !(!this.#H(e) || ((t || !this.#p(e)) && (yield e), e === this.#l)); ) e = this.#u[e];
   }
-  *#rindexes({ allowStale = this.allowStale } = {}) {
-    if (this.#size) {
-      for (let i4 = this.#head; true; ) {
-        if (!this.#isValidIndex(i4)) {
-          break;
-        }
-        if (allowStale || !this.#isStale(i4)) {
-          yield i4;
-        }
-        if (i4 === this.#tail) {
-          break;
-        } else {
-          i4 = this.#next[i4];
-        }
-      }
-    }
+  *#O({ allowStale: t = this.allowStale } = {}) {
+    if (this.#n) for (let e = this.#l; !(!this.#H(e) || ((t || !this.#p(e)) && (yield e), e === this.#h)); ) e = this.#a[e];
   }
-  #isValidIndex(index) {
-    return index !== void 0 && this.#keyMap.get(this.#keyList[index]) === index;
+  #H(t) {
+    return t !== void 0 && this.#s.get(this.#i[t]) === t;
   }
-  /**
-   * Return a generator yielding `[key, value]` pairs,
-   * in order from most recently used to least recently used.
-   */
   *entries() {
-    for (const i4 of this.#indexes()) {
-      if (this.#valList[i4] !== void 0 && this.#keyList[i4] !== void 0 && !this.#isBackgroundFetch(this.#valList[i4])) {
-        yield [this.#keyList[i4], this.#valList[i4]];
-      }
-    }
+    for (let t of this.#F()) this.#t[t] !== void 0 && this.#i[t] !== void 0 && !this.#e(this.#t[t]) && (yield [this.#i[t], this.#t[t]]);
   }
-  /**
-   * Inverse order version of {@link LRUCache.entries}
-   *
-   * Return a generator yielding `[key, value]` pairs,
-   * in order from least recently used to most recently used.
-   */
   *rentries() {
-    for (const i4 of this.#rindexes()) {
-      if (this.#valList[i4] !== void 0 && this.#keyList[i4] !== void 0 && !this.#isBackgroundFetch(this.#valList[i4])) {
-        yield [this.#keyList[i4], this.#valList[i4]];
-      }
-    }
+    for (let t of this.#O()) this.#t[t] !== void 0 && this.#i[t] !== void 0 && !this.#e(this.#t[t]) && (yield [this.#i[t], this.#t[t]]);
   }
-  /**
-   * Return a generator yielding the keys in the cache,
-   * in order from most recently used to least recently used.
-   */
   *keys() {
-    for (const i4 of this.#indexes()) {
-      const k2 = this.#keyList[i4];
-      if (k2 !== void 0 && !this.#isBackgroundFetch(this.#valList[i4])) {
-        yield k2;
-      }
+    for (let t of this.#F()) {
+      let e = this.#i[t];
+      e !== void 0 && !this.#e(this.#t[t]) && (yield e);
     }
   }
-  /**
-   * Inverse order version of {@link LRUCache.keys}
-   *
-   * Return a generator yielding the keys in the cache,
-   * in order from least recently used to most recently used.
-   */
   *rkeys() {
-    for (const i4 of this.#rindexes()) {
-      const k2 = this.#keyList[i4];
-      if (k2 !== void 0 && !this.#isBackgroundFetch(this.#valList[i4])) {
-        yield k2;
-      }
+    for (let t of this.#O()) {
+      let e = this.#i[t];
+      e !== void 0 && !this.#e(this.#t[t]) && (yield e);
     }
   }
-  /**
-   * Return a generator yielding the values in the cache,
-   * in order from most recently used to least recently used.
-   */
   *values() {
-    for (const i4 of this.#indexes()) {
-      const v2 = this.#valList[i4];
-      if (v2 !== void 0 && !this.#isBackgroundFetch(this.#valList[i4])) {
-        yield this.#valList[i4];
-      }
-    }
+    for (let t of this.#F()) this.#t[t] !== void 0 && !this.#e(this.#t[t]) && (yield this.#t[t]);
   }
-  /**
-   * Inverse order version of {@link LRUCache.values}
-   *
-   * Return a generator yielding the values in the cache,
-   * in order from least recently used to most recently used.
-   */
   *rvalues() {
-    for (const i4 of this.#rindexes()) {
-      const v2 = this.#valList[i4];
-      if (v2 !== void 0 && !this.#isBackgroundFetch(this.#valList[i4])) {
-        yield this.#valList[i4];
-      }
-    }
+    for (let t of this.#O()) this.#t[t] !== void 0 && !this.#e(this.#t[t]) && (yield this.#t[t]);
   }
-  /**
-   * Iterating over the cache itself yields the same results as
-   * {@link LRUCache.entries}
-   */
   [Symbol.iterator]() {
     return this.entries();
   }
-  /**
-   * A String value that is used in the creation of the default string
-   * description of an object. Called by the built-in method
-   * `Object.prototype.toString`.
-   */
   [Symbol.toStringTag] = "LRUCache";
-  /**
-   * Find a value for which the supplied fn method returns a truthy value,
-   * similar to `Array.find()`. fn is called as `fn(value, key, cache)`.
-   */
-  find(fn, getOptions = {}) {
-    for (const i4 of this.#indexes()) {
-      const v2 = this.#valList[i4];
-      const value = this.#isBackgroundFetch(v2) ? v2.__staleWhileFetching : v2;
-      if (value === void 0)
-        continue;
-      if (fn(value, this.#keyList[i4], this)) {
-        return this.get(this.#keyList[i4], getOptions);
-      }
+  find(t, e = {}) {
+    for (let i4 of this.#F()) {
+      let s2 = this.#t[i4], h2 = this.#e(s2) ? s2.__staleWhileFetching : s2;
+      if (h2 !== void 0 && t(h2, this.#i[i4], this)) return this.get(this.#i[i4], e);
     }
   }
-  /**
-   * Call the supplied function on each item in the cache, in order from most
-   * recently used to least recently used.
-   *
-   * `fn` is called as `fn(value, key, cache)`.
-   *
-   * If `thisp` is provided, function will be called in the `this`-context of
-   * the provided object, or the cache if no `thisp` object is provided.
-   *
-   * Does not update age or recenty of use, or iterate over stale values.
-   */
-  forEach(fn, thisp = this) {
-    for (const i4 of this.#indexes()) {
-      const v2 = this.#valList[i4];
-      const value = this.#isBackgroundFetch(v2) ? v2.__staleWhileFetching : v2;
-      if (value === void 0)
-        continue;
-      fn.call(thisp, value, this.#keyList[i4], this);
+  forEach(t, e = this) {
+    for (let i4 of this.#F()) {
+      let s2 = this.#t[i4], h2 = this.#e(s2) ? s2.__staleWhileFetching : s2;
+      h2 !== void 0 && t.call(e, h2, this.#i[i4], this);
     }
   }
-  /**
-   * The same as {@link LRUCache.forEach} but items are iterated over in
-   * reverse order.  (ie, less recently used items are iterated over first.)
-   */
-  rforEach(fn, thisp = this) {
-    for (const i4 of this.#rindexes()) {
-      const v2 = this.#valList[i4];
-      const value = this.#isBackgroundFetch(v2) ? v2.__staleWhileFetching : v2;
-      if (value === void 0)
-        continue;
-      fn.call(thisp, value, this.#keyList[i4], this);
+  rforEach(t, e = this) {
+    for (let i4 of this.#O()) {
+      let s2 = this.#t[i4], h2 = this.#e(s2) ? s2.__staleWhileFetching : s2;
+      h2 !== void 0 && t.call(e, h2, this.#i[i4], this);
     }
   }
-  /**
-   * Delete any stale entries. Returns true if anything was removed,
-   * false otherwise.
-   */
   purgeStale() {
-    let deleted = false;
-    for (const i4 of this.#rindexes({ allowStale: true })) {
-      if (this.#isStale(i4)) {
-        this.#delete(this.#keyList[i4], "expire");
-        deleted = true;
+    let t = false;
+    for (let e of this.#O({ allowStale: true })) this.#p(e) && (this.#E(this.#i[e], "expire"), t = true);
+    return t;
+  }
+  info(t) {
+    let e = this.#s.get(t);
+    if (e === void 0) return;
+    let i4 = this.#t[e], s2 = this.#e(i4) ? i4.__staleWhileFetching : i4;
+    if (s2 === void 0) return;
+    let h2 = { value: s2 };
+    if (this.#d && this.#A) {
+      let n = this.#d[e], o = this.#A[e];
+      if (n && o) {
+        let r = n - (this.#m.now() - o);
+        h2.ttl = r, h2.start = Date.now();
       }
     }
-    return deleted;
+    return this.#y && (h2.size = this.#y[e]), h2;
   }
-  /**
-   * Get the extended info about a given entry, to get its value, size, and
-   * TTL info simultaneously. Returns `undefined` if the key is not present.
-   *
-   * Unlike {@link LRUCache#dump}, which is designed to be portable and survive
-   * serialization, the `start` value is always the current timestamp, and the
-   * `ttl` is a calculated remaining time to live (negative if expired).
-   *
-   * Always returns stale values, if their info is found in the cache, so be
-   * sure to check for expirations (ie, a negative {@link LRUCache.Entry#ttl})
-   * if relevant.
-   */
-  info(key) {
-    const i4 = this.#keyMap.get(key);
-    if (i4 === void 0)
-      return void 0;
-    const v2 = this.#valList[i4];
-    const value = this.#isBackgroundFetch(v2) ? v2.__staleWhileFetching : v2;
-    if (value === void 0)
-      return void 0;
-    const entry = { value };
-    if (this.#ttls && this.#starts) {
-      const ttl = this.#ttls[i4];
-      const start = this.#starts[i4];
-      if (ttl && start) {
-        const remain = ttl - (this.#perf.now() - start);
-        entry.ttl = remain;
-        entry.start = Date.now();
-      }
-    }
-    if (this.#sizes) {
-      entry.size = this.#sizes[i4];
-    }
-    return entry;
-  }
-  /**
-   * Return an array of [key, {@link LRUCache.Entry}] tuples which can be
-   * passed to {@link LRUCache#load}.
-   *
-   * The `start` fields are calculated relative to a portable `Date.now()`
-   * timestamp, even if `performance.now()` is available.
-   *
-   * Stale entries are always included in the `dump`, even if
-   * {@link LRUCache.OptionsBase.allowStale} is false.
-   *
-   * Note: this returns an actual array, not a generator, so it can be more
-   * easily passed around.
-   */
   dump() {
-    const arr = [];
-    for (const i4 of this.#indexes({ allowStale: true })) {
-      const key = this.#keyList[i4];
-      const v2 = this.#valList[i4];
-      const value = this.#isBackgroundFetch(v2) ? v2.__staleWhileFetching : v2;
-      if (value === void 0 || key === void 0)
-        continue;
-      const entry = { value };
-      if (this.#ttls && this.#starts) {
-        entry.ttl = this.#ttls[i4];
-        const age = this.#perf.now() - this.#starts[i4];
-        entry.start = Math.floor(Date.now() - age);
+    let t = [];
+    for (let e of this.#F({ allowStale: true })) {
+      let i4 = this.#i[e], s2 = this.#t[e], h2 = this.#e(s2) ? s2.__staleWhileFetching : s2;
+      if (h2 === void 0 || i4 === void 0) continue;
+      let n = { value: h2 };
+      if (this.#d && this.#A) {
+        n.ttl = this.#d[e];
+        let o = this.#m.now() - this.#A[e];
+        n.start = Math.floor(Date.now() - o);
       }
-      if (this.#sizes) {
-        entry.size = this.#sizes[i4];
-      }
-      arr.unshift([key, entry]);
+      this.#y && (n.size = this.#y[e]), t.unshift([i4, n]);
     }
-    return arr;
+    return t;
   }
-  /**
-   * Reset the cache and load in the items in entries in the order listed.
-   *
-   * The shape of the resulting cache may be different if the same options are
-   * not used in both caches.
-   *
-   * The `start` fields are assumed to be calculated relative to a portable
-   * `Date.now()` timestamp, even if `performance.now()` is available.
-   */
-  load(arr) {
+  load(t) {
     this.clear();
-    for (const [key, entry] of arr) {
-      if (entry.start) {
-        const age = Date.now() - entry.start;
-        entry.start = this.#perf.now() - age;
+    for (let [e, i4] of t) {
+      if (i4.start) {
+        let s2 = Date.now() - i4.start;
+        i4.start = this.#m.now() - s2;
       }
-      this.set(key, entry.value, entry);
+      this.set(e, i4.value, i4);
     }
   }
-  /**
-   * Add a value to the cache.
-   *
-   * Note: if `undefined` is specified as a value, this is an alias for
-   * {@link LRUCache#delete}
-   *
-   * Fields on the {@link LRUCache.SetOptions} options param will override
-   * their corresponding values in the constructor options for the scope
-   * of this single `set()` operation.
-   *
-   * If `start` is provided, then that will set the effective start
-   * time for the TTL calculation. Note that this must be a previous
-   * value of `performance.now()` if supported, or a previous value of
-   * `Date.now()` if not.
-   *
-   * Options object may also include `size`, which will prevent
-   * calling the `sizeCalculation` function and just use the specified
-   * number if it is a positive integer, and `noDisposeOnSet` which
-   * will prevent calling a `dispose` function in the case of
-   * overwrites.
-   *
-   * If the `size` (or return value of `sizeCalculation`) for a given
-   * entry is greater than `maxEntrySize`, then the item will not be
-   * added to the cache.
-   *
-   * Will update the recency of the entry.
-   *
-   * If the value is `undefined`, then this is an alias for
-   * `cache.delete(key)`. `undefined` is never stored in the cache.
-   */
-  set(k2, v2, setOptions = {}) {
-    if (v2 === void 0) {
-      this.delete(k2);
-      return this;
-    }
-    const { ttl = this.ttl, start, noDisposeOnSet = this.noDisposeOnSet, sizeCalculation = this.sizeCalculation, status } = setOptions;
-    let { noUpdateTTL = this.noUpdateTTL } = setOptions;
-    const size = this.#requireSize(k2, v2, setOptions.size || 0, sizeCalculation);
-    if (this.maxEntrySize && size > this.maxEntrySize) {
-      if (status) {
-        status.set = "miss";
-        status.maxEntrySizeExceeded = true;
-      }
-      this.#delete(k2, "set");
-      return this;
-    }
-    let index = this.#size === 0 ? void 0 : this.#keyMap.get(k2);
-    if (index === void 0) {
-      index = this.#size === 0 ? this.#tail : this.#free.length !== 0 ? this.#free.pop() : this.#size === this.#max ? this.#evict(false) : this.#size;
-      this.#keyList[index] = k2;
-      this.#valList[index] = v2;
-      this.#keyMap.set(k2, index);
-      this.#next[this.#tail] = index;
-      this.#prev[index] = this.#tail;
-      this.#tail = index;
-      this.#size++;
-      this.#addItemSize(index, size, status);
-      if (status)
-        status.set = "add";
-      noUpdateTTL = false;
-      if (this.#hasOnInsert) {
-        this.#onInsert?.(v2, k2, "add");
-      }
-    } else {
-      this.#moveToTail(index);
-      const oldVal = this.#valList[index];
-      if (v2 !== oldVal) {
-        if (this.#hasFetchMethod && this.#isBackgroundFetch(oldVal)) {
-          oldVal.__abortController.abort(new Error("replaced"));
-          const { __staleWhileFetching: s2 } = oldVal;
-          if (s2 !== void 0 && !noDisposeOnSet) {
-            if (this.#hasDispose) {
-              this.#dispose?.(s2, k2, "set");
-            }
-            if (this.#hasDisposeAfter) {
-              this.#disposed?.push([s2, k2, "set"]);
-            }
-          }
-        } else if (!noDisposeOnSet) {
-          if (this.#hasDispose) {
-            this.#dispose?.(oldVal, k2, "set");
-          }
-          if (this.#hasDisposeAfter) {
-            this.#disposed?.push([oldVal, k2, "set"]);
-          }
+  set(t, e, i4 = {}) {
+    if (e === void 0) return this.delete(t), this;
+    let { ttl: s2 = this.ttl, start: h2, noDisposeOnSet: n = this.noDisposeOnSet, sizeCalculation: o = this.sizeCalculation, status: r } = i4, { noUpdateTTL: f2 = this.noUpdateTTL } = i4, m = this.#P(t, e, i4.size || 0, o);
+    if (this.maxEntrySize && m > this.maxEntrySize) return r && (r.set = "miss", r.maxEntrySizeExceeded = true), this.#E(t, "set"), this;
+    let c = this.#n === 0 ? void 0 : this.#s.get(t);
+    if (c === void 0) c = this.#n === 0 ? this.#h : this.#b.length !== 0 ? this.#b.pop() : this.#n === this.#o ? this.#M(false) : this.#n, this.#i[c] = t, this.#t[c] = e, this.#s.set(t, c), this.#a[this.#h] = c, this.#u[c] = this.#h, this.#h = c, this.#n++, this.#U(c, m, r), r && (r.set = "add"), f2 = false, this.#x && this.#C?.(e, t, "add");
+    else {
+      this.#D(c);
+      let d = this.#t[c];
+      if (e !== d) {
+        if (this.#v && this.#e(d)) {
+          d.__abortController.abort(new Error("replaced"));
+          let { __staleWhileFetching: g } = d;
+          g !== void 0 && !n && (this.#T && this.#w?.(g, t, "set"), this.#f && this.#r?.push([g, t, "set"]));
+        } else n || (this.#T && this.#w?.(d, t, "set"), this.#f && this.#r?.push([d, t, "set"]));
+        if (this.#W(c), this.#U(c, m, r), this.#t[c] = e, r) {
+          r.set = "replace";
+          let g = d && this.#e(d) ? d.__staleWhileFetching : d;
+          g !== void 0 && (r.oldValue = g);
         }
-        this.#removeItemSize(index);
-        this.#addItemSize(index, size, status);
-        this.#valList[index] = v2;
-        if (status) {
-          status.set = "replace";
-          const oldValue = oldVal && this.#isBackgroundFetch(oldVal) ? oldVal.__staleWhileFetching : oldVal;
-          if (oldValue !== void 0)
-            status.oldValue = oldValue;
-        }
-      } else if (status) {
-        status.set = "update";
-      }
-      if (this.#hasOnInsert) {
-        this.onInsert?.(v2, k2, v2 === oldVal ? "update" : "replace");
-      }
+      } else r && (r.set = "update");
+      this.#x && this.onInsert?.(e, t, e === d ? "update" : "replace");
     }
-    if (ttl !== 0 && !this.#ttls) {
-      this.#initializeTTLTracking();
-    }
-    if (this.#ttls) {
-      if (!noUpdateTTL) {
-        this.#setItemTTL(index, ttl, start);
-      }
-      if (status)
-        this.#statusTTL(status, index);
-    }
-    if (!noDisposeOnSet && this.#hasDisposeAfter && this.#disposed) {
-      const dt = this.#disposed;
-      let task;
-      while (task = dt?.shift()) {
-        this.#disposeAfter?.(...task);
-      }
+    if (s2 !== 0 && !this.#d && this.#j(), this.#d && (f2 || this.#N(c, s2, h2), r && this.#z(r, c)), !n && this.#f && this.#r) {
+      let d = this.#r, g;
+      for (; g = d?.shift(); ) this.#S?.(...g);
     }
     return this;
   }
-  /**
-   * Evict the least recently used item, returning its value or
-   * `undefined` if cache is empty.
-   */
   pop() {
     try {
-      while (this.#size) {
-        const val = this.#valList[this.#head];
-        this.#evict(true);
-        if (this.#isBackgroundFetch(val)) {
-          if (val.__staleWhileFetching) {
-            return val.__staleWhileFetching;
-          }
-        } else if (val !== void 0) {
-          return val;
-        }
+      for (; this.#n; ) {
+        let t = this.#t[this.#l];
+        if (this.#M(true), this.#e(t)) {
+          if (t.__staleWhileFetching) return t.__staleWhileFetching;
+        } else if (t !== void 0) return t;
       }
     } finally {
-      if (this.#hasDisposeAfter && this.#disposed) {
-        const dt = this.#disposed;
-        let task;
-        while (task = dt?.shift()) {
-          this.#disposeAfter?.(...task);
-        }
+      if (this.#f && this.#r) {
+        let t = this.#r, e;
+        for (; e = t?.shift(); ) this.#S?.(...e);
       }
     }
   }
-  #evict(free) {
-    const head = this.#head;
-    const k2 = this.#keyList[head];
-    const v2 = this.#valList[head];
-    if (this.#hasFetchMethod && this.#isBackgroundFetch(v2)) {
-      v2.__abortController.abort(new Error("evicted"));
-    } else if (this.#hasDispose || this.#hasDisposeAfter) {
-      if (this.#hasDispose) {
-        this.#dispose?.(v2, k2, "evict");
-      }
-      if (this.#hasDisposeAfter) {
-        this.#disposed?.push([v2, k2, "evict"]);
-      }
-    }
-    this.#removeItemSize(head);
-    if (this.#autopurgeTimers?.[head]) {
-      clearTimeout(this.#autopurgeTimers[head]);
-      this.#autopurgeTimers[head] = void 0;
-    }
-    if (free) {
-      this.#keyList[head] = void 0;
-      this.#valList[head] = void 0;
-      this.#free.push(head);
-    }
-    if (this.#size === 1) {
-      this.#head = this.#tail = 0;
-      this.#free.length = 0;
-    } else {
-      this.#head = this.#next[head];
-    }
-    this.#keyMap.delete(k2);
-    this.#size--;
-    return head;
+  #M(t) {
+    let e = this.#l, i4 = this.#i[e], s2 = this.#t[e];
+    return this.#v && this.#e(s2) ? s2.__abortController.abort(new Error("evicted")) : (this.#T || this.#f) && (this.#T && this.#w?.(s2, i4, "evict"), this.#f && this.#r?.push([s2, i4, "evict"])), this.#W(e), this.#g?.[e] && (clearTimeout(this.#g[e]), this.#g[e] = void 0), t && (this.#i[e] = void 0, this.#t[e] = void 0, this.#b.push(e)), this.#n === 1 ? (this.#l = this.#h = 0, this.#b.length = 0) : this.#l = this.#a[e], this.#s.delete(i4), this.#n--, e;
   }
-  /**
-   * Check if a key is in the cache, without updating the recency of use.
-   * Will return false if the item is stale, even though it is technically
-   * in the cache.
-   *
-   * Check if a key is in the cache, without updating the recency of
-   * use. Age is updated if {@link LRUCache.OptionsBase.updateAgeOnHas} is set
-   * to `true` in either the options or the constructor.
-   *
-   * Will return `false` if the item is stale, even though it is technically in
-   * the cache. The difference can be determined (if it matters) by using a
-   * `status` argument, and inspecting the `has` field.
-   *
-   * Will not update item age unless
-   * {@link LRUCache.OptionsBase.updateAgeOnHas} is set.
-   */
-  has(k2, hasOptions = {}) {
-    const { updateAgeOnHas = this.updateAgeOnHas, status } = hasOptions;
-    const index = this.#keyMap.get(k2);
-    if (index !== void 0) {
-      const v2 = this.#valList[index];
-      if (this.#isBackgroundFetch(v2) && v2.__staleWhileFetching === void 0) {
-        return false;
-      }
-      if (!this.#isStale(index)) {
-        if (updateAgeOnHas) {
-          this.#updateItemAge(index);
-        }
-        if (status) {
-          status.has = "hit";
-          this.#statusTTL(status, index);
-        }
-        return true;
-      } else if (status) {
-        status.has = "stale";
-        this.#statusTTL(status, index);
-      }
-    } else if (status) {
-      status.has = "miss";
-    }
+  has(t, e = {}) {
+    let { updateAgeOnHas: i4 = this.updateAgeOnHas, status: s2 } = e, h2 = this.#s.get(t);
+    if (h2 !== void 0) {
+      let n = this.#t[h2];
+      if (this.#e(n) && n.__staleWhileFetching === void 0) return false;
+      if (this.#p(h2)) s2 && (s2.has = "stale", this.#z(s2, h2));
+      else return i4 && this.#R(h2), s2 && (s2.has = "hit", this.#z(s2, h2)), true;
+    } else s2 && (s2.has = "miss");
     return false;
   }
-  /**
-   * Like {@link LRUCache#get} but doesn't update recency or delete stale
-   * items.
-   *
-   * Returns `undefined` if the item is stale, unless
-   * {@link LRUCache.OptionsBase.allowStale} is set.
-   */
-  peek(k2, peekOptions = {}) {
-    const { allowStale = this.allowStale } = peekOptions;
-    const index = this.#keyMap.get(k2);
-    if (index === void 0 || !allowStale && this.#isStale(index)) {
-      return;
-    }
-    const v2 = this.#valList[index];
-    return this.#isBackgroundFetch(v2) ? v2.__staleWhileFetching : v2;
+  peek(t, e = {}) {
+    let { allowStale: i4 = this.allowStale } = e, s2 = this.#s.get(t);
+    if (s2 === void 0 || !i4 && this.#p(s2)) return;
+    let h2 = this.#t[s2];
+    return this.#e(h2) ? h2.__staleWhileFetching : h2;
   }
-  #backgroundFetch(k2, index, options, context) {
-    const v2 = index === void 0 ? void 0 : this.#valList[index];
-    if (this.#isBackgroundFetch(v2)) {
-      return v2;
-    }
-    const ac = new AC();
-    const { signal } = options;
-    signal?.addEventListener("abort", () => ac.abort(signal.reason), {
-      signal: ac.signal
-    });
-    const fetchOpts = {
-      signal: ac.signal,
-      options,
-      context
-    };
-    const cb = (v3, updateCache = false) => {
-      const { aborted } = ac.signal;
-      const ignoreAbort = options.ignoreFetchAbort && v3 !== void 0;
-      const proceed = options.ignoreFetchAbort || !!(options.allowStaleOnFetchAbort && v3 !== void 0);
-      if (options.status) {
-        if (aborted && !updateCache) {
-          options.status.fetchAborted = true;
-          options.status.fetchError = ac.signal.reason;
-          if (ignoreAbort)
-            options.status.fetchAbortIgnored = true;
-        } else {
-          options.status.fetchResolved = true;
-        }
-      }
-      if (aborted && !ignoreAbort && !updateCache) {
-        return fetchFail(ac.signal.reason, proceed);
-      }
-      const bf2 = p2;
-      const vl = this.#valList[index];
-      if (vl === p2 || ignoreAbort && updateCache && vl === void 0) {
-        if (v3 === void 0) {
-          if (bf2.__staleWhileFetching !== void 0) {
-            this.#valList[index] = bf2.__staleWhileFetching;
-          } else {
-            this.#delete(k2, "fetch");
-          }
-        } else {
-          if (options.status)
-            options.status.fetchUpdated = true;
-          this.set(k2, v3, fetchOpts.options);
-        }
-      }
-      return v3;
-    };
-    const eb = (er) => {
-      if (options.status) {
-        options.status.fetchRejected = true;
-        options.status.fetchError = er;
-      }
-      return fetchFail(er, false);
-    };
-    const fetchFail = (er, proceed) => {
-      const { aborted } = ac.signal;
-      const allowStaleAborted = aborted && options.allowStaleOnFetchAbort;
-      const allowStale = allowStaleAborted || options.allowStaleOnFetchRejection;
-      const noDelete = allowStale || options.noDeleteOnFetchRejection;
-      const bf2 = p2;
-      if (this.#valList[index] === p2) {
-        const del = !noDelete || !proceed && bf2.__staleWhileFetching === void 0;
-        if (del) {
-          this.#delete(k2, "fetch");
-        } else if (!allowStaleAborted) {
-          this.#valList[index] = bf2.__staleWhileFetching;
-        }
-      }
-      if (allowStale) {
-        if (options.status && bf2.__staleWhileFetching !== void 0) {
-          options.status.returnedStale = true;
-        }
-        return bf2.__staleWhileFetching;
-      } else if (bf2.__returned === bf2) {
-        throw er;
-      }
-    };
-    const pcall = (res, rej) => {
-      const fmp = this.#fetchMethod?.(k2, v2, fetchOpts);
-      if (fmp && fmp instanceof Promise) {
-        fmp.then((v3) => res(v3 === void 0 ? void 0 : v3), rej);
-      }
-      ac.signal.addEventListener("abort", () => {
-        if (!options.ignoreFetchAbort || options.allowStaleOnFetchAbort) {
-          res(void 0);
-          if (options.allowStaleOnFetchAbort) {
-            res = (v3) => cb(v3, true);
-          }
-        }
+  #G(t, e, i4, s2) {
+    let h2 = e === void 0 ? void 0 : this.#t[e];
+    if (this.#e(h2)) return h2;
+    let n = new C(), { signal: o } = i4;
+    o?.addEventListener("abort", () => n.abort(o.reason), { signal: n.signal });
+    let r = { signal: n.signal, options: i4, context: s2 }, f2 = (p2, _ = false) => {
+      let { aborted: l } = n.signal, w2 = i4.ignoreFetchAbort && p2 !== void 0, b2 = i4.ignoreFetchAbort || !!(i4.allowStaleOnFetchAbort && p2 !== void 0);
+      if (i4.status && (l && !_ ? (i4.status.fetchAborted = true, i4.status.fetchError = n.signal.reason, w2 && (i4.status.fetchAbortIgnored = true)) : i4.status.fetchResolved = true), l && !w2 && !_) return c(n.signal.reason, b2);
+      let S2 = g, u = this.#t[e];
+      return (u === g || w2 && _ && u === void 0) && (p2 === void 0 ? S2.__staleWhileFetching !== void 0 ? this.#t[e] = S2.__staleWhileFetching : this.#E(t, "fetch") : (i4.status && (i4.status.fetchUpdated = true), this.set(t, p2, r.options))), p2;
+    }, m = (p2) => (i4.status && (i4.status.fetchRejected = true, i4.status.fetchError = p2), c(p2, false)), c = (p2, _) => {
+      let { aborted: l } = n.signal, w2 = l && i4.allowStaleOnFetchAbort, b2 = w2 || i4.allowStaleOnFetchRejection, S2 = b2 || i4.noDeleteOnFetchRejection, u = g;
+      if (this.#t[e] === g && (!S2 || !_ && u.__staleWhileFetching === void 0 ? this.#E(t, "fetch") : w2 || (this.#t[e] = u.__staleWhileFetching)), b2) return i4.status && u.__staleWhileFetching !== void 0 && (i4.status.returnedStale = true), u.__staleWhileFetching;
+      if (u.__returned === u) throw p2;
+    }, d = (p2, _) => {
+      let l = this.#L?.(t, h2, r);
+      l && l instanceof Promise && l.then((w2) => p2(w2 === void 0 ? void 0 : w2), _), n.signal.addEventListener("abort", () => {
+        (!i4.ignoreFetchAbort || i4.allowStaleOnFetchAbort) && (p2(void 0), i4.allowStaleOnFetchAbort && (p2 = (w2) => f2(w2, true)));
       });
     };
-    if (options.status)
-      options.status.fetchDispatched = true;
-    const p2 = new Promise(pcall).then(cb, eb);
-    const bf = Object.assign(p2, {
-      __abortController: ac,
-      __staleWhileFetching: v2,
-      __returned: void 0
-    });
-    if (index === void 0) {
-      this.set(k2, bf, { ...fetchOpts.options, status: void 0 });
-      index = this.#keyMap.get(k2);
+    i4.status && (i4.status.fetchDispatched = true);
+    let g = new Promise(d).then(f2, m), A = Object.assign(g, { __abortController: n, __staleWhileFetching: h2, __returned: void 0 });
+    return e === void 0 ? (this.set(t, A, { ...r.options, status: void 0 }), e = this.#s.get(t)) : this.#t[e] = A, A;
+  }
+  #e(t) {
+    if (!this.#v) return false;
+    let e = t;
+    return !!e && e instanceof Promise && e.hasOwnProperty("__staleWhileFetching") && e.__abortController instanceof C;
+  }
+  async fetch(t, e = {}) {
+    let { allowStale: i4 = this.allowStale, updateAgeOnGet: s2 = this.updateAgeOnGet, noDeleteOnStaleGet: h2 = this.noDeleteOnStaleGet, ttl: n = this.ttl, noDisposeOnSet: o = this.noDisposeOnSet, size: r = 0, sizeCalculation: f2 = this.sizeCalculation, noUpdateTTL: m = this.noUpdateTTL, noDeleteOnFetchRejection: c = this.noDeleteOnFetchRejection, allowStaleOnFetchRejection: d = this.allowStaleOnFetchRejection, ignoreFetchAbort: g = this.ignoreFetchAbort, allowStaleOnFetchAbort: A = this.allowStaleOnFetchAbort, context: p2, forceRefresh: _ = false, status: l, signal: w2 } = e;
+    if (!this.#v) return l && (l.fetch = "get"), this.get(t, { allowStale: i4, updateAgeOnGet: s2, noDeleteOnStaleGet: h2, status: l });
+    let b2 = { allowStale: i4, updateAgeOnGet: s2, noDeleteOnStaleGet: h2, ttl: n, noDisposeOnSet: o, size: r, sizeCalculation: f2, noUpdateTTL: m, noDeleteOnFetchRejection: c, allowStaleOnFetchRejection: d, allowStaleOnFetchAbort: A, ignoreFetchAbort: g, status: l, signal: w2 }, S2 = this.#s.get(t);
+    if (S2 === void 0) {
+      l && (l.fetch = "miss");
+      let u = this.#G(t, S2, b2, p2);
+      return u.__returned = u;
     } else {
-      this.#valList[index] = bf;
-    }
-    return bf;
-  }
-  #isBackgroundFetch(p2) {
-    if (!this.#hasFetchMethod)
-      return false;
-    const b2 = p2;
-    return !!b2 && b2 instanceof Promise && b2.hasOwnProperty("__staleWhileFetching") && b2.__abortController instanceof AC;
-  }
-  async fetch(k2, fetchOptions = {}) {
-    const {
-      // get options
-      allowStale = this.allowStale,
-      updateAgeOnGet = this.updateAgeOnGet,
-      noDeleteOnStaleGet = this.noDeleteOnStaleGet,
-      // set options
-      ttl = this.ttl,
-      noDisposeOnSet = this.noDisposeOnSet,
-      size = 0,
-      sizeCalculation = this.sizeCalculation,
-      noUpdateTTL = this.noUpdateTTL,
-      // fetch exclusive options
-      noDeleteOnFetchRejection = this.noDeleteOnFetchRejection,
-      allowStaleOnFetchRejection = this.allowStaleOnFetchRejection,
-      ignoreFetchAbort = this.ignoreFetchAbort,
-      allowStaleOnFetchAbort = this.allowStaleOnFetchAbort,
-      context,
-      forceRefresh = false,
-      status,
-      signal
-    } = fetchOptions;
-    if (!this.#hasFetchMethod) {
-      if (status)
-        status.fetch = "get";
-      return this.get(k2, {
-        allowStale,
-        updateAgeOnGet,
-        noDeleteOnStaleGet,
-        status
-      });
-    }
-    const options = {
-      allowStale,
-      updateAgeOnGet,
-      noDeleteOnStaleGet,
-      ttl,
-      noDisposeOnSet,
-      size,
-      sizeCalculation,
-      noUpdateTTL,
-      noDeleteOnFetchRejection,
-      allowStaleOnFetchRejection,
-      allowStaleOnFetchAbort,
-      ignoreFetchAbort,
-      status,
-      signal
-    };
-    let index = this.#keyMap.get(k2);
-    if (index === void 0) {
-      if (status)
-        status.fetch = "miss";
-      const p2 = this.#backgroundFetch(k2, index, options, context);
-      return p2.__returned = p2;
-    } else {
-      const v2 = this.#valList[index];
-      if (this.#isBackgroundFetch(v2)) {
-        const stale = allowStale && v2.__staleWhileFetching !== void 0;
-        if (status) {
-          status.fetch = "inflight";
-          if (stale)
-            status.returnedStale = true;
-        }
-        return stale ? v2.__staleWhileFetching : v2.__returned = v2;
+      let u = this.#t[S2];
+      if (this.#e(u)) {
+        let E = i4 && u.__staleWhileFetching !== void 0;
+        return l && (l.fetch = "inflight", E && (l.returnedStale = true)), E ? u.__staleWhileFetching : u.__returned = u;
       }
-      const isStale = this.#isStale(index);
-      if (!forceRefresh && !isStale) {
-        if (status)
-          status.fetch = "hit";
-        this.#moveToTail(index);
-        if (updateAgeOnGet) {
-          this.#updateItemAge(index);
-        }
-        if (status)
-          this.#statusTTL(status, index);
-        return v2;
-      }
-      const p2 = this.#backgroundFetch(k2, index, options, context);
-      const hasStale = p2.__staleWhileFetching !== void 0;
-      const staleVal = hasStale && allowStale;
-      if (status) {
-        status.fetch = isStale ? "stale" : "refresh";
-        if (staleVal && isStale)
-          status.returnedStale = true;
-      }
-      return staleVal ? p2.__staleWhileFetching : p2.__returned = p2;
+      let T10 = this.#p(S2);
+      if (!_ && !T10) return l && (l.fetch = "hit"), this.#D(S2), s2 && this.#R(S2), l && this.#z(l, S2), u;
+      let F = this.#G(t, S2, b2, p2), O2 = F.__staleWhileFetching !== void 0 && i4;
+      return l && (l.fetch = T10 ? "stale" : "refresh", O2 && T10 && (l.returnedStale = true)), O2 ? F.__staleWhileFetching : F.__returned = F;
     }
   }
-  async forceFetch(k2, fetchOptions = {}) {
-    const v2 = await this.fetch(k2, fetchOptions);
-    if (v2 === void 0)
-      throw new Error("fetch() returned undefined");
-    return v2;
+  async forceFetch(t, e = {}) {
+    let i4 = await this.fetch(t, e);
+    if (i4 === void 0) throw new Error("fetch() returned undefined");
+    return i4;
   }
-  memo(k2, memoOptions = {}) {
-    const memoMethod = this.#memoMethod;
-    if (!memoMethod) {
-      throw new Error("no memoMethod provided to constructor");
-    }
-    const { context, forceRefresh, ...options } = memoOptions;
-    const v2 = this.get(k2, options);
-    if (!forceRefresh && v2 !== void 0)
-      return v2;
-    const vv = memoMethod(k2, v2, {
-      options,
-      context
-    });
-    this.set(k2, vv, options);
-    return vv;
+  memo(t, e = {}) {
+    let i4 = this.#I;
+    if (!i4) throw new Error("no memoMethod provided to constructor");
+    let { context: s2, forceRefresh: h2, ...n } = e, o = this.get(t, n);
+    if (!h2 && o !== void 0) return o;
+    let r = i4(t, o, { options: n, context: s2 });
+    return this.set(t, r, n), r;
   }
-  /**
-   * Return a value from the cache. Will update the recency of the cache
-   * entry found.
-   *
-   * If the key is not found, get() will return `undefined`.
-   */
-  get(k2, getOptions = {}) {
-    const { allowStale = this.allowStale, updateAgeOnGet = this.updateAgeOnGet, noDeleteOnStaleGet = this.noDeleteOnStaleGet, status } = getOptions;
-    const index = this.#keyMap.get(k2);
-    if (index !== void 0) {
-      const value = this.#valList[index];
-      const fetching = this.#isBackgroundFetch(value);
-      if (status)
-        this.#statusTTL(status, index);
-      if (this.#isStale(index)) {
-        if (status)
-          status.get = "stale";
-        if (!fetching) {
-          if (!noDeleteOnStaleGet) {
-            this.#delete(k2, "expire");
-          }
-          if (status && allowStale)
-            status.returnedStale = true;
-          return allowStale ? value : void 0;
-        } else {
-          if (status && allowStale && value.__staleWhileFetching !== void 0) {
-            status.returnedStale = true;
-          }
-          return allowStale ? value.__staleWhileFetching : void 0;
+  get(t, e = {}) {
+    let { allowStale: i4 = this.allowStale, updateAgeOnGet: s2 = this.updateAgeOnGet, noDeleteOnStaleGet: h2 = this.noDeleteOnStaleGet, status: n } = e, o = this.#s.get(t);
+    if (o !== void 0) {
+      let r = this.#t[o], f2 = this.#e(r);
+      return n && this.#z(n, o), this.#p(o) ? (n && (n.get = "stale"), f2 ? (n && i4 && r.__staleWhileFetching !== void 0 && (n.returnedStale = true), i4 ? r.__staleWhileFetching : void 0) : (h2 || this.#E(t, "expire"), n && i4 && (n.returnedStale = true), i4 ? r : void 0)) : (n && (n.get = "hit"), f2 ? r.__staleWhileFetching : (this.#D(o), s2 && this.#R(o), r));
+    } else n && (n.get = "miss");
+  }
+  #k(t, e) {
+    this.#u[e] = t, this.#a[t] = e;
+  }
+  #D(t) {
+    t !== this.#h && (t === this.#l ? this.#l = this.#a[t] : this.#k(this.#u[t], this.#a[t]), this.#k(this.#h, t), this.#h = t);
+  }
+  delete(t) {
+    return this.#E(t, "delete");
+  }
+  #E(t, e) {
+    let i4 = false;
+    if (this.#n !== 0) {
+      let s2 = this.#s.get(t);
+      if (s2 !== void 0) if (this.#g?.[s2] && (clearTimeout(this.#g?.[s2]), this.#g[s2] = void 0), i4 = true, this.#n === 1) this.#V(e);
+      else {
+        this.#W(s2);
+        let h2 = this.#t[s2];
+        if (this.#e(h2) ? h2.__abortController.abort(new Error("deleted")) : (this.#T || this.#f) && (this.#T && this.#w?.(h2, t, e), this.#f && this.#r?.push([h2, t, e])), this.#s.delete(t), this.#i[s2] = void 0, this.#t[s2] = void 0, s2 === this.#h) this.#h = this.#u[s2];
+        else if (s2 === this.#l) this.#l = this.#a[s2];
+        else {
+          let n = this.#u[s2];
+          this.#a[n] = this.#a[s2];
+          let o = this.#a[s2];
+          this.#u[o] = this.#u[s2];
         }
-      } else {
-        if (status)
-          status.get = "hit";
-        if (fetching) {
-          return value.__staleWhileFetching;
-        }
-        this.#moveToTail(index);
-        if (updateAgeOnGet) {
-          this.#updateItemAge(index);
-        }
-        return value;
-      }
-    } else if (status) {
-      status.get = "miss";
-    }
-  }
-  #connect(p2, n) {
-    this.#prev[n] = p2;
-    this.#next[p2] = n;
-  }
-  #moveToTail(index) {
-    if (index !== this.#tail) {
-      if (index === this.#head) {
-        this.#head = this.#next[index];
-      } else {
-        this.#connect(this.#prev[index], this.#next[index]);
-      }
-      this.#connect(this.#tail, index);
-      this.#tail = index;
-    }
-  }
-  /**
-   * Deletes a key out of the cache.
-   *
-   * Returns true if the key was deleted, false otherwise.
-   */
-  delete(k2) {
-    return this.#delete(k2, "delete");
-  }
-  #delete(k2, reason) {
-    let deleted = false;
-    if (this.#size !== 0) {
-      const index = this.#keyMap.get(k2);
-      if (index !== void 0) {
-        if (this.#autopurgeTimers?.[index]) {
-          clearTimeout(this.#autopurgeTimers?.[index]);
-          this.#autopurgeTimers[index] = void 0;
-        }
-        deleted = true;
-        if (this.#size === 1) {
-          this.#clear(reason);
-        } else {
-          this.#removeItemSize(index);
-          const v2 = this.#valList[index];
-          if (this.#isBackgroundFetch(v2)) {
-            v2.__abortController.abort(new Error("deleted"));
-          } else if (this.#hasDispose || this.#hasDisposeAfter) {
-            if (this.#hasDispose) {
-              this.#dispose?.(v2, k2, reason);
-            }
-            if (this.#hasDisposeAfter) {
-              this.#disposed?.push([v2, k2, reason]);
-            }
-          }
-          this.#keyMap.delete(k2);
-          this.#keyList[index] = void 0;
-          this.#valList[index] = void 0;
-          if (index === this.#tail) {
-            this.#tail = this.#prev[index];
-          } else if (index === this.#head) {
-            this.#head = this.#next[index];
-          } else {
-            const pi = this.#prev[index];
-            this.#next[pi] = this.#next[index];
-            const ni = this.#next[index];
-            this.#prev[ni] = this.#prev[index];
-          }
-          this.#size--;
-          this.#free.push(index);
-        }
+        this.#n--, this.#b.push(s2);
       }
     }
-    if (this.#hasDisposeAfter && this.#disposed?.length) {
-      const dt = this.#disposed;
-      let task;
-      while (task = dt?.shift()) {
-        this.#disposeAfter?.(...task);
-      }
+    if (this.#f && this.#r?.length) {
+      let s2 = this.#r, h2;
+      for (; h2 = s2?.shift(); ) this.#S?.(...h2);
     }
-    return deleted;
+    return i4;
   }
-  /**
-   * Clear the cache entirely, throwing away all values.
-   */
   clear() {
-    return this.#clear("delete");
+    return this.#V("delete");
   }
-  #clear(reason) {
-    for (const index of this.#rindexes({ allowStale: true })) {
-      const v2 = this.#valList[index];
-      if (this.#isBackgroundFetch(v2)) {
-        v2.__abortController.abort(new Error("deleted"));
-      } else {
-        const k2 = this.#keyList[index];
-        if (this.#hasDispose) {
-          this.#dispose?.(v2, k2, reason);
-        }
-        if (this.#hasDisposeAfter) {
-          this.#disposed?.push([v2, k2, reason]);
-        }
+  #V(t) {
+    for (let e of this.#O({ allowStale: true })) {
+      let i4 = this.#t[e];
+      if (this.#e(i4)) i4.__abortController.abort(new Error("deleted"));
+      else {
+        let s2 = this.#i[e];
+        this.#T && this.#w?.(i4, s2, t), this.#f && this.#r?.push([i4, s2, t]);
       }
     }
-    this.#keyMap.clear();
-    this.#valList.fill(void 0);
-    this.#keyList.fill(void 0);
-    if (this.#ttls && this.#starts) {
-      this.#ttls.fill(0);
-      this.#starts.fill(0);
-      for (const t of this.#autopurgeTimers ?? []) {
-        if (t !== void 0)
-          clearTimeout(t);
-      }
-      this.#autopurgeTimers?.fill(void 0);
+    if (this.#s.clear(), this.#t.fill(void 0), this.#i.fill(void 0), this.#d && this.#A) {
+      this.#d.fill(0), this.#A.fill(0);
+      for (let e of this.#g ?? []) e !== void 0 && clearTimeout(e);
+      this.#g?.fill(void 0);
     }
-    if (this.#sizes) {
-      this.#sizes.fill(0);
-    }
-    this.#head = 0;
-    this.#tail = 0;
-    this.#free.length = 0;
-    this.#calculatedSize = 0;
-    this.#size = 0;
-    if (this.#hasDisposeAfter && this.#disposed) {
-      const dt = this.#disposed;
-      let task;
-      while (task = dt?.shift()) {
-        this.#disposeAfter?.(...task);
-      }
+    if (this.#y && this.#y.fill(0), this.#l = 0, this.#h = 0, this.#b.length = 0, this.#_ = 0, this.#n = 0, this.#f && this.#r) {
+      let e = this.#r, i4;
+      for (; i4 = e?.shift(); ) this.#S?.(...i4);
     }
   }
-}
-const log$a = globalLogger.createChild("JettonsManager");
+};
+const log$b = globalLogger.createChild("JettonsManager");
 function createCacheKey(network, address) {
   return `${network.chainId}:${address}`;
 }
@@ -36601,7 +35718,7 @@ class JettonsManager {
   constructor(cacheSize = 1e4, eventEmitter, networkManager) {
     this.eventEmitter = eventEmitter;
     this.networkManager = networkManager;
-    this.cache = new LRUCache({
+    this.cache = new L({
       max: cacheSize,
       ttl: 1e3 * 60 * 10
       // 10 minutes TTL
@@ -36609,7 +35726,7 @@ class JettonsManager {
     for (const network of this.networkManager.getConfiguredNetworks()) {
       this.addTonToCache(network);
     }
-    log$a.info("JettonsManager initialized", { cacheSize });
+    log$b.info("JettonsManager initialized", { cacheSize });
     this.eventEmitter.on("emulation:result", (emulationResult) => {
       if (emulationResult && typeof emulationResult === "object" && "metadata" in emulationResult && "network" in emulationResult) {
         const network = emulationResult.network;
@@ -36647,13 +35764,13 @@ class JettonsManager {
       const cacheKey = this.normalizedCacheKey(targetNetwork, jettonAddress);
       const cachedInfo = this.cache.get(cacheKey);
       if (cachedInfo) {
-        log$a.debug("Jetton info found in cache", { jettonAddress, network: targetNetwork });
+        log$b.debug("Jetton info found in cache", { jettonAddress, network: targetNetwork });
         return cachedInfo;
       }
-      log$a.debug("Jetton info not found in cache", { jettonAddress, network: targetNetwork });
+      log$b.debug("Jetton info not found in cache", { jettonAddress, network: targetNetwork });
       const address = asMaybeAddressFriendly(jettonAddress);
       if (!address) {
-        log$a.error("Invalid jetton address format", { jettonAddress, network: targetNetwork });
+        log$b.error("Invalid jetton address format", { jettonAddress, network: targetNetwork });
         return null;
       }
       const apiClient = this.networkManager.getClient(targetNetwork);
@@ -36687,7 +35804,7 @@ class JettonsManager {
       }
       return null;
     } catch (error2) {
-      log$a.error("Error getting jetton info", { error: error2, jettonAddress, network: targetNetwork });
+      log$b.error("Error getting jetton info", { error: error2, jettonAddress, network: targetNetwork });
       return null;
     }
   }
@@ -36702,7 +35819,7 @@ class JettonsManager {
     const targetNetwork = network;
     try {
       const apiClient = this.networkManager.getClient(targetNetwork);
-      log$a.debug("Getting address jettons", {
+      log$b.debug("Getting address jettons", {
         userAddress,
         network: targetNetwork,
         offset,
@@ -36720,10 +35837,10 @@ class JettonsManager {
       for (const item of response.jettons) {
         addressJettons.push(item);
       }
-      log$a.debug("Retrieved address jettons", { count: addressJettons.length, network: targetNetwork });
+      log$b.debug("Retrieved address jettons", { count: addressJettons.length, network: targetNetwork });
       return addressJettons;
     } catch (error2) {
-      log$a.error("Failed to get address jettons", { error: error2, userAddress, network: targetNetwork });
+      log$b.error("Failed to get address jettons", { error: error2, userAddress, network: targetNetwork });
       throw new JettonError(`Failed to get jettons for address: ${error2 instanceof Error ? error2.message : "Unknown error"}`, JettonErrorCode.NETWORK_ERROR, error2);
     }
   }
@@ -36743,14 +35860,14 @@ class JettonsManager {
         uri: emulationInfo.extra.uri
       };
       this.cache.set(cacheKey, jettonInfo);
-      log$a.debug("Added jetton info from emulation to cache", {
+      log$b.debug("Added jetton info from emulation to cache", {
         jettonAddress,
         network,
         name: jettonInfo.name,
         symbol: jettonInfo.symbol
       });
     } catch (error2) {
-      log$a.error("Error adding jetton from emulation", { error: error2, jettonAddress, network });
+      log$b.error("Error adding jetton from emulation", { error: error2, jettonAddress, network });
     }
   }
   /**
@@ -36765,16 +35882,16 @@ class JettonsManager {
         }
         const jettonMasterInfo = addressMetadata.token_info.find((info) => typeof info === "object" && info !== null && "type" in info && info.type === "jetton_masters");
         if (jettonMasterInfo) {
-          log$a.debug("Adding jetton from emulation metadata", { jettonAddress, network });
+          log$b.debug("Adding jetton from emulation metadata", { jettonAddress, network });
           this.addJettonFromEmulation(network, jettonAddress, jettonMasterInfo);
           addedCount++;
         }
       }
       if (addedCount > 0) {
-        log$a.info("Added jettons from emulation metadata", { addedCount, network });
+        log$b.info("Added jettons from emulation metadata", { addedCount, network });
       }
     } catch (error2) {
-      log$a.error("Error adding jettons from emulation metadata", { error: error2, network });
+      log$b.error("Error adding jettons from emulation metadata", { error: error2, network });
     }
   }
   /**
@@ -36820,13 +35937,13 @@ class JettonsManager {
         }
       }
       this.addTonToCache(network);
-      log$a.info("Jetton cache cleared for network", { network });
+      log$b.info("Jetton cache cleared for network", { network });
     } else {
       this.cache.clear();
       for (const net of this.networkManager.getConfiguredNetworks()) {
         this.addTonToCache(net);
       }
-      log$a.info("Jetton cache cleared for all networks");
+      log$b.info("Jetton cache cleared for all networks");
     }
   }
 }
@@ -36859,18 +35976,18 @@ class SwapError extends DefiManagerError {
   }
 }
 class DefiManager {
+  createFactoryContext;
   providers = /* @__PURE__ */ new Map();
   defaultProviderId;
+  constructor(createFactoryContext) {
+    this.createFactoryContext = createFactoryContext;
+  }
   /**
    * Register a swap provider
-   * @param name - Unique name for the provider
    * @param provider - Provider instance
    */
-  /**
-   * Register a swap provider
-   * @param provider - Provider instance
-   */
-  registerProvider(provider) {
+  registerProvider(input) {
+    const provider = resolveProvider(input, this.createFactoryContext());
     const providerId = provider.providerId;
     if (!providerId) {
       throw this.createError("Provider must have a providerId", DefiManagerError.INVALID_PROVIDER);
@@ -36930,8 +36047,11 @@ class DefiManager {
     return this.providers.has(providerId);
   }
 }
-const log$9 = globalLogger.createChild("SwapManager");
+const log$a = globalLogger.createChild("SwapManager");
 class SwapManager extends DefiManager {
+  constructor(createFactoryContext) {
+    super(createFactoryContext);
+  }
   /**
    * Get a quote for swapping tokens
    * @param params - Quote parameters
@@ -36939,7 +36059,7 @@ class SwapManager extends DefiManager {
    * @returns Promise resolving to swap quote
    */
   async getQuote(params, providerId) {
-    log$9.debug("Getting swap quote", {
+    log$a.debug("Getting swap quote", {
       fromToken: params.from,
       toToken: params.to,
       amount: params.amount,
@@ -36948,14 +36068,14 @@ class SwapManager extends DefiManager {
     });
     try {
       const quote = await this.getProvider(providerId || this.defaultProviderId).getQuote(params);
-      log$9.debug("Received swap quote", {
+      log$a.debug("Received swap quote", {
         fromAmount: quote.fromAmount,
         toAmount: quote.toAmount,
         priceImpact: quote.priceImpact
       });
       return quote;
     } catch (error2) {
-      log$9.error("Failed to get swap quote", { error: error2, params });
+      log$a.error("Failed to get swap quote", { error: error2, params });
       throw error2;
     }
   }
@@ -36966,21 +36086,122 @@ class SwapManager extends DefiManager {
    */
   async buildSwapTransaction(params) {
     const providerId = params.quote.providerId || this.defaultProviderId;
-    log$9.debug("Building swap transaction", {
+    log$a.debug("Building swap transaction", {
       providerId,
       userAddress: params.userAddress
     });
     try {
       const transaction = await this.getProvider(providerId).buildSwapTransaction(params);
-      log$9.debug("Built swap transaction", params.quote);
+      log$a.debug("Built swap transaction", params.quote);
       return transaction;
     } catch (error2) {
-      log$9.error("Failed to build swap transaction", { error: error2, params });
+      log$a.error("Failed to build swap transaction", { error: error2, params });
       throw error2;
     }
   }
   createError(message, code, details) {
     return new SwapError(message, code, details);
+  }
+}
+var StakingErrorCode;
+(function(StakingErrorCode2) {
+  StakingErrorCode2["InvalidParams"] = "INVALID_PARAMS";
+  StakingErrorCode2["UnsupportedOperation"] = "UNSUPPORTED_OPERATION";
+})(StakingErrorCode || (StakingErrorCode = {}));
+class StakingError extends DefiManagerError {
+  code;
+  constructor(message, code, details) {
+    super(message, code, details);
+    this.name = "StakingError";
+    this.code = code;
+  }
+}
+const log$9 = globalLogger.createChild("StakingManager");
+class StakingManager extends DefiManager {
+  constructor(createFactoryContext) {
+    super(createFactoryContext);
+  }
+  /**
+   * Get a quote for staking or unstaking
+   * @param params - Quote parameters
+   * @param providerId - Optional provider id to use
+   */
+  async getQuote(params, providerId) {
+    log$9.debug("Getting staking quote", params);
+    try {
+      const quote = await this.getProvider(providerId).getQuote(params);
+      log$9.debug("Received staking quote", quote);
+      return quote;
+    } catch (error2) {
+      throw this.createError("Failed to get staking quote", StakingErrorCode.InvalidParams, { error: error2, params });
+    }
+  }
+  /**
+   * Stake TON using a provider
+   * @param params - Staking parameters
+   * @param providerId - Optional provider id to use
+   */
+  async buildStakeTransaction(params, providerId) {
+    log$9.debug("Building staking transaction", params);
+    try {
+      return await this.getProvider(providerId).buildStakeTransaction(params);
+    } catch (error2) {
+      throw this.createError("Failed to build staking transaction", StakingErrorCode.InvalidParams, {
+        error: error2,
+        params
+      });
+    }
+  }
+  /**
+   * Get staking balance for a user
+   * @param userAddress - User address
+   * @param network - Network to query
+   * @param providerId - Optional provider id to use
+   */
+  async getStakedBalance(userAddress, network, providerId) {
+    log$9.debug("Getting staking balance", {
+      userAddress,
+      network,
+      provider: providerId || this.defaultProviderId
+    });
+    try {
+      return await this.getProvider(providerId).getStakedBalance(userAddress, network);
+    } catch (error2) {
+      throw this.createError("Failed to get staking balance", StakingErrorCode.InvalidParams, {
+        error: error2,
+        userAddress,
+        network
+      });
+    }
+  }
+  /**
+   * Get staking information for a network
+   * @param network - Network to query
+   * @param providerId - Optional provider id to use
+   */
+  async getStakingProviderInfo(network, providerId) {
+    log$9.debug("Getting staking info", {
+      network,
+      provider: providerId || this.defaultProviderId
+    });
+    try {
+      return await this.getProvider(providerId).getStakingProviderInfo(network);
+    } catch (error2) {
+      throw this.createError("Failed to get staking info", StakingErrorCode.InvalidParams, { error: error2, network });
+    }
+  }
+  /**
+   * Get supported unstake modes
+   * @param providerId Provider identifier (optional, uses default if not specified)
+   * @returns An array of supported unstake modes
+   */
+  getSupportedUnstakeModes(providerId) {
+    return this.getProvider(providerId).getSupportedUnstakeModes();
+  }
+  createError(message, code, details) {
+    const errorCode = Object.values(StakingErrorCode).includes(code) ? code : StakingErrorCode.InvalidParams;
+    log$9.error(message, { code, details });
+    return new StakingError(message, errorCode, details);
   }
 }
 const log$8 = globalLogger.createChild("EventEmitter");
@@ -37621,19 +36842,6 @@ class BaseApiClient {
     this.fetchApi = config2.fetchApi ?? fetch;
     this.disableNetworkSend = config2.disableNetworkSend ?? false;
   }
-  async doRequest(url, init = {}) {
-    const fetchFn = this.fetchApi;
-    if (!this.timeout || this.timeout <= 0) {
-      return fetchFn(url, init);
-    }
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-    try {
-      return await fetchFn(url, { ...init, signal: controller.signal });
-    } finally {
-      clearTimeout(timeoutId);
-    }
-  }
   async fetch(url, props = {}) {
     const headers = new Headers(props.headers);
     headers.set("accept", "application/json");
@@ -37689,6 +36897,19 @@ class BaseApiClient {
     } catch {
     }
     return new TonClientError(`HTTP ${response.status}: ${message}`, code, detail);
+  }
+  async doRequest(url, init = {}) {
+    const fetchFn = this.fetchApi;
+    if (!this.timeout || this.timeout <= 0) {
+      return fetchFn(url, init);
+    }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    try {
+      return await fetchFn(url, { ...init, signal: controller.signal });
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 }
 const padBase64 = (data) => {
@@ -38131,6 +37352,7 @@ class TonWalletKit {
   networkManager;
   jettonsManager;
   swapManager;
+  stakingManager;
   initializer;
   eventProcessor;
   bridgeManager;
@@ -38158,7 +37380,8 @@ class TonWalletKit {
     this.initializer = new Initializer(options, this.eventEmitter, this.analyticsManager);
     this.initializationPromise = this.initialize();
     this.jettonsManager = new JettonsManager(1e4, this.eventEmitter, this.networkManager);
-    this.swapManager = new SwapManager();
+    this.swapManager = new SwapManager(() => this.createFactoryContext());
+    this.stakingManager = new StakingManager(() => this.createFactoryContext());
     this.eventEmitter.on("restoreConnection", async (event) => {
       if (!event.domain) {
         log$4.error("Domain is required for restore connection");
@@ -38202,6 +37425,12 @@ class TonWalletKit {
       };
       this.bridgeManager.sendJsBridgeResponse(event?.tabId?.toString() || "", true, event?.id ?? event?.messageId, tonConnectEvent);
     });
+  }
+  createFactoryContext() {
+    return {
+      networkManager: this.networkManager,
+      ssr: false
+    };
   }
   async sendErrorConnectResponse(event) {
     const tonConnectEvent = {
@@ -38599,9 +37828,6 @@ class TonWalletKit {
    * @throws WalletKitError if no client is configured for the network
    */
   getApiClient(network) {
-    if (!this.isInitialized) {
-      throw new WalletKitError(ERROR_CODES.INITIALIZATION_ERROR, "TonWalletKit not yet initialized - call initialize() first");
-    }
     return this.networkManager.getClient(network);
   }
   /**
@@ -38667,6 +37893,12 @@ class TonWalletKit {
    */
   get swap() {
     return this.swapManager;
+  }
+  /**
+   * Staking API access
+   */
+  get staking() {
+    return this.stakingManager;
   }
   /**
    * Get the event emitter for this kit instance
@@ -39222,7 +38454,7 @@ function mapTonApiTraceTransaction(raw) {
 function mapTonApiTrace(trace, mapTraceTransaction) {
   const traceTransactions = flattenTrace(trace);
   const transactions = Object.fromEntries(traceTransactions.map((tx) => [tx.hash, mapTraceTransaction(tx)]));
-  const transactionsOrder = [...traceTransactions].sort((a2, b2) => BigInt(a2.lt ?? 0) < BigInt(b2.lt ?? 0) ? -1 : 1).map((tx) => tx.hash);
+  const transactionsOrder = [...traceTransactions].sort((a4, b2) => BigInt(a4.lt ?? 0) < BigInt(b2.lt ?? 0) ? -1 : 1).map((tx) => tx.hash);
   const lts = traceTransactions.map((tx) => BigInt(tx.lt ?? 0));
   const times = traceTransactions.map((tx) => Number(tx.utime ?? 0));
   const startLt = lts.length > 0 ? lts.reduce((min, value) => value < min ? value : min, lts[0]) : 0n;
