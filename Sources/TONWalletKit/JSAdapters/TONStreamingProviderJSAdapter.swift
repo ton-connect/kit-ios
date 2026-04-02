@@ -51,9 +51,7 @@ class TONStreamingProviderJSAdapter<Provider: TONStreamingProviderProtocol>: NSO
         let watcher = publisher
             .sink(
                 receiveCompletion: { _ in },
-                receiveValue: { [weak context] update in
-                    guard let context else { return }
-                    
+                receiveValue: { update in
                     do {
                         let value = try update.encode(in: context)
                         handler.call(withArguments: [value])

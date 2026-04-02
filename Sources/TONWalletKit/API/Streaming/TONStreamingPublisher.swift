@@ -40,11 +40,11 @@ struct TONStreamingPublisher<Output>: Publisher {
     }
     
     func receive<S>(subscriber: S) where S : Subscriber, Self.Failure == S.Failure, Self.Output == S.Input {
-        let subscribtion = TONStreamingSubscription<Output>(
+        let subscription = TONStreamingSubscription<Output>(
             subscriber: subscriber,
             watch: watch
         )
-        subscriber.receive(subscription: subscribtion)
+        subscriber.receive(subscription: subscription)
     }
 }
 
