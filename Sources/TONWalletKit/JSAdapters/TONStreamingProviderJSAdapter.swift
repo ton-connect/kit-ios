@@ -108,3 +108,5 @@ class TONStreamingProviderJSAdapter<Provider: TONStreamingProviderProtocol>: NSO
         }
     }
 }
+
+extension TONStreamingProviderJSAdapter: JSValueEncodable {}
