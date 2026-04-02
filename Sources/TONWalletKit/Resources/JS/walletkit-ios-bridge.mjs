@@ -27321,6 +27321,17 @@ function isFriendlyTonAddress(address) {
   }
   return true;
 }
+function compareAddress(a2, b2) {
+  if (!a2 || !b2)
+    return false;
+  try {
+    const addressA = typeof a2 === "string" ? distExports$2.Address.parse(a2) : a2;
+    const addressB = typeof b2 === "string" ? distExports$2.Address.parse(b2) : b2;
+    return addressA.equals(addressB);
+  } catch {
+    return typeof a2 === "string" && typeof b2 === "string" ? a2.toLowerCase() === b2.toLowerCase() : false;
+  }
+}
 function asHex(data) {
   if (!isHex(data)) {
     throw new Error("Not a valid hex");
@@ -27463,6 +27474,11 @@ function asBase64(data) {
 }
 function Base64Normalize(data) {
   return data.replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
+}
+function Base64NormalizeUrl(data) {
+  const normalized = Base64Normalize(data);
+  const burl = normalized.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+  return burl;
 }
 function ParseBase64(data) {
   if (typeof atob === "undefined" && typeof Buffer === "undefined") {
@@ -28505,8 +28521,15 @@ function toAddressBook$1(data) {
   return out;
 }
 function buildEvent(data, account, actions, addressBook) {
+  const extHash = (() => {
+    const firstTxHash = data.transactions_order?.[0];
+    const firstTx = firstTxHash ? data.transactions[firstTxHash] : void 0;
+    const inMsg = firstTx?.in_msg;
+    return inMsg?.hash_norm ?? inMsg?.hash ?? data.external_hash ?? data.trace?.in_msg_hash ?? "";
+  })();
   return {
     eventId: Base64ToHex(data.trace_id),
+    traceExternalHash: extHash ? Base64NormalizeUrl(extHash) : void 0,
     account: toAccount(account, addressBook),
     timestamp: data.start_utime,
     actions,
@@ -28832,13 +28855,13 @@ class MemoryStorageAdapter {
     return Array.from(this.store.keys());
   }
 }
-const log$n = globalLogger.createChild("StorageAdapter");
+const log$o = globalLogger.createChild("StorageAdapter");
 function createStorageAdapter(config2 = {}) {
   if (typeof localStorage !== "undefined") {
     try {
       return new LocalStorageAdapter(config2);
     } catch (error2) {
-      log$n.warn("Failed to create LocalStorageAdapter, falling back to memory", { error: error2 });
+      log$o.warn("Failed to create LocalStorageAdapter, falling back to memory", { error: error2 });
     }
   }
   if (config2.allowMemory) {
@@ -28847,7 +28870,7 @@ function createStorageAdapter(config2 = {}) {
     throw new Error("No storage adapter available");
   }
 }
-const log$m = globalLogger.createChild("Storage");
+const log$n = globalLogger.createChild("Storage");
 class Storage {
   adapter;
   constructor(adapter) {
@@ -28866,7 +28889,7 @@ class Storage {
       }
       return JSON.parse(value);
     } catch (error2) {
-      log$m.warn("Failed to parse stored value", { key, error: error2 });
+      log$n.warn("Failed to parse stored value", { key, error: error2 });
       return null;
     }
   }
@@ -28880,7 +28903,7 @@ class Storage {
       const serialized = JSON.stringify(value);
       await this.adapter.set(key, serialized);
     } catch (error2) {
-      log$m.error("Failed to serialize value for storage", { key, error: error2 });
+      log$n.error("Failed to serialize value for storage", { key, error: error2 });
       throw error2;
     }
   }
@@ -29146,7 +29169,7 @@ class WalletManager {
     return wallet.getWalletId();
   }
 }
-const log$l = globalLogger.createChild("TONConnectStoredSessionManager");
+const log$m = globalLogger.createChild("TONConnectStoredSessionManager");
 class TONConnectStoredSessionManager {
   sessions = /* @__PURE__ */ new Map();
   storage;
@@ -29308,16 +29331,16 @@ class TONConnectStoredSessionManager {
             if (wallet) {
               session.walletAddress = wallet.getAddress();
             } else {
-              log$l.warn("Session Wallet not found for session", { sessionId: session.sessionId });
+              log$m.warn("Session Wallet not found for session", { sessionId: session.sessionId });
               continue;
             }
           }
           this.sessions.set(session.sessionId, session);
         }
-        log$l.debug("Loaded session metadata", { count: storedSessions.length });
+        log$m.debug("Loaded session metadata", { count: storedSessions.length });
       }
     } catch (error2) {
-      log$l.warn("Failed to load sessions from storage", { error: error2 });
+      log$m.warn("Failed to load sessions from storage", { error: error2 });
     }
   }
   /**
@@ -29328,7 +29351,7 @@ class TONConnectStoredSessionManager {
       const sessionsToStore = Array.from(this.sessions.values());
       await this.storage.set(this.storageKey, sessionsToStore);
     } catch (error2) {
-      log$l.warn("Failed to persist sessions to storage", { error: error2 });
+      log$m.warn("Failed to persist sessions to storage", { error: error2 });
     }
   }
   async migrateSessions() {
@@ -29367,7 +29390,7 @@ function requireUtil() {
     }
     return ret;
   }
-  function toHex(bytes) {
+  function toHex2(bytes) {
     return Array.prototype.map.call(bytes, function(n) {
       return (n < 16 ? "0" : "") + n.toString(16);
     }).join("");
@@ -29416,7 +29439,7 @@ function requireUtil() {
   }
   util = {
     normalizeInput,
-    toHex,
+    toHex: toHex2,
     debugPrint,
     testSpeed
   };
@@ -30774,7 +30797,7 @@ function addLegacySendTransactionFeature(options) {
 }
 const TONCONNECT_BRIDGE_RESPONSE = "TONCONNECT_BRIDGE_RESPONSE";
 globalLogger.createChild("ExtensionTransport");
-const log$k = globalLogger.createChild("BridgeManager");
+const log$l = globalLogger.createChild("BridgeManager");
 class BridgeManager {
   config;
   bridgeProvider;
@@ -30830,7 +30853,7 @@ class BridgeManager {
    */
   async start() {
     if (this.bridgeProvider) {
-      log$k.warn("Bridge already initialized");
+      log$l.warn("Bridge already initialized");
       return;
     }
     try {
@@ -30842,7 +30865,7 @@ class BridgeManager {
         this.reconnectAttempts = 0;
       }
     } catch (error2) {
-      log$k.error("Failed to start bridge", { error: error2 });
+      log$l.error("Failed to start bridge", { error: error2 });
       throw error2;
     }
     const requestProcessing = () => {
@@ -30855,7 +30878,7 @@ class BridgeManager {
    * Create new session for a dApp connection
    */
   async createSession(appSessionId) {
-    log$k.info("[BRIDGE] Creating session", { appSessionId });
+    log$l.info("[BRIDGE] Creating session", { appSessionId });
     const session = await this.sessionManager.getSession(appSessionId);
     if (!session) {
       throw new WalletKitError(ERROR_CODES.SESSION_NOT_FOUND, `Session not found`, void 0, {
@@ -30863,7 +30886,7 @@ class BridgeManager {
       });
     }
     if (this.bridgeProvider && this.isConnected) {
-      log$k.info("[BRIDGE] Updating clients");
+      log$l.info("[BRIDGE] Updating clients");
       await this.updateClients();
     }
   }
@@ -30874,7 +30897,7 @@ class BridgeManager {
     if (this.bridgeProvider && this.isConnected) {
       await this.updateClients();
     }
-    log$k.debug("Session removed", { appSessionId });
+    log$l.debug("Session removed", { appSessionId });
   }
   /**
    * Send response to dApp
@@ -30914,9 +30937,9 @@ class BridgeManager {
       await this.bridgeProvider.send(response, sessionCrypto, sessionId, {
         traceId: event?.traceId
       });
-      log$k.debug("Response sent successfully", { sessionId, requestId: event.id });
+      log$l.debug("Response sent successfully", { sessionId, requestId: event.id });
     } catch (error2) {
-      log$k.error("Failed to send response through bridge", {
+      log$l.error("Failed to send response through bridge", {
         sessionId,
         requestId: event.id,
         error: error2
@@ -31011,7 +31034,7 @@ class BridgeManager {
         listener: this.queueBridgeEvent.bind(this),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         errorListener: (error2) => {
-          log$k.error("Bridge listener error", { error: error2.toString() });
+          log$l.error("Bridge listener error", { error: error2.toString() });
           this.analytics?.emitBridgeClientConnectError({
             error_message: `${error2?.toString() || "Unknown error"}${error2?.errorCode ? ` (Code: ${error2?.errorCode})` : ""}`,
             trace_id: error2?.traceId ?? connectTraceId,
@@ -31025,7 +31048,7 @@ class BridgeManager {
       });
       this.isConnected = true;
       this.reconnectAttempts = 0;
-      log$k.info("Bridge connected successfully");
+      log$l.info("Bridge connected successfully");
       if (this.analytics) {
         const client2 = clients[0];
         this.analytics.emitBridgeClientConnectEstablished({
@@ -31034,7 +31057,7 @@ class BridgeManager {
         });
       }
     } catch (error2) {
-      log$k.error("Bridge connection failed", { error: error2?.toString() });
+      log$l.error("Bridge connection failed", { error: error2?.toString() });
       this.analytics?.emitBridgeClientConnectError({
         error_message: `${error2?.toString() || "Unknown error"}${error2?.errorCode ? ` (Code: ${error2?.errorCode})` : ""}`,
         trace_id: error2?.traceId ?? connectTraceId,
@@ -31043,9 +31066,9 @@ class BridgeManager {
       if (!this.config.disableHttpConnection) {
         if (this.reconnectAttempts < (this.config.maxReconnectAttempts || 5)) {
           this.reconnectAttempts++;
-          log$k.info("Bridge reconnection attempt", { attempt: this.reconnectAttempts });
+          log$l.info("Bridge reconnection attempt", { attempt: this.reconnectAttempts });
           setTimeout(() => {
-            this.connectToSSEBridge().catch((error3) => log$k.error("Bridge reconnection failed", { error: error3 }));
+            this.connectToSSEBridge().catch((error3) => log$l.error("Bridge reconnection failed", { error: error3 }));
           }, this.config.reconnectInterval);
         }
       }
@@ -31066,10 +31089,10 @@ class BridgeManager {
    * Add client to existing bridge connection
    */
   async updateClients() {
-    log$k.debug("Updating clients");
+    log$l.debug("Updating clients");
     if (this.bridgeProvider) {
       const clients = await this.getClients();
-      log$k.info("[BRIDGE] Restoring connection", { clients: clients.length });
+      log$l.info("[BRIDGE] Restoring connection", { clients: clients.length });
       await this.bridgeProvider.restoreConnection(clients, {
         lastEventId: this.lastEventId
       });
@@ -31080,14 +31103,14 @@ class BridgeManager {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   queueBridgeEvent(event) {
-    log$k.debug("Bridge event queued", { eventId: event?.id, event });
+    log$l.debug("Bridge event queued", { eventId: event?.id, event });
     this.eventQueue.push(event);
     this.processBridgeEvents().catch((error2) => {
-      log$k.error("Error in background event processing", { error: error2 });
+      log$l.error("Error in background event processing", { error: error2 });
     });
   }
   queueJsBridgeEvent(messageInfo, event) {
-    log$k.debug("JS Bridge event queued", { eventId: messageInfo?.messageId });
+    log$l.debug("JS Bridge event queued", { eventId: messageInfo?.messageId });
     if (!event) {
       return;
     }
@@ -31106,11 +31129,12 @@ class BridgeManager {
     } else if (event.method == "restoreConnection") {
       this.eventEmitter?.emit("restoreConnection", {
         ...event,
+        method: "restoreConnection",
         tabId: messageInfo.tabId,
         domain: messageInfo.domain,
         messageId: messageInfo.messageId,
         walletId: messageInfo.walletId
-      });
+      }, "bridge-manager");
     } else if (event.method == "send" && event?.params?.length === 1) {
       this.eventQueue.push({
         ...event,
@@ -31124,7 +31148,7 @@ class BridgeManager {
       });
     }
     this.processBridgeEvents().catch((error2) => {
-      log$k.error("Error in background event processing", { error: error2 });
+      log$l.error("Error in background event processing", { error: error2 });
     });
   }
   /**
@@ -31136,7 +31160,7 @@ class BridgeManager {
    */
   async processBridgeEvents() {
     if (this.isProcessing) {
-      log$k.debug("Event processing already in progress, skipping");
+      log$l.debug("Event processing already in progress, skipping");
       return;
     }
     this.isProcessing = true;
@@ -31149,7 +31173,7 @@ class BridgeManager {
         }
       }
     } catch (error2) {
-      log$k.error("Error during event processing", { error: error2 });
+      log$l.error("Error during event processing", { error: error2 });
       this.isProcessing = false;
       this.restartConnection();
       return;
@@ -31163,7 +31187,7 @@ class BridgeManager {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async handleBridgeEvent(event) {
     try {
-      log$k.info("Bridge event received", { event });
+      log$l.info("Bridge event received", { event });
       const rawEvent = {
         id: event.id || crypto.randomUUID(),
         method: event.method || "unknown",
@@ -31234,23 +31258,23 @@ class BridgeManager {
       try {
         await this.eventStore.storeEvent(rawEvent);
         if (this.eventEmitter) {
-          this.eventEmitter.emit("bridge-storage-updated");
+          this.eventEmitter.emit("bridgeStorageUpdated", {}, "bridge-manager");
         }
-        log$k.info("Event stored durably", { eventId: rawEvent.id, method: rawEvent.method });
+        log$l.info("Event stored durably", { eventId: rawEvent.id, method: rawEvent.method });
       } catch (error2) {
-        log$k.error("Failed to store event durably", {
+        log$l.error("Failed to store event durably", {
           eventId: rawEvent.id,
           error: error2.message
         });
         throw WalletKitError.fromError(ERROR_CODES.EVENT_STORE_OPERATION_FAILED, "Failed to store event durably", error2, { eventId: rawEvent.id, method: rawEvent.method });
       }
-      log$k.info("Bridge event processed", { rawEvent });
+      log$l.info("Bridge event processed", { rawEvent });
       if (event?.lastEventId && event.lastEventId !== this.lastEventId) {
         this.lastEventId = event.lastEventId;
         await this.saveLastEventId();
       }
     } catch (error2) {
-      log$k.error("Error handling bridge event", { error: error2 });
+      log$l.error("Error handling bridge event", { error: error2 });
     }
   }
   /**
@@ -31261,11 +31285,11 @@ class BridgeManager {
       const savedEventId = await this.storage.get(this.storageKey);
       if (savedEventId) {
         this.lastEventId = savedEventId;
-        log$k.debug("Loaded last event ID from storage", { lastEventId: this.lastEventId });
+        log$l.debug("Loaded last event ID from storage", { lastEventId: this.lastEventId });
       }
     } catch (error2) {
       const storageError = WalletKitError.fromError(ERROR_CODES.STORAGE_READ_FAILED, "Failed to load last event ID from storage", error2);
-      log$k.warn("Failed to load last event ID from storage", { error: storageError });
+      log$l.warn("Failed to load last event ID from storage", { error: storageError });
     }
   }
   /**
@@ -31275,11 +31299,11 @@ class BridgeManager {
     try {
       if (this.lastEventId) {
         await this.storage.set(this.storageKey, this.lastEventId);
-        log$k.debug("Saved last event ID to storage", { lastEventId: this.lastEventId });
+        log$l.debug("Saved last event ID to storage", { lastEventId: this.lastEventId });
       }
     } catch (error2) {
       const storageError = WalletKitError.fromError(ERROR_CODES.STORAGE_WRITE_FAILED, "Failed to save last event ID to storage", error2);
-      log$k.warn("Failed to save last event ID to storage", { error: storageError });
+      log$l.warn("Failed to save last event ID to storage", { error: storageError });
     }
   }
 }
@@ -31303,7 +31327,7 @@ function isValidHost(host) {
   const parts = host.split(".");
   return parts.every((part) => part.length > 0);
 }
-const log$j = globalLogger.createChild("ConnectHandler");
+const log$k = globalLogger.createChild("ConnectHandler");
 class ConnectHandler extends BasicHandler {
   config;
   analytics;
@@ -31325,7 +31349,7 @@ class ConnectHandler extends BasicHandler {
         manifest = result.manifest;
         manifestFetchErrorCode = result.manifestFetchErrorCode;
       } catch (error2) {
-        log$j.warn("Failed to fetch manifest", { error: error2 });
+        log$k.warn("Failed to fetch manifest", { error: error2 });
       }
     }
     const preview = this.createPreview(event, manifestUrl, manifest, manifestFetchErrorCode);
@@ -31394,14 +31418,14 @@ class ConnectHandler extends BasicHandler {
         try {
           const parsedDAppUrl = new URL(dAppUrl);
           if (!isValidHost(parsedDAppUrl.host)) {
-            log$j.warn("Invalid dApp URL in manifest - invalid host format", {
+            log$k.warn("Invalid dApp URL in manifest - invalid host format", {
               dAppUrl,
               host: parsedDAppUrl.host
             });
             finalManifestFetchErrorCode = CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR;
           }
         } catch (_) {
-          log$j.warn("Invalid dApp URL in manifest - failed to parse", { dAppUrl });
+          log$k.warn("Invalid dApp URL in manifest - failed to parse", { dAppUrl });
           finalManifestFetchErrorCode = CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR;
         }
       }
@@ -31464,7 +31488,7 @@ class ConnectHandler extends BasicHandler {
     if (directResult.manifest) {
       return directResult;
     }
-    log$j.info("Direct manifest fetch failed, trying proxy", { manifestUrl });
+    log$k.info("Direct manifest fetch failed, trying proxy", { manifestUrl });
     const proxyUrl = `${ConnectHandler.MANIFEST_PROXY_URL}${manifestUrl}`;
     return this.tryFetchManifest(proxyUrl);
   }
@@ -31472,7 +31496,7 @@ class ConnectHandler extends BasicHandler {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        log$j.error("Failed to fetch manifest not ok", { url, status: response.status });
+        log$k.error("Failed to fetch manifest not ok", { url, status: response.status });
         return {
           manifest: null,
           manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR
@@ -31484,7 +31508,7 @@ class ConnectHandler extends BasicHandler {
         manifestFetchErrorCode: void 0
       };
     } catch (e) {
-      log$j.error("Failed to fetch manifest catched", { url, error: e });
+      log$k.error("Failed to fetch manifest catched", { url, error: e });
       return {
         manifest: null,
         manifestFetchErrorCode: CONNECT_EVENT_ERROR_CODES.MANIFEST_CONTENT_ERROR
@@ -31614,8 +31638,7 @@ function toTransactionEmulatedTrace(response) {
     dataCells: Object.fromEntries(Object.entries(response.data_cells ?? {}).map(([hash, cell]) => [Base64ToHex(hash), cell])),
     metadata: {},
     // to be filled later
-    addressBook: {}
-    // to be filled later
+    addressBook: toAddressBook(response.address_book)
   };
 }
 function toTransactionTraceNode(node) {
@@ -31645,8 +31668,8 @@ function toTransaction(tx) {
     traceId: tx.trace_id ?? void 0,
     previousTransactionHash: tx.prev_trans_hash ? Base64ToHex(tx.prev_trans_hash) : void 0,
     previousTransactionLogicalTime: tx.prev_trans_lt ?? void 0,
-    origStatus: toAccountStatus(tx.orig_status),
-    endStatus: toAccountStatus(tx.end_status),
+    origStatus: toAccountStatus$1(tx.orig_status),
+    endStatus: toAccountStatus$1(tx.end_status),
     totalFees: tx.total_fees,
     totalFeesExtraCurrencies: tx.total_fees_extra_currencies,
     blockRef: toTransactionBlockRef(tx.block_ref),
@@ -31655,7 +31678,7 @@ function toTransaction(tx) {
     isEmulated: tx.emulated
   };
 }
-function toAccountStatus(status) {
+function toAccountStatus$1(status) {
   if (status === "active") {
     return { type: "active" };
   } else if (status === "frozen") {
@@ -31752,7 +31775,7 @@ function toAccountState(state) {
     hash: Base64ToHex(state.hash),
     balance: state.balance,
     extraCurrencies: state.extra_currencies ?? void 0,
-    accountStatus: state.account_status ? toAccountStatus(state.account_status) : void 0,
+    accountStatus: state.account_status ? toAccountStatus$1(state.account_status) : void 0,
     frozenHash: state.frozen_hash ? Base64ToHex(state.frozen_hash) : void 0,
     dataHash: state.data_hash ? Base64ToHex(state.data_hash) : void 0,
     codeHash: state.code_hash ? Base64ToHex(state.code_hash) : void 0
@@ -32042,7 +32065,7 @@ async function createTransactionPreview(client2, request, wallet) {
     moneyFlow
   };
 }
-const log$i = globalLogger.createChild("TransactionHandler");
+const log$j = globalLogger.createChild("TransactionHandler");
 class TransactionHandler extends BasicHandler {
   config;
   walletManager;
@@ -32065,7 +32088,7 @@ class TransactionHandler extends BasicHandler {
     const walletId = event.walletId;
     const walletAddress = event.walletAddress;
     if (!walletId && !walletAddress) {
-      log$i.error("Wallet ID not found", { event });
+      log$j.error("Wallet ID not found", { event });
       return {
         error: {
           code: SEND_TRANSACTION_ERROR_CODES.UNKNOWN_APP_ERROR,
@@ -32076,7 +32099,7 @@ class TransactionHandler extends BasicHandler {
     }
     const wallet = walletId ? this.walletManager.getWallet(walletId) : void 0;
     if (!wallet) {
-      log$i.error("Wallet not found", { event, walletId, walletAddress });
+      log$j.error("Wallet not found", { event, walletId, walletAddress });
       return {
         error: {
           code: SEND_TRANSACTION_ERROR_CODES.UNKNOWN_APP_ERROR,
@@ -32087,8 +32110,8 @@ class TransactionHandler extends BasicHandler {
     }
     const requestValidation = this.parseTonConnectTransactionRequest(event, wallet);
     if (!requestValidation.result || !requestValidation?.validation?.isValid) {
-      log$i.error("Failed to parse transaction request", { event, requestValidation });
-      this.eventEmitter.emit("event:error", event);
+      log$j.error("Failed to parse transaction request", { event, requestValidation });
+      this.eventEmitter.emit("eventError", event, "transaction-handler");
       return {
         error: {
           code: SEND_TRANSACTION_ERROR_CODES.BAD_REQUEST_ERROR,
@@ -32104,13 +32127,13 @@ class TransactionHandler extends BasicHandler {
         preview = await CallForSuccess(() => createTransactionPreview(wallet.client, request, wallet));
         if (preview.result === Result.success && preview.trace) {
           try {
-            this.eventEmitter.emit("emulation:result", preview.trace);
+            this.eventEmitter.emit("emulationResult", preview.trace, "transaction-handler");
           } catch (error2) {
-            log$i.warn("Error emitting emulation result event", { error: error2 });
+            log$j.warn("Error emitting emulation result event", { error: error2 });
           }
         }
       } catch (error2) {
-        log$i.error("Failed to create transaction preview", { error: error2 });
+        log$j.error("Failed to create transaction preview", { error: error2 });
         preview = {
           error: {
             code: ERROR_CODES.UNKNOWN_EMULATION_ERROR,
@@ -32183,7 +32206,7 @@ class TransactionHandler extends BasicHandler {
         validation: { isValid: errors2.length === 0, errors: errors2 }
       };
     } catch (error2) {
-      log$i.error("Failed to parse transaction request", { error: error2 });
+      log$j.error("Failed to parse transaction request", { error: error2 });
       errors2.push("Failed to parse transaction request");
       return {
         result: void 0,
@@ -32340,7 +32363,7 @@ function validateSignDataPayloadCell(data) {
   }
   return null;
 }
-const log$h = globalLogger.createChild("SignDataHandler");
+const log$i = globalLogger.createChild("SignDataHandler");
 class SignDataHandler extends BasicHandler {
   analytics;
   walletManager;
@@ -32365,14 +32388,14 @@ class SignDataHandler extends BasicHandler {
     const wallet = walletId ? this.walletManager.getWallet(walletId) : void 0;
     const payload = this.parseDataToSign(event);
     if (!payload) {
-      log$h.error("No data to sign found in request", { event });
+      log$i.error("No data to sign found in request", { event });
       throw new WalletKitError(ERROR_CODES.INVALID_REQUEST_EVENT, "No data to sign found in request", void 0, {
         eventId: event.id
       });
     }
     const preview = this.createDataPreview(payload.data, event);
     if (!preview) {
-      log$h.error("No preview found for data", { data: payload });
+      log$i.error("No preview found for data", { data: payload });
       throw new WalletKitError(ERROR_CODES.RESPONSE_CREATION_FAILED, "Failed to create preview for sign data request", void 0, { eventId: event.id, data: payload });
     }
     const signEvent = {
@@ -32408,7 +32431,7 @@ class SignDataHandler extends BasicHandler {
       const parsed = JSON.parse(event.params[0]);
       const validationResult = validateSignDataPayload(parsed);
       if (validationResult) {
-        log$h.error("Invalid data to sign found in request", { validationResult });
+        log$i.error("Invalid data to sign found in request", { validationResult });
         return void 0;
       }
       if (parsed === void 0) {
@@ -32446,7 +32469,7 @@ class SignDataHandler extends BasicHandler {
         data: signData
       };
     } catch (error2) {
-      log$h.error("Invalid data to sign found in request", { error: error2 });
+      log$i.error("Invalid data to sign found in request", { error: error2 });
       return void 0;
     }
   }
@@ -32481,7 +32504,7 @@ class SignDataHandler extends BasicHandler {
           }
         };
       } catch (error2) {
-        log$h.error("Error deserializing cell", { error: error2 });
+        log$i.error("Error deserializing cell", { error: error2 });
         return {
           type: "cell",
           value: {
@@ -32537,7 +32560,7 @@ class DisconnectHandler extends BasicHandler {
     return void 0;
   }
 }
-const log$g = globalLogger.createChild("EventRouter");
+const log$h = globalLogger.createChild("EventRouter");
 class EventRouter {
   config;
   eventEmitter;
@@ -32569,7 +32592,7 @@ class EventRouter {
   async routeEvent(event) {
     const validation = validateBridgeEvent(event);
     if (!validation.isValid) {
-      log$g.error("Invalid bridge event", { errors: validation.errors });
+      log$h.error("Invalid bridge event", { errors: validation.errors });
       return;
     }
     try {
@@ -32581,7 +32604,7 @@ class EventRouter {
             try {
               await this.bridgeManager.sendResponse(event, result);
             } catch (error2) {
-              log$g.error("Error sending response for error event", { error: error2, event, result });
+              log$h.error("Error sending response for error event", { error: error2, event, result });
             }
             return;
           }
@@ -32590,7 +32613,7 @@ class EventRouter {
         }
       }
     } catch (error2) {
-      log$g.error("Error routing event", { error: error2 });
+      log$h.error("Error routing event", { error: error2 });
       throw error2;
     }
   }
@@ -32833,7 +32856,7 @@ function PrepareSignData(data) {
     hash: Uint8ArrayToHex(finalHash)
   };
 }
-const log$f = globalLogger.createChild("RequestProcessor");
+const log$g = globalLogger.createChild("RequestProcessor");
 class RequestProcessor {
   walletKitOptions;
   sessionManager;
@@ -32921,7 +32944,7 @@ class RequestProcessor {
       }
       return;
     } catch (error2) {
-      log$f.error("Failed to approve connect request", { error: error2 });
+      log$g.error("Failed to approve connect request", { error: error2 });
       throw error2;
     }
   }
@@ -32930,7 +32953,7 @@ class RequestProcessor {
    */
   async rejectConnectRequest(event, reason, errorCode) {
     try {
-      log$f.info("Connect request rejected", {
+      log$g.info("Connect request rejected", {
         id: event.id,
         dAppName: event.preview.dAppInfo?.name || "",
         reason: reason || "User rejected connection"
@@ -32948,7 +32971,7 @@ class RequestProcessor {
       try {
         await this.bridgeManager.sendResponse(event, response, new SessionCrypto());
       } catch (error2) {
-        log$f.error("Failed to send connect request rejection response", { error: error2 });
+        log$g.error("Failed to send connect request rejection response", { error: error2 });
       }
       if (this.analytics) {
         const sessionData = event.from ? await this.sessionManager.getSession(sessionId) : void 0;
@@ -32977,7 +33000,7 @@ class RequestProcessor {
       }
       return;
     } catch (error2) {
-      log$f.error("Failed to reject connect request", { error: error2 });
+      log$g.error("Failed to reject connect request", { error: error2 });
       throw error2;
     }
   }
@@ -33009,7 +33032,7 @@ class RequestProcessor {
         return { signedBoc };
       }
     } catch (error2) {
-      log$f.error("Failed to approve transaction request", { error: error2 });
+      log$g.error("Failed to approve transaction request", { error: error2 });
       if (error2 instanceof WalletKitError) {
         throw error2;
       }
@@ -33064,7 +33087,7 @@ class RequestProcessor {
       }
       return;
     } catch (error2) {
-      log$f.error("Failed to reject transaction request", { error: error2 });
+      log$g.error("Failed to reject transaction request", { error: error2 });
       throw error2;
     }
   }
@@ -33171,7 +33194,7 @@ class RequestProcessor {
         };
       }
     } catch (error2) {
-      log$f.error("Failed to approve sign data request", {
+      log$g.error("Failed to approve sign data request", {
         error: error2?.message?.toString() ?? error2?.toString()
       });
       if (error2 instanceof WalletKitError) {
@@ -33210,7 +33233,7 @@ class RequestProcessor {
       }
       return;
     } catch (error2) {
-      log$f.error("Failed to reject sign data request", { error: error2 });
+      log$g.error("Failed to reject sign data request", { error: error2 });
       throw error2;
     }
   }
@@ -33303,7 +33326,7 @@ async function signTransactionInternal(wallet, request) {
   const signedBoc = await wallet.getSignedSendTransaction(request, {
     fakeSignature: false
   });
-  log$f.debug("Signing transaction", {
+  log$g.debug("Signing transaction", {
     messagesNumber: request.messages.length,
     fromAddress: request.fromAddress,
     validUntil: request.validUntil
@@ -33358,7 +33381,7 @@ function parseDomain(url) {
       value: parsedUrl.host
     };
   } catch (error2) {
-    log$f.error("Failed to parse domain", { error: error2 });
+    log$g.error("Failed to parse domain", { error: error2 });
     return { lengthBytes: 0, value: "" };
   }
 }
@@ -33390,7 +33413,7 @@ function toTonConnectSignDataPayload(payload) {
 const getEventUUID = () => {
   return crypto.randomUUID();
 };
-const log$e = globalLogger.createChild("EventStore");
+const log$f = globalLogger.createChild("EventStore");
 const MAX_EVENT_SIZE_BYTES = 100 * 1024;
 class StorageEventStore {
   storage;
@@ -33424,7 +33447,7 @@ class StorageEventStore {
       sizeBytes
     };
     await this.saveEvent(storedEvent);
-    log$e.info("Event stored", {
+    log$f.info("Event stored", {
       eventId: storedEvent.id,
       eventType,
       sizeBytes,
@@ -33463,11 +33486,11 @@ class StorageEventStore {
       const allEvents = await this.getAllEventsFromStorage();
       const event = allEvents[eventId];
       if (!event) {
-        log$e.warn("Cannot lock non-existent event", { eventId });
+        log$f.warn("Cannot lock non-existent event", { eventId });
         return void 0;
       }
       if (event.status !== "new") {
-        log$e.debug("Cannot lock event - not in new status", {
+        log$f.debug("Cannot lock event - not in new status", {
           eventId,
           status: event.status,
           lockedBy: event.lockedBy
@@ -33482,7 +33505,7 @@ class StorageEventStore {
       };
       allEvents[eventId] = updatedEvent;
       await this.storage.set(this.storageKey, allEvents);
-      log$e.debug("Event lock acquired", { eventId, walletAddress: walletId });
+      log$f.debug("Event lock acquired", { eventId, walletAddress: walletId });
       return updatedEvent;
     });
   }
@@ -33510,7 +33533,7 @@ class StorageEventStore {
       };
       allEvents[eventId] = updatedEvent;
       await this.storage.set(this.storageKey, allEvents);
-      log$e.debug("Event retry count incremented", {
+      log$f.debug("Event retry count incremented", {
         eventId,
         retryCount: updatedEvent.retryCount,
         error: error2
@@ -33540,7 +33563,7 @@ class StorageEventStore {
       }
       allEvents[eventId] = updatedEvent;
       await this.storage.set(this.storageKey, allEvents);
-      log$e.debug("Event status updated", { eventId, oldStatus, newStatus: status });
+      log$f.debug("Event status updated", { eventId, oldStatus, newStatus: status });
       return updatedEvent;
     });
   }
@@ -33552,7 +33575,7 @@ class StorageEventStore {
       const allEvents = await this.getAllEventsFromStorage();
       return allEvents[eventId] || null;
     } catch (error2) {
-      log$e.warn("Failed to get event", { eventId, error: error2 });
+      log$f.warn("Failed to get event", { eventId, error: error2 });
       return null;
     }
   }
@@ -33572,7 +33595,7 @@ class StorageEventStore {
         };
         await this.saveEvent(recoveredEvent);
         recoveredCount++;
-        log$e.info("Recovered stale event", {
+        log$f.info("Recovered stale event", {
           eventId: event.id,
           lockedBy: event.lockedBy,
           staleMinutes: Math.round((now - event.processingStartedAt) / 6e4),
@@ -33581,7 +33604,7 @@ class StorageEventStore {
       }
     }
     if (recoveredCount > 0) {
-      log$e.info("Event recovery completed", { recoveredCount });
+      log$f.info("Event recovery completed", { recoveredCount });
     }
     return recoveredCount;
   }
@@ -33596,7 +33619,7 @@ class StorageEventStore {
     for (const event of events) {
       if (event.status === "completed" && event.completedAt && event.completedAt < cutoffTime || event.status === "errored" && event.createdAt < cutoffTime) {
         eventsToRemove.push(event.id);
-        log$e.debug("Marked event for cleanup", { eventId: event.id, status: event.status });
+        log$f.debug("Marked event for cleanup", { eventId: event.id, status: event.status });
       }
     }
     if (eventsToRemove.length > 0) {
@@ -33608,7 +33631,7 @@ class StorageEventStore {
         }
         await this.storage.set(this.storageKey, allEvents);
       });
-      log$e.info("Event cleanup completed", { cleanedUpCount });
+      log$f.info("Event cleanup completed", { cleanedUpCount });
     }
     return cleanedUpCount;
   }
@@ -33620,7 +33643,7 @@ class StorageEventStore {
       const allEvents = await this.getAllEventsFromStorage();
       return Object.values(allEvents);
     } catch (error2) {
-      log$e.warn("Failed to get all events", { error: error2 });
+      log$f.warn("Failed to get all events", { error: error2 });
       return [];
     }
   }
@@ -33648,7 +33671,7 @@ class StorageEventStore {
       const eventsData = await this.storage.get(this.storageKey);
       return eventsData || {};
     } catch (error2) {
-      log$e.warn("Failed to get events from storage", { error: error2 });
+      log$f.warn("Failed to get events from storage", { error: error2 });
       return {};
     }
   }
@@ -33683,7 +33706,7 @@ class StorageEventStore {
     }
   }
 }
-const log$d = globalLogger.createChild("EventProcessor");
+const log$e = globalLogger.createChild("EventProcessor");
 class StorageEventProcessor {
   eventStore;
   config;
@@ -33711,7 +33734,7 @@ class StorageEventProcessor {
     if (this.processorConfig.disableEvents) {
       return;
     }
-    this.eventEmitter.on("bridge-storage-updated", () => {
+    this.eventEmitter.on("bridgeStorageUpdated", () => {
       this.triggerProcessing();
     });
   }
@@ -33724,15 +33747,15 @@ class StorageEventProcessor {
     }
     if (walletId) {
       if (this.registeredWallets.has(walletId)) {
-        log$d.debug("Processing already registered for wallet", { walletId });
+        log$e.debug("Processing already registered for wallet", { walletId });
       } else {
         this.registeredWallets.add(walletId);
-        log$d.info("Registered wallet for event processing", { walletId });
+        log$e.info("Registered wallet for event processing", { walletId });
       }
     }
     if (!this.isProcessing) {
       this.isProcessing = true;
-      log$d.info("Started global event processing loop");
+      log$e.info("Started global event processing loop");
       this.processEventsLoop();
     } else {
       this.triggerProcessing();
@@ -33747,7 +33770,7 @@ class StorageEventProcessor {
     }
     if (walletId) {
       this.registeredWallets.delete(walletId);
-      log$d.info("Unregistered wallet from event processing", { walletId });
+      log$e.info("Unregistered wallet from event processing", { walletId });
     }
     if (this.registeredWallets.size === 0 && this.isProcessing && !walletId) {
       this.isProcessing = false;
@@ -33755,12 +33778,12 @@ class StorageEventProcessor {
         this.wakeUpResolver();
         this.wakeUpResolver = void 0;
       }
-      log$d.info("Stopped global event processing loop (no more wallets)");
+      log$e.info("Stopped global event processing loop (no more wallets)");
     }
   }
   async clearRegisteredWallets() {
     this.registeredWallets.clear();
-    log$d.info("Cleared registered wallets from event processing");
+    log$e.info("Cleared registered wallets from event processing");
   }
   /**
    * Process next available event from any source (wallet or no-wallet)
@@ -33794,7 +33817,7 @@ class StorageEventProcessor {
       const processed = await this.processEvent(eventToUse, walletId);
       return processed;
     } catch (error2) {
-      log$d.error("Error in processNextAvailableEvent", {
+      log$e.error("Error in processNextAvailableEvent", {
         error: error2.message
       });
       return false;
@@ -33806,9 +33829,9 @@ class StorageEventProcessor {
   async completeEvent(eventId) {
     try {
       await this.eventStore.updateEventStatus(eventId, "completed", "processing");
-      log$d.debug("Event marked as completed", { eventId });
+      log$e.debug("Event marked as completed", { eventId });
     } catch (error2) {
-      log$d.error("Failed to mark event as completed", {
+      log$e.error("Failed to mark event as completed", {
         eventId,
         error: error2.message
       });
@@ -33819,7 +33842,7 @@ class StorageEventProcessor {
    */
   startRecoveryLoop() {
     if (this.recoveryTimeoutId) {
-      log$d.debug("Recovery loop already running");
+      log$e.debug("Recovery loop already running");
       return;
     }
     const recoveryLoop = async () => {
@@ -33829,7 +33852,7 @@ class StorageEventProcessor {
           this.triggerProcessing();
         }
       } catch (error2) {
-        log$d.error("Error in recovery loop", { error: error2.message });
+        log$e.error("Error in recovery loop", { error: error2.message });
       }
       if (this.recoveryTimeoutId !== void 0) {
         this.recoveryTimeoutId = setTimeout(recoveryLoop, this.config.recoveryIntervalMs);
@@ -33839,7 +33862,7 @@ class StorageEventProcessor {
       try {
         await this.eventStore.cleanupOldEvents(this.config.retentionMs);
       } catch (error2) {
-        log$d.error("Error in cleanup loop", { error: error2.message });
+        log$e.error("Error in cleanup loop", { error: error2.message });
       }
       if (this.cleanupTimeoutId !== void 0) {
         this.cleanupTimeoutId = setTimeout(cleanupLoop, this.config.cleanupIntervalMs);
@@ -33847,7 +33870,7 @@ class StorageEventProcessor {
     };
     this.recoveryTimeoutId = setTimeout(recoveryLoop, this.config.recoveryIntervalMs);
     this.cleanupTimeoutId = setTimeout(cleanupLoop, this.config.cleanupIntervalMs);
-    log$d.info("Recovery and cleanup loops started");
+    log$e.info("Recovery and cleanup loops started");
   }
   /**
    * Stop the recovery process
@@ -33861,7 +33884,7 @@ class StorageEventProcessor {
       clearTimeout(this.cleanupTimeoutId);
       this.cleanupTimeoutId = void 0;
     }
-    log$d.info("Recovery and cleanup loops stopped");
+    log$e.info("Recovery and cleanup loops stopped");
   }
   // Private helper methods
   /**
@@ -33871,12 +33894,12 @@ class StorageEventProcessor {
   async processEvent(event, walletId) {
     const acquiredEvent = await this.eventStore.acquireLock(event.id, walletId);
     if (!acquiredEvent) {
-      log$d.debug("Failed to acquire lock on event", { eventId: event.id, walletId });
+      log$e.debug("Failed to acquire lock on event", { eventId: event.id, walletId });
       return false;
     }
     const retryCount = event.retryCount || 0;
     if (retryCount >= this.config.maxRetries) {
-      log$d.error("Event exceeded max retries, marking as errored", {
+      log$e.error("Event exceeded max retries, marking as errored", {
         eventId: event.id,
         retryCount,
         maxRetries: this.config.maxRetries
@@ -33884,14 +33907,14 @@ class StorageEventProcessor {
       try {
         await this.eventStore.updateEventStatus(event.id, "errored", "processing");
       } catch (error2) {
-        log$d.error("Failed to mark event as errored", {
+        log$e.error("Failed to mark event as errored", {
           eventId: event.id,
           error: error2.message
         });
       }
       return false;
     }
-    log$d.info("Processing event", {
+    log$e.info("Processing event", {
       eventId: event.id,
       eventType: event.eventType,
       walletId,
@@ -33911,11 +33934,11 @@ class StorageEventProcessor {
         ...walletAddress ? { walletAddress } : {}
       });
       await this.eventStore.updateEventStatus(event.id, "completed", "processing");
-      log$d.info("Event processing completed", { eventId: event.id });
+      log$e.info("Event processing completed", { eventId: event.id });
       return true;
     } catch (error2) {
       const errorMessage = error2.message ?? "Unknown error";
-      log$d.error("Error processing event", {
+      log$e.error("Error processing event", {
         eventId: event.id,
         error: errorMessage,
         retryCount
@@ -33923,7 +33946,7 @@ class StorageEventProcessor {
       try {
         await this.eventStore.releaseLock(event.id, errorMessage);
       } catch (updateError) {
-        log$d.error("Failed to increment retry count", {
+        log$e.error("Failed to increment retry count", {
           eventId: event.id,
           error: updateError.message
         });
@@ -33942,21 +33965,21 @@ class StorageEventProcessor {
           await this.waitForWakeUpOrTimeout(500);
         }
       } catch (error2) {
-        log$d.error("Error in global processing loop", {
+        log$e.error("Error in global processing loop", {
           error: error2.message
         });
         await this.waitForWakeUpOrTimeout(500);
       }
     }
     this.wakeUpResolver = void 0;
-    log$d.debug("Global processing loop ended");
+    log$e.debug("Global processing loop ended");
   }
   /**
    * Trigger the global processing loop
    */
   triggerProcessing() {
     if (this.isProcessing && this.wakeUpResolver) {
-      log$d.debug("Waking up global processing loop");
+      log$e.debug("Waking up global processing loop");
       this.wakeUpResolver();
     }
   }
@@ -34734,6 +34757,9 @@ async function getJettonWalletAddressFromClient(client2, jettonAddress, ownerAdd
 async function getJettonBalanceFromClient(client2, jettonWalletAddress) {
   try {
     const result = await client2.runGetMethod(jettonWalletAddress, "get_wallet_data");
+    if (result.exitCode !== 0) {
+      return "0";
+    }
     const parsedStack = ParseStack(result.stack);
     const balance = parsedStack[0].type === "int" ? parsedStack[0].value : 0n;
     return balance.toString();
@@ -34865,7 +34891,7 @@ function createTransferTransaction(params) {
     fromAddress: params.fromAddress
   };
 }
-const log$c = globalLogger.createChild("WalletTonClass");
+const log$d = globalLogger.createChild("WalletTonClass");
 class WalletTonClass {
   async createTransferTonTransaction(param) {
     if (!isValidAddress(param.recipientAddress)) {
@@ -34936,12 +34962,12 @@ class WalletTonClass {
   }
   async sendTransaction(request) {
     try {
-      const boc = await this.getSignedSendTransaction(request);
+      const boc = await this.getSignedSendTransaction(request, { fakeSignature: false });
       await CallForSuccess(() => this.getClient().sendBoc(boc));
       const { hash: normalizedHash, boc: normalizedBoc } = getNormalizedExtMessageHash(boc);
       return { boc, normalizedBoc, normalizedHash };
     } catch (error2) {
-      log$c.error("Failed to send transaction", { error: error2 });
+      log$d.error("Failed to send transaction", { error: error2 });
       if (error2 instanceof WalletKitError) {
         throw error2;
       }
@@ -35028,7 +35054,7 @@ class WalletNftClass {
     });
   }
 }
-const log$b = globalLogger.createChild("Initializer");
+const log$c = globalLogger.createChild("Initializer");
 class Initializer {
   config;
   networkManager;
@@ -35044,12 +35070,12 @@ class Initializer {
    */
   async initialize(options, networkManager) {
     try {
-      log$b.info("Initializing TonWalletKit...");
+      log$c.info("Initializing TonWalletKit...");
       this.networkManager = networkManager;
       const storage = this.initializeStorage(options);
       const { walletManager, sessionManager, bridgeManager, eventRouter, eventProcessor } = await this.initializeManagers(options, storage);
       const { requestProcessor } = this.initializeProcessors(sessionManager, bridgeManager, walletManager);
-      log$b.info("TonWalletKit initialized successfully");
+      log$c.info("TonWalletKit initialized successfully");
       return {
         walletManager,
         sessionManager,
@@ -35060,7 +35086,7 @@ class Initializer {
         eventProcessor
       };
     } catch (error2) {
-      log$b.error("Failed to initialize TonWalletKit", { error: error2 });
+      log$c.error("Failed to initialize TonWalletKit", { error: error2 });
       throw error2;
     }
   }
@@ -35101,9 +35127,9 @@ class Initializer {
     const bridgeManager = new BridgeManager(options?.walletManifest, options?.bridge, sessionManager, storage, eventStore, eventRouter, options, this.eventEmitter, this.analyticsManager);
     eventRouter.setBridgeManager(bridgeManager);
     bridgeManager.start().then(() => {
-      log$b.info("Bridge manager started successfully");
+      log$c.info("Bridge manager started successfully");
     }).catch((e) => {
-      log$b.error("Could not start bridge manager", { error: e?.toString?.() });
+      log$c.error("Could not start bridge manager", { error: e?.toString?.() });
     });
     const eventProcessor = new StorageEventProcessor(options?.eventProcessor, eventStore, DEFAULT_DURABLE_EVENTS_CONFIG, walletManager, sessionManager, eventRouter, this.eventEmitter);
     return {
@@ -35128,7 +35154,7 @@ class Initializer {
    */
   async cleanup(components) {
     try {
-      log$b.info("Cleaning up TonWalletKit components...");
+      log$c.info("Cleaning up TonWalletKit components...");
       if (components.eventProcessor) {
         components.eventProcessor.stopRecoveryLoop();
         await components.eventProcessor.clearRegisteredWallets();
@@ -35140,9 +35166,9 @@ class Initializer {
       if (components.eventRouter) {
         components.eventRouter.clearCallbacks();
       }
-      log$b.info("TonWalletKit cleanup completed");
+      log$c.info("TonWalletKit cleanup completed");
     } catch (error2) {
-      log$b.error("Error during cleanup", { error: error2 });
+      log$c.error("Error during cleanup", { error: error2 });
     }
   }
 }
@@ -36585,7 +36611,7 @@ class LRUCache {
     }
   }
 }
-const log$a = globalLogger.createChild("JettonsManager");
+const log$b = globalLogger.createChild("JettonsManager");
 function createCacheKey(network, address) {
   return `${network.chainId}:${address}`;
 }
@@ -36606,13 +36632,7 @@ class JettonsManager {
     for (const network of this.networkManager.getConfiguredNetworks()) {
       this.addTonToCache(network);
     }
-    log$a.info("JettonsManager initialized", { cacheSize });
-    this.eventEmitter.on("emulation:result", (emulationResult) => {
-      if (emulationResult && typeof emulationResult === "object" && "metadata" in emulationResult && "network" in emulationResult) {
-        const network = emulationResult.network;
-        this.addJettonsFromEmulationMetadata(Network.custom(network), emulationResult.metadata);
-      }
-    });
+    log$b.info("JettonsManager initialized", { cacheSize });
   }
   /**
    * Add TON native token to cache for a specific network
@@ -36644,13 +36664,13 @@ class JettonsManager {
       const cacheKey = this.normalizedCacheKey(targetNetwork, jettonAddress);
       const cachedInfo = this.cache.get(cacheKey);
       if (cachedInfo) {
-        log$a.debug("Jetton info found in cache", { jettonAddress, network: targetNetwork });
+        log$b.debug("Jetton info found in cache", { jettonAddress, network: targetNetwork });
         return cachedInfo;
       }
-      log$a.debug("Jetton info not found in cache", { jettonAddress, network: targetNetwork });
+      log$b.debug("Jetton info not found in cache", { jettonAddress, network: targetNetwork });
       const address = asMaybeAddressFriendly(jettonAddress);
       if (!address) {
-        log$a.error("Invalid jetton address format", { jettonAddress, network: targetNetwork });
+        log$b.error("Invalid jetton address format", { jettonAddress, network: targetNetwork });
         return null;
       }
       const apiClient = this.networkManager.getClient(targetNetwork);
@@ -36684,7 +36704,7 @@ class JettonsManager {
       }
       return null;
     } catch (error2) {
-      log$a.error("Error getting jetton info", { error: error2, jettonAddress, network: targetNetwork });
+      log$b.error("Error getting jetton info", { error: error2, jettonAddress, network: targetNetwork });
       return null;
     }
   }
@@ -36699,7 +36719,7 @@ class JettonsManager {
     const targetNetwork = network;
     try {
       const apiClient = this.networkManager.getClient(targetNetwork);
-      log$a.debug("Getting address jettons", {
+      log$b.debug("Getting address jettons", {
         userAddress,
         network: targetNetwork,
         offset,
@@ -36717,10 +36737,10 @@ class JettonsManager {
       for (const item of response.jettons) {
         addressJettons.push(item);
       }
-      log$a.debug("Retrieved address jettons", { count: addressJettons.length, network: targetNetwork });
+      log$b.debug("Retrieved address jettons", { count: addressJettons.length, network: targetNetwork });
       return addressJettons;
     } catch (error2) {
-      log$a.error("Failed to get address jettons", { error: error2, userAddress, network: targetNetwork });
+      log$b.error("Failed to get address jettons", { error: error2, userAddress, network: targetNetwork });
       throw new JettonError(`Failed to get jettons for address: ${error2 instanceof Error ? error2.message : "Unknown error"}`, JettonErrorCode.NETWORK_ERROR, error2);
     }
   }
@@ -36740,14 +36760,14 @@ class JettonsManager {
         uri: emulationInfo.extra.uri
       };
       this.cache.set(cacheKey, jettonInfo);
-      log$a.debug("Added jetton info from emulation to cache", {
+      log$b.debug("Added jetton info from emulation to cache", {
         jettonAddress,
         network,
         name: jettonInfo.name,
         symbol: jettonInfo.symbol
       });
     } catch (error2) {
-      log$a.error("Error adding jetton from emulation", { error: error2, jettonAddress, network });
+      log$b.error("Error adding jetton from emulation", { error: error2, jettonAddress, network });
     }
   }
   /**
@@ -36762,16 +36782,16 @@ class JettonsManager {
         }
         const jettonMasterInfo = addressMetadata.token_info.find((info) => typeof info === "object" && info !== null && "type" in info && info.type === "jetton_masters");
         if (jettonMasterInfo) {
-          log$a.debug("Adding jetton from emulation metadata", { jettonAddress, network });
+          log$b.debug("Adding jetton from emulation metadata", { jettonAddress, network });
           this.addJettonFromEmulation(network, jettonAddress, jettonMasterInfo);
           addedCount++;
         }
       }
       if (addedCount > 0) {
-        log$a.info("Added jettons from emulation metadata", { addedCount, network });
+        log$b.info("Added jettons from emulation metadata", { addedCount, network });
       }
     } catch (error2) {
-      log$a.error("Error adding jettons from emulation metadata", { error: error2, network });
+      log$b.error("Error adding jettons from emulation metadata", { error: error2, network });
     }
   }
   /**
@@ -36817,13 +36837,13 @@ class JettonsManager {
         }
       }
       this.addTonToCache(network);
-      log$a.info("Jetton cache cleared for network", { network });
+      log$b.info("Jetton cache cleared for network", { network });
     } else {
       this.cache.clear();
       for (const net of this.networkManager.getConfiguredNetworks()) {
         this.addTonToCache(net);
       }
-      log$a.info("Jetton cache cleared for all networks");
+      log$b.info("Jetton cache cleared for all networks");
     }
   }
 }
@@ -36927,7 +36947,7 @@ class DefiManager {
     return this.providers.has(providerId);
   }
 }
-const log$9 = globalLogger.createChild("SwapManager");
+const log$a = globalLogger.createChild("SwapManager");
 class SwapManager extends DefiManager {
   /**
    * Get a quote for swapping tokens
@@ -36936,7 +36956,7 @@ class SwapManager extends DefiManager {
    * @returns Promise resolving to swap quote
    */
   async getQuote(params, providerId) {
-    log$9.debug("Getting swap quote", {
+    log$a.debug("Getting swap quote", {
       fromToken: params.from,
       toToken: params.to,
       amount: params.amount,
@@ -36945,14 +36965,14 @@ class SwapManager extends DefiManager {
     });
     try {
       const quote = await this.getProvider(providerId || this.defaultProviderId).getQuote(params);
-      log$9.debug("Received swap quote", {
+      log$a.debug("Received swap quote", {
         fromAmount: quote.fromAmount,
         toAmount: quote.toAmount,
         priceImpact: quote.priceImpact
       });
       return quote;
     } catch (error2) {
-      log$9.error("Failed to get swap quote", { error: error2, params });
+      log$a.error("Failed to get swap quote", { error: error2, params });
       throw error2;
     }
   }
@@ -36963,16 +36983,16 @@ class SwapManager extends DefiManager {
    */
   async buildSwapTransaction(params) {
     const providerId = params.quote.providerId || this.defaultProviderId;
-    log$9.debug("Building swap transaction", {
+    log$a.debug("Building swap transaction", {
       providerId,
       userAddress: params.userAddress
     });
     try {
       const transaction = await this.getProvider(providerId).buildSwapTransaction(params);
-      log$9.debug("Built swap transaction", params.quote);
+      log$a.debug("Built swap transaction", params.quote);
       return transaction;
     } catch (error2) {
-      log$9.error("Failed to build swap transaction", { error: error2, params });
+      log$a.error("Failed to build swap transaction", { error: error2, params });
       throw error2;
     }
   }
@@ -36980,81 +37000,274 @@ class SwapManager extends DefiManager {
     return new SwapError(message, code, details);
   }
 }
-const log$8 = globalLogger.createChild("EventEmitter");
+const log$9 = globalLogger.createChild("EventEmitter");
 class EventEmitter {
-  listeners = /* @__PURE__ */ new Map();
+  listeners = {};
   /**
-   * Subscribe to an event
+   * Subscribe to an event.
+   * Returns an unsubscribe function.
    */
   on(eventName, listener) {
-    if (!this.listeners.has(eventName)) {
-      this.listeners.set(eventName, /* @__PURE__ */ new Set());
+    const eventListeners = this.listeners[eventName];
+    if (!eventListeners) {
+      this.listeners[eventName] = /* @__PURE__ */ new Set([listener]);
+    } else {
+      eventListeners.add(listener);
     }
-    this.listeners.get(eventName).add(listener);
-    log$8.debug("Event listener added", { eventName, totalListeners: this.listeners.get(eventName).size });
+    log$9.debug("Event listener added", {
+      eventName: String(eventName),
+      totalListeners: this.listeners[eventName]?.size
+    });
+    return () => this.off(eventName, listener);
   }
   /**
-   * Subscribe to an event once (automatically removes after first emission)
+   * Subscribe to an event once (automatically removes after first emission).
+   * Returns an unsubscribe function.
    */
   once(eventName, listener) {
-    const onceListener = (data) => {
-      this.off(eventName, onceListener);
-      listener(data);
+    const wrapper = (event) => {
+      this.off(eventName, wrapper);
+      listener(event);
     };
-    this.on(eventName, onceListener);
+    return this.on(eventName, wrapper);
   }
   /**
    * Unsubscribe from an event
    */
   off(eventName, listener) {
-    const eventListeners = this.listeners.get(eventName);
-    if (eventListeners) {
-      eventListeners.delete(listener);
-      log$8.debug("Event listener removed", { eventName, totalListeners: eventListeners.size });
-      if (eventListeners.size === 0) {
-        this.listeners.delete(eventName);
-      }
-    }
+    this.listeners[eventName]?.delete(listener);
   }
   /**
-   * Emit an event to all subscribers
+   * Emit an event to all subscribers.
    */
-  emit(eventName, data) {
-    const eventListeners = this.listeners.get(eventName);
+  emit(eventName, payload, source) {
+    const event = {
+      type: eventName,
+      timestamp: Date.now(),
+      source,
+      payload
+    };
+    const eventListeners = this.listeners[eventName];
     if (eventListeners) {
-      log$8.debug("Emitting event", { eventName, listenerCount: eventListeners.size });
       eventListeners.forEach((listener) => {
-        try {
-          listener(data);
-        } catch (error2) {
-          log$8.error("Error in event listener", { eventName, error: error2 });
-        }
+        listener(event);
       });
     }
   }
   /**
-   * Remove all listeners for a specific event
+   * Remove all listeners for a specific event or all events
    */
   removeAllListeners(eventName) {
     if (eventName) {
-      this.listeners.delete(eventName);
-      log$8.debug("All listeners removed for event", { eventName });
+      delete this.listeners[eventName];
+      log$9.debug("All listeners removed for event", { eventName: String(eventName) });
     } else {
-      this.listeners.clear();
-      log$8.debug("All event listeners cleared");
+      this.listeners = {};
+      log$9.debug("All event listeners cleared");
     }
   }
   /**
    * Get the number of listeners for an event
    */
   listenerCount(eventName) {
-    return this.listeners.get(eventName)?.size || 0;
+    return this.listeners[eventName]?.size || 0;
   }
   /**
    * Get all event names that have listeners
    */
   eventNames() {
-    return Array.from(this.listeners.keys());
+    return Object.keys(this.listeners);
+  }
+}
+const log$8 = globalLogger.createChild("StreamingManager");
+class StreamingManager {
+  eventEmitter;
+  providers = /* @__PURE__ */ new Map();
+  watchCounts = /* @__PURE__ */ new Map();
+  // network -> address -> count
+  providerFactories = /* @__PURE__ */ new Map();
+  constructor(eventEmitter) {
+    this.eventEmitter = eventEmitter;
+  }
+  /**
+   * Register a provider factory for a specific network.
+   */
+  registerProvider(network, factory) {
+    const networkId = String(network.chainId);
+    if (this.providerFactories.has(networkId)) {
+      log$8.warn(`Provider factory for network ${networkId} is already registered. Overriding with new factory.`);
+    }
+    this.providerFactories.set(networkId, factory);
+  }
+  /**
+   * Check if a provider factory is registered for a specific network.
+   */
+  hasProvider(network) {
+    return this.providerFactories.has(String(network.chainId));
+  }
+  /**
+   * Watch account balance changes.
+   */
+  watchBalance(network, address, onChange) {
+    const id = asAddressFriendly(address);
+    const unwatchProvider = this.addWatcher(network, "balance", id);
+    const off = this.eventEmitter.on("streaming:balance-update", ({ payload: update }) => {
+      if (compareAddress(address, update.address))
+        onChange(update);
+    });
+    return () => {
+      unwatchProvider();
+      off();
+    };
+  }
+  /**
+   * Watch transactions for an address.
+   */
+  watchTransactions(network, address, onChange) {
+    const id = asAddressFriendly(address);
+    const unwatchProvider = this.addWatcher(network, "transactions", id);
+    const off = this.eventEmitter.on("streaming:transactions", ({ payload: update }) => {
+      if (compareAddress(address, update.address))
+        onChange(update);
+    });
+    return () => {
+      unwatchProvider();
+      off();
+    };
+  }
+  /**
+   * Watch jetton changes for an address.
+   */
+  watchJettons(network, address, onChange) {
+    const id = asAddressFriendly(address);
+    const unwatchProvider = this.addWatcher(network, "jettons", id);
+    const off = this.eventEmitter.on("streaming:jettons-update", ({ payload: jetton }) => {
+      if (compareAddress(address, jetton.ownerAddress))
+        onChange(jetton);
+    });
+    return () => {
+      unwatchProvider();
+      off();
+    };
+  }
+  /**
+   * Bulk watch multiple types for an address.
+   */
+  watch(network, address, types, onUpdate) {
+    const unwatchers = types.map((type) => {
+      switch (type) {
+        case "balance":
+          return this.watchBalance(network, address, (u) => onUpdate("balance", u));
+        case "transactions":
+          return this.watchTransactions(network, address, (u) => onUpdate("transactions", u));
+        case "jettons":
+          return this.watchJettons(network, address, (u) => onUpdate("jettons", u));
+        default:
+          return () => {
+          };
+      }
+    });
+    return () => unwatchers.forEach((unwatch) => unwatch());
+  }
+  addWatcher(network, type, id) {
+    const networkId = String(network.chainId);
+    const resourceKey = `${type}:${id}`;
+    let networkWatch = this.watchCounts.get(networkId);
+    if (!networkWatch) {
+      networkWatch = /* @__PURE__ */ new Map();
+      this.watchCounts.set(networkId, networkWatch);
+    }
+    const currentCount = networkWatch.get(resourceKey) || 0;
+    const provider = this.getProvider(network);
+    if (currentCount === 0) {
+      this.callProviderWatch(provider, type, id);
+    }
+    networkWatch.set(resourceKey, currentCount + 1);
+    const networkWatchSnapshot = networkWatch;
+    return () => {
+      const count = networkWatchSnapshot.get(resourceKey) || 0;
+      if (count <= 1) {
+        networkWatchSnapshot.delete(resourceKey);
+        this.callProviderUnwatch(provider, type, id);
+      } else {
+        networkWatchSnapshot.set(resourceKey, count - 1);
+      }
+    };
+  }
+  callProviderWatch(provider, type, id) {
+    switch (type) {
+      case "balance":
+        provider.watchBalance(id);
+        break;
+      case "transactions":
+        provider.watchTransactions(id);
+        break;
+      case "jettons":
+        provider.watchJettons(id);
+        break;
+    }
+  }
+  callProviderUnwatch(provider, type, id) {
+    switch (type) {
+      case "balance":
+        provider.unwatchBalance(id);
+        break;
+      case "transactions":
+        provider.unwatchTransactions(id);
+        break;
+      case "jettons":
+        provider.unwatchJettons(id);
+        break;
+    }
+  }
+  getProvider(network) {
+    const networkId = String(network.chainId);
+    let provider = this.providers.get(networkId);
+    if (provider)
+      return provider;
+    const factory = this.providerFactories.get(networkId);
+    if (!factory) {
+      throw new Error(`No streaming provider factory registered for network ${networkId}`);
+    }
+    log$8.info("Creating new streaming provider", { networkId });
+    provider = factory({
+      network,
+      getWatchers: () => this.getWatchers(network),
+      listener: {
+        onBalanceUpdate: (update) => this.eventEmitter.emit("streaming:balance-update", update, "streaming-manager"),
+        onTransactions: (update) => this.eventEmitter.emit("streaming:transactions", update, "streaming-manager"),
+        onJettonsUpdate: (update) => this.eventEmitter.emit("streaming:jettons-update", update, "streaming-manager")
+      }
+    });
+    this.providers.set(networkId, provider);
+    return provider;
+  }
+  getWatchers(network) {
+    const networkId = String(network.chainId);
+    const networkWatch = this.watchCounts.get(networkId);
+    const result = /* @__PURE__ */ new Map();
+    if (!networkWatch)
+      return result;
+    networkWatch.forEach((count, key) => {
+      if (count > 0) {
+        const [type, id] = key.split(":");
+        let set = result.get(type);
+        if (!set) {
+          set = /* @__PURE__ */ new Set();
+          result.set(type, set);
+        }
+        set.add(id);
+      }
+    });
+    return result;
+  }
+  /**
+   * Close all active streaming connections.
+   */
+  shutdown() {
+    this.providers.forEach((provider) => provider.close());
+    this.providers.clear();
+    this.watchCounts.clear();
   }
 }
 var ContentType;
@@ -38128,6 +38341,7 @@ class TonWalletKit {
   networkManager;
   jettonsManager;
   swapManager;
+  streamingManager;
   initializer;
   eventProcessor;
   bridgeManager;
@@ -38152,11 +38366,12 @@ class TonWalletKit {
     }
     this.networkManager = new KitNetworkManager(options);
     this.eventEmitter = new EventEmitter();
+    this.streamingManager = new StreamingManager(this.eventEmitter);
     this.initializer = new Initializer(options, this.eventEmitter, this.analyticsManager);
     this.initializationPromise = this.initialize();
     this.jettonsManager = new JettonsManager(1e4, this.eventEmitter, this.networkManager);
     this.swapManager = new SwapManager();
-    this.eventEmitter.on("restoreConnection", async (event) => {
+    this.eventEmitter.on("restoreConnection", async ({ payload: event }) => {
       if (!event.domain) {
         log$4.error("Domain is required for restore connection");
         return this.sendErrorConnectResponse(event);
@@ -38447,6 +38662,22 @@ class TonWalletKit {
   removeErrorCallback() {
     this.eventRouter.removeErrorCallback();
   }
+  // === URL Parsing API ===
+  /**
+   * Allow to convert url to ConnectionRequestEvent to use inline way
+   */
+  async connectionEventFromUrl(url) {
+    await this.ensureInitialized();
+    try {
+      const bridgeEvent = this.parseBridgeConnectEventFromUrl(url);
+      const handler = new ConnectHandler(() => {
+      }, this.config, this.analyticsManager);
+      return await handler.handle(bridgeEvent);
+    } catch (error2) {
+      log$4.error("Failed to create connection event from URL", { error: error2, url });
+      throw error2;
+    }
+  }
   // === URL Processing API ===
   /**
    * Handle pasted TON Connect URL/link
@@ -38455,16 +38686,7 @@ class TonWalletKit {
   async handleTonConnectUrl(url) {
     await this.ensureInitialized();
     try {
-      const parsedUrl = this.parseTonConnectUrl(url);
-      if (!parsedUrl) {
-        throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Invalid TON Connect URL format", void 0, {
-          url
-        });
-      }
-      const bridgeEvent = this.createConnectEventFromUrl(parsedUrl);
-      if (!bridgeEvent) {
-        throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Invalid TON Connect URL - unable to create bridge event", void 0, { parsedUrl });
-      }
+      const bridgeEvent = this.parseBridgeConnectEventFromUrl(url);
       await this.eventRouter.routeEvent(bridgeEvent);
     } catch (error2) {
       log$4.error("Failed to handle TON Connect URL", { error: error2, url });
@@ -38487,6 +38709,22 @@ class TonWalletKit {
       walletAddress: asAddressFriendly(wallet.getAddress())
     };
     await this.eventRouter.routeEvent(bridgeEvent);
+  }
+  /**
+   * Parse and validate TON Connect URL into a RawBridgeEventConnect
+   */
+  parseBridgeConnectEventFromUrl(url) {
+    const parsedUrl = this.parseTonConnectUrl(url);
+    if (!parsedUrl) {
+      throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Invalid TON Connect URL format", void 0, {
+        url
+      });
+    }
+    const bridgeEvent = this.createConnectEventFromUrl(parsedUrl);
+    if (!bridgeEvent) {
+      throw new WalletKitError(ERROR_CODES.VALIDATION_ERROR, "Invalid TON Connect URL - unable to create bridge event", void 0, { parsedUrl });
+    }
+    return bridgeEvent;
   }
   /**
    * Parse TON Connect URL to extract connection parameters
@@ -38643,6 +38881,12 @@ class TonWalletKit {
     return this.swapManager;
   }
   /**
+   * Streaming API access
+   */
+  get streaming() {
+    return this.streamingManager;
+  }
+  /**
    * Get the event emitter for this kit instance
    * Allows external components to listen to and emit events
    */
@@ -38729,9 +38973,9 @@ function mapJettonMasters(jettonInfo) {
         balance: "0",
         owner: jettonInfo.admin ? toRaw(jettonInfo.admin.address) : "",
         jetton: jettonRaw,
-        last_transaction_lt: "0",
-        code_hash: "",
-        data_hash: ""
+        last_transaction_lt: jettonInfo.last_transaction_lt?.toString() ?? "0",
+        code_hash: jettonInfo.code_hash ?? "",
+        data_hash: jettonInfo.data_hash ?? ""
       }
     ],
     address_book: addressBook,
@@ -38775,8 +39019,7 @@ function mapUserJettons(rawResponse) {
       balance: wallet.balance,
       info: {
         name: wallet.jetton.name,
-        description: "",
-        // TonApi does not provide description here
+        description: wallet.jetton.description ?? "",
         image: {
           url: wallet.jetton.image
         },
@@ -38825,6 +39068,7 @@ function mapNftItem(item) {
     })),
     extra: {
       isVerified,
+      trust: item.trust,
       contentUrl: item.metadata.content_url,
       previews: item.previews,
       approvedBy: item.approved_by
@@ -38854,6 +39098,17 @@ function mapNftItemsResponse(items) {
 const hexBocToBase64 = (hex) => {
   return Buffer.from(hex, "hex").toString("base64");
 };
+const decimalToInt257Hex = (value) => {
+  const normalized = value.trim();
+  if (!/^-?\d+$/.test(normalized)) {
+    throw new Error(`Invalid decimal stack number: ${value}`);
+  }
+  const parsed = BigInt(normalized);
+  if (parsed < 0n) {
+    return `-0x${(-parsed).toString(16)}`;
+  }
+  return `0x${parsed.toString(16)}`;
+};
 const mapTonApiGetMethodArgs = (stack) => {
   return (stack || []).map((item) => {
     switch (item.type) {
@@ -38866,7 +39121,7 @@ const mapTonApiGetMethodArgs = (stack) => {
         if (item.value.startsWith("0x") || item.value.startsWith("-0x")) {
           return { type: "int257", value: item.value };
         }
-        return { type: "tinyint", value: item.value };
+        return { type: "int257", value: decimalToInt257Hex(item.value) };
       case "cell":
         return { type: "cell_boc_base64", value: item.value };
       case "slice":
@@ -38899,6 +39154,374 @@ const mapTonApiTvmStackRecord = (item) => {
       throw new Error(`Unsupported TonApi stack item type: ${item.type}`);
   }
 };
+function toHex(value) {
+  const normalized = value.trim();
+  if (!normalized) {
+    throw new Error("Invalid hex value: empty input");
+  }
+  if (isHex(normalized)) {
+    return normalized.toLowerCase();
+  }
+  if (/^[0-9a-fA-F]+$/.test(normalized) && normalized.length % 2 === 0) {
+    return `0x${normalized.toLowerCase()}`;
+  }
+  try {
+    return Base64ToHex(Base64Normalize(normalized)).toLowerCase();
+  } catch {
+  }
+  throw new Error(`Invalid hex value: ${value}`);
+}
+function parseBlockRef(block) {
+  if (!block) {
+    return { workchain: 0, shard: "", seqno: 0 };
+  }
+  const matches = block.match(/\(\s*(-?\d+)\s*,\s*([^,]+)\s*,\s*(-?\d+)\s*\)/);
+  if (!matches) {
+    return { workchain: 0, shard: block, seqno: 0 };
+  }
+  const workchain = Number(matches[1]);
+  const seqno = Number(matches[3]);
+  return {
+    workchain: Number.isFinite(workchain) ? workchain : 0,
+    shard: matches[2].trim(),
+    seqno: Number.isFinite(seqno) ? seqno : 0
+  };
+}
+function toAccountStatus(status) {
+  if (!status)
+    return void 0;
+  if (status === "active")
+    return { type: "active" };
+  if (status === "frozen")
+    return { type: "frozen" };
+  if (status === "uninit")
+    return { type: "uninit" };
+  if (status === "nonexist")
+    return { type: "unknown", value: "nonexist" };
+  return { type: "unknown", value: status };
+}
+function mapTonApiMessage(raw) {
+  const extra = {};
+  for (const currency of raw.value_extra ?? []) {
+    extra[Number(currency.id)] = String(currency.amount ?? 0);
+  }
+  return {
+    hash: toHex(raw.hash),
+    source: raw.source ? asAddressFriendly(raw.source.address) : void 0,
+    destination: raw.destination ? asAddressFriendly(raw.destination.address) : void 0,
+    value: raw.value !== void 0 && raw.value !== null ? String(raw.value) : void 0,
+    valueExtraCurrencies: extra,
+    fwdFee: raw.fwd_fee !== void 0 && raw.fwd_fee !== null ? String(raw.fwd_fee) : void 0,
+    ihrFee: raw.ihr_fee !== void 0 && raw.ihr_fee !== null ? String(raw.ihr_fee) : void 0,
+    creationLogicalTime: raw.created_lt !== void 0 && raw.created_lt !== null ? String(raw.created_lt) : void 0,
+    createdAt: raw.created_at ? Number(raw.created_at) : void 0,
+    opcode: raw.op_code ?? void 0,
+    ihrDisabled: raw.ihr_disabled ?? void 0,
+    isBounce: raw.bounce ?? void 0,
+    isBounced: raw.bounced ?? void 0,
+    importFee: raw.import_fee !== void 0 && raw.import_fee !== null ? String(raw.import_fee) : void 0,
+    messageContent: {
+      body: void 0,
+      decoded: raw.decoded_body
+    }
+  };
+}
+function mapTonApiDescription(raw) {
+  return {
+    type: raw.transaction_type ?? "ord",
+    isAborted: raw.aborted ?? !(raw.success ?? true),
+    isDestroyed: raw.destroyed ?? false,
+    isCreditFirst: false,
+    isTock: false,
+    isInstalled: false,
+    storagePhase: {
+      storageFeesCollected: String(raw.storage_phase?.storage_fees_collected ?? 0),
+      statusChange: raw.storage_phase?.status_change ?? "unchanged"
+    },
+    creditPhase: raw.credit_phase?.credit !== void 0 && raw.credit_phase?.credit !== null ? {
+      credit: String(raw.credit_phase.credit)
+    } : void 0,
+    computePhase: {
+      isSkipped: raw.compute_phase?.skipped ?? false,
+      isSuccess: raw.compute_phase?.success ?? raw.success ?? true,
+      isMessageStateUsed: false,
+      isAccountActivated: false,
+      gasFees: String(raw.compute_phase?.gas_fees ?? 0),
+      gasUsed: String(raw.compute_phase?.gas_used ?? 0),
+      gasLimit: String(raw.compute_phase?.gas_used ?? 0),
+      mode: 0,
+      exitCode: raw.compute_phase?.exit_code ?? (raw.success ? 0 : 1),
+      vmStepsNumber: raw.compute_phase?.vm_steps ?? 0
+    },
+    action: {
+      isSuccess: raw.action_phase?.success ?? raw.success ?? true,
+      isValid: true,
+      hasNoFunds: false,
+      statusChange: "unchanged",
+      totalForwardingFees: String(raw.action_phase?.fwd_fees ?? 0),
+      totalActionFees: String(raw.action_phase?.total_fees ?? 0),
+      resultCode: raw.action_phase?.result_code ?? 0,
+      totalActionsNumber: raw.action_phase?.total_actions ?? 0,
+      specActionsNumber: 0,
+      skippedActionsNumber: raw.action_phase?.skipped_actions ?? 0,
+      messagesCreatedNumber: raw.out_msgs?.length ?? 0,
+      totalMessagesSize: {
+        cells: "0",
+        bits: "0"
+      }
+    }
+  };
+}
+function mapTonApiTransaction(raw) {
+  const blockRef = parseBlockRef(raw.block);
+  return {
+    account: asAddressFriendly(raw.account.address),
+    hash: toHex(raw.hash),
+    logicalTime: String(raw.lt),
+    now: Number(raw.utime ?? 0),
+    mcBlockSeqno: blockRef.seqno,
+    traceExternalHash: toHex(raw.hash),
+    previousTransactionHash: raw.prev_trans_hash || void 0,
+    previousTransactionLogicalTime: raw.prev_trans_lt !== void 0 && raw.prev_trans_lt !== null ? String(raw.prev_trans_lt) : void 0,
+    origStatus: toAccountStatus(raw.orig_status),
+    endStatus: toAccountStatus(raw.end_status),
+    totalFees: String(raw.total_fees ?? 0),
+    totalFeesExtraCurrencies: {},
+    blockRef,
+    inMessage: raw.in_msg ? mapTonApiMessage(raw.in_msg) : void 0,
+    outMessages: (raw.out_msgs ?? []).map((message) => mapTonApiMessage(message)),
+    description: mapTonApiDescription(raw),
+    isEmulated: false
+  };
+}
+function mapTraceStatus(status) {
+  if (!status || status === "nonexist") {
+    return "uninit";
+  }
+  if (status === "active" || status === "frozen" || status === "uninit") {
+    return status;
+  }
+  return status;
+}
+function flattenTrace(trace) {
+  const out = [trace.transaction];
+  for (const child of trace.children ?? []) {
+    out.push(...flattenTrace(child));
+  }
+  return out;
+}
+function mapTonApiTraceNode(trace) {
+  return {
+    tx_hash: trace.transaction.hash,
+    in_msg_hash: trace.transaction.in_msg?.hash ?? null,
+    children: (trace.children ?? []).map((child) => mapTonApiTraceNode(child))
+  };
+}
+function mapTonApiTraceMessage(raw) {
+  const extraCurrencies = {};
+  for (const currency of raw.value_extra ?? []) {
+    extraCurrencies[String(currency.id)] = String(currency.amount ?? 0);
+  }
+  return {
+    hash: raw.hash ?? "",
+    source: raw.source?.address ?? null,
+    destination: raw.destination?.address ?? "",
+    value: raw.value !== void 0 && raw.value !== null ? String(raw.value) : null,
+    value_extra_currencies: extraCurrencies,
+    fwd_fee: raw.fwd_fee !== void 0 && raw.fwd_fee !== null ? String(raw.fwd_fee) : null,
+    ihr_fee: raw.ihr_fee !== void 0 && raw.ihr_fee !== null ? String(raw.ihr_fee) : null,
+    created_lt: raw.created_lt !== void 0 && raw.created_lt !== null ? String(raw.created_lt) : null,
+    created_at: raw.created_at !== void 0 && raw.created_at !== null ? String(raw.created_at) : null,
+    opcode: raw.op_code ?? null,
+    ihr_disabled: raw.ihr_disabled ?? null,
+    bounce: raw.bounce ?? null,
+    bounced: raw.bounced ?? null,
+    import_fee: raw.import_fee !== void 0 && raw.import_fee !== null ? String(raw.import_fee) : null,
+    message_content: {
+      hash: "",
+      body: "",
+      decoded: raw.decoded_body ?? null
+    },
+    init_state: null,
+    hash_norm: void 0
+  };
+}
+function mapTonApiTraceTransaction(raw) {
+  const blockRef = parseBlockRef(raw.block);
+  const inMsg = raw.in_msg ? mapTonApiTraceMessage(raw.in_msg) : null;
+  const outMsgs = (raw.out_msgs ?? []).map((message) => mapTonApiTraceMessage(message));
+  return {
+    account: raw.account.address,
+    hash: raw.hash,
+    lt: String(raw.lt ?? 0),
+    now: Number(raw.utime ?? 0),
+    mc_block_seqno: blockRef.seqno,
+    trace_external_hash: raw.hash,
+    prev_trans_hash: raw.prev_trans_hash ?? null,
+    prev_trans_lt: raw.prev_trans_lt !== void 0 && raw.prev_trans_lt !== null ? String(raw.prev_trans_lt) : null,
+    orig_status: mapTraceStatus(raw.orig_status),
+    end_status: mapTraceStatus(raw.end_status),
+    total_fees: String(raw.total_fees ?? 0),
+    total_fees_extra_currencies: {},
+    description: {
+      type: raw.transaction_type ?? "ord",
+      aborted: raw.aborted ?? !(raw.success ?? true),
+      destroyed: raw.destroyed ?? false,
+      credit_first: false,
+      is_tock: false,
+      installed: false,
+      storage_ph: {
+        storage_fees_collected: String(raw.storage_phase?.storage_fees_collected ?? 0),
+        status_change: raw.storage_phase?.status_change ?? "unchanged"
+      },
+      credit_ph: raw.credit_phase?.credit !== void 0 && raw.credit_phase?.credit !== null ? { credit: String(raw.credit_phase.credit) } : void 0,
+      compute_ph: {
+        skipped: raw.compute_phase?.skipped ?? false,
+        success: raw.compute_phase?.success ?? raw.success ?? true,
+        msg_state_used: false,
+        account_activated: false,
+        gas_fees: String(raw.compute_phase?.gas_fees ?? 0),
+        gas_used: String(raw.compute_phase?.gas_used ?? 0),
+        gas_limit: String(raw.compute_phase?.gas_used ?? 0),
+        mode: 0,
+        exit_code: raw.compute_phase?.exit_code ?? (raw.success ? 0 : 1),
+        vm_steps: raw.compute_phase?.vm_steps ?? 0,
+        vm_init_state_hash: "",
+        vm_final_state_hash: ""
+      },
+      action: {
+        success: raw.action_phase?.success ?? raw.success ?? true,
+        valid: true,
+        no_funds: false,
+        status_change: "unchanged",
+        total_fwd_fees: String(raw.action_phase?.fwd_fees ?? 0),
+        total_action_fees: String(raw.action_phase?.total_fees ?? 0),
+        result_code: raw.action_phase?.result_code ?? 0,
+        tot_actions: raw.action_phase?.total_actions ?? 0,
+        spec_actions: 0,
+        skipped_actions: raw.action_phase?.skipped_actions ?? 0,
+        msgs_created: raw.out_msgs?.length ?? 0,
+        action_list_hash: "",
+        tot_msg_size: {
+          cells: "0",
+          bits: "0"
+        }
+      }
+    },
+    block_ref: {
+      workchain: blockRef.workchain,
+      shard: blockRef.shard,
+      seqno: blockRef.seqno
+    },
+    in_msg: inMsg,
+    out_msgs: outMsgs,
+    account_state_before: {
+      hash: "",
+      balance: String(raw.end_balance ?? 0),
+      extra_currencies: null,
+      account_status: mapTraceStatus(raw.orig_status),
+      frozen_hash: null,
+      data_hash: null,
+      code_hash: null
+    },
+    account_state_after: {
+      hash: "",
+      balance: String(raw.end_balance ?? 0),
+      extra_currencies: null,
+      account_status: mapTraceStatus(raw.end_status),
+      frozen_hash: null,
+      data_hash: null,
+      code_hash: null
+    },
+    emulated: false,
+    trace_id: raw.hash
+  };
+}
+function mapTonApiTrace(trace, mapTraceTransaction) {
+  const traceTransactions = flattenTrace(trace);
+  const transactions = Object.fromEntries(traceTransactions.map((tx) => [tx.hash, mapTraceTransaction(tx)]));
+  const transactionsOrder = [...traceTransactions].sort((a2, b2) => BigInt(a2.lt ?? 0) < BigInt(b2.lt ?? 0) ? -1 : 1).map((tx) => tx.hash);
+  const lts = traceTransactions.map((tx) => BigInt(tx.lt ?? 0));
+  const times = traceTransactions.map((tx) => Number(tx.utime ?? 0));
+  const startLt = lts.length > 0 ? lts.reduce((min, value) => value < min ? value : min, lts[0]) : 0n;
+  const endLt = lts.length > 0 ? lts.reduce((max, value) => value > max ? value : max, lts[0]) : 0n;
+  const startUtime = times.length > 0 ? Math.min(...times) : 0;
+  const endUtime = times.length > 0 ? Math.max(...times) : 0;
+  const traceId = trace.transaction.hash;
+  const rootTx = mapTraceTransaction(trace.transaction);
+  const messagesCount = traceTransactions.reduce((acc, tx) => acc + (tx.in_msg ? 1 : 0) + (tx.out_msgs?.length ?? 0), 0);
+  return {
+    address_book: {},
+    metadata: {},
+    traces: [
+      {
+        actions: [],
+        end_lt: endLt.toString(),
+        end_utime: endUtime,
+        external_hash: rootTx.in_msg?.hash ?? "",
+        is_incomplete: false,
+        mc_seqno_end: String(rootTx.mc_block_seqno ?? 0),
+        mc_seqno_start: String(rootTx.mc_block_seqno ?? 0),
+        start_lt: startLt.toString(),
+        start_utime: startUtime,
+        trace: mapTonApiTraceNode(trace),
+        trace_id: traceId,
+        trace_info: {
+          classification_state: "tonapi",
+          messages: messagesCount,
+          pending_messages: 0,
+          trace_state: "complete",
+          transactions: traceTransactions.length
+        },
+        transactions,
+        transactions_order: transactionsOrder,
+        warning: ""
+      }
+    ]
+  };
+}
+function normalizeTonApiAccountAddress(account) {
+  if (typeof account === "string") {
+    return account;
+  }
+  return account?.address ?? "";
+}
+function mapTonApiEvent(raw) {
+  return {
+    eventId: toHex(raw.event_id),
+    account: toAccount(raw.account, {}),
+    timestamp: Number(raw.timestamp ?? 0),
+    actions: (raw.actions ?? []).map((action) => {
+      const status = action.status === "failed" ? "failure" : "success";
+      const actionType = action.type ?? "Unknown";
+      const payload = actionType ? action[actionType] : void 0;
+      const actionIdSource = action.base_transactions?.[0] ?? raw.event_id;
+      return {
+        type: actionType,
+        id: toHex(actionIdSource),
+        status,
+        simplePreview: {
+          name: action.simple_preview?.name ?? actionType ?? "Action",
+          description: action.simple_preview?.description ?? action.simple_preview?.name ?? "Action",
+          value: action.simple_preview?.value ?? "",
+          accounts: (action.simple_preview?.accounts ?? []).map((account) => toAccount(normalizeTonApiAccountAddress(account), {})),
+          valueImage: action.simple_preview?.value_image
+        },
+        baseTransactions: (action.base_transactions ?? []).map((transactionHash) => toHex(String(transactionHash))),
+        ...payload && typeof payload === "object" ? { [actionType]: payload } : {}
+      };
+    }),
+    isScam: raw.is_scam ?? false,
+    lt: Number(raw.lt ?? 0),
+    inProgress: raw.in_progress ?? false,
+    trace: {
+      tx_hash: "",
+      in_msg_hash: null,
+      children: []
+    },
+    transactions: {}
+  };
+}
 function mapMasterchainInfo(rawResponse) {
   return {
     seqno: rawResponse.seqno,
@@ -38951,7 +39574,7 @@ class ApiClientTonApi extends BaseApiClient {
     return mapJettonMasters(raw);
   }
   async jettonsByOwnerAddress(request) {
-    const raw = await this.getJson(`/v2/accounts/${request.ownerAddress}/jettons?currencies=usd`);
+    const raw = await this.getJson(`/v2/accounts/${this.normalizeAddress(request.ownerAddress)}/jettons?currencies=usd`);
     return mapUserJettons(raw);
   }
   async nftItemsByAddress(request) {
@@ -38959,7 +39582,7 @@ class ApiClientTonApi extends BaseApiClient {
       throw new Error("TonApi requires an address to fetch NFT items.");
     }
     try {
-      const raw = await this.getJson(`/v2/nfts/${request.address}`);
+      const raw = await this.getJson(`/v2/nfts/${this.normalizeAddress(request.address)}`);
       return mapNftItemsResponse([raw]);
     } catch (e) {
       if (e instanceof TonClientError && e.status === 404) {
@@ -38974,7 +39597,7 @@ class ApiClientTonApi extends BaseApiClient {
       query.limit = request.pagination.limit;
     if (request.pagination?.offset)
       query.offset = request.pagination.offset;
-    const raw = await this.getJson(`/v2/accounts/${request.ownerAddress}/nfts`, query);
+    const raw = await this.getJson(`/v2/accounts/${this.normalizeAddress(request.ownerAddress)}/nfts`, query);
     return mapNftItemsResponse(raw.nft_items);
   }
   async sendBoc(boc) {
@@ -39001,20 +39624,85 @@ class ApiClientTonApi extends BaseApiClient {
       stack: (raw.stack || []).map(mapTonApiTvmStackRecord)
     };
   }
-  async getAccountTransactions(_request) {
-    throw new Error("Method not implemented.");
+  async getAccountTransactions(request) {
+    const address = request.address?.[0];
+    if (!address) {
+      return { transactions: [], addressBook: {} };
+    }
+    const limit = Math.max(1, Math.min(request.limit ?? 10, 100));
+    const offset = Math.max(0, request.offset ?? 0);
+    const response = await this.getJson(`/v2/blockchain/accounts/${address}/transactions`, {
+      limit,
+      offset,
+      sort_order: "desc"
+    });
+    const transactions = (response.transactions ?? []).map(mapTonApiTransaction);
+    return {
+      transactions,
+      addressBook: {}
+    };
   }
-  async getTransactionsByHash(_request) {
-    throw new Error("Method not implemented.");
+  async getTransactionsByHash(request) {
+    const isMessageHash = "msgHash" in request;
+    const requestHash = isMessageHash ? request.msgHash : request.bodyHash;
+    const normalizedHash = this.normalizeTonApiId(requestHash);
+    const byTransaction = async () => this.getJson(`/v2/blockchain/transactions/${normalizedHash}`);
+    const byMessage = async () => this.getJson(`/v2/blockchain/messages/${normalizedHash}/transaction`);
+    const primaryRequest = isMessageHash ? byMessage : byTransaction;
+    const fallbackRequest = isMessageHash ? byTransaction : byMessage;
+    let tx;
+    try {
+      tx = await primaryRequest();
+    } catch (error2) {
+      if (!(error2 instanceof TonClientError) || error2.status !== 404) {
+        throw error2;
+      }
+      tx = await fallbackRequest();
+    }
+    return {
+      transactions: [mapTonApiTransaction(tx)],
+      addressBook: {}
+    };
   }
   async getPendingTransactions(_request) {
-    throw new Error("Method not implemented.");
+    return {
+      transactions: [],
+      addressBook: {}
+    };
   }
-  async getTrace(_request) {
-    throw new Error("Method not implemented.");
+  async getTrace(request) {
+    const candidates = request.traceId && request.traceId.length > 0 ? request.traceId : [];
+    if (request.account) {
+      candidates.push(String(request.account));
+    }
+    for (const candidate of candidates) {
+      const traceId = this.normalizeTonApiId(candidate);
+      try {
+        const trace = await this.getJson(`/v2/traces/${traceId}`);
+        return mapTonApiTrace(trace, mapTonApiTraceTransaction);
+      } catch (error2) {
+        if (error2 instanceof TonClientError && error2.status === 404) {
+          continue;
+        }
+        throw error2;
+      }
+    }
+    throw new Error("Failed to fetch trace");
   }
-  async getPendingTrace(_request) {
-    throw new Error("Method not implemented.");
+  async getPendingTrace(request) {
+    for (const messageHash of request.externalMessageHash) {
+      const normalizedHash = this.normalizeTonApiId(messageHash);
+      try {
+        const tx = await this.getJson(`/v2/blockchain/messages/${normalizedHash}/transaction`);
+        return await this.getTrace({ traceId: [tx.hash] });
+      } catch (error2) {
+        if (error2 instanceof TonClientError && error2.status === 404) {
+          continue;
+        }
+        throw error2;
+      }
+    }
+    throw new Error("Failed to fetch pending trace");
   }
   async resolveDnsWallet(domain) {
     try {
@@ -39033,8 +39721,23 @@ class ApiClientTonApi extends BaseApiClient {
       return null;
     }
   }
-  async getEvents(_request) {
-    throw new Error("Method not implemented.");
+  async getEvents(request) {
+    const account = String(request.account);
+    const limit = Math.max(1, Math.min(request.limit ?? 20, 100));
+    const offset = Math.max(0, request.offset ?? 0);
+    const response = await this.getJson(`/v2/accounts/${account}/events`, {
+      limit,
+      offset,
+      sort_order: "desc",
+      i18n: "en"
+    });
+    const pageEvents = response.events ?? [];
+    return {
+      events: pageEvents.map(mapTonApiEvent),
+      offset,
+      limit,
+      hasNext: Number(response.next_from ?? 0) > 0 || pageEvents.length >= limit
+    };
   }
   async getMasterchainInfo() {
     const raw = await this.getJson(`/v2/blockchain/masterchain-head`);
@@ -39043,6 +39746,30 @@ class ApiClientTonApi extends BaseApiClient {
   appendAuthHeaders(headers) {
     if (this.apiKey) {
       headers.set("Authorization", `Bearer ${this.apiKey}`);
+    }
+  }
+  normalizeTonApiId(value) {
+    const normalizedValue = value.trim();
+    if (!normalizedValue) {
+      throw new Error("Invalid TonAPI id: value is required");
+    }
+    if (isHex(normalizedValue)) {
+      return normalizedValue.toLowerCase();
+    }
+    if (/^[0-9a-fA-F]+$/.test(normalizedValue) && normalizedValue.length % 2 === 0) {
+      return `0x${normalizedValue.toLowerCase()}`;
+    }
+    const normalizedBase64 = Base64Normalize(normalizedValue);
+    return Base64ToHex(normalizedBase64).toLowerCase();
+  }
+  normalizeAddress(address) {
+    try {
+      if (address instanceof distExports$2.Address) {
+        return address.toString();
+      }
+      return distExports$2.Address.parse(address).toString();
+    } catch {
+      return address.toString();
     }
   }
 }
@@ -39449,17 +40176,12 @@ class WalletV5 {
     return this.client.getAccountState(asAddressFriendly(this.address)).then((state) => state.status);
   }
   get seqno() {
-    return this.client.runGetMethod(asAddressFriendly(this.address), "seqno").then((data) => {
-      if (data.exitCode === 0) {
-        const parsedStack = ParseStack(data.stack);
-        if (parsedStack[0]?.type === "int") {
-          return Number(parsedStack[0].value);
-        } else {
-          throw new Error("Stack is not an int");
-        }
-      } else {
+    return this.client.getAccountState(asAddressFriendly(this.address)).then((state) => {
+      if (state.status === "non-existing" || state.status === "uninitialized" || !state.data) {
         return 0;
       }
+      const dataCell = distExports$2.Cell.fromBase64(state.data);
+      return dataCell.asSlice().skip(1).loadUint(32);
     });
   }
   get isSignatureAuthAllowed() {
@@ -39830,6 +40552,8 @@ function formatUnits(value, decimals) {
   fraction = fraction.replace(/(0+)$/, "");
   return `${negative ? "-" : ""}${integer || "0"}${fraction ? `.${fraction}` : ""}`;
 }
+globalLogger.createChild("WebsocketStreamingProvider");
+globalLogger.createChild("TonCenterStreamingProvider");
 var extendStatics = function(d, b2) {
   extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b3) {
     d2.__proto__ = b3;
@@ -43543,8 +44267,14 @@ const tokenToAddress = (token) => {
   return distExports$2.Address.parse(token.address).toRawString();
 };
 const toOmnistonAddress = (address, network) => {
+  let formattedAddress;
+  try {
+    formattedAddress = distExports$2.Address.parse(address).toString({ bounceable: true });
+  } catch {
+    formattedAddress = address;
+  }
   return {
-    address,
+    address: formattedAddress,
     blockchain: mapNetworkToBlockchainId(network)
   };
 };
@@ -43612,7 +44342,9 @@ class OmnistonSwapProvider extends SwapProvider {
       const amount = params.isReverseSwap ? { askUnits: parseUnits(params.amount, params.to.decimals).toString() } : { bidUnits: parseUnits(params.amount, params.from.decimals).toString() };
       const quoteRequest = {
         amount,
-        settlementMethods: [SettlementMethod.SETTLEMENT_METHOD_SWAP],
+        settlementMethods: params.providerOptions?.settlementMethods ?? [
+          SettlementMethod.SETTLEMENT_METHOD_SWAP
+        ],
         bidAssetAddress: toOmnistonAddress(bidAssetAddress, params.network),
         askAssetAddress: toOmnistonAddress(askAssetAddress, params.network),
         referrerAddress: referrerAddress ? toOmnistonAddress(distExports$2.Address.parse(referrerAddress).toString({ bounceable: true }), params.network) : void 0,
