@@ -72,3 +72,5 @@ class TONWalletSignerJSAdapter: NSObject, JSWalletSigner {
         return JSValue(object: signer.publicKey().value, in: context)
     }
 }
+
+extension TONWalletSignerJSAdapter: JSValueEncodable {}

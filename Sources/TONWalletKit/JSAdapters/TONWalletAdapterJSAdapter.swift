@@ -233,3 +233,5 @@ class TONWalletAdapterJSAdapter: NSObject, JSWalletAdapter {
         return JSValue(object: encodedFeatures, in: context)
     }
 }
+
+extension TONWalletAdapterJSAdapter: JSValueEncodable {}
