@@ -45161,6 +45161,9 @@ window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager,
     },
     swap() {
       return walletKit.swap;
+    },
+    streaming() {
+      return walletKit.streaming;
     }
   };
 });

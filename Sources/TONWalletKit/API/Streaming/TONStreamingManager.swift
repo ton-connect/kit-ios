@@ -53,12 +53,17 @@ public protocol TONStreamingManagerProtocol {
         address: String,
         types: [TONStreamingWatchType]
     ) -> AnyPublisher<TONStreamingUpdate, any Error>
+    
+    func connect() throws
+    func disconnect() throws
+    
+    func connectionChange(network: TONNetwork) -> AnyPublisher<Bool, any Error>
 }
 
 class TONStreamingManager: TONStreamingManagerProtocol {
     private let jsObject: any JSDynamicObject
     
-    init(jsObject: any JSDynamicObject) {
+    required init(jsObject: any JSDynamicObject) {
         self.jsObject = jsObject
     }
     
@@ -121,5 +126,28 @@ class TONStreamingManager: TONStreamingManagerProtocol {
             let unwatch: JSValue = try jsObject.watch(network, address, types, handler)
             return { unwatch.call(withArguments: []) }
         }.eraseToAnyPublisher()
+    }
+
+    func connect() throws {
+        try jsObject.connect()
+    }
+    
+    func disconnect() throws {
+        try jsObject.disconnect()
+    }
+    
+    func connectionChange(network: TONNetwork) -> AnyPublisher<Bool, any Error> {
+        TONStreamingPublisher { [jsObject] handler in
+            let handler = jsObject.jsContext.closure(handler)
+            let unwatch: JSValue = try jsObject.onConnectionChange(network, handler)
+            return { unwatch.call(withArguments: []) }
+        }.eraseToAnyPublisher()
+    }
+}
+
+extension TONStreamingManager: JSValueDecodable {
+    
+    static func from(_ value: JSValue) throws -> Self? {
+        Self(jsObject: value)
     }
 }
