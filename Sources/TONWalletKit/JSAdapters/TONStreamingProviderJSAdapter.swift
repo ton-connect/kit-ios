@@ -32,6 +32,21 @@ class TONStreamingProviderJSAdapter<Provider: TONStreamingProviderProtocol>: NSO
     private weak var context: JSContext?
     private let streamingProvider: Provider
     
+    var type: String { streamingProvider.type.rawValue }
+    var providerId: String { streamingProvider.identifier.name }
+    
+    var network: JSValue {
+        guard let context else {
+            return JSValue(undefinedIn: JSContext())
+        }
+        
+        do {
+            return JSValue(object: try streamingProvider.network.encode(in: context), in: context)
+        } catch {
+            return JSValue(undefinedIn: context)
+        }
+    }
+    
     init(
         context: JSContext,
         streamingProvider: Provider
@@ -104,6 +119,21 @@ class TONStreamingProviderJSAdapter<Provider: TONStreamingProviderProtocol>: NSO
         } catch {
             return JSValue(undefinedIn: JSContext())
         }
+    }
+    
+    @objc(connect) func connect() {
+        try? streamingProvider.connect()
+    }
+    
+    @objc(disconnect) func disconnect() {
+        try? streamingProvider.disconnect()
+    }
+    
+    @objc(onConnectionChange:) func connectionChange(handler: JSValue) -> JSValue {
+        return wrap(
+            handler: handler,
+            with: streamingProvider.connectionChange()
+        )
     }
 }
 

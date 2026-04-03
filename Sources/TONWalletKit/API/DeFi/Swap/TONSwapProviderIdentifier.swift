@@ -26,7 +26,7 @@
 
 import Foundation
 
-public protocol TONSwapProviderIdentifier: TONDefiProviderIdentifier {
+public protocol TONSwapProviderIdentifier: TONProviderIdentifier {
     associatedtype QuoteOptions: Codable
     associatedtype SwapOptions: Codable
 }
