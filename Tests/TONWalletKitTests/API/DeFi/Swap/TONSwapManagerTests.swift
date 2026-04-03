@@ -115,7 +115,7 @@ struct TONSwapManagerTests {
         let result = try sut.registeredProviders()
 
         #expect(mock.callRecords.first?.path == "getRegisteredProviders")
-        #expect(result == ["omniston", "dedust"])
+        #expect(result.map { $0.name } == ["omniston", "dedust"])
     }
 
     @Test("registeredProviders() throws when jsObject throws")

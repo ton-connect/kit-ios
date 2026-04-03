@@ -39,11 +39,9 @@ public struct TONTransactionsUpdate: Codable {
     public var addressBook: [String: TONAddressBookEntry]?
     /** Metadata about addresses, including indexing and associated token info. */
     public var metadata: [String: TONTransactionAddressMetadataEntry]?
-    /** Indicates if the trace was invalidated */
-    public var invalidated: Bool?
     public let type: String
 
-    public init(status: TONStreamingUpdateStatus, address: TONUserFriendlyAddress, transactions: [TONTransaction], traceHash: TONHex, addressBook: [String: TONAddressBookEntry]? = nil, metadata: [String: TONTransactionAddressMetadataEntry]? = nil, invalidated: Bool? = nil) {
+    public init(status: TONStreamingUpdateStatus, address: TONUserFriendlyAddress, transactions: [TONTransaction], traceHash: TONHex, addressBook: [String: TONAddressBookEntry]? = nil, metadata: [String: TONTransactionAddressMetadataEntry]? = nil) {
         self.type = "transactions"
         self.status = status
         self.address = address
@@ -51,7 +49,6 @@ public struct TONTransactionsUpdate: Codable {
         self.traceHash = traceHash
         self.addressBook = addressBook
         self.metadata = metadata
-        self.invalidated = invalidated
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -62,7 +59,6 @@ public struct TONTransactionsUpdate: Codable {
         case traceHash
         case addressBook
         case metadata
-        case invalidated
     }
 
     // Encodable protocol methods
@@ -76,7 +72,6 @@ public struct TONTransactionsUpdate: Codable {
         try container.encode(traceHash, forKey: .traceHash)
         try container.encodeIfPresent(addressBook, forKey: .addressBook)
         try container.encodeIfPresent(metadata, forKey: .metadata)
-        try container.encodeIfPresent(invalidated, forKey: .invalidated)
     }
 }
 

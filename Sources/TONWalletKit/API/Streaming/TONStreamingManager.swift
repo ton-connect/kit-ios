@@ -31,7 +31,7 @@ public protocol TONStreamingManagerProtocol {
     
     func hasProvider(network: TONNetwork) throws -> Bool;
 
-    func register<T: TONStreamingProviderProtocol>(provider: T, network: TONNetwork) throws
+    func register<T: TONStreamingProviderProtocol>(provider: T) throws
     
     func balance(
         network: TONNetwork,
@@ -53,12 +53,17 @@ public protocol TONStreamingManagerProtocol {
         address: String,
         types: [TONStreamingWatchType]
     ) -> AnyPublisher<TONStreamingUpdate, any Error>
+    
+    func connect() throws
+    func disconnect() throws
+    
+    func connectionChange(network: TONNetwork) -> AnyPublisher<Bool, any Error>
 }
 
 class TONStreamingManager: TONStreamingManagerProtocol {
     private let jsObject: any JSDynamicObject
     
-    init(jsObject: any JSDynamicObject) {
+    required init(jsObject: any JSDynamicObject) {
         self.jsObject = jsObject
     }
     
@@ -66,8 +71,8 @@ class TONStreamingManager: TONStreamingManagerProtocol {
         try jsObject.hasProvider(network)
     }
     
-    func register<T: TONStreamingProviderProtocol>(provider: T, network: TONNetwork) throws {
-        try jsObject.registerProvider(network, TONEncodableStreamingProvider(streamingProvider: provider))
+    func register<T: TONStreamingProviderProtocol>(provider: T) throws {
+        try jsObject.registerProvider(TONEncodableStreamingProvider(streamingProvider: provider))
     }
     
     func balance(
@@ -121,5 +126,28 @@ class TONStreamingManager: TONStreamingManagerProtocol {
             let unwatch: JSValue = try jsObject.watch(network, address, types, handler)
             return { unwatch.call(withArguments: []) }
         }.eraseToAnyPublisher()
+    }
+
+    func connect() throws {
+        try jsObject.connect()
+    }
+    
+    func disconnect() throws {
+        try jsObject.disconnect()
+    }
+    
+    func connectionChange(network: TONNetwork) -> AnyPublisher<Bool, any Error> {
+        TONStreamingPublisher { [jsObject] handler in
+            let handler = jsObject.jsContext.closure(handler)
+            let unwatch: JSValue = try jsObject.onConnectionChange(network, handler)
+            return { unwatch.call(withArguments: []) }
+        }.eraseToAnyPublisher()
+    }
+}
+
+extension TONStreamingManager: JSValueDecodable {
+    
+    static func from(_ value: JSValue) throws -> Self? {
+        Self(jsObject: value)
     }
 }

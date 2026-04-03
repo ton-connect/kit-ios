@@ -26,7 +26,7 @@
 
 import Foundation
 
-public protocol TONSwapProviderProtocol: TONDefiProviderProtocol {
+public protocol TONSwapProviderProtocol: TONProvider {
     associatedtype QuoteOptions: Codable
     associatedtype SwapOptions: Codable
     
@@ -36,7 +36,7 @@ public protocol TONSwapProviderProtocol: TONDefiProviderProtocol {
 
 public extension TONSwapProviderProtocol {
     
-    var type: TONDefiProviderType { .swap }
+    var type: TONProviderType { .swap }
 }
 
 public final class TONSwapProvider<Identifier: TONSwapProviderIdentifier>: TONSwapProviderProtocol {

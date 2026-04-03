@@ -32,7 +32,7 @@ import BigInt
 public struct TONAccountState: Codable {
 
     /** The state hash of the account */
-    public var hash: String
+    public var hash: String?
     public var balance: TONTokenAmount
     /** Map of extra currency IDs to their amounts. Extra currencies are additional tokens that can be attached to TON messages. */
     public var extraCurrencies: [String: String]?
@@ -44,7 +44,7 @@ public struct TONAccountState: Codable {
     /** The hash of the smart contract code */
     public var codeHash: String?
 
-    public init(hash: String, balance: TONTokenAmount, extraCurrencies: [String: String]? = nil, accountStatus: TONAccountStatus? = nil, frozenHash: String? = nil, dataHash: String? = nil, codeHash: String? = nil) {
+    public init(hash: String? = nil, balance: TONTokenAmount, extraCurrencies: [String: String]? = nil, accountStatus: TONAccountStatus? = nil, frozenHash: String? = nil, dataHash: String? = nil, codeHash: String? = nil) {
         self.hash = hash
         self.balance = balance
         self.extraCurrencies = extraCurrencies
@@ -68,7 +68,7 @@ public struct TONAccountState: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(hash, forKey: .hash)
+        try container.encodeIfPresent(hash, forKey: .hash)
         try container.encode(balance, forKey: .balance)
         try container.encodeIfPresent(extraCurrencies, forKey: .extraCurrencies)
         try container.encodeIfPresent(accountStatus, forKey: .accountStatus)

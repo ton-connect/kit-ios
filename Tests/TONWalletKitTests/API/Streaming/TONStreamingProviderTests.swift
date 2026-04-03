@@ -9,7 +9,7 @@ struct TONStreamingProviderTests {
 
     private func makeSUT() -> (sut: TONStreamingProvider, mock: MockJSDynamicObject) {
         let mock = MockJSDynamicObject()
-        let sut = TONStreamingProvider(jsObject: mock)
+        let sut = TONStreamingProvider(jsObject: mock, identifier: AnyTONProviderIdentifier(name: "test-provider"))
         return (sut, mock)
     }
 
@@ -241,6 +241,150 @@ struct TONStreamingProviderTests {
         cancellable.cancel()
 
         handler.call(withArguments: [encoded])
+        #expect(receivedCount == 1)
+    }
+
+    @Test("identifier returns the identifier passed at init")
+    func identifierReturnsValue() {
+        let (sut, _) = makeSUT()
+
+        #expect(sut.identifier.name == "test-provider")
+    }
+
+    @Test("type returns streaming")
+    func typeReturnsStreaming() {
+        let (sut, _) = makeSUT()
+
+        #expect(sut.type == .streaming)
+    }
+
+    @Test("network reads network from jsObject")
+    func networkReadsFromJS() throws {
+        let (sut, mock) = makeSUT()
+        mock.stubbedProperties["network"] = TONNetwork(chainId: "-239")
+
+        let network = try sut.network
+
+        #expect(network.chainId == "-239")
+    }
+
+    @Test("network throws when jsObject has no network")
+    func networkThrowsWhenMissing() {
+        let (sut, _) = makeSUT()
+
+        #expect(throws: (any Error).self) {
+            try sut.network
+        }
+    }
+
+    @Test("connect calls connect on jsObject")
+    func connectCallsJS() throws {
+        let (sut, mock) = makeSUT()
+
+        try sut.connect()
+
+        #expect(mock.callRecords.count == 1)
+        #expect(mock.callRecords[0].path == "connect")
+    }
+
+    @Test("disconnect calls disconnect on jsObject")
+    func disconnectCallsJS() throws {
+        let (sut, mock) = makeSUT()
+
+        try sut.disconnect()
+
+        #expect(mock.callRecords.count == 1)
+        #expect(mock.callRecords[0].path == "disconnect")
+    }
+
+    @Test("connect throws when jsObject throws")
+    func connectThrowsOnError() {
+        let (sut, mock) = makeSUT()
+        mock.shouldThrowOnCall = true
+
+        #expect(throws: (any Error).self) {
+            try sut.connect()
+        }
+    }
+
+    @Test("disconnect throws when jsObject throws")
+    func disconnectThrowsOnError() {
+        let (sut, mock) = makeSUT()
+        mock.shouldThrowOnCall = true
+
+        #expect(throws: (any Error).self) {
+            try sut.disconnect()
+        }
+    }
+
+    @Test("connectionChange calls onConnectionChange on jsObject")
+    func connectionChangeCallsJS() {
+        let (sut, mock) = makeSUT()
+
+        let cancellable = sut.connectionChange().sink(
+            receiveCompletion: { _ in },
+            receiveValue: { _ in }
+        )
+
+        #expect(mock.callRecords.count == 1)
+        #expect(mock.callRecords[0].path == "onConnectionChange")
+        cancellable.cancel()
+    }
+
+    @Test("connectionChange delivers values through JS handler")
+    func connectionChangeDeliversValues() throws {
+        let (sut, mock) = makeSUT()
+
+        var received: Bool?
+        let cancellable = sut.connectionChange().sink(
+            receiveCompletion: { _ in },
+            receiveValue: { received = $0 }
+        )
+
+        let handler = mock.callRecords[0].args[0] as! JSValue
+        handler.call(withArguments: [true])
+
+        #expect(received == true)
+        cancellable.cancel()
+    }
+
+    @Test("connectionChange sends failure when watch throws")
+    func connectionChangeSendsFailureOnThrow() {
+        let (sut, mock) = makeSUT()
+        mock.shouldThrowOnCall = true
+
+        var completionError: (any Error)?
+        let cancellable = sut.connectionChange().sink(
+            receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    completionError = error
+                }
+            },
+            receiveValue: { _ in }
+        )
+
+        #expect(completionError != nil)
+        cancellable.cancel()
+    }
+
+    @Test("connectionChange cancel stops delivering values")
+    func connectionChangeCancelStopsDelivery() throws {
+        let (sut, mock) = makeSUT()
+
+        var receivedCount = 0
+        let cancellable = sut.connectionChange().sink(
+            receiveCompletion: { _ in },
+            receiveValue: { _ in receivedCount += 1 }
+        )
+
+        let handler = mock.callRecords[0].args[0] as! JSValue
+
+        handler.call(withArguments: [true])
+        #expect(receivedCount == 1)
+
+        cancellable.cancel()
+
+        handler.call(withArguments: [false])
         #expect(receivedCount == 1)
     }
 }

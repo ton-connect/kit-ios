@@ -6,7 +6,7 @@ struct MockSwapProvider: TONSwapProviderProtocol {
     typealias QuoteOptions = TONOmnistonProviderOptions
     typealias SwapOptions = AnyCodable
 
-    var type: TONDefiProviderType { .swap }
+    var type: TONProviderType { .swap }
     var identifier: TONOmnistonSwapProviderIdentifier
 
     var shouldThrow = false

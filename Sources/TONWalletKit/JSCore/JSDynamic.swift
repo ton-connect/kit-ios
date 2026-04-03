@@ -89,7 +89,7 @@ extension JSValue: JSDynamicObject {
     var jsContext: JSContext { context }
     
     subscript<T: JSValueDecodable>(dynamicMember member: String) -> T? {
-        try? objectForKeyedSubscript(member).decode()
+        try? T.from(objectForKeyedSubscript(member))
     }
     
     subscript(dynamicMember member: String) -> any JSDynamicObjectMember {
@@ -101,7 +101,7 @@ extension JSContext: JSDynamicObject {
     var jsContext: JSContext { self }
     
     subscript<T: JSValueDecodable>(dynamicMember member: String) -> T? {
-        try? objectForKeyedSubscript(member)?.decode()
+        try? T.from(objectForKeyedSubscript(member))
     }
     
     subscript(dynamicMember member: String) -> JSDynamicObjectMember {

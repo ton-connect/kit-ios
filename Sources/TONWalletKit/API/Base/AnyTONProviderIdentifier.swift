@@ -1,8 +1,8 @@
 //
-//  TONDefiProvider.swift
+//  AnyTONProviderIdentifier.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 16.03.2026.
+//  Created by Nikita Rodionov on 03.04.2026.
 //  
 //  Copyright (c) 2026 TON Connect
 //
@@ -24,11 +24,12 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-import Foundation
-
-public protocol TONDefiProviderProtocol {
-    associatedtype Identifier: TONDefiProviderIdentifier
+public struct AnyTONProviderIdentifier: TONProviderIdentifier {
+    public typealias Provider = any TONProvider
     
-    var type: TONDefiProviderType { get }
-    var identifier: Identifier { get }
+    public var name: String
+    
+    public init(name: String) {
+        self.name = name
+    }
 }
