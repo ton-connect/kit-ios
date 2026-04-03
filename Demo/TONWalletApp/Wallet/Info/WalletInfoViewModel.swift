@@ -62,6 +62,7 @@ class WalletInfoViewModel: ObservableObject {
     func subscribeToBalanceChanges() {
         Task {
             try await TONWalletKit.shared().streaming().balance(network: .mainnet, address: address)
+                .receive(on: DispatchQueue.main)
                 .sink(
                     receiveCompletion: { _ in },
                     receiveValue: { balance in
