@@ -83,21 +83,26 @@ public class TONWalletKit {
     }
     
     public func streamingProvider(
-        config: TONTonCenterStreamingProviderConfig?
+        config: TONTonCenterStreamingProviderConfig
     ) async throws -> any TONStreamingProviderProtocol {
         let provider: TONStreamingProvider = try await jsWalletKit().createTonCenterStreamingProvider(config)
         return provider
     }
     
     public func streamingProvider(
-        config: TONTonApiStreamingProviderConfig?
+        config: TONTonApiStreamingProviderConfig
     ) async throws -> any TONStreamingProviderProtocol {
         let provider: TONStreamingProvider = try await jsWalletKit().createTonCenterStreamingProvider(config)
         return provider
     }
     
-    public func swap() async throws -> TONSwapManagerProtocol {
+    public func swap() async throws -> any TONSwapManagerProtocol {
         let manager: TONSwapManager = try await jsWalletKit().swap()
+        return manager
+    }
+    
+    public func streaming() async throws -> any TONStreamingManagerProtocol {
+        let manager: TONStreamingManager = try await jsWalletKit().streaming()
         return manager
     }
     
