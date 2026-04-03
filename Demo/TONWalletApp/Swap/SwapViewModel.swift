@@ -206,7 +206,7 @@ class SwapViewModel: ObservableObject {
         try manager.register(provider: omniston)
         omnistonIdentifier = omniston.identifier
 
-        let deDust = try await kit.deDustSwapProvider(config: nil)
+        let deDust = try await kit.dedustSwapProvider(config: nil)
         try manager.register(provider: deDust)
         deDustIdentifier = deDust.identifier
 
