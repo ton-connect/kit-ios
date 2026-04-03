@@ -35,7 +35,7 @@ public protocol TONSwapManagerProtocol {
         with id: Identifier
     ) throws -> TONSwapProvider<Identifier>?
     
-    func registeredProviders() throws -> [String]
+    func registeredProviders() throws -> [AnyTONProviderIdentifier]
     
     func hasProvider<Identifier: TONSwapProviderIdentifier>(
         with id: Identifier
@@ -73,8 +73,9 @@ class TONSwapManager: TONSwapManagerProtocol {
         return TONSwapProvider<Identifier>(jsObject: jsObject, identifier: id)
     }
     
-    func registeredProviders() throws -> [String] {
-        try self.jsObject.getRegisteredProviders()
+    func registeredProviders() throws -> [AnyTONProviderIdentifier] {
+        let names: [String] = try self.jsObject.getRegisteredProviders()
+        return names.map { AnyTONProviderIdentifier(name: $0) }
     }
     
     func hasProvider<Identifier: TONSwapProviderIdentifier>(

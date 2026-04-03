@@ -31,7 +31,7 @@ public protocol TONStreamingManagerProtocol {
     
     func hasProvider(network: TONNetwork) throws -> Bool;
 
-    func register<T: TONStreamingProviderProtocol>(provider: T, network: TONNetwork) throws
+    func register<T: TONStreamingProviderProtocol>(provider: T) throws
     
     func balance(
         network: TONNetwork,
@@ -66,8 +66,8 @@ class TONStreamingManager: TONStreamingManagerProtocol {
         try jsObject.hasProvider(network)
     }
     
-    func register<T: TONStreamingProviderProtocol>(provider: T, network: TONNetwork) throws {
-        try jsObject.registerProvider(network, TONEncodableStreamingProvider(streamingProvider: provider))
+    func register<T: TONStreamingProviderProtocol>(provider: T) throws {
+        try jsObject.registerProvider(TONEncodableStreamingProvider(streamingProvider: provider))
     }
     
     func balance(

@@ -28,9 +28,16 @@ import Foundation
 import JavaScriptCore
 
 @objc protocol JSStreamingProvider: JSExport {
+    var type: String { get }
+    var providerId: String { get }
+    var network: JSValue { get }
+    
     @objc(watchBalance::) func balance(address: JSValue, handler: JSValue) -> JSValue
     @objc(watchTransactions::) func transactions(address: JSValue, handler: JSValue) -> JSValue
     @objc(watchJettons::) func jettons(address: JSValue, handler: JSValue) -> JSValue
     
-    // close?
+    @objc(connect) func connect()
+    @objc(disconnect) func disconnect()
+    
+    @objc(onConnectionChange:) func connectionChange(handler: JSValue) -> JSValue
 }
