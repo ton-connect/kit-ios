@@ -57,7 +57,6 @@ extension TONWalletKit {
             return _shared
         }
         let bridgeURL = "https://bridge.tonapi.io/bridge"
-        let apiKey = "25a9b2326a34b39a5fa4b264fb78fb4709e1bd576fc5e6b176639f5b71e94b0d"
         let apiClientConfig = TONWalletKitConfiguration.APIClientConfiguration(key: "25a9b2326a34b39a5fa4b264fb78fb4709e1bd576fc5e6b176639f5b71e94b0d")
         let testNetworkConfiguration = TONWalletKitConfiguration.NetworkConfiguration(
             network: .testnet,
@@ -89,7 +88,19 @@ extension TONWalletKit {
             ]
         )
         let kit = TONWalletKit(configuration: configuration)
-        let toncenterStreaming = try? await kit.streamingProvider(config: TONTonCenterStreamingProviderConfig(network: .mainnet, apiKey: apiKey))
+        
+        do {
+            let toncenterStreaming = try await kit.streamingProvider(
+                config: TONTonCenterStreamingProviderConfig(
+                    network: .mainnet,
+                    apiKey: "459a138f1bd20bd91869cbe7d377aeae44e8ced22dfe9c5708c0b6f1b153db88"
+                )
+            )
+            
+            try await kit.streaming().register(provider: toncenterStreaming)
+        } catch {
+            debugPrint("ERROR - \(error)")
+        }
         
         _shared = kit
         return kit

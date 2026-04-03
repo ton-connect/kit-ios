@@ -26,6 +26,7 @@
 
 import Foundation
 import TONWalletKit
+import Combine
 
 @MainActor
 class WalletInfoViewModel: ObservableObject {
@@ -36,11 +37,15 @@ class WalletInfoViewModel: ObservableObject {
     @Published private(set) var formattedBalance: String?
     private(set) var balance: TONBalance?
     
+    private var subscribers = Set<AnyCancellable>()
+    
     init(wallet: TONWalletProtocol) {
         self.wallet = wallet
     }
     
     func load() async {
+        subscribeToBalanceChanges()
+        
         if formattedBalance != nil { return }
         
         do {
@@ -51,6 +56,19 @@ class WalletInfoViewModel: ObservableObject {
         } catch {
             self.formattedBalance = "Unknown balance"
             debugPrint(error.localizedDescription)
+        }
+    }
+    
+    func subscribeToBalanceChanges() {
+        Task {
+            try await TONWalletKit.shared().streaming().balance(network: .mainnet, address: address)
+                .sink(
+                    receiveCompletion: { _ in },
+                    receiveValue: { balance in
+                        self.formattedBalance = balance.balance
+                    }
+                )
+                .store(in: &subscribers)
         }
     }
 }
