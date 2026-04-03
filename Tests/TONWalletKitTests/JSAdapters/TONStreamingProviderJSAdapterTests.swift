@@ -298,4 +298,98 @@ struct TONStreamingProviderJSAdapterTests {
         let count2: Int? = context.rtCallCount
         #expect(count2 == 1)
     }
+
+    @Test("type returns streaming")
+    func typeReturnsStreaming() {
+        let (sut, _) = makeSUT()
+
+        #expect(sut.type == "streaming")
+    }
+
+    @Test("providerId returns provider identifier name")
+    func providerIdReturnsName() {
+        let (sut, provider) = makeSUT()
+
+        #expect(sut.providerId == provider.identifier.name)
+    }
+
+    @Test("network returns encoded network from provider")
+    func networkReturnsEncodedValue() {
+        let (sut, _) = makeSUT()
+
+        let network = sut.network
+
+        #expect(!network.isUndefined)
+    }
+
+    @Test("connect calls connect on provider")
+    func connectCallsProvider() {
+        let (sut, provider) = makeSUT()
+
+        sut.connect()
+
+        #expect(provider.connectCalled == true)
+    }
+
+    @Test("disconnect calls disconnect on provider")
+    func disconnectCallsProvider() {
+        let (sut, provider) = makeSUT()
+
+        sut.disconnect()
+
+        #expect(provider.disconnectCalled == true)
+    }
+
+    @Test("connectionChange calls handler with connection status")
+    func connectionChangeCallsHandler() {
+        let (sut, provider) = makeSUT()
+        var receivedValue: JSValue?
+        let handler: @convention(block) (JSValue) -> Void = { value in
+            receivedValue = value
+        }
+        let jsHandler = JSValue(object: handler, in: context)!
+
+        let _ = sut.connectionChange(handler: jsHandler)
+        provider.connectionChangeSubject.send(true)
+
+        #expect(receivedValue?.toBool() == true)
+    }
+
+    @Test("connectionChange returns unwatch that stops delivery")
+    func connectionChangeUnwatchStopsDelivery() {
+        let (sut, provider) = makeSUT()
+        var callCount = 0
+        let handler: @convention(block) (JSValue) -> Void = { _ in
+            callCount += 1
+        }
+        let jsHandler = JSValue(object: handler, in: context)!
+
+        let unwatch = sut.connectionChange(handler: jsHandler)
+        provider.connectionChangeSubject.send(true)
+        #expect(callCount == 1)
+
+        unwatch.call(withArguments: [])
+        provider.connectionChangeSubject.send(false)
+        #expect(callCount == 1)
+    }
+
+    @Test("connectionChange round-trip: JS function receives adapter and gets updates")
+    func connectionChangeRoundTrip() throws {
+        let (sut, provider) = makeSUT()
+
+        context.evaluateScript("""
+            var connResult = null;
+            function startWatchingConnection(provider) {
+                return provider.onConnectionChange(function(status) {
+                    connResult = status;
+                });
+            }
+        """)
+
+        try context.startWatchingConnection(sut)
+        provider.connectionChangeSubject.send(true)
+
+        let result: Bool? = context.connResult
+        #expect(result == true)
+    }
 }
