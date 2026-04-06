@@ -52,7 +52,7 @@ extension TONWalletKit {
     private static var _shared: TONWalletKit?
     
     @discardableResult
-    static func shared() -> TONWalletKit {
+    static func shared() async -> TONWalletKit {
         if let _shared {
             return _shared
         }
@@ -88,6 +88,20 @@ extension TONWalletKit {
             ]
         )
         let kit = TONWalletKit(configuration: configuration)
+        
+        do {
+            let toncenterStreaming = try await kit.streamingProvider(
+                config: TONTonCenterStreamingProviderConfig(
+                    network: .mainnet,
+                    apiKey: "459a138f1bd20bd91869cbe7d377aeae44e8ced22dfe9c5708c0b6f1b153db88"
+                )
+            )
+            
+            try await kit.streaming().register(provider: toncenterStreaming)
+        } catch {
+            debugPrint("ERROR - \(error)")
+        }
+        
         _shared = kit
         return kit
     }

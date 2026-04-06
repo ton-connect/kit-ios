@@ -25,6 +25,7 @@
 //  SOFTWARE.
 
 import Foundation
+import Combine
 import TONWalletKit
 
 @MainActor
@@ -39,12 +40,16 @@ final class WalletJettonsListViewModel: ObservableObject {
     
     @Published private(set) var canLoadMore: Bool = false
     
+    private var subscribers = Set<AnyCancellable>()
+    
     init(wallet: TONWalletProtocol) {
         self.wallet = wallet
     }
     
     func loadJettons() async {
         guard state == .initial else { return }
+        
+        subscribeToBalanceChanges()
         
         state = .loading
         
@@ -91,6 +96,20 @@ final class WalletJettonsListViewModel: ObservableObject {
     
     func remove(jetton: WalletJettonsListItem) {
         jettons.removeAll { $0.id == jetton.id }
+    }
+    
+    func subscribeToBalanceChanges() {
+        Task {
+            try await TONWalletKit.shared().streaming().jettons(network: .mainnet, address: wallet.address.value)
+                .receive(on: DispatchQueue.main)
+                .sink(
+                    receiveCompletion: { _ in },
+                    receiveValue: { update in
+                        self.jettons = self.jettons.map { $0.applying(update: update) }
+                    }
+                )
+                .store(in: &subscribers)
+        }
     }
 }
 

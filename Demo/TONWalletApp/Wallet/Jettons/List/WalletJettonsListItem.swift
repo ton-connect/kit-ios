@@ -29,13 +29,13 @@ import SwiftUI
 import TONWalletKit
 
 struct WalletJettonsListItem: Identifiable {
-    let id = UUID()
-    let name: String
-    let symbol: String
-    let address: String
-    let balance: String
-    let image: Image?
-    let imageURL: URL?
+    var id = UUID()
+    var name: String
+    var symbol: String
+    var address: String
+    var balance: String
+    var image: Image?
+    var imageURL: URL?
     
     let jetton: TONJetton
     let wallet: TONWalletProtocol
@@ -62,5 +62,15 @@ struct WalletJettonsListItem: Identifiable {
             self.imageURL = nil
             self.image = nil
         }
+    }
+    
+    func applying(update: TONJettonUpdate) -> WalletJettonsListItem {
+        guard update.masterAddress.value == self.address && update.status == .finalized else {
+            return self
+        }
+        
+        var copy = self
+        copy.balance = update.balance ?? copy.balance
+        return copy
     }
 }

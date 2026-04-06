@@ -39,7 +39,7 @@ class MainViewModel: ObservableObject {
             
             var tonWallets: [TONWalletProtocol] = []
             
-            let kit = TONWalletKit.shared()
+            let kit = await TONWalletKit.shared()
             
             for wallet in wallets {
                 switch wallet.data.version {
