@@ -208,4 +208,24 @@ struct TONAPIClientJSAdapterTests {
             try await result.then()
         }
     }
+
+    @Test("getNetwork is callable from JS")
+    func getNetworkCallableFromJS() throws {
+        let (sut, _) = makeSUT(network: .mainnet)
+        context.evaluateScript("function callGetNetwork(client) { return client.getNetwork(); }")
+
+        let result: JSValue = try context.callGetNetwork(sut)
+
+        #expect(result.forProperty("chainId")?.toString() == "-239")
+    }
+
+    @Test("masterchainInfo resolves from JS call")
+    func masterchainInfoResolvesFromJS() async throws {
+        let (sut, _) = makeSUT()
+        context.evaluateScript("function callMasterchainInfo(client) { return client.getMasterchainInfo(); }")
+
+        let result: TONMasterchainInfo = try await context.callMasterchainInfo(sut)
+
+        #expect(result.seqno == 12345)
+    }
 }
