@@ -32,8 +32,7 @@ class StakingViewModel: ObservableObject {
     }
 
     var receiveAmount: String? {
-        guard let quote = currentQuote else { return nil }
-        return formatter.string(from: quote.amountOut)
+        currentQuote?.amountOut
     }
 
     var canGetQuote: Bool {
@@ -53,13 +52,11 @@ class StakingViewModel: ObservableObject {
     }
 
     var formattedStakedBalance: String? {
-        guard let balance = stakedBalance else { return nil }
-        return formatter.string(from: balance.stakedBalance)
+        stakedBalance?.stakedBalance
     }
 
     var formattedInstantUnstakeAvailable: String? {
-        guard let info = providerInfo, let available = info.instantUnstakeAvailable else { return nil }
-        return formatter.string(from: available)
+        providerInfo?.instantUnstakeAvailable
     }
 
     func setAmount(_ value: String) {
@@ -88,7 +85,7 @@ class StakingViewModel: ObservableObject {
         Task {
             do {
                 let manager = try await getStakingManager()
-                let amountValue = formatter.amount(from: amount) ?? TONTokenAmount(nanoUnits: 0)
+                let amountValue = amount
 
                 let quote = try await manager.quote(params: TONStakingQuoteParams<AnyCodable>(
                     direction: direction,
@@ -158,12 +155,10 @@ class StakingViewModel: ObservableObject {
         do {
             async let balanceTask = manager.stakedBalance(
                 userAddress: wallet.address,
-                network: TONNetwork.mainnet,
-                identifier: nil
+                network: TONNetwork.mainnet
             )
             async let infoTask = manager.stakingProviderInfo(
-                network: TONNetwork.mainnet,
-                identifier: nil
+                network: TONNetwork.mainnet
             )
 
             let (balance, info) = try await (balanceTask, infoTask)
@@ -187,7 +182,7 @@ class StakingViewModel: ObservableObject {
         try manager.register(provider: provider)
         try manager.set(defaultProviderId: provider.identifier)
 
-        if let modes = try? manager.supportedUnstakeModes(identifier: nil) {
+        if let modes = try? manager.supportedUnstakeModes() {
             supportedModes = modes
         }
 
