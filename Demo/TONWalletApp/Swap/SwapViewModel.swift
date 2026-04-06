@@ -199,16 +199,16 @@ class SwapViewModel: ObservableObject {
         let kit = TONWalletKit.shared()
         let manager = try await kit.swap()
 
-        let omniston = try await kit.omnistoneSwapProvider(config: nil)
+        let omniston = try await kit.omnistonSwapProvider(config: nil)
         try manager.register(provider: omniston)
         
-        let deDust = try await kit.deDustSwapProvider(config: nil)
+        let deDust = try await kit.dedustSwapProvider(config: nil)
         try manager.register(provider: deDust)
 
         try manager.set(defaultProviderId: omniston.identifier)
 
         self.providers = [
-            SwapProviderOption(name: "Omnistone", identifier: omniston.identifier),
+            SwapProviderOption(name: "Omniston", identifier: omniston.identifier),
             SwapProviderOption(name: "DeDust", identifier: deDust.identifier),
         ]
         
