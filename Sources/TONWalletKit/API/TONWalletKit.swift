@@ -106,7 +106,7 @@ public class TONWalletKit {
         let manager: TONSwapManager = try await jsWalletKit().swap()
         return manager
     }
-
+    
 	public func streaming() async throws -> any TONStreamingManagerProtocol {
         let manager: TONStreamingManager = try await jsWalletKit().streaming()
         return manager
@@ -119,7 +119,7 @@ public class TONWalletKit {
     
     public func signer(mnemonic: TONMnemonic) async throws -> any TONWalletSignerProtocol {
         let signer = try await jsWalletKit().createSignerFromMnemonic(mnemonic.value)
-        
+
         return TONWalletSigner(jsWalletSigner: signer)
     }
     
