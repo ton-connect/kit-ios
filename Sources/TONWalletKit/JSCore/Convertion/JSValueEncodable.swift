@@ -111,6 +111,13 @@ extension Array: JSValueEncodable where Element: JSValueEncodable {
     }
 }
 
+extension JSValueEncodable where Self: Encodable, Self: RawRepresentable, Self.RawValue: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any {
+        try rawValue.encode(in: context)
+    }
+}
+
 extension JSValueEncodable where Self: Encodable {
     
     func encode(in context: JSContext) throws -> Any {

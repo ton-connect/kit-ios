@@ -209,12 +209,11 @@ struct TONStakingProviderJSAdapterTests {
     @Test("supportedUnstakeModes returns first mode from JS")
     func supportedUnstakeModesReturnsFromJS() throws {
         let sut = makeSUT()
-        context.evaluateScript("function callFirstMode(adapter) { return adapter.getSupportedUnstakeModes(); }")
-
-        let result: [TONUnstakeMode] = try context.callFirstMode(sut)
-
-        debugPrint("SAdsad")
-        #expect(result[0] == .instant)
+        context.evaluateScript("function callFirstMode(adapter) { return adapter.getSupportedUnstakeModes()[0]; }")
+        
+        let result: String = try context.callFirstMode(sut)
+        
+        #expect(result == "INSTANT")
     }
 
     @Test("adapter works as JS function argument")

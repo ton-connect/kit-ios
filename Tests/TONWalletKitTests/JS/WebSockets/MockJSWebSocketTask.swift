@@ -34,7 +34,9 @@ actor MockJSWebSocketTask: JSWebSocketTaskProtocol {
 
     private var eventContinuation: AsyncStream<JSWebSocketEvent>.Continuation?
     nonisolated(unsafe) private var sendContinuation: AsyncStream<URLSessionWebSocketTask.Message>.Continuation?
+    nonisolated(unsafe) private var sendStream: AsyncStream<URLSessionWebSocketTask.Message>?
     nonisolated(unsafe) private var closeContinuation: AsyncStream<(code: URLSessionWebSocketTask.CloseCode, reason: Data?)>.Continuation?
+    nonisolated(unsafe) private var closeStream: AsyncStream<(code: URLSessionWebSocketTask.CloseCode, reason: Data?)>?
 
     init() {}
 
@@ -64,25 +66,45 @@ actor MockJSWebSocketTask: JSWebSocketTaskProtocol {
         cancelCalled = true
     }
 
-    nonisolated func expectSend(count: Int = 1) async -> [URLSessionWebSocketTask.Message] {
-        var received: [URLSessionWebSocketTask.Message] = []
-        let stream = AsyncStream<URLSessionWebSocketTask.Message> { self.sendContinuation = $0 }
+    nonisolated func prepareSend() {
+        let (stream, continuation) = AsyncStream.makeStream(of: URLSessionWebSocketTask.Message.self)
+        self.sendStream = stream
+        self.sendContinuation = continuation
+    }
 
+    nonisolated func awaitSend(count: Int = 1) async -> [URLSessionWebSocketTask.Message] {
+        guard let stream = sendStream else { return [] }
+        var received: [URLSessionWebSocketTask.Message] = []
         for await message in stream {
             received.append(message)
             if received.count >= count { break }
         }
-
         return received
     }
 
-    nonisolated func expectClose() async -> (code: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        let stream = AsyncStream<(code: URLSessionWebSocketTask.CloseCode, reason: Data?)> { self.closeContinuation = $0 }
+    nonisolated func expectSend(count: Int = 1) async -> [URLSessionWebSocketTask.Message] {
+        prepareSend()
+        return await awaitSend(count: count)
+    }
 
+    nonisolated func prepareClose() {
+        let (stream, continuation) = AsyncStream.makeStream(of: (code: URLSessionWebSocketTask.CloseCode, reason: Data?).self)
+        self.closeStream = stream
+        self.closeContinuation = continuation
+    }
+
+    nonisolated func awaitClose() async -> (code: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+        guard let stream = closeStream else {
+            fatalError("prepareClose was not called before awaitClose")
+        }
         for await call in stream {
             return call
         }
+        fatalError("awaitClose stream ended without receiving a close call")
+    }
 
-        fatalError("expectClose stream ended without receiving a close call")
+    nonisolated func expectClose() async -> (code: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+        prepareClose()
+        return await awaitClose()
     }
 }
