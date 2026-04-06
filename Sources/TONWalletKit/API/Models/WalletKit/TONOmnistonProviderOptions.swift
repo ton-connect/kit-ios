@@ -27,6 +27,46 @@
 import Foundation
 import BigInt
 
-public typealias TONOmnistonProviderOptions = TONOmnistonReferrerOptions
+/** Provider-specific options for Omniston swap operations */
 
+public struct TONOmnistonProviderOptions: Codable {
+
+    /** The address of the referrer */
+    public var referrerAddress: String?
+    /** Referrer fee in basis points (1 bp = 0.01%) */
+    public var referrerFeeBps: Int?
+    /** Whether a flexible referrer fee is allowed */
+    public var flexibleReferrerFee: Bool?
+    /** Settlement methods to use for the swap */
+    public var settlementMethods: [TONSettlementMethod]?
+
+    public init(referrerAddress: String? = nil, referrerFeeBps: Int? = nil, flexibleReferrerFee: Bool? = nil, settlementMethods: [TONSettlementMethod]? = nil) {
+        self.referrerAddress = referrerAddress
+        self.referrerFeeBps = referrerFeeBps
+        self.flexibleReferrerFee = flexibleReferrerFee
+        self.settlementMethods = settlementMethods
+    }
+
+    public enum CodingKeys: String, CodingKey, CaseIterable {
+        case referrerAddress
+        case referrerFeeBps
+        case flexibleReferrerFee
+        case settlementMethods
+    }
+
+    // Encodable protocol methods
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(referrerAddress, forKey: .referrerAddress)
+        try container.encodeIfPresent(referrerFeeBps, forKey: .referrerFeeBps)
+        try container.encodeIfPresent(flexibleReferrerFee, forKey: .flexibleReferrerFee)
+        try container.encodeIfPresent(settlementMethods, forKey: .settlementMethods)
+    }
+}
+
+
+
+
+extension TONOmnistonProviderOptions: JSValueCodable {}
 
