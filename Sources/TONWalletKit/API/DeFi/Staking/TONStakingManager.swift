@@ -28,6 +28,19 @@ import Foundation
 
 public protocol TONStakingManagerProtocol {
 
+    func register<Provider: TONStakingProviderProtocol>(provider: Provider) throws
+    func set<Identifier: TONStakingProviderIdentifier>(defaultProviderId: Identifier) throws
+    
+    func provider<Identifier: TONStakingProviderIdentifier>(
+        with id: Identifier
+    ) throws -> TONStakingProvider<Identifier>?
+    
+    func registeredProviders() throws -> [AnyTONProviderIdentifier]
+    
+    func hasProvider<Identifier: TONStakingProviderIdentifier>(
+        with id: Identifier
+    ) throws -> Bool
+    
     func quote<Identifier: TONStakingProviderIdentifier>(
         params: TONStakingQuoteParams<Identifier.QuoteOptions>,
         identifier: Identifier
@@ -71,9 +84,8 @@ public extension TONStakingManagerProtocol {
         )
     }
 
-    func stakingProviderInfo<Identifier: TONStakingProviderIdentifier>(
-        network: TONNetwork?,
-        identifier: Identifier?
+    func stakingProviderInfo(
+        network: TONNetwork?
     ) async throws -> TONStakingProviderInfo {
         try await stakingProviderInfo(
             network: network,
@@ -81,14 +93,13 @@ public extension TONStakingManagerProtocol {
         )
     }
 
-    func supportedUnstakeModes<Identifier: TONStakingProviderIdentifier>(
-        identifier: Identifier?
-    ) throws -> [TONUnstakeMode] {
+    func supportedUnstakeModes() throws -> [TONUnstakeMode] {
         try supportedUnstakeModes(identifier: nil)
     }
 }
 
 class TONStakingManager: TONStakingManagerProtocol {
+
     let jsObject: any JSDynamicObject
 
     required init(jsObject: any JSDynamicObject) {
