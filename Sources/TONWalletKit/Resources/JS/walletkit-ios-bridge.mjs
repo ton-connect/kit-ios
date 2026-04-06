@@ -34629,24 +34629,7 @@ function DefaultSignature(data, privateKey) {
   }
   return Uint8ArrayToHex(distExports$1.sign(Buffer.from(Uint8Array.from(data)), Buffer.from(fullKey)));
 }
-function DefaultDomainSignature(data, privateKey, domain) {
-  let fullKey = privateKey;
-  if (fullKey.length === 32) {
-    const keyPair = distExports$1.keyPairFromSeed(Buffer.from(fullKey));
-    fullKey = keyPair.secretKey;
-  }
-  return Uint8ArrayToHex(distExports$2.domainSign({
-    data: Buffer.from(Uint8Array.from(data)),
-    secretKey: Buffer.from(fullKey),
-    domain
-  }));
-}
-function createWalletSigner(privateKey, domain) {
-  if (domain) {
-    return async (data) => {
-      return DefaultDomainSignature(Uint8Array.from(data), privateKey, domain);
-    };
-  }
+function createWalletSigner(privateKey) {
   return async (data) => {
     return DefaultSignature(Uint8Array.from(data), privateKey);
   };
@@ -34662,9 +34645,9 @@ class Signer {
    * @param options - Optional configuration for mnemonic type
    * @returns Signer function with publicKey property
    */
-  static async fromMnemonic(mnemonic2, options, domain) {
+  static async fromMnemonic(mnemonic2, options) {
     const keyPair = await MnemonicToKeyPair(mnemonic2, options?.type ?? "ton");
-    const signer = createWalletSigner(keyPair.secretKey, domain);
+    const signer = createWalletSigner(keyPair.secretKey);
     return {
       sign: signer,
       publicKey: Uint8ArrayToHex(keyPair.publicKey)
@@ -34675,10 +34658,10 @@ class Signer {
    * @param privateKey - Private key as hex string or Uint8Array
    * @returns Signer function with publicKey property
    */
-  static async fromPrivateKey(privateKey, domain) {
+  static async fromPrivateKey(privateKey) {
     const privateKeyBytes = typeof privateKey === "string" ? Uint8Array.from(Buffer.from(privateKey.replace("0x", ""), "hex")) : privateKey;
     const keyPair = distExports$1.keyPairFromSeed(Buffer.from(privateKeyBytes));
-    const signer = createWalletSigner(keyPair.secretKey, domain);
+    const signer = createWalletSigner(keyPair.secretKey);
     return {
       sign: signer,
       publicKey: Uint8ArrayToHex(keyPair.publicKey)
@@ -39048,6 +39031,7 @@ class WalletV5R1Adapter {
   // private keyPair: { publicKey: Uint8Array; secretKey: Uint8Array };
   signer;
   config;
+  domain;
   walletContract;
   client;
   publicKey;
@@ -39064,13 +39048,15 @@ class WalletV5R1Adapter {
       tonClient: options.client,
       network: options.network,
       walletId: options.walletId,
-      workchain: options.workchain
+      workchain: options.workchain,
+      domain: options.domain
     });
   }
   constructor(config2) {
     this.config = config2;
     this.client = config2.tonClient;
     this.signer = config2.signer;
+    this.domain = config2.domain;
     this.publicKey = this.config.publicKey;
     this.walletContract = WalletV5.createFromConfig({
       publicKey: HexToBigInt(this.publicKey),
@@ -39229,7 +39215,8 @@ class WalletV5R1Adapter {
     };
     const expireAt = options.validUntil ?? Math.floor(Date.now() / 1e3) + 300;
     const payload = distExports$2.beginCell().storeUint(Opcodes2.auth_signed, 32).storeUint(walletId, 32).storeUint(expireAt, 32).storeUint(seqno, 32).storeSlice(actionsList.beginParse()).endCell();
-    const signingData = payload.hash();
+    const domainPrefix = this.domain ? distExports$2.signatureDomainPrefix(this.domain) : null;
+    const signingData = domainPrefix ? Buffer.concat([domainPrefix, payload.hash()]) : payload.hash();
     const signature = options.fakeSignature ? FakeSignature(signingData) : await this.sign(signingData);
     return distExports$2.beginCell().storeSlice(payload.beginParse()).storeBuffer(Buffer.from(HexToUint8Array(signature))).endCell();
   }
@@ -39508,6 +39495,7 @@ const log$5 = globalLogger.createChild("WalletV4R2Adapter");
 class WalletV4R2Adapter {
   signer;
   config;
+  domain;
   walletContract;
   client;
   publicKey;
@@ -39524,13 +39512,15 @@ class WalletV4R2Adapter {
       tonClient: options.client,
       network: options.network,
       walletId: typeof options.walletId === "bigint" ? Number(options.walletId) : options.walletId,
-      workchain: options.workchain
+      workchain: options.workchain,
+      domain: options.domain
     });
   }
   constructor(config2) {
     this.config = config2;
     this.client = config2.tonClient;
     this.signer = config2.signer;
+    this.domain = config2.domain;
     this.publicKey = this.config.publicKey;
     const walletConfig = {
       publicKey: HexToBigInt(this.publicKey),
@@ -39603,7 +39593,9 @@ class WalletV4R2Adapter {
         messages,
         timeout
       });
-      const signature = await this.sign(Uint8Array.from(data.hash()));
+      const domainPrefix = this.domain ? distExports$2.signatureDomainPrefix(this.domain) : null;
+      const signingData = domainPrefix ? Buffer.concat([domainPrefix, data.hash()]) : data.hash();
+      const signature = await this.sign(Uint8Array.from(signingData));
       const signedCell = distExports$2.beginCell().storeBuffer(Buffer.from(HexToUint8Array(signature))).storeSlice(data.asSlice()).endCell();
       const ext = distExports$2.external({
         to: this.walletContract.address,
@@ -45319,24 +45311,24 @@ window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager,
       walletKit.removeDisconnectCallback();
       console.log("🗑️ All event listeners removed");
     },
-    createSignerFromMnemonic(mnemonic2, domain) {
+    createSignerFromMnemonic(mnemonic2) {
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating signer from mnemonic and domain - ", domain);
+        console.log("➕ Bridge: Creating signer from mnemonic");
         if (!mnemonic2) {
           throw new Error("Mnemonic is required to create signer");
         }
-        return yield Signer.fromMnemonic(mnemonic2, { type: "ton" }, domain);
+        return yield Signer.fromMnemonic(mnemonic2, { type: "ton" });
       });
     },
-    createSignerFromPrivateKey(privateKey, domain) {
+    createSignerFromPrivateKey(privateKey) {
       return __async(this, null, function* () {
         if (!initialized) throw new Error("WalletKit Bridge not initialized");
-        console.log("➕ Bridge: Creating signer from private key and domain - ", domain);
+        console.log("➕ Bridge: Creating signer from private key");
         if (!privateKey) {
           throw new Error("Private key is required to create signer");
         }
-        return yield Signer.fromPrivateKey(privateKey, domain);
+        return yield Signer.fromPrivateKey(privateKey);
       });
     },
     createV4R2WalletAdapter(signer, parameters) {
@@ -45350,7 +45342,8 @@ window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager,
         }
         return yield WalletV4R2Adapter.create(this.jsSigner(signer), {
           client: walletKit.getApiClient(network),
-          network
+          network,
+          domain: parameters.domain
         });
       });
     },
@@ -45365,7 +45358,8 @@ window.initWalletKit = (configuration, storage, bridgeTransport, sessionManager,
         }
         return yield WalletV5R1Adapter.create(this.jsSigner(signer), {
           client: walletKit.getApiClient(network),
-          network
+          network,
+          domain: parameters.domain
         });
       });
     },
