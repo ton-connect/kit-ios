@@ -1,8 +1,8 @@
 //
-//  TONSwapProviderIdentifier.swift
+//  JSContext+Closure.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 16.03.2026.
+//  Created by Nikita Rodionov on 31.03.2026.
 //  
 //  Copyright (c) 2026 TON Connect
 //
@@ -25,8 +25,15 @@
 //  SOFTWARE.
 
 import Foundation
+import JavaScriptCore
 
-public protocol TONSwapProviderIdentifier: TONProviderIdentifier {
-    associatedtype QuoteOptions: Codable
-    associatedtype SwapOptions: Codable
+extension JSContext {
+    
+    func closure<T>(_ block: @escaping (T) -> Void) -> JSValue where T: JSValueCodable {
+        let block: @convention(block) (JSValue) -> Void = { value in
+            let decoded: T? = try? value.decode()
+            if let decoded { block(decoded) }
+        }
+        return JSValue(object: block, in: self)
+    }
 }

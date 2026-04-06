@@ -454,4 +454,16 @@ struct TONWalletAdapterJSAdapterTests {
 
         #expect(result.isUndefined)
     }
+
+    @Test("identifier is callable from JS")
+    func identifierCallableFromJS() throws {
+        let wallet = MockWalletAdapter()
+        wallet.mockIdentifier = "my-wallet-id"
+        let sut = TONWalletAdapterJSAdapter(context: context, walletAdapter: wallet)
+        context.evaluateScript("function callIdentifier(w) { return w.getWalletId(); }")
+
+        let result: String? = try context.callIdentifier(sut)
+
+        #expect(result == "my-wallet-id")
+    }
 }

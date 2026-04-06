@@ -295,7 +295,7 @@ struct TONWalletKitTests {
         let (sut, _, mockContext) = makeSUT()
         try await sut.initialize()
 
-        _ = try? await sut.deDustSwapProvider(config: nil)
+        _ = try? await sut.dedustSwapProvider(config: nil)
 
         let paths = mockContext.callRecords.map(\.path)
         #expect(paths.contains("walletKit.createDeDustSwapProvider"))
@@ -310,5 +310,16 @@ struct TONWalletKitTests {
 
         let paths = mockContext.callRecords.map(\.path)
         #expect(paths.contains("walletKit.swap"))
+    }
+
+    @Test("streaming() calls streaming")
+    func streamingCallsStreaming() async throws {
+        let (sut, _, mockContext) = makeSUT()
+        try await sut.initialize()
+
+        _ = try? await sut.streaming()
+
+        let paths = mockContext.callRecords.map(\.path)
+        #expect(paths.contains("walletKit.streaming"))
     }
 }

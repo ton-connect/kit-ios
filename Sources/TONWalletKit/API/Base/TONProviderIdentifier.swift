@@ -1,8 +1,8 @@
 //
-//  TONSwapProviderIdentifier.swift
+//  TONProviderIdentifier.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 16.03.2026.
+//  Created by Nikita Rodionov on 03.04.2026.
 //  
 //  Copyright (c) 2026 TON Connect
 //
@@ -24,9 +24,17 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-import Foundation
+public protocol TONProviderIdentifier {
+    associatedtype Provider
 
-public protocol TONSwapProviderIdentifier: TONProviderIdentifier {
-    associatedtype QuoteOptions: Codable
-    associatedtype SwapOptions: Codable
+    var name: String { get }
+
+    init(name: String)
+}
+
+public extension TONProviderIdentifier {
+    
+    func eraseToAnyIdentifier() -> AnyTONProviderIdentifier {
+        AnyTONProviderIdentifier(name: name)
+    }
 }

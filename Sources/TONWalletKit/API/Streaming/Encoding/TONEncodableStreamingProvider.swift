@@ -1,8 +1,8 @@
 //
-//  TONSwapProviderIdentifier.swift
+//  TONEncodableStreamingProvider.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 16.03.2026.
+//  Created by Nikita Rodionov on 02.04.2026.
 //  
 //  Copyright (c) 2026 TON Connect
 //
@@ -26,7 +26,25 @@
 
 import Foundation
 
-public protocol TONSwapProviderIdentifier: TONProviderIdentifier {
-    associatedtype QuoteOptions: Codable
-    associatedtype SwapOptions: Codable
+final class TONEncodableStreamingProvider<Provider: TONStreamingProviderProtocol>: JSValueEncodable {
+    let streamingProvider: Provider
+    
+    init(streamingProvider: Provider) {
+        self.streamingProvider = streamingProvider
+    }
+    
+    func encode(in context: JSContext) throws -> Any {
+        if let value = streamingProvider as? JSValueEncodable {
+            return try value.encode(in: context)
+        }
+        return TONStreamingProviderJSAdapter(
+            context: context,
+            streamingProvider: streamingProvider
+        )
+    }
+}
+
+extension TONStreamingProvider: JSValueEncodable {
+    
+    func encode(in context: JSContext) throws -> Any { jsObject }
 }

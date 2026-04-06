@@ -1,5 +1,5 @@
 //
-//  TONSwapProviderIdentifier.swift
+//  TONProviderType.swift
 //  TONWalletKit
 //
 //  Created by Nikita Rodionov on 16.03.2026.
@@ -26,7 +26,7 @@
 
 import Foundation
 
-public protocol TONSwapProviderIdentifier: TONProviderIdentifier {
-    associatedtype QuoteOptions: Codable
-    associatedtype SwapOptions: Codable
+public enum TONProviderType: String {
+    case swap
+    case streaming
 }

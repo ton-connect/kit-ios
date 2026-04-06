@@ -1,8 +1,8 @@
 //
-//  TONSwapProviderIdentifier.swift
+//  JSStreamingProvider.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 16.03.2026.
+//  Created by Nikita Rodionov on 02.04.2026.
 //  
 //  Copyright (c) 2026 TON Connect
 //
@@ -25,8 +25,19 @@
 //  SOFTWARE.
 
 import Foundation
+import JavaScriptCore
 
-public protocol TONSwapProviderIdentifier: TONProviderIdentifier {
-    associatedtype QuoteOptions: Codable
-    associatedtype SwapOptions: Codable
+@objc protocol JSStreamingProvider: JSExport {
+    var type: String { get }
+    var providerId: String { get }
+    var network: JSValue { get }
+    
+    @objc(watchBalance::) func balance(address: JSValue, handler: JSValue) -> JSValue
+    @objc(watchTransactions::) func transactions(address: JSValue, handler: JSValue) -> JSValue
+    @objc(watchJettons::) func jettons(address: JSValue, handler: JSValue) -> JSValue
+    
+    @objc(connect) func connect()
+    @objc(disconnect) func disconnect()
+    
+    @objc(onConnectionChange:) func connectionChange(handler: JSValue) -> JSValue
 }

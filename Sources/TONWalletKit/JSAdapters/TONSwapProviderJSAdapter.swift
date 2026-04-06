@@ -94,4 +94,4 @@ class TONSwapProviderJSAdapter<Provider: TONSwapProviderProtocol>: NSObject, JSS
     
 }
 
-
+extension TONSwapProviderJSAdapter: JSValueEncodable {}
