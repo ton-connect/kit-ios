@@ -70,7 +70,7 @@ public class TONWalletKit {
         self.context = try await contextProvider.context(for: configuration)
     }
     
-    public func omnistoneSwapProvider(
+    public func omnistonSwapProvider(
         config: TONOmnistonSwapProviderConfig?
     ) async throws -> TONOmnistonSwapProvider {
         try await jsWalletKit().createOmnistonSwapProvider(config)

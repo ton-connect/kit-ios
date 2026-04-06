@@ -33,7 +33,7 @@ public struct TONOmnistonSwapProviderIdentifier: TONSwapProviderIdentifier {
 
     public let name: String
     
-    public init(name: String = "omnistone") {
+    public init(name: String = "omniston") {
         self.name = name
     }
 }
