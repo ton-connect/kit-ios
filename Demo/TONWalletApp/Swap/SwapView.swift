@@ -37,6 +37,9 @@ struct SwapView: View {
             )
             .presentationDetents([.medium])
         }
+        .task {
+            await viewModel.load()
+        }
     }
 
     // MARK: - Token Input Section
@@ -167,15 +170,17 @@ struct SwapView: View {
                 .textSM(weight: .medium)
                 .foregroundColor(Color.TON.gray500)
 
-            Picker("Provider", selection: Binding(
-                get: { viewModel.selectedProvider },
-                set: { viewModel.setProvider($0) }
-            )) {
-                ForEach(SwapProviderOption.allCases) { option in
-                    Text(option.rawValue).tag(option)
+            if let provider = viewModel.selectedProvider {
+                Picker("Provider", selection: Binding(
+                    get: { provider },
+                    set: { viewModel.setProvider($0) }
+                )) {
+                    ForEach(viewModel.providers) { option in
+                        Text(option.name).tag(option)
+                    }
                 }
+                .pickerStyle(.segmented)
             }
-            .pickerStyle(.segmented)
         }
         .widget()
     }
