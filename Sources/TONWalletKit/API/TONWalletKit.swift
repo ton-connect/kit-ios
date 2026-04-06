@@ -87,15 +87,15 @@ public class TONWalletKit {
         return manager
     }
     
-    public func signer(mnemonic: TONMnemonic, domain: TONSignatureDomain? = nil) async throws -> any TONWalletSignerProtocol {
-        let signer = try await jsWalletKit().createSignerFromMnemonic(mnemonic.value, domain)
+    public func signer(mnemonic: TONMnemonic) async throws -> any TONWalletSignerProtocol {
+        let signer = try await jsWalletKit().createSignerFromMnemonic(mnemonic.value)
         
         return TONWalletSigner(jsWalletSigner: signer)
     }
     
-    public func signer(privateKey: Data, domain: TONSignatureDomain? = nil) async throws -> any TONWalletSignerProtocol {
+    public func signer(privateKey: Data) async throws -> any TONWalletSignerProtocol {
         let data = [UInt8](privateKey)
-        let signer = try await jsWalletKit().createSignerFromPrivateKey(data, domain)
+        let signer = try await jsWalletKit().createSignerFromPrivateKey(data)
         
         return TONWalletSigner(jsWalletSigner: signer)
     }
