@@ -279,12 +279,12 @@ struct TONWalletKitTests {
         #expect(provider.contextCallCount == 1)
     }
 
-    @Test("omnistoneSwapProvider(config:) calls createOmnistonSwapProvider")
+    @Test("omnistonSwapProvider(config:) calls createOmnistonSwapProvider")
     func omnistonSwapProviderCalls() async throws {
         let (sut, _, mockContext) = makeSUT()
         try await sut.initialize()
 
-        _ = try? await sut.omnistoneSwapProvider(config: nil)
+        _ = try? await sut.omnistonSwapProvider(config: nil)
 
         let paths = mockContext.callRecords.map(\.path)
         #expect(paths.contains("walletKit.createOmnistonSwapProvider"))
