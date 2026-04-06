@@ -305,4 +305,24 @@ struct TONConnectSessionsManagerJSAdapterTests {
             try await result.then()
         }
     }
+
+    @Test("sessions resolves from JS call")
+    func sessionsResolvesFromJS() async throws {
+        let (sut, _) = makeSUT()
+        context.evaluateScript("function callSessions(m) { return m.getSessions(undefined); }")
+
+        let result: JSValue = try await context.callSessions(sut)
+
+        #expect(result.isArray)
+    }
+
+    @Test("clearSessions resolves from JS call")
+    func clearSessionsResolvesFromJS() async throws {
+        let (sut, manager) = makeSUT()
+        context.evaluateScript("function callClear(m) { return m.clearSessions(); }")
+
+        let _: JSValue = try await context.callClear(sut)
+
+        #expect(manager.removeAllSessionsCallCount == 1)
+    }
 }

@@ -61,4 +61,79 @@ struct TONSwapProviderJSAdapterTests {
             try await result.then()
         }
     }
+
+    @Test("type is accessible from JS")
+    func typeAccessibleFromJS() {
+        let sut = makeSUT()
+        context.setObject(sut, forKeyedSubscript: "adapter" as NSString)
+
+        let result = context.evaluateScript("adapter.type")
+
+        #expect(result?.toString() == "swap")
+    }
+
+    @Test("providerId is accessible from JS")
+    func providerIdAccessibleFromJS() {
+        let sut = makeSUT(identifierName: "test-provider")
+        context.setObject(sut, forKeyedSubscript: "adapter" as NSString)
+
+        let result = context.evaluateScript("adapter.providerId")
+
+        #expect(result?.toString() == "test-provider")
+    }
+
+    @Test("quote resolves from JS call")
+    func quoteResolvesFromJS() async throws {
+        let sut = makeSUT()
+        context.setObject(sut, forKeyedSubscript: "adapter" as NSString)
+
+        let promise = context.evaluateScript("""
+        adapter.getQuote({
+            amount: "1000000000",
+            from: { address: "ton", decimals: 9 },
+            to: { address: "ton", decimals: 9 },
+            network: { chainId: "-239" }
+        })
+        """)!
+
+        let result = try await promise.then()
+        #expect(result.forProperty("providerId")?.toString() == "omniston")
+    }
+
+    @Test("adapter works as JS function argument")
+    func adapterWorksAsJSFunctionArgument() throws {
+        let sut = makeSUT(identifierName: "test-provider")
+        context.evaluateScript("function getProviderType(provider) { return provider.type; }")
+
+        let result: String? = try context.getProviderType(sut)
+
+        #expect(result == "swap")
+    }
+
+    @Test("swapTransaction resolves from JS call")
+    func swapTransactionResolvesFromJS() async throws {
+        let sut = makeSUT()
+        context.setObject(sut, forKeyedSubscript: "adapter" as NSString)
+
+        let promise = context.evaluateScript("""
+        adapter.buildSwapTransaction({
+            quote: {
+                fromToken: { address: "ton", decimals: 9 },
+                toToken: { address: "ton", decimals: 9 },
+                rawFromAmount: "1000000000",
+                rawToAmount: "1000000",
+                fromAmount: "1",
+                toAmount: "1",
+                rawMinReceived: "990000",
+                minReceived: "0.99",
+                network: { chainId: "-239" },
+                providerId: "omniston"
+            },
+            userAddress: "EQCrq6urq6urq6urq6urq6urq6urq6urq6urq6urq6urq8Uk"
+        })
+        """)!
+
+        let result = try await promise.then()
+        #expect(result.forProperty("messages")?.isArray == true)
+    }
 }

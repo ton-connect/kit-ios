@@ -93,4 +93,27 @@ struct TONWalletSignerJSAdapterTests {
             try await result.then()
         }
     }
+
+    @Test("publicKey is callable from JS")
+    func publicKeyCallableFromJS() throws {
+        let key = TONHex(data: Data([0xab, 0xcd, 0x12, 0x34]))
+        let signer = MockSigner(publicKey: key)
+        let sut = TONWalletSignerJSAdapter(context: context, signer: signer)
+        context.evaluateScript("function callPublicKey(s) { return s.publicKey(); }")
+
+        let result: String? = try context.callPublicKey(sut)
+
+        #expect(result == key.value)
+    }
+
+    @Test("sign resolves from JS call")
+    func signResolvesFromJS() async throws {
+        let signer = MockSigner()
+        let sut = TONWalletSignerJSAdapter(context: context, signer: signer)
+        context.evaluateScript("function callSign(s, data) { return s.sign(data); }")
+
+        let result: String = try await context.callSign(sut, [0x01, 0x02, 0x03] as [UInt8])
+
+        #expect(result == TONHex(data: Data([0xab, 0xcd])).value)
+    }
 }

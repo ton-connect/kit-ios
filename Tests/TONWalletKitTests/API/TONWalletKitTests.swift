@@ -102,19 +102,6 @@ struct TONWalletKitTests {
         #expect(paths.contains("walletKit.createSignerFromMnemonic"))
     }
 
-    @Test("signer(mnemonic:domain:) passes domain to createSignerFromMnemonic")
-    func signerMnemonicWithDomainCallsCreate() async throws {
-        let (sut, _, mockContext) = makeSUT()
-        try await sut.initialize()
-        let mnemonic = TONMnemonic(value: (1...24).map { "word\($0)" })
-        let domain = TONSignatureDomain.l2(globalId: 42)
-
-        _ = try? await sut.signer(mnemonic: mnemonic, domain: domain)
-
-        let paths = mockContext.callRecords.map(\.path)
-        #expect(paths.contains("walletKit.createSignerFromMnemonic"))
-    }
-
     @Test("signer(privateKey:) calls createSignerFromPrivateKey")
     func signerPrivateKeyCallsCreate() async throws {
         let (sut, _, mockContext) = makeSUT()
@@ -126,24 +113,12 @@ struct TONWalletKitTests {
         #expect(paths.contains("walletKit.createSignerFromPrivateKey"))
     }
 
-    @Test("signer(privateKey:domain:) passes domain to createSignerFromPrivateKey")
-    func signerPrivateKeyWithDomainCallsCreate() async throws {
-        let (sut, _, mockContext) = makeSUT()
-        try await sut.initialize()
-        let domain = TONSignatureDomain.l2(globalId: 7)
-
-        _ = try? await sut.signer(privateKey: Data([0x01, 0x02]), domain: domain)
-
-        let paths = mockContext.callRecords.map(\.path)
-        #expect(paths.contains("walletKit.createSignerFromPrivateKey"))
-    }
-
     @Test("walletV4R2Adapter() calls createV4R2WalletAdapter")
     func walletV4R2AdapterCalls() async throws {
         let (sut, _, mockContext) = makeSUT()
         try await sut.initialize()
         let signer = MockSigner()
-        let params = TONV4R2WalletParameters(network: .mainnet)
+        let params = TONV4R2WalletParameters(network: .mainnet, domain: nil)
 
         _ = try? await sut.walletV4R2Adapter(signer: signer, parameters: params)
 
@@ -156,7 +131,7 @@ struct TONWalletKitTests {
         let (sut, _, mockContext) = makeSUT()
         try await sut.initialize()
         let signer = MockSigner()
-        let params = TONV5R1WalletParameters(network: .mainnet)
+        let params = TONV5R1WalletParameters(network: .mainnet, domain: nil)
 
         _ = try? await sut.walletV5R1Adapter(signer: signer, parameters: params)
 
@@ -335,5 +310,16 @@ struct TONWalletKitTests {
 
         let paths = mockContext.callRecords.map(\.path)
         #expect(paths.contains("walletKit.swap"))
+    }
+
+    @Test("streaming() calls streaming")
+    func streamingCallsStreaming() async throws {
+        let (sut, _, mockContext) = makeSUT()
+        try await sut.initialize()
+
+        _ = try? await sut.streaming()
+
+        let paths = mockContext.callRecords.map(\.path)
+        #expect(paths.contains("walletKit.streaming"))
     }
 }

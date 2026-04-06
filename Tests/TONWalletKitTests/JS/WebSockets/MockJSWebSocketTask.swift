@@ -33,10 +33,26 @@ actor MockJSWebSocketTask: JSWebSocketTaskProtocol {
     var cancelCalled = false
 
     private var eventContinuation: AsyncStream<JSWebSocketEvent>.Continuation?
-    nonisolated(unsafe) private var sendContinuation: AsyncStream<URLSessionWebSocketTask.Message>.Continuation?
-    nonisolated(unsafe) private var closeContinuation: AsyncStream<(code: URLSessionWebSocketTask.CloseCode, reason: Data?)>.Continuation?
 
-    init() {}
+    private nonisolated(unsafe) var _sendStream: AsyncStream<URLSessionWebSocketTask.Message>!
+    private nonisolated(unsafe) var _sendContinuation: AsyncStream<URLSessionWebSocketTask.Message>.Continuation!
+    private nonisolated(unsafe) var _closeStream: AsyncStream<CloseCall>!
+    private nonisolated(unsafe) var _closeContinuation: AsyncStream<CloseCall>.Continuation!
+
+    struct CloseCall: Sendable {
+        let code: URLSessionWebSocketTask.CloseCode
+        let reason: Data?
+    }
+
+    init() {
+        let (sendStream, sendContinuation) = AsyncStream.makeStream(of: URLSessionWebSocketTask.Message.self)
+        _sendStream = sendStream
+        _sendContinuation = sendContinuation
+
+        let (closeStream, closeContinuation) = AsyncStream.makeStream(of: CloseCall.self)
+        _closeStream = closeStream
+        _closeContinuation = closeContinuation
+    }
 
     func start() -> AsyncStream<JSWebSocketEvent> {
         AsyncStream { self.eventContinuation = $0 }
@@ -52,12 +68,12 @@ actor MockJSWebSocketTask: JSWebSocketTaskProtocol {
 
     func send(_ message: URLSessionWebSocketTask.Message) async throws {
         sentMessages.append(message)
-        sendContinuation?.yield(message)
+        _sendContinuation.yield(message)
     }
 
     func close(code: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         closeCalls.append((code, reason))
-        closeContinuation?.yield((code, reason))
+        _closeContinuation.yield(CloseCall(code: code, reason: reason))
     }
 
     func cancel() {
@@ -66,23 +82,17 @@ actor MockJSWebSocketTask: JSWebSocketTaskProtocol {
 
     nonisolated func expectSend(count: Int = 1) async -> [URLSessionWebSocketTask.Message] {
         var received: [URLSessionWebSocketTask.Message] = []
-        let stream = AsyncStream<URLSessionWebSocketTask.Message> { self.sendContinuation = $0 }
-
-        for await message in stream {
+        for await message in _sendStream {
             received.append(message)
             if received.count >= count { break }
         }
-
         return received
     }
 
     nonisolated func expectClose() async -> (code: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        let stream = AsyncStream<(code: URLSessionWebSocketTask.CloseCode, reason: Data?)> { self.closeContinuation = $0 }
-
-        for await call in stream {
-            return call
+        for await call in _closeStream {
+            return (code: call.code, reason: call.reason)
         }
-
         fatalError("expectClose stream ended without receiving a close call")
     }
 }
