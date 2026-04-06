@@ -1,9 +1,9 @@
 //
-//  TONProviderType.swift
+//  JSStakingProvider.swift
 //  TONWalletKit
 //
-//  Created by Nikita Rodionov on 16.03.2026.
-//  
+//  Created by Nikita Rodionov on 06.04.2026.
+//
 //  Copyright (c) 2026 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -12,10 +12,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,9 +25,15 @@
 //  SOFTWARE.
 
 import Foundation
+import JavaScriptCore
 
-public enum TONProviderType: String {
-    case swap
-    case streaming
-    case staking
+@objc protocol JSStakingProvider: JSExport {
+    var type: String { get }
+    var providerId: String { get }
+
+    @objc(getQuote:) func quote(params: JSValue) -> JSValue
+    @objc(buildStakeTransaction:) func stakeTransaction(params: JSValue) -> JSValue
+    @objc(getStakedBalance::) func stakedBalance(userAddress: JSValue, network: JSValue) -> JSValue
+    @objc(getStakingProviderInfo:) func stakingProviderInfo(network: JSValue) -> JSValue
+    @objc(getSupportedUnstakeModes) func supportedUnstakeModes() -> JSValue
 }
