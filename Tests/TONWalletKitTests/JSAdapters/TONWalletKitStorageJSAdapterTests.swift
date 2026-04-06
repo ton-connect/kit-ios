@@ -247,4 +247,27 @@ struct TONWalletKitStorageJSAdapterTests {
             try await result.then()
         }
     }
+
+    @Test("get resolves from JS call")
+    func getResolvesFromJS() async throws {
+        let storage = MockStorage()
+        storage.store["key"] = "value"
+        let (sut, _) = makeSUT(storage: storage)
+        context.evaluateScript("function callGet(s, key) { return s.get(key); }")
+
+        let result: String = try await context.callGet(sut, "key")
+
+        #expect(result == "value")
+    }
+
+    @Test("set delegates from JS call")
+    func setDelegatesFromJS() async throws {
+        let (sut, storage) = makeSUT()
+        context.evaluateScript("function callSet(s, k, v) { return s.set(k, v); }")
+
+        let _: JSValue = try await context.callSet(sut, "myKey", "myValue")
+
+        #expect(storage.setCalls.first?.key == "myKey")
+        #expect(storage.setCalls.first?.value == "myValue")
+    }
 }
