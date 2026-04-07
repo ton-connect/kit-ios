@@ -32,14 +32,14 @@ import BigInt
 public struct TONStakingProviderInfo: Codable {
 
     /** Annual Percentage Yield in basis points (100 = 1%) */
-    public var apy: Int
+    public var apy: Double
     public var rawInstantUnstakeAvailable: TONTokenAmount?
     /** Amount available for instant unstake */
     public var instantUnstakeAvailable: String?
     /** Identifier of the staking provider */
     public var providerId: String
 
-    public init(apy: Int, rawInstantUnstakeAvailable: TONTokenAmount? = nil, instantUnstakeAvailable: String? = nil, providerId: String) {
+    public init(apy: Double, rawInstantUnstakeAvailable: TONTokenAmount? = nil, instantUnstakeAvailable: String? = nil, providerId: String) {
         self.apy = apy
         self.rawInstantUnstakeAvailable = rawInstantUnstakeAvailable
         self.instantUnstakeAvailable = instantUnstakeAvailable
