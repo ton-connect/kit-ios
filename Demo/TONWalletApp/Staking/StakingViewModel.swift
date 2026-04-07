@@ -176,7 +176,7 @@ class StakingViewModel: ObservableObject {
 
     private func getStakingManager() async throws -> TONStakingManagerProtocol {
         if let stakingManager { return stakingManager }
-        let kit = TONWalletKit.shared()
+        let kit = await TONWalletKit.shared()
         let manager = try await kit.staking()
         let provider = try await kit.stakingProvider(config: TONTonStakersProviderConfig())
         try manager.register(provider: provider)
