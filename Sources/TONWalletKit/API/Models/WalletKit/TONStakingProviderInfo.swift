@@ -33,18 +33,22 @@ public struct TONStakingProviderInfo: Codable {
 
     /** Annual Percentage Yield in basis points (100 = 1%) */
     public var apy: Int
-    public var instantUnstakeAvailable: TONTokenAmount?
+    public var rawInstantUnstakeAvailable: TONTokenAmount?
+    /** Amount available for instant unstake */
+    public var instantUnstakeAvailable: String?
     /** Identifier of the staking provider */
     public var providerId: String
 
-    public init(apy: Int, instantUnstakeAvailable: TONTokenAmount? = nil, providerId: String) {
+    public init(apy: Int, rawInstantUnstakeAvailable: TONTokenAmount? = nil, instantUnstakeAvailable: String? = nil, providerId: String) {
         self.apy = apy
+        self.rawInstantUnstakeAvailable = rawInstantUnstakeAvailable
         self.instantUnstakeAvailable = instantUnstakeAvailable
         self.providerId = providerId
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case apy
+        case rawInstantUnstakeAvailable
         case instantUnstakeAvailable
         case providerId
     }
@@ -54,6 +58,7 @@ public struct TONStakingProviderInfo: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(apy, forKey: .apy)
+        try container.encodeIfPresent(rawInstantUnstakeAvailable, forKey: .rawInstantUnstakeAvailable)
         try container.encodeIfPresent(instantUnstakeAvailable, forKey: .instantUnstakeAvailable)
         try container.encode(providerId, forKey: .providerId)
     }

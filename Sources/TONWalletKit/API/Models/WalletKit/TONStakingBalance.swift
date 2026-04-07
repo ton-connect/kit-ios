@@ -31,19 +31,27 @@ import BigInt
 
 public struct TONStakingBalance: Codable {
 
-    public var stakedBalance: TONTokenAmount
-    public var instantUnstakeAvailable: TONTokenAmount
+    public var rawStakedBalance: TONTokenAmount
+    /** Amount currently staked */
+    public var stakedBalance: String
+    public var rawInstantUnstakeAvailable: TONTokenAmount
+    /** Amount available for instant unstake */
+    public var instantUnstakeAvailable: String
     /** Identifier of the staking provider */
     public var providerId: String
 
-    public init(stakedBalance: TONTokenAmount, instantUnstakeAvailable: TONTokenAmount, providerId: String) {
+    public init(rawStakedBalance: TONTokenAmount, stakedBalance: String, rawInstantUnstakeAvailable: TONTokenAmount, instantUnstakeAvailable: String, providerId: String) {
+        self.rawStakedBalance = rawStakedBalance
         self.stakedBalance = stakedBalance
+        self.rawInstantUnstakeAvailable = rawInstantUnstakeAvailable
         self.instantUnstakeAvailable = instantUnstakeAvailable
         self.providerId = providerId
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case rawStakedBalance
         case stakedBalance
+        case rawInstantUnstakeAvailable
         case instantUnstakeAvailable
         case providerId
     }
@@ -52,7 +60,9 @@ public struct TONStakingBalance: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(rawStakedBalance, forKey: .rawStakedBalance)
         try container.encode(stakedBalance, forKey: .stakedBalance)
+        try container.encode(rawInstantUnstakeAvailable, forKey: .rawInstantUnstakeAvailable)
         try container.encode(instantUnstakeAvailable, forKey: .instantUnstakeAvailable)
         try container.encode(providerId, forKey: .providerId)
     }
