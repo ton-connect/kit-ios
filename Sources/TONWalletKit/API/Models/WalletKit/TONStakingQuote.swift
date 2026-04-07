@@ -32,43 +32,44 @@ import BigInt
 public struct TONStakingQuote: Codable {
 
     public var direction: TONStakingQuoteDirection
-    public var amountIn: TONTokenAmount
-    public var amountOut: TONTokenAmount
+    public var rawAmountIn: TONTokenAmount
+    public var rawAmountOut: TONTokenAmount
+    /** Formatted amount of tokens being provided */
+    public var amountIn: String
+    /** Formatted estimated amount of tokens to be received */
+    public var amountOut: String
     public var network: TONNetwork
     /** Identifier of the staking provider */
     public var providerId: String
     /** Annual Percentage Yield in basis points (100 = 1%) */
-    public var apy: Int?
+    public var apy: Double?
     public var unstakeMode: TONUnstakeMode?
-    /** Estimated delay in hours for unstaking */
-    public var estimatedUnstakeDelayHours: Int?
-    public var instantUnstakeAvailable: TONTokenAmount?
     /** Provider-specific metadata for the quote */
     public var metadata: AnyCodable?
 
-    public init(direction: TONStakingQuoteDirection, amountIn: TONTokenAmount, amountOut: TONTokenAmount, network: TONNetwork, providerId: String, apy: Int? = nil, unstakeMode: TONUnstakeMode? = nil, estimatedUnstakeDelayHours: Int? = nil, instantUnstakeAvailable: TONTokenAmount? = nil, metadata: AnyCodable? = nil) {
+    public init(direction: TONStakingQuoteDirection, rawAmountIn: TONTokenAmount, rawAmountOut: TONTokenAmount, amountIn: String, amountOut: String, network: TONNetwork, providerId: String, apy: Double? = nil, unstakeMode: TONUnstakeMode? = nil, metadata: AnyCodable? = nil) {
         self.direction = direction
+        self.rawAmountIn = rawAmountIn
+        self.rawAmountOut = rawAmountOut
         self.amountIn = amountIn
         self.amountOut = amountOut
         self.network = network
         self.providerId = providerId
         self.apy = apy
         self.unstakeMode = unstakeMode
-        self.estimatedUnstakeDelayHours = estimatedUnstakeDelayHours
-        self.instantUnstakeAvailable = instantUnstakeAvailable
         self.metadata = metadata
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case direction
+        case rawAmountIn
+        case rawAmountOut
         case amountIn
         case amountOut
         case network
         case providerId
         case apy
         case unstakeMode
-        case estimatedUnstakeDelayHours
-        case instantUnstakeAvailable
         case metadata
     }
 
@@ -77,14 +78,14 @@ public struct TONStakingQuote: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(direction, forKey: .direction)
+        try container.encode(rawAmountIn, forKey: .rawAmountIn)
+        try container.encode(rawAmountOut, forKey: .rawAmountOut)
         try container.encode(amountIn, forKey: .amountIn)
         try container.encode(amountOut, forKey: .amountOut)
         try container.encode(network, forKey: .network)
         try container.encode(providerId, forKey: .providerId)
         try container.encodeIfPresent(apy, forKey: .apy)
         try container.encodeIfPresent(unstakeMode, forKey: .unstakeMode)
-        try container.encodeIfPresent(estimatedUnstakeDelayHours, forKey: .estimatedUnstakeDelayHours)
-        try container.encodeIfPresent(instantUnstakeAvailable, forKey: .instantUnstakeAvailable)
         try container.encodeIfPresent(metadata, forKey: .metadata)
     }
 }

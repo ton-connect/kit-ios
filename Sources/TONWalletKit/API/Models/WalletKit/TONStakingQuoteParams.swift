@@ -29,14 +29,15 @@ import BigInt
 
 public struct TONStakingQuoteParams<TProviderOptions: Codable>: Codable {
     public var direction: TONStakingQuoteDirection
-    public var amount: TONTokenAmount
+    /** Amount of tokens to stake or unstake */
+    public var amount: String
     public var userAddress: TONUserFriendlyAddress?
     public var network: TONNetwork?
     public var unstakeMode: TONUnstakeMode?
     /** Provider-specific options */
     public var providerOptions: TProviderOptions?
 
-    public init(direction: TONStakingQuoteDirection, amount: TONTokenAmount, userAddress: TONUserFriendlyAddress? = nil, network: TONNetwork? = nil, unstakeMode: TONUnstakeMode? = nil, providerOptions: TProviderOptions? = nil) {
+    public init(direction: TONStakingQuoteDirection, amount: String, userAddress: TONUserFriendlyAddress? = nil, network: TONNetwork? = nil, unstakeMode: TONUnstakeMode? = nil, providerOptions: TProviderOptions? = nil) {
         self.direction = direction
         self.amount = amount
         self.userAddress = userAddress
