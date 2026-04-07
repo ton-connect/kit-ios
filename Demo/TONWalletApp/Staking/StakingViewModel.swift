@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import TONWalletKit
 
 @MainActor
@@ -47,8 +48,7 @@ class StakingViewModel: ObservableObject {
     }
 
     var formattedAPY: String? {
-        guard let apy = providerInfo?.apy else { return nil }
-        return String(format: "%.2f%%", Double(apy) / 100.0)
+        providerInfo.flatMap { String(format: "%.2f%%", $0.apy) }
     }
 
     var formattedStakedBalance: String? {
@@ -58,6 +58,8 @@ class StakingViewModel: ObservableObject {
     var formattedInstantUnstakeAvailable: String? {
         providerInfo?.instantUnstakeAvailable
     }
+    
+    private var subscribers = Set<AnyCancellable>()
 
     func setAmount(_ value: String) {
         guard value.isEmpty || Double(value) != nil else { return }
@@ -142,6 +144,7 @@ class StakingViewModel: ObservableObject {
 
     func load() async {
         do {
+            try await subscribeToBalanceChanges()
             _ = try await getStakingManager()
             await loadStakingData()
         } catch {
@@ -151,7 +154,7 @@ class StakingViewModel: ObservableObject {
 
     func loadStakingData() async {
         guard let manager = stakingManager else { return }
-
+        
         do {
             async let balanceTask = manager.stakedBalance(
                 userAddress: wallet.address,
@@ -166,6 +169,18 @@ class StakingViewModel: ObservableObject {
             providerInfo = info
         } catch {
             debugPrint("Failed to load staking data: \(error.localizedDescription)")
+        }
+    }
+    
+    func updateBalance() {
+        guard let manager = stakingManager else { return }
+        
+        Task {
+            let balance = try await manager.stakedBalance(
+                userAddress: wallet.address,
+                network: TONNetwork.mainnet
+            )
+            self.stakedBalance = balance
         }
     }
 
@@ -188,5 +203,17 @@ class StakingViewModel: ObservableObject {
 
         stakingManager = manager
         return manager
+    }
+    
+    private func subscribeToBalanceChanges() async throws {
+        try await TONWalletKit.shared().streaming().jettons(network: .mainnet, address: wallet.address.value)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { balance in
+                    self.updateBalance()
+                }
+            )
+            .store(in: &subscribers)
     }
 }
