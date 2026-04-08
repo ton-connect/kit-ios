@@ -172,3 +172,13 @@ extension JSValueDecodable where Self: Decodable {
         }
     }
 }
+
+extension JSValueDecodable where Self: Decodable, Self: RawRepresentable, Self.RawValue: JSValueDecodable {
+    
+    static func from(_ value: JSValue) throws -> Self? {
+        guard let rawValue = try RawValue.from(value) else {
+            return nil
+        }
+        return Self(rawValue: rawValue)
+    }
+}

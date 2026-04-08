@@ -34,6 +34,7 @@ struct WalletView: View {
     
     let onSend: (SendTokensViewModel) -> Void
     let onSwap: (SwapViewModel) -> Void
+    let onStaking: (StakingViewModel) -> Void
 
     var body: some View {
         ScrollView {
@@ -47,6 +48,11 @@ struct WalletView: View {
 
                 Button("Swap") {
                     onSwap(viewModel.swapViewModel())
+                }
+                .buttonStyle(TONButtonStyle(type: .secondary))
+
+                Button("Staking") {
+                    onStaking(viewModel.stakingViewModel())
                 }
                 .buttonStyle(TONButtonStyle(type: .secondary))
                 

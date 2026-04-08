@@ -66,16 +66,14 @@ class AddWalletViewModel: ObservableObject {
                 adapter = try await kit.walletV5R1Adapter(
                     signer: signer,
                     parameters: TONV5R1WalletParameters(
-                        network: .mainnet,
-                        domain: nil
+                        network: .mainnet, domain: nil
                     )
                 )
             case .v4r2:
                 adapter = try await kit.walletV4R2Adapter(
                     signer: signer,
                     parameters: TONV4R2WalletParameters(
-                        network: .mainnet,
-                        domain: nil
+                        network: .mainnet, domain: nil
                     )
                 )
             }
