@@ -39,8 +39,10 @@ struct MockStakingProvider: TONStakingProviderProtocol {
     private func makeStubQuote() -> TONStakingQuote {
         TONStakingQuote(
             direction: .stake,
-            amountIn: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "1000000000")),
-            amountOut: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "950000000")),
+            rawAmountIn: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "1000000000")),
+            rawAmountOut: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "950000000")),
+            amountIn: "1",
+            amountOut: "0.95",
             network: TONNetwork(chainId: "-239"),
             providerId: "tonstakers",
             apy: 500
@@ -49,8 +51,10 @@ struct MockStakingProvider: TONStakingProviderProtocol {
 
     private func makeStubBalance() -> TONStakingBalance {
         TONStakingBalance(
-            stakedBalance: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "5000000000")),
-            instantUnstakeAvailable: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "1000000000")),
+            rawStakedBalance: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "5000000000")),
+            stakedBalance: "5",
+            rawInstantUnstakeAvailable: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "1000000000")),
+            instantUnstakeAvailable: "1",
             providerId: "tonstakers"
         )
     }

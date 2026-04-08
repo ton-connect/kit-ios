@@ -158,8 +158,10 @@ struct TONStakingProviderJSAdapterTests {
             return adapter.buildStakeTransaction({
                 quote: {
                     direction: "stake",
-                    amountIn: "1000000000",
-                    amountOut: "950000000",
+                    rawAmountIn: "1000000000",
+                    rawAmountOut: "950000000",
+                    amountIn: "1",
+                    amountOut: "0.95",
                     network: { chainId: "-239" },
                     providerId: "tonstakers"
                 },

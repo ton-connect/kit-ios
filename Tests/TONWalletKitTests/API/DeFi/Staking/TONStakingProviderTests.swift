@@ -18,15 +18,17 @@ struct TONStakingProviderTests {
     private func makeQuoteParams() -> TONStakingQuoteParams<AnyCodable> {
         TONStakingQuoteParams(
             direction: .stake,
-            amount: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "1000000000"))
+            amount: "1000000000"
         )
     }
 
     private func makeStakeParams() -> TONStakeParams<AnyCodable> {
         let quote = TONStakingQuote(
             direction: .stake,
-            amountIn: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "1000000000")),
-            amountOut: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "950000000")),
+            rawAmountIn: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "1000000000")),
+            rawAmountOut: TONTokenAmount(nanoUnits: BigInt(stringLiteral: "950000000")),
+            amountIn: "1",
+            amountOut: "0.95",
             network: TONNetwork(chainId: "-239"),
             providerId: "tonstakers"
         )
