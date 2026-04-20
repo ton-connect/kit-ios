@@ -196,7 +196,7 @@ class SwapViewModel: ObservableObject {
 
     private func getSwapManager() async throws -> TONSwapManagerProtocol {
         if let swapManager { return swapManager }
-        let kit = TONWalletKit.shared()
+        let kit = await TONWalletKit.shared()
         let manager = try await kit.swap()
 
         let omniston = try await kit.omnistonSwapProvider(config: nil)

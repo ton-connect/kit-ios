@@ -56,8 +56,11 @@ extension TONWalletKit {
         if let _shared {
             return _shared
         }
+        if Env.toncenterAPIKey.isEmpty || Env.toncenterStreamingAPIKey.isEmpty {
+            fatalError("API keys not configured. Fill in your keys in Demo/TONWalletApp/Env.swift")
+        }
         let bridgeURL = "https://bridge.tonapi.io/bridge"
-        let apiClientConfig = TONWalletKitConfiguration.APIClientConfiguration(key: "25a9b2326a34b39a5fa4b264fb78fb4709e1bd576fc5e6b176639f5b71e94b0d")
+        let apiClientConfig = TONWalletKitConfiguration.APIClientConfiguration(key: Env.toncenterAPIKey)
         let testNetworkConfiguration = TONWalletKitConfiguration.NetworkConfiguration(
             network: .testnet,
             apiClient: .toncenter(apiClientConfig)
@@ -68,7 +71,7 @@ extension TONWalletKit {
         )
         let tetraNetworkConfiguration = TONWalletKitConfiguration.NetworkConfiguration(
             network: .tetra,
-            apiClient: .tonApi(.init(key: ""))
+            apiClient: .tonApi(.init(key: Env.tonApiTetraKey))
         )
         let configuration = TONWalletKitConfiguration(
             networkConfigurations: [testNetworkConfiguration, mainNetworkConfiguration, tetraNetworkConfiguration],
@@ -93,7 +96,7 @@ extension TONWalletKit {
             let toncenterStreaming = try await kit.streamingProvider(
                 config: TONTonCenterStreamingProviderConfig(
                     network: .mainnet,
-                    apiKey: "459a138f1bd20bd91869cbe7d377aeae44e8ced22dfe9c5708c0b6f1b153db88"
+                    apiKey: Env.toncenterStreamingAPIKey
                 )
             )
             

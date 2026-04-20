@@ -446,6 +446,8 @@ struct JSTimerPolyfillTests {
         context?.evaluateScript("")
         weak var weakContext = context
         
+        #expect(weakContext != nil)
+        
         context = nil
         
         try await Task.sleep(for: .seconds(0.1))
