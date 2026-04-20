@@ -1,5 +1,10 @@
 //
-//  Copyright (c) 2025 TON Connect
+//  JSStakingProvider.swift
+//  TONWalletKit
+//
+//  Created by Nikita Rodionov on 06.04.2026.
+//
+//  Copyright (c) 2026 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -20,25 +25,15 @@
 //  SOFTWARE.
 
 import Foundation
+import JavaScriptCore
 
-@globalActor actor EventSourceActor: GlobalActor {
-    static let shared = EventSourceActor()
-}
+@objc protocol JSStakingProvider: JSExport {
+    var type: String { get }
+    var providerId: String { get }
 
-struct EventSource {
-    private let timeout: TimeInterval
-
-    init(timeout: TimeInterval = 300) {
-        self.timeout = timeout
-    }
-
-    @EventSourceActor
-    func createTask(urlRequest: URLRequest,
-                    lastEventId: String? = nil) -> EventSourceTask {
-        EventSourceTask(
-            urlRequest: urlRequest,
-            timeout: timeout,
-            lastEventId: lastEventId
-        )
-    }
+    @objc(getQuote:) func quote(params: JSValue) -> JSValue
+    @objc(buildStakeTransaction:) func stakeTransaction(params: JSValue) -> JSValue
+    @objc(getStakedBalance::) func stakedBalance(userAddress: JSValue, network: JSValue) -> JSValue
+    @objc(getStakingProviderInfo:) func stakingProviderInfo(network: JSValue) -> JSValue
+    @objc(getSupportedUnstakeModes) func supportedUnstakeModes() -> JSValue
 }

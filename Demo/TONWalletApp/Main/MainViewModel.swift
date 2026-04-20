@@ -45,12 +45,12 @@ class MainViewModel: ObservableObject {
                 switch wallet.data.version {
                 case .v4r2:
                     let signer = try await kit.signer(mnemonic: TONMnemonic(value: wallet.data.mnemonic))
-                    let adapter = try await kit.walletV4R2Adapter(signer: signer, parameters: .init(network: .mainnet))
+                    let adapter = try await kit.walletV4R2Adapter(signer: signer, parameters: .init(network: .mainnet, domain: nil))
                     let tonWallet = try await kit.add(walletAdapter: adapter)
                     tonWallets.append(tonWallet)
                 case .v5r1:
                     let signer = try await kit.signer(mnemonic: TONMnemonic(value: wallet.data.mnemonic))
-                    let adapter = try await kit.walletV5R1Adapter(signer: signer, parameters: .init(network: .mainnet))
+                    let adapter = try await kit.walletV5R1Adapter(signer: signer, parameters: .init(network: .mainnet, domain: nil))
                     let tonWallet = try await kit.add(walletAdapter: adapter)
                     tonWallets.append(tonWallet)
                 }

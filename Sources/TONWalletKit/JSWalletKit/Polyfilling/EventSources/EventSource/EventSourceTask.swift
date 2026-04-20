@@ -7,10 +7,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,24 +29,24 @@ final class EventSourceTask {
         case event(Event)
         case error(Error)
     }
-    
+
     enum TaskState {
         case idle
         case connecting
         case open
         case closed
     }
-    
+
     private var state: TaskState = .idle
     private var httpResponseErrorStatusCode: Int?
     private var cancelClosure: (() -> Void)?
-    
+
     private var eventParser = EventParser()
-    
+
     private let urlRequest: URLRequest
     private let timeout: TimeInterval
     private var lastEventId: String?
-    
+
     init(urlRequest: URLRequest,
          timeout: TimeInterval,
          lastEventId: String?) {
@@ -54,7 +54,7 @@ final class EventSourceTask {
         self.timeout = timeout
         self.lastEventId = lastEventId
     }
-    
+
     func eventsStream() -> AsyncStream<TaskEvent> {
         guard state == .idle else {
             return AsyncStream { continuation in
@@ -62,20 +62,20 @@ final class EventSourceTask {
                 continuation.finish()
             }
         }
-        
+
         return AsyncStream { [weak self] continuation in
             guard let self else { return }
-            
+
             let urlSessionDelegate = URLSessionDelegate()
-            
+
             let urlSession = URLSession(
                 configuration: createURLSessionConfiguration(),
                 delegate: urlSessionDelegate,
                 delegateQueue: nil
             )
-            
+
             let urlSessionDataTask = urlSession.dataTask(with: urlRequest)
-            
+
             let urlSessionDelegateTask = Task { [weak self] in
                 guard let self else { return }
                 for await event in urlSessionDelegate.eventStream.stream {
@@ -97,15 +97,15 @@ final class EventSourceTask {
                     }
                 }
             }
-            
+
             continuation.onTermination = { [weak self] _ in
                 urlSessionDelegateTask.cancel()
                 Task { [weak self] in await self?.closeConnection(streamContinuation: continuation) }
             }
-            
+
             state = .connecting
             urlSessionDataTask.resume()
-            
+
             cancelClosure = { [weak self] in
                 self?.state = .closed
                 urlSessionDataTask.cancel()
@@ -113,11 +113,11 @@ final class EventSourceTask {
             }
         }
     }
-    
+
     public func cancel() {
         cancelClosure?()
     }
-    
+
     private func createURLSessionConfiguration() -> URLSessionConfiguration {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = [
@@ -130,7 +130,7 @@ final class EventSourceTask {
         configuration.timeoutIntervalForResource = timeout
         return configuration
     }
-    
+
     private func handleDidReceiveResponse(response: URLResponse,
                                           urlSessionDelegateCompletionHandler: @escaping (URLSession.ResponseDisposition) -> Void,
                                           streamContinuation: AsyncStream<TaskEvent>.Continuation) {
@@ -138,12 +138,12 @@ final class EventSourceTask {
             urlSessionDelegateCompletionHandler(.cancel)
             return
         }
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             urlSessionDelegateCompletionHandler(.cancel)
             return
         }
-        
+
         if (200..<300).contains(httpResponse.statusCode) {
             state = .open
             streamContinuation.yield(.open)
@@ -152,7 +152,7 @@ final class EventSourceTask {
         }
         urlSessionDelegateCompletionHandler(.allow)
     }
-    
+
     private func handleDidReceiveData(data: Data,
                                       streamContinuation: AsyncStream<TaskEvent>.Continuation) {
         if let httpResponseErrorStatusCode {
@@ -171,7 +171,7 @@ final class EventSourceTask {
         }
         events.forEach { streamContinuation.yield(.event($0)) }
     }
-    
+
     private func handleDidComplete(error: Error?,
                                    streamContinuation: AsyncStream<TaskEvent>.Continuation) {
         if state != .closed, let error {
@@ -179,7 +179,7 @@ final class EventSourceTask {
         }
         closeConnection(streamContinuation: streamContinuation)
     }
-    
+
     private func closeConnection(streamContinuation: AsyncStream<TaskEvent>.Continuation) {
         if state != .closed {
             streamContinuation.yield(.closed)
