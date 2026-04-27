@@ -1,10 +1,10 @@
 //
-//  MainView.swift
+//  WalletHomeActionsRow.swift
 //  TONWalletApp
 //
-//  Created by Nikita Rodionov on 06.10.2025.
+//  Created by Nikita Rodionov on 27.04.2026.
 //
-//  Copyright (c) 2025 TON Connect
+//  Copyright (c) 2026 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -12,10 +12,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,31 +26,16 @@
 
 import SwiftUI
 
-struct MainView: View {
-    @StateObject private var viewModel = MainViewModel()
-    
+struct WalletHomeActionsRow: View {
+    let onDeposit: () -> Void
+    let onSend: () -> Void
+    let onReceive: () -> Void
+
     var body: some View {
-        Group {
-            switch viewModel.state {
-            case .loading:
-                ProgressView()
-                    .task {
-                        await viewModel.load()
-                    }
-            case .addWallet:
-                NavigationStack {
-                    AddWalletView {
-                        viewModel.show(wallets: [$0])
-                    }
-                }
-            case .wallets(let viewModel):
-                if let active = viewModel.activeWallet {
-                    WalletHomeView(walletsList: viewModel, activeWallet: active)
-                        .id(active.id)
-                } else {
-                    WalletsListView(viewModel: viewModel)
-                }
-            }
+        HStack(spacing: 8) {
+            TONActionButton(icon: .circlePlus, title: "Deposit", style: .secondary, action: onDeposit)
+            TONActionButton(icon: .send, title: "Send", style: .secondary, action: onSend)
+            TONActionButton(icon: .arrowDownCircle, title: "Receive", style: .secondary, action: onReceive)
         }
     }
 }
