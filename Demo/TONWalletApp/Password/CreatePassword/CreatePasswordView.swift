@@ -83,7 +83,7 @@ struct CreatePasswordView: View {
                         }
                     }
                 }
-                .buttonStyle(TONButtonStyle(type: .primary))
+                .buttonStyle(TONLegacyButtonStyle(type: .primary))
                 .disabled(!viewModel.canContinue)
             }
             .widget()

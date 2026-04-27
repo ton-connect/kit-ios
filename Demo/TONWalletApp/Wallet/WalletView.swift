@@ -48,7 +48,7 @@ struct WalletView: View {
                 Button("Swap") {
                     onSwap(viewModel.swapViewModel())
                 }
-                .buttonStyle(TONButtonStyle(type: .secondary))
+                .buttonStyle(TONLegacyButtonStyle(type: .secondary))
                 
                 WalletDAppConnectionView(viewModel: viewModel.dAppConnection)
                     .widget()

@@ -26,14 +26,13 @@
 
 import SwiftUI
 
-struct TONButtonStyle: ButtonStyle {
+struct TONLegacyButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
 
-    /// The configuration for the button style.
-    let type: TONButtonType
+    let type: TONLegacyButtonType
     let isLoading: Bool
-    
-    init(type: TONButtonType, isLoading: Bool = false) {
+
+    init(type: TONLegacyButtonType, isLoading: Bool = false) {
         self.type = type
         self.isLoading = isLoading
     }
@@ -62,7 +61,7 @@ struct TONButtonStyle: ButtonStyle {
     }
 }
 
-enum TONButtonType {
+enum TONLegacyButtonType {
     case primary
     case secondary
     

@@ -65,7 +65,7 @@ struct UnlockWalletView: View {
                 Button("Unlock Wallet") {
                     unlock()
                 }
-                .buttonStyle(TONButtonStyle(type: .primary))
+                .buttonStyle(TONLegacyButtonStyle(type: .primary))
                 .disabled(!viewModel.canUnlock)
             }
             .widget()
@@ -76,7 +76,7 @@ struct UnlockWalletView: View {
                     viewModel.reset()
                     appStateManager.reset()
                 }
-                .buttonStyle(TONButtonStyle(type: .secondary))
+                .buttonStyle(TONLegacyButtonStyle(type: .secondary))
                 
                 Text("This will permanently delete your wallet data")
                     .textSM()
