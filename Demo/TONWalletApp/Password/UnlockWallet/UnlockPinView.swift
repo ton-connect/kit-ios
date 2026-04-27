@@ -62,9 +62,11 @@ private struct ForgotPinSheet: View {
                 Text("Forgot your PIN code?")
                     .textStyle(.title3Bold)
                     .foregroundStyle(Color.tonTextPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text("There is no password recovery option. If you created a wallet backup, you can restore the wallet using your backup passphrase and then set a new PIN code.")
                     .textStyle(.body)
                     .foregroundStyle(Color.tonTextSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Button("Reset wallet", action: onReset)
@@ -73,6 +75,7 @@ private struct ForgotPinSheet: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 16)
         .padding(.vertical, 24)
+        .fixedSize(horizontal: false, vertical: true)
         .overlay(alignment: .topTrailing) {
             Button(action: onClose) {
                 Image(systemName: "xmark.circle.fill")
