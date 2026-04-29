@@ -65,8 +65,10 @@ class WalletInfoViewModel: ObservableObject {
                 .receive(on: DispatchQueue.main)
                 .sink(
                     receiveCompletion: { _ in },
-                    receiveValue: { balance in
-                        self.formattedBalance = balance.balance
+                    receiveValue: { [weak self] balance in
+                        if balance.status == .finalized {
+                            self?.formattedBalance = balance.balance
+                        }
                     }
                 )
                 .store(in: &subscribers)

@@ -155,17 +155,17 @@ extension JSBlob: JSBlobExport {
 
   /// Returns the text of this blob as a `JSValue`.
   public func text() -> JSValue {
-    self.utf8Promise { utf8, _ in String(utf8) }.value
+    self.utf8Promise { utf8, _ in String(utf8) }
   }
 
   /// Returns the bytes of this blob as a `JSValue`.
   public func bytes() -> JSValue {
-    self.utf8Promise { bufferWithBytes(utf8: $0, in: $1).1 }.value
+    self.utf8Promise { bufferWithBytes(utf8: $0, in: $1).1 }
   }
 
   /// Returns a Javascript `ArrayBuffer` of this blob as a `JSValue`.
   public func arrayBuffer() -> JSValue {
-    self.utf8Promise { bufferWithBytes(utf8: $0, in: $1).0 }.value
+    self.utf8Promise { bufferWithBytes(utf8: $0, in: $1).0 }
   }
 
   /// The implementation of Javascript's `Blob.slice`.
@@ -180,10 +180,24 @@ extension JSBlob: JSBlobExport {
 
   private func utf8Promise(
     _ map: @Sendable @escaping (String.UTF8View, JSContext) -> Any?
-  ) -> JSPromise {
-    JSPromise(in: .current()) { continuation in
-      let indexedStorage = self.indexedStorage
-      Task { await indexedStorage.utf8(continuation: continuation, map) }
+  ) -> JSValue {
+      guard let context = JSContext.current() else {
+          return JSValue(
+              newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+              in: JSContext()
+          )
+      }
+      
+    let indexedStorage = self.indexedStorage
+    return JSValue(newPromiseIn: context) { resolve, reject in
+      Task {
+        do {
+          let utf8 = try await indexedStorage.utf8(context: context)
+          resolve?.call(withArguments: [map(utf8, context) as Any])
+        } catch let error as JSValueError {
+          reject?.call(withArguments: [error.value as Any])
+        }
+      }
     }
   }
 }
@@ -203,41 +217,6 @@ extension JSBlob {
         context: context
       )
     }
-
-    func utf8(
-      continuation: JSPromise.Continuation,
-      _ map: (String.UTF8View, JSContext) -> Any?
-    ) async {
-      do {
-        continuation.resume(
-          resolving: map(try await self.utf8(context: continuation.context), continuation.context)
-        )
-      } catch {
-        continuation.resume(rejecting: error.value)
-      }
-    }
-  }
-}
-
-extension JSValue {
-  fileprivate func consumeIterable() -> [String] {
-    guard self.isObject else { return [] }
-    guard let symbolIterator = self.context.evaluateScript("Symbol.iterator") else { return [] }
-    guard
-      let iteratorFunction = self.objectForKeyedSubscript(symbolIterator).call(withArguments: []),
-      let iterator = iteratorFunction.call(withArguments: [])
-    else { return [] }
-    print(iterator)
-    var results: [String] = []
-    while true {
-      guard let result = iterator.invokeMethod("next", withArguments: []) else { break }
-      guard let done = result.forProperty("done")?.toBool() else { break }
-      if done { break }
-      if let value = result.forProperty("value") {
-        results.append(value.toString())
-      }
-    }
-    return results
   }
 }
 

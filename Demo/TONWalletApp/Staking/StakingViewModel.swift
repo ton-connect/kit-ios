@@ -208,10 +208,13 @@ class StakingViewModel: ObservableObject {
     private func subscribeToBalanceChanges() async throws {
         try await TONWalletKit.shared().streaming().jettons(network: .mainnet, address: wallet.address.value)
             .receive(on: DispatchQueue.main)
+            .debounce(for: .seconds(2), scheduler: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
-                receiveValue: { balance in
-                    self.updateBalance()
+                receiveValue: { [weak self] balance in
+                    if balance.status == .finalized {
+                        self?.updateBalance()
+                    }
                 }
             )
             .store(in: &subscribers)
