@@ -61,6 +61,14 @@ enum TONTypography {
             lineHeight: 24, letterSpacing: -0.45, textCase: nil
         )
 
+        // MARK: - Title 3 Regular Rounded (20)
+        static let title3RoundedRegular = TextStyle(
+            name: "Title 3 Regular Rounded — SF Pro Rounded Regular 20",
+            font: .system(size: 20, weight: .regular, design: .rounded),
+            uiFont: .systemFont(ofSize: 20, weight: .regular),
+            lineHeight: 24, letterSpacing: -0.45, textCase: nil
+        )
+
         // MARK: - Body (17)
         static let body = TextStyle(
             name: "Body — SF Pro Regular 17",
@@ -179,7 +187,7 @@ enum TONTypography {
 
         static let allStyles: [TextStyle] = [
             .price64, .price44, .price40,
-            .title1, .title2, .title3Bold, .title3Semibold,
+            .title1, .title2, .title3Bold, .title3Semibold, .title3RoundedRegular,
             .body, .bodyMedium, .bodySemibold, .bodyRoundedSemibold,
             .callout, .calloutMedium,
             .subheadline1,

@@ -34,10 +34,15 @@ enum TONIcon: String, CaseIterable, Hashable {
     case headerStar = "HeaderStar"
     case headerStarOutline = "HeaderStarOutline"
     case holders = "Holders"
+    case more = "More"
     case plusLarge = "PlusLarge"
     case sellIcon = "SellIcon"
+    case send = "Send"
+    case settings24 = "Settings24"
     case star24 = "Star24"
     case switchVertical24 = "SwitchVertical24"
+    case ton = "TON"
+    case toncoin = "Toncoin"
     case tonFill = "TonFill"
     case trend = "Trend"
     case volume = "Volume"
@@ -123,9 +128,9 @@ enum TONIcon: String, CaseIterable, Hashable {
             return .tabbar
         case .arrowDownCircle, .arrowRightCircle, .arrowRightUpCircle, .arrowUpCircle, .calendar,
              .calendarDays, .chat, .chevronDown, .chevronRight, .chevronUp, .circleMinus, .circlePlus, .coin,
-             .filter, .gas, .globus, .headerArrowShare, .headerStar, .headerStarOutline, .holders,
-             .plusLarge, .sellIcon, .star24, .switchVertical24, .tonFill, .trend, .volume, .volume2,
-             .volume3, .wallet, .wallet4:
+             .filter, .gas, .globus, .headerArrowShare, .headerStar, .headerStarOutline, .holders, .more,
+             .plusLarge, .sellIcon, .send, .settings24, .star24, .switchVertical24, .ton, .toncoin, .tonFill,
+             .trend, .volume, .volume2, .volume3, .wallet, .wallet4:
             return .icons24
         case .changeValue, .chevronBackSmall, .chevronDownSmall, .chevronForwardSmall, .chevronTopSmall,
              .clear, .close, .copy, .doc, .done, .failed, .github, .globe, .inProgress, .link20, .openLink,

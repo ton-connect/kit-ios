@@ -92,6 +92,8 @@ actor TONWalletKitContextProvider: TONWalletKitContextProviderProtocol {
             }
         }
         
+        self.task = task
+        
         return try await task.value
     }
 }

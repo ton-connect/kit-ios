@@ -44,5 +44,8 @@ playground.xcworkspace
 .build/
 .swiftpm/
 
+# Demo app secrets
+Demo/TONWalletApp/Env.swift
+
 # WalletKit from git
 walletkit-git
