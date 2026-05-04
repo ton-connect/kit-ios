@@ -34,6 +34,7 @@ struct WalletView: View {
     
     let onSend: (SendTokensViewModel) -> Void
     let onSwap: (SwapViewModel) -> Void
+    let onStaking: (StakingViewModel) -> Void
 
     var body: some View {
         ScrollView {

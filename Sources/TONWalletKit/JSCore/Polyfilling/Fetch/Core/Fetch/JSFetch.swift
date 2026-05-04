@@ -7,10 +7,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in all
 //  copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,7 +25,7 @@
 
 public struct JSFetchInstaller: Sendable, JSContextInstallable {
     let session: URLSession
-    
+
     public func install(in context: JSContext) throws {
         try context.install([
             .request,
@@ -37,9 +37,11 @@ public struct JSFetchInstaller: Sendable, JSContextInstallable {
         }
         context.setObject(constructFetchTask, forPath: "_jsCoreExtrasFetchTask")
     }
-    
+
     private func constructFetchTask(request: JSValue) -> JSFetchTask? {
-        let context = JSContext.current()!
+        guard let context = JSContext.current() else {
+            return nil
+        }
         let path = request.objectForKeyedSubscript("url").toString() ?? ""
         guard let url = URL(string: path) else {
             context.exception = .typeError(message: "Failed to parse URL from \(path).", in: context)
@@ -67,22 +69,16 @@ public struct JSFetchInstaller: Sendable, JSContextInstallable {
 extension JSContextInstallable where Self == JSFetchInstaller {
     /// An installable that installs a fetch implementation.
     public static var fetch: Self { .fetch(sessionConfiguration: .default) }
-    
+
     /// An installable that installs a fetch implementation.
     ///
     /// - Parameters:
     ///   - sessionConfiguration: The configuration to use for the underlying `URLSession` that makes HTTP requests.
     /// - Returns: An installable.
     public static func fetch(sessionConfiguration: URLSessionConfiguration) -> Self {
-        JSFetchInstaller(
-            session: URLSession(
-                configuration: sessionConfiguration,
-                delegate: JSURLSessionDataDelegate(isShared: true),
-                delegateQueue: nil
-            )
-        )
+        JSFetchInstaller(session: URLSession(configuration: sessionConfiguration))
     }
-    
+
     /// An installable that installs a fetch implementation.
     ///
     /// - Parameters:
@@ -101,134 +97,102 @@ extension JSContextInstallable where Self == JSFetchInstaller {
     func cancel(_ reason: JSValue)
 }
 
-@objc private final class JSFetchTask: NSObject, Sendable {
+private actor JSFetchExecutor {
     private let request: URLRequest
     private let session: URLSession
-    private let state: Lock<(task: URLSessionDataTask?, delegate: JSURLSessionDataDelegate)>
-    
+    private var swiftTask: Task<Void, Never>?
+    private var cancelReason: JSValue?
+
     init(request: URLRequest, session: URLSession) {
-        debugPrint(request)
-        
-        if let body = request.httpBody {
-            debugPrint("Body")
-            debugPrint(String(data: body, encoding: .utf8) as? AnyObject as Any)
-        }
-        
         self.request = request
         self.session = session
-        if let delegate = session.delegate as? JSURLSessionDataDelegate {
-            self.state = Lock((nil, delegate))
-        } else {
-            self.state = Lock((nil, JSURLSessionDataDelegate(isShared: false)))
+    }
+
+    func setCancelReason(_ reason: JSValue) {
+        self.cancelReason = reason
+        self.swiftTask?.cancel()
+    }
+
+    func run(context: JSContext, resolve: JSValue?, reject: JSValue?) {
+        if let reason = self.cancelReason {
+            reject?.call(withArguments: [reason as Any])
+            return
+        }
+        let request = self.request
+        let session = self.session
+        self.swiftTask = Task {
+            await self.executeFetch(
+                context: context,
+                resolve: resolve,
+                reject: reject,
+                request: request,
+                session: session
+            )
         }
     }
-}
 
-extension JSFetchTask: JSFetchTaskExport {
-    func perform() -> JSValue {
-        JSPromise(in: .current()) { continuation in
-            self.state.withLock { state in
-                let task = state.task ?? self.session.dataTask(with: self.request)
-                state.task = task
-                state.delegate.addFetchContinuation(continuation, for: task.taskIdentifier)
-                guard !state.delegate.rejectIfCancelled(for: task.taskIdentifier) else { return }
-                if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *), !state.delegate.isShared {
-                    task.delegate = state.delegate
-                }
-                task.resume()
+    private func executeFetch(
+        context: JSContext,
+        resolve: JSValue?,
+        reject: JSValue?,
+        request: URLRequest,
+        session: URLSession
+    ) async {
+        JSFetchLogger.logRequest(request)
+        do {
+            let data: Data
+            let urlResponse: URLResponse
+            let didRedirect: Bool
+            if #available(iOS 15, macOS 12, tvOS 15, watchOS 8, *) {
+                let observer = JSRedirectObserver()
+                (data, urlResponse) = try await session.data(for: request, delegate: observer)
+                didRedirect = observer.didRedirect
+            } else {
+                (data, urlResponse) = try await session.data(for: request)
+                didRedirect = urlResponse.url != request.url
             }
-        }
-        .value
-    }
-    
-    func cancel(_ reason: JSValue) {
-        let transfer = UnsafeJSValueTransfer(value: reason)
-        self.state.withLock { state in
-            let task = state.task ?? self.session.dataTask(with: self.request)
-            state.delegate.markCancelReason(reason: transfer, for: task.taskIdentifier)
-            task.cancel()
-        }
-    }
-}
-
-// MARK: - Delegate
-
-private final class JSURLSessionDataDelegate: NSObject {
-    typealias TaskID = Int
-    private typealias State = (
-        body: JSFetchResponseBlobStorage?,
-        cancelReason: JSValue?,
-        didRedirect: Bool,
-        continuation: JSPromise.Continuation?
-    )
-    
-    let isShared: Bool
-    private let state = Lock([TaskID: State]())
-    
-    init(isShared: Bool) {
-        self.isShared = isShared
-    }
-}
-
-extension JSURLSessionDataDelegate {
-    func addFetchContinuation(_ continuation: JSPromise.Continuation, for taskId: TaskID) {
-        self.editState(for: taskId) { $0.continuation = continuation }
-    }
-    
-    func markCancelReason(reason: UnsafeJSValueTransfer, for taskId: TaskID) {
-        self.editState(for: taskId) { $0.cancelReason = reason.value }
-    }
-    
-    func rejectIfCancelled(for taskId: TaskID) -> Bool {
-        self.editState(for: taskId) { state in
-            if let cancelReason = state.cancelReason {
-                state.continuation?.resume(rejecting: cancelReason)
-                return true
-            }
-            return false
-        }
-    }
-}
-
-extension JSURLSessionDataDelegate: URLSessionDataDelegate {
-    func urlSession(
-        _ session: URLSession,
-        dataTask: URLSessionDataTask,
-        didReceive response: URLResponse,
-        completionHandler: @escaping @Sendable (URLSession.ResponseDisposition) -> Void
-    ) {
-        debugPrint(response)
-        self.editState(for: dataTask.taskIdentifier) { state in
-            guard let continuation = state.continuation else { return }
-            guard let response = response as? HTTPURLResponse else {
-                continuation.resume(
-                    rejecting: JSValue(
+            JSFetchLogger.logResponse(urlResponse, data: data)
+            guard let httpResponse = urlResponse as? HTTPURLResponse else {
+                reject?.call(withArguments: [
+                    JSValue(
                         newErrorFromMessage: "Server responded with a non-HTTP response.",
-                        in: continuation.context
-                    )
-                )
+                        in: context
+                    ) as Any
+                ])
                 return
             }
-            let storage = JSFetchResponseBlobStorage(contentLength: response.expectedContentLength)
-            let (cookies, headers) = response.cookieFilteredHeaders
-            if dataTask.currentRequest?.httpShouldHandleCookies == true {
+            let (cookies, headers) = httpResponse.cookieFilteredHeaders
+            if request.httpShouldHandleCookies {
                 session.configuration.httpCookieStorage?
-                    .setCookies(cookies, for: response.url, mainDocumentURL: response.url)
+                    .setCookies(cookies, for: httpResponse.url, mainDocumentURL: httpResponse.url)
             }
-            continuation.resume(
-                resolving: JSValue.response(
-                    response: response,
-                    headers: headers,
-                    body: storage,
-                    didRedirect: state.didRedirect,
-                    in: continuation.context
-                )
+            let storage = JSFetchResponseBlobStorage(data: data)
+            let responseJS = JSValue.response(
+                response: httpResponse,
+                headers: headers,
+                body: storage,
+                didRedirect: didRedirect,
+                in: context
             )
-            state.body = storage
+            resolve?.call(withArguments: [responseJS as Any])
+        } catch {
+            if let urlError = error as? URLError, urlError.code == .cancelled {
+                reject?.call(withArguments: [self.cancelReason as Any])
+            } else {
+                reject?.call(withArguments: [
+                    JSValue(
+                        newErrorFromMessage: error.localizedDescription,
+                        in: context
+                    ) as Any
+                ])
+            }
         }
-        completionHandler(.allow)
     }
-    
+}
+
+private final class JSRedirectObserver: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    var didRedirect = false
+
     func urlSession(
         _ session: URLSession,
         task: URLSessionTask,
@@ -236,87 +200,58 @@ extension JSURLSessionDataDelegate: URLSessionDataDelegate {
         newRequest request: URLRequest,
         completionHandler: @escaping @Sendable (URLRequest?) -> Void
     ) {
-        self.editState(for: task.taskIdentifier) { $0.didRedirect = true }
+        self.didRedirect = true
         completionHandler(request)
-    }
-    
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        debugPrint("Response object")
-        debugPrint(String(data: data, encoding: .utf8) as Any)
-        self.editState(for: dataTask.taskIdentifier) { $0.body?.resume(with: data) }
-    }
-    
-    func urlSession(
-        _ session: URLSession,
-        task: URLSessionTask,
-        didCompleteWithError error: (any Error)?
-    ) {
-        self.editState(for: task.taskIdentifier) { state in
-            state.body?.finish(with: error)
-            guard let continuation = state.continuation, let error else { return }
-            if let error = error as? URLError, error.code == .cancelled {
-                continuation.resume(rejecting: state.cancelReason)
-            } else {
-                continuation.resume(
-                    rejecting: JSValue(
-                        newErrorFromMessage: error.localizedDescription,
-                        in: continuation.context
-                    )
-                )
-            }
-        }
     }
 }
 
-extension JSURLSessionDataDelegate {
-    private func editState<T: Sendable>(
-        for taskId: TaskID,
-        operation: @Sendable (inout State) -> T
-    ) -> T {
-        self.state.withLock { operation(&$0[taskId, default: (nil, nil, false, nil)]) }
+@objc private final class JSFetchTask: NSObject, Sendable {
+    private let executor: JSFetchExecutor
+
+    init(request: URLRequest, session: URLSession) {
+        self.executor = JSFetchExecutor(request: request, session: session)
+    }
+}
+
+extension JSFetchTask: JSFetchTaskExport {
+    func perform() -> JSValue {
+        guard let context = JSContext.current() else {
+            return JSValue(
+                newPromiseRejectedWithReason: "No context exists to perform \(#function)",
+                in: JSContext()
+            )
+        }
+
+        return JSValue(newPromiseIn: context) { resolve, reject in
+            Task {
+                await self.executor.run(context: context, resolve: resolve, reject: reject)
+            }
+        }
+    }
+
+    func cancel(_ reason: JSValue) {
+        Task { await self.executor.setCancelReason(reason) }
     }
 }
 
 // MARK: - Response Blob Storage
 
-private final class JSFetchResponseBlobStorage {
-    private let stream: AsyncThrowingStream<Data, any Error>
-    private let continuation: AsyncThrowingStream<Data, any Error>.Continuation
+private final class JSFetchResponseBlobStorage: JSBlobStorage {
+    private let data: Data
     let utf8SizeInBytes: Int64
-    
-    init(contentLength: Int64) {
-        let (stream, continuation) = AsyncThrowingStream<Data, any Error>.makeStream()
-        self.utf8SizeInBytes = contentLength
-        self.stream = stream
-        self.continuation = continuation
-    }
-}
 
-extension JSFetchResponseBlobStorage: JSBlobStorage {
+    init(data: Data) {
+        self.data = data
+        self.utf8SizeInBytes = Int64(data.count)
+    }
+
     func utf8Bytes(
         startIndex: Int64,
         endIndex: Int64,
         context: JSContext
     ) async throws(JSValueError) -> String.UTF8View {
-        do {
-            let utf8 = try await self.stream.reduce(into: Data()) { $0.append($1) }
-            return String(decoding: utf8, as: UTF8.self)
-                .utf8Bytes(startIndex: startIndex, endIndex: endIndex, context: context)
-        } catch {
-            throw JSValueError(
-                value: JSValue(newErrorFromMessage: error.localizedDescription, in: context)
-            )
-        }
-    }
-}
-
-extension JSFetchResponseBlobStorage {
-    func resume(with data: Data) {
-        self.continuation.yield(data)
-    }
-    
-    func finish(with error: (any Error)?) {
-        self.continuation.finish(throwing: error)
+        String(decoding: self.data, as: UTF8.self)
+            .utf8Bytes(startIndex: startIndex, endIndex: endIndex, context: context)
     }
 }
 
@@ -338,13 +273,13 @@ extension URLRequest {
         if let headers = request.objectForKeyedSubscript("headers"), !headers.isUndefined {
             if let entries = headers.invokeMethod("entries", withArguments: []), entries.isObject {
                 // entries() returns an iterator, so we need to iterate manually
-                while let next = entries.invokeMethod("next", withArguments: []), 
-                      let done = next.objectForKeyedSubscript("done")?.toBool(), 
-                      !done 
+                while let next = entries.invokeMethod("next", withArguments: []),
+                      let done = next.objectForKeyedSubscript("done")?.toBool(),
+                      !done
                 {
-                    if let pair = next.objectForKeyedSubscript("value"), 
-                       let key = pair.atIndex(0), 
-                       let value = pair.atIndex(1) 
+                    if let pair = next.objectForKeyedSubscript("value"),
+                       let key = pair.atIndex(0),
+                       let value = pair.atIndex(1)
                     {
                         requestCopy.addValue(value.toString(), forHTTPHeaderField: key.toString())
                     }

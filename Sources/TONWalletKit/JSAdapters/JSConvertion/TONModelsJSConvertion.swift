@@ -47,13 +47,15 @@ extension TONBalance: JSValueDecodable {
     }
 }
 
-extension TONUserFriendlyAddress: JSValueDecodable {
+extension TONUserFriendlyAddress: JSValueCodable {
     
     static func from(_ value: JSValue) throws -> Self? {
         let stringValue: String = try value.decode()
         
         return try TONUserFriendlyAddress(value: stringValue)
     }
+    
+    func encode(in context: JSContext) throws -> Any { value }
 }
 
 extension TONBase64: JSValueDecodable {
