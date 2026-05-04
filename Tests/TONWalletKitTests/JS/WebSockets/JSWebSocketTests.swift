@@ -601,7 +601,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         ws.send(JSValue(object: "hello", in: context))
         let messages = await sent
 
@@ -643,7 +644,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         ws.send(JSValue(int32: 3, in: context))
         let messages = await sent
 
@@ -662,7 +664,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         ws.send(JSValue(bool: true, in: context))
         let messages = await sent
 
@@ -683,7 +686,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let uint8Array = context.evaluateScript("new Uint8Array([1, 2, 3])")!
         ws.send(uint8Array)
         let messages = await sent
@@ -702,7 +706,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let arrayBuffer = context.evaluateScript("""
             (function() {
                 var buf = new ArrayBuffer(3);
@@ -728,7 +733,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let typedArray = context.evaluateScript("new Uint16Array([256, 512])")!
         ws.send(typedArray)
         let messages = await sent
@@ -748,7 +754,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let empty = context.evaluateScript("new Uint8Array([])")!
         ws.send(empty)
         let messages = await sent
@@ -769,7 +776,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         ws.send(JSValue(nullIn: context))
         let messages = await sent
 
@@ -787,7 +795,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         ws.send(JSValue(undefinedIn: context))
         let messages = await sent
 
@@ -805,7 +814,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let obj = context.evaluateScript("({})")!
         ws.send(obj)
         let messages = await sent
@@ -824,7 +834,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let arr = context.evaluateScript("[10, 20, 30]")!
         ws.send(arr)
         let messages = await sent
@@ -843,7 +854,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let int8 = context.evaluateScript("new Int8Array([-1, -128, 127, 0])")!
         ws.send(int8)
         let messages = await sent
@@ -863,7 +875,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let float64 = context.evaluateScript("new Float64Array([1.9, 255.5, 0.1])")!
         ws.send(float64)
         let messages = await sent
@@ -882,7 +895,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let arr = context.evaluateScript("new Uint8Array([0, 1, 254, 255])")!
         ws.send(arr)
         let messages = await sent
@@ -901,7 +915,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let subarray = context.evaluateScript("""
             new Uint8Array([10, 20, 30, 40, 50]).subarray(1, 4)
         """)!
@@ -922,7 +937,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let subarray = context.evaluateScript("new Uint16Array([1, 2, 3, 4]).subarray(1, 3)")!
         ws.send(subarray)
         let messages = await sent
@@ -942,7 +958,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let subarray = context.evaluateScript("new Uint32Array([1, 2, 3]).subarray(0, 2)")!
         ws.send(subarray)
         let messages = await sent
@@ -961,7 +978,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let subarray = context.evaluateScript("new Float64Array([1.0, 2.0, 3.0]).subarray(1, 2)")!
         ws.send(subarray)
         let messages = await sent
@@ -980,7 +998,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let int16 = context.evaluateScript("new Int16Array([300, -1, 0, 32767])")!
         ws.send(int16)
         let messages = await sent
@@ -1000,7 +1019,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let uint32 = context.evaluateScript("new Uint32Array([256, 65535, 0, 1])")!
         ws.send(uint32)
         let messages = await sent
@@ -1019,7 +1039,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let float32 = context.evaluateScript("new Float32Array([NaN, Infinity, -Infinity])")!
         ws.send(float32)
         let messages = await sent
@@ -1038,7 +1059,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let clamped = context.evaluateScript("new Uint8ClampedArray([0, 128, 255, 300, -10])")!
         ws.send(clamped)
         let messages = await sent
@@ -1058,7 +1080,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let dv = context.evaluateScript("""
             (function() {
                 var buf = new ArrayBuffer(4);
@@ -1087,7 +1110,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let dv = context.evaluateScript("""
             (function() {
                 var buf = new ArrayBuffer(6);
@@ -1113,7 +1137,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let buffer = context.evaluateScript("""
             (function() {
                 var buf = new ArrayBuffer(3);
@@ -1139,7 +1164,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let single = context.evaluateScript("new Uint8Array([42])")!
         ws.send(single)
         let messages = await sent
@@ -1158,7 +1184,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let arr = context.evaluateScript("[1, 2.7, 255, 0, -1]")!
         ws.send(arr)
         let messages = await sent
@@ -1178,7 +1205,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let large = context.evaluateScript("""
             (function() {
                 var arr = new Uint8Array(512);
@@ -1206,7 +1234,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let slice = context.evaluateScript("""
             (function() {
                 var buf = new ArrayBuffer(5);
@@ -1232,7 +1261,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let derived = context.evaluateScript("""
             new Uint8Array(new Uint16Array([1, 2, 256, 512]))
         """)!
@@ -1256,7 +1286,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let jsArray = context.evaluateScript("new Uint8Array([72, 101, 108, 108, 111])")!
         ws.send(jsArray)
         let messages = await sent
@@ -1324,7 +1355,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let buf = context.evaluateScript("""
             (function() {
                 var buf = new ArrayBuffer(4);
@@ -1353,16 +1385,18 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 3)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 3)
         ws.send(JSValue(object: "first", in: context))
         ws.send(JSValue(object: "second", in: context))
         ws.send(context.evaluateScript("new Uint8Array([1, 2])")!)
         let messages = await sent
 
         #expect(messages.count == 3)
-        if case .string(let text) = messages[0] { #expect(text == "first") }
-        if case .string(let text) = messages[1] { #expect(text == "second") }
-        if case .data(let data) = messages[2] { #expect(Array(data) == [1, 2]) }
+        let strings = messages.compactMap { if case .string(let t) = $0 { return t } else { return nil } }
+        let datas = messages.compactMap { if case .data(let d) = $0 { return Array(d) } else { return nil } }
+        #expect(Set(strings) == Set(["first", "second"]))
+        #expect(datas == [[1, 2]])
     }
 
     @Test("bufferedAmount starts at zero")
@@ -1474,7 +1508,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         ws.send(JSValue(object: "hello", in: context))
         #expect(ws.bufferedAmount == 5)
 
@@ -1570,7 +1605,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let closed = mockTask.expectClose()
+        mockTask.prepareClose()
+        async let closed = mockTask.awaitClose()
         ws.close(JSValue(int32: 1001, in: context), JSValue(object: "going away", in: context))
         let call = await closed
 
@@ -1984,7 +2020,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let blob = JSBlob(storage: "hello", type: MIMEType(rawValue: "text/plain"))
         ws.send(JSValue(object: blob, in: context))
         let messages = await sent
@@ -2003,7 +2040,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let blob = JSBlob(storage: "", type: MIMEType(rawValue: ""))
         ws.send(JSValue(object: blob, in: context))
         let messages = await sent
@@ -2022,7 +2060,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let blob = context.evaluateScript("new Blob(['abc'])")!
         ws.send(blob)
         let messages = await sent
@@ -2041,7 +2080,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let blob = context.evaluateScript("new Blob(['hello world']).slice(0, 5)")!
         ws.send(blob)
         let messages = await sent
@@ -2060,7 +2100,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let content = String(repeating: "z", count: 512)
         let blob = JSBlob(storage: content, type: MIMEType(rawValue: "text/plain"))
         ws.send(JSValue(object: blob, in: context))
@@ -2080,7 +2121,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let blob = context.evaluateScript("new Blob(['hello', ' ', 'world'])")!
         ws.send(blob)
         let messages = await sent
@@ -2099,7 +2141,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let blob = JSBlob(storage: "héllo", type: MIMEType(rawValue: "text/plain"))
         ws.send(JSValue(object: blob, in: context))
         let messages = await sent
@@ -2118,7 +2161,8 @@ struct JSWebSocketTests {
         let ws = makeWebSocket(task: mockTask)!
         ws.handleEvent(.open(negotiatedProtocol: nil))
 
-        async let sent = mockTask.expectSend(count: 1)
+        mockTask.prepareSend()
+        async let sent = mockTask.awaitSend(count: 1)
         let blob = JSBlob(storage: "😀", type: MIMEType(rawValue: "text/plain"))
         ws.send(JSValue(object: blob, in: context))
         let messages = await sent

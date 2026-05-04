@@ -33,7 +33,8 @@ import BigInt
 
 extension {{projectName}}API {
 {{/swiftUseApiNamespace}}
-{{#vendorExtensions.x-type-alias}}
+{{#vendorExtensions.x-string-literal-union}}
+{{> modelStringLiteralUnion}}{{/vendorExtensions.x-string-literal-union}}{{^vendorExtensions.x-string-literal-union}}{{#vendorExtensions.x-type-alias}}
 
 {{#nonPublicApi}}internal{{/nonPublicApi}}{{^nonPublicApi}}public{{/nonPublicApi}} typealias {{{classname}}} = {{modelNamePrefix}}{{{vendorExtensions.x-alias-target}}}
 {{/vendorExtensions.x-type-alias}}{{^vendorExtensions.x-type-alias}}{{#description}}
@@ -44,13 +45,10 @@ extension {{projectName}}API {
 {{> modelOneOf}}{{/vendorExtensions.x-is-one-of-interface}}{{^vendorExtensions.x-is-one-of-interface}}{{#isArray}}
 {{> modelArray}}{{/isArray}}{{^isArray}}{{#isEnum}}
 {{> modelEnum}}{{/isEnum}}{{^isEnum}}
-{{> modelAllOf}}{{/isEnum}}{{/isArray}}{{/vendorExtensions.x-is-one-of-interface}}{{/vendorExtensions.x-is-generic}}{{/vendorExtensions.x-discriminated-union}}{{/vendorExtensions.x-type-alias}}{{/vendorExtensions.x-skip-model}}{{/model}}{{/models}}
+{{> modelAllOf}}{{/isEnum}}{{/isArray}}{{/vendorExtensions.x-is-one-of-interface}}{{/vendorExtensions.x-is-generic}}{{/vendorExtensions.x-discriminated-union}}{{/vendorExtensions.x-type-alias}}{{/vendorExtensions.x-string-literal-union}}{{/vendorExtensions.x-skip-model}}{{/model}}{{/models}}
 {{#swiftUseApiNamespace}}
 }
-{{/swiftUseApiNamespace}}{{#models}}{{#model}}{{^vendorExtensions.x-skip-model}}{{#vendorExtensions.x-swift-identifiable}}
-@available(iOS 13, tvOS 13, watchOS 6, macOS 10.15, *)
-extension {{#swiftUseApiNamespace}}{{projectName}}API.{{/swiftUseApiNamespace}}{{{classname}}}: Identifiable {}
-{{/vendorExtensions.x-swift-identifiable}}{{^vendorExtensions.x-type-alias}}
+{{/swiftUseApiNamespace}}{{#models}}{{#model}}{{^vendorExtensions.x-skip-model}}{{^vendorExtensions.x-type-alias}}
 
 extension {{{classname}}}: JSValueCodable {}
 {{/vendorExtensions.x-type-alias}}{{/vendorExtensions.x-skip-model}}{{/model}}{{/models}}

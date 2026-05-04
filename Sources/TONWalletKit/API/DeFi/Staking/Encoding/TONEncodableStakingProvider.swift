@@ -1,5 +1,10 @@
 //
-//  Copyright (c) 2025 TON Connect
+//  TONEncodableStakingProvider.swift
+//  TONWalletKit
+//
+//  Created by Nikita Rodionov on 06.04.2026.
+//
+//  Copyright (c) 2026 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +26,22 @@
 
 import Foundation
 
-@globalActor actor EventSourceActor: GlobalActor {
-    static let shared = EventSourceActor()
+class TONEncodableStakingProvider<Provider: TONStakingProviderProtocol>: JSValueEncodable {
+    let stakingProvider: Provider
+
+    init(stakingProvider: Provider) {
+        self.stakingProvider = stakingProvider
+    }
+
+    func encode(in context: JSContext) throws -> Any {
+        if let value = stakingProvider as? JSValueEncodable {
+            return try value.encode(in: context)
+        }
+        return TONStakingProviderJSAdapter(context: context, stakingProvider: stakingProvider)
+    }
 }
 
-struct EventSource {
-    private let timeout: TimeInterval
+extension TONStakingProvider: JSValueEncodable {
 
-    init(timeout: TimeInterval = 300) {
-        self.timeout = timeout
-    }
-
-    @EventSourceActor
-    func createTask(urlRequest: URLRequest,
-                    lastEventId: String? = nil) -> EventSourceTask {
-        EventSourceTask(
-            urlRequest: urlRequest,
-            timeout: timeout,
-            lastEventId: lastEventId
-        )
-    }
+    func encode(in context: JSContext) throws -> Any { jsObject }
 }

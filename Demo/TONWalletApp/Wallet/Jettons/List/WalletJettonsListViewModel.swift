@@ -104,8 +104,12 @@ final class WalletJettonsListViewModel: ObservableObject {
                 .receive(on: DispatchQueue.main)
                 .sink(
                     receiveCompletion: { _ in },
-                    receiveValue: { update in
-                        self.jettons = self.jettons.map { $0.applying(update: update) }
+                    receiveValue: { [weak self] update in
+                        guard let self else { return }
+                        
+                        if update.status == .finalized {
+                            self.jettons = self.jettons.map { $0.applying(update: update) }
+                        }
                     }
                 )
                 .store(in: &subscribers)
