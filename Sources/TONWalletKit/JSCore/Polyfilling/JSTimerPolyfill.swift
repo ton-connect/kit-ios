@@ -47,125 +47,97 @@ class JSTimerIdentifierProvider {
 }
 
 public class JSTimerPolyfill: NSObject, JSPolyfill, JSTimerManager {
-    private var timers: [Int32: Timer?] = [:]
+    private var timers: [Int32: DispatchSourceTimer] = [:]
     private let timersQueue = DispatchQueue(label: "com.jstimers.queue")
+    private let callbackQueue = DispatchQueue(label: "com.jstimers.callbacks")
     private let timerIdentifierProvider = JSTimerIdentifierProvider()
-    
+
     public func apply(to context: JSContext) {
         context.setObject(self,
                           forKeyedSubscript: "__nativeTimersManager" as NSString)
-        
+
         context.evaluateScript(
             """
             function setTimeout(callback, interval, ...parameters) {
                 return __nativeTimersManager.setTimeout(callback, interval, parameters);
             }
-            
+
             function clearTimeout(identifier) {
                 __nativeTimersManager.clearTimeout(identifier);
             }
-            
+
             function setInterval(callback, interval) {
                 return __nativeTimersManager.setInterval(callback, interval);
             }
-            
+
             function clearInterval(identifier) {
                 __nativeTimersManager.clearInterval(identifier);
             }
             """
         )
     }
-    
+
     @objc
     public func setTimeout(callback: JSValue, interval: Double, parameters: [Any]) -> Int32 {
         guard callback.isObject && callback.isFunction else {
             return -1
         }
-        
+
         let identifier = timersQueue.sync { timerIdentifierProvider.nextTimerIdentifier() }
-        
-        preserveTimerSlot(for: identifier)
-        
-        DispatchQueue.main.async { [weak self] in
-            let function = JSManagedValue(value: callback, andOwner: callback.context)
-            
-            let timer = Timer.scheduledTimer(withTimeInterval: max(0.0, interval) / 1000.0, repeats: false) { [weak self] timer in
-                timer.invalidate()
-                
-                function?.value?.call(withArguments: parameters)
-                
-                self?.timersQueue.async {
-                    self?.timers.removeValue(forKey: identifier)
-                }
-            }
-            
-            self?.set(timer: timer, for: identifier)
+        let function = JSManagedValue(value: callback, andOwner: callback.context)
+
+        let timer = DispatchSource.makeTimerSource(queue: callbackQueue)
+        timer.schedule(deadline: .now() + max(0.0, interval) / 1000.0)
+        timer.setEventHandler { [weak self] in
+            function?.value?.call(withArguments: parameters)
+            self?.removeTimer(for: identifier)
         }
-        
+
+        timersQueue.sync { timers[identifier] = timer }
+        timer.resume()
+
         return identifier
     }
-    
+
     @objc
     public func clearTimeout(identifier: Int32) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            var timer: Timer?
-            
-            self.timersQueue.sync {
-                if let removedTimer = self.timers.removeValue(forKey: identifier) {
-                    timer = removedTimer
-                }
-            }
-            timer?.invalidate()
+        let timer: DispatchSourceTimer? = timersQueue.sync {
+            timers.removeValue(forKey: identifier)
         }
+        timer?.cancel()
     }
-    
+
     @objc
     public func setInterval(callback: JSValue, interval: Double, parameters: [Any]) -> Int32 {
         guard callback.isObject && callback.isFunction else {
             return -1
         }
-        
+
         let identifier = timersQueue.sync { self.timerIdentifierProvider.nextTimerIdentifier() }
-        
-        preserveTimerSlot(for: identifier)
-        
-        DispatchQueue.main.async { [weak self] in
-            let function = JSManagedValue(value: callback, andOwner: callback.context)
-            
-            let timer = Timer.scheduledTimer(withTimeInterval: max(0.0, interval) / 1000.0, repeats: true) { timer in
-                function?.value?.call(withArguments: parameters)
-            }
-            
-            self?.set(timer: timer, for: identifier)
+        let function = JSManagedValue(value: callback, andOwner: callback.context)
+
+        let intervalSeconds = max(0.0, interval) / 1000.0
+        let timer = DispatchSource.makeTimerSource(queue: callbackQueue)
+        timer.schedule(deadline: .now() + intervalSeconds, repeating: intervalSeconds)
+        timer.setEventHandler {
+            function?.value?.call(withArguments: parameters)
         }
-        
+
+        timersQueue.sync { timers[identifier] = timer }
+        timer.resume()
+
         return identifier
     }
-    
+
     @objc
     public func clearInterval(identifier: Int32) {
         clearTimeout(identifier: identifier)
     }
-    
-    private func preserveTimerSlot(for identifier: Int32) {
-        timersQueue.sync {
-            timers[identifier] = Optional<Timer>.none
-        }
-    }
-    
-    private func set(timer: Timer, for identifier: Int32) {
-        let timerIsValid = timer.isValid
-        
-        timersQueue.sync { [weak self] in
-            guard let self = self else { return }
-            
-            if timerIsValid && self.timers[identifier] == Optional<Timer>.none {
-                self.timers[identifier] = timer
-            } else {
-                self.timers.removeValue(forKey: identifier)
-            }
+
+    private func removeTimer(for identifier: Int32) {
+        timersQueue.async { [weak self] in
+            let timer = self?.timers.removeValue(forKey: identifier)
+            timer?.cancel()
         }
     }
 }

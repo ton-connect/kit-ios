@@ -1,5 +1,10 @@
 //
-//  Copyright (c) 2025 TON Connect
+//  TONTonStakersProviderConfig.swift
+//  TONWalletKit
+//
+//  Created by Nikita Rodionov on 06.04.2026.
+//
+//  Copyright (c) 2026 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +26,21 @@
 
 import Foundation
 
-@globalActor actor EventSourceActor: GlobalActor {
-    static let shared = EventSourceActor()
-}
+public struct TONTonStakersProviderConfig: Encodable {
+    public var chains: [TONNetwork: TONTonStakersChainConfig]
 
-struct EventSource {
-    private let timeout: TimeInterval
-
-    init(timeout: TimeInterval = 300) {
-        self.timeout = timeout
+    public init(chains: [TONNetwork: TONTonStakersChainConfig] = [:]) {
+        self.chains = chains
     }
 
-    @EventSourceActor
-    func createTask(urlRequest: URLRequest,
-                    lastEventId: String? = nil) -> EventSourceTask {
-        EventSourceTask(
-            urlRequest: urlRequest,
-            timeout: timeout,
-            lastEventId: lastEventId
-        )
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        var stringKeyed: [String: TONTonStakersChainConfig] = [:]
+        for (network, config) in chains {
+            stringKeyed[network.chainId] = config
+        }
+        try container.encode(stringKeyed)
     }
 }
+
+extension TONTonStakersProviderConfig: JSValueEncodable {}

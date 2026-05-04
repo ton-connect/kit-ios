@@ -1,5 +1,10 @@
 //
-//  Copyright (c) 2025 TON Connect
+//  TONTonStakersStakingProviderIdentifier.swift
+//  TONWalletKit
+//
+//  Created by Nikita Rodionov on 06.04.2026.
+//
+//  Copyright (c) 2026 TON Connect
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +26,14 @@
 
 import Foundation
 
-@globalActor actor EventSourceActor: GlobalActor {
-    static let shared = EventSourceActor()
-}
+public struct TONTonStakersStakingProviderIdentifier: TONStakingProviderIdentifier {
+    public typealias Provider = TONTonStakersStakingProvider
+    public typealias QuoteOptions = AnyCodable
+    public typealias StakeOptions = AnyCodable
 
-struct EventSource {
-    private let timeout: TimeInterval
+    public let name: String
 
-    init(timeout: TimeInterval = 300) {
-        self.timeout = timeout
-    }
-
-    @EventSourceActor
-    func createTask(urlRequest: URLRequest,
-                    lastEventId: String? = nil) -> EventSourceTask {
-        EventSourceTask(
-            urlRequest: urlRequest,
-            timeout: timeout,
-            lastEventId: lastEventId
-        )
+    public init(name: String) {
+        self.name = name
     }
 }

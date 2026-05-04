@@ -35,9 +35,17 @@ public struct TONTokenAmount: Codable {
     }
     
     public init?(nanoUnits: String) {
+        let nanoUnits = nanoUnits.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !nanoUnits.isEmpty else {
+            self.nanoUnits = 0
+            return
+        }
+        
         guard let bigInt = BigInt(nanoUnits) else {
             return nil
         }
+        
         self.nanoUnits = bigInt
     }
     
